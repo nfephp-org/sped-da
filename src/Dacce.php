@@ -2,7 +2,8 @@
 
 namespace NFePHP\DA;
 
-class Daux
+
+class Dacce
 {
-    
+
 }
