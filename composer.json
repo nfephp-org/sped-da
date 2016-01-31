@@ -35,7 +35,7 @@
     },
     "autoload": {
         "psr-4": {
-          "nfephp-org\\sped-da\\DA\\": "src/"
+          "NFePHP\\DA\\": "src/"
         }
     },
     "extra": {
