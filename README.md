@@ -1,6 +1,8 @@
 # sped-da
 Classes para geração dos documentos auxiliares usados pelos padrões Sped
 
+## Versão : Alpha-dev, ainda sem classes funcionais, apenas estruturação do pacote
+
 # Orientação
 Abaixo seguem as orientações gerais para desenvolvedores que desejarem contribuir para a construção e melhoria dos códigos.
 
@@ -71,6 +73,7 @@ Por exemplo:
 8. **Dados dos itens**
 
    * Presente em todas as páginas, da primeira até a última
+   * Aqui é onde está o maior problema, pois temos que pre-renderizar o DANFE e verificar quantos itens cabem na primeira página, em função da área que sobrou e distribuir os itens restantes pelas paginas seguintes.
    * _Área ocupada varia com os dados no xml_
 
 9. **Informações Adicionais**
