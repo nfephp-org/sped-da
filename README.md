@@ -12,7 +12,7 @@ Para a geração dos documentos auxiliares devem feitas as seguintes consideraç
 
 * Esta biblioteca deverá ser escrita para PHP7, não será testado ou aceito o seu uso em ambientes com php menor que o 5.6 (por ora, pelo menos durante o seu desenvolvimento) e apartir da sua primeira versão estável somente PHP >= 7.0 será aceitável.
 * Este pacote *"sped-da"* se tornará uma dependência (sugerida) dos demais, e será de competência do desenvolvedor coloca-la como dependência de sua aplicação ou não, usando o composer.
-* A rederização das classes principais (Danfe, Dacte, Damdfe, Dacce e o NFCe, este com ressalvas) devem ser feita em PDF ou em HTML.
+* A renderização das classes principais (Danfe, Dacte, Damdfe, Dacce e o NFCe, este com ressalvas) devem ser feita em PDF ou em HTML.
 * Essas classes principais devem extender a classe Da.php que é a construtora básica.
 * Os documentos auxiliares podem ser renderizados a partir dos XMLs ou das classes construtoras, estabelecidas em cada pacote. Ou seja, tanto pode ser passada uma classe com os dados do documento como o próprio documento em XML.
 * Deve ser permitida e facilitada a criação de um PDF com múltiplos documentos.
