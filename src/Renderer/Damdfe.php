@@ -3,7 +3,6 @@
 
 namespace NFePHP\DA\Renderer;
 
-
 class Damdfe
 {
 
