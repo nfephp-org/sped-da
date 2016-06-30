@@ -3,11 +3,25 @@ Classes para geração dos documentos auxiliares usados pelos padrões Sped
 
 ## Versão : Alpha-dev, ainda sem classes funcionais, apenas estruturação do pacote
 
+[![Build Status][ico-travis]][link-travis]
+[![Coverage Status][ico-scrutinizer]][link-scrutinizer]
+[![Quality Score][ico-code-quality]][link-code-quality]
+[![Latest Version on Packagist][ico-version]][link-packagist]
+[![License][ico-license]][link-packagist]
+[![Total Downloads][ico-downloads]][link-downloads]
+
+[![Issues][ico-issues]][link-issues]
+[![Forks][ico-forks]][link-forks]
+[![Stars][ico-stars]][link-stars]
+
+
+
 # Orientação
 Abaixo seguem as orientações gerais para desenvolvedores que desejarem contribuir para a construção e melhoria dos códigos.
 
->Uma novo projeto oriundo do TCPDF está em desenvolvimento por NIcola Azumi. Este novo projeto é uma evolução do TCPDF e está sendo estruturado de acordo com as práticas mais atuais do PHP.
->Dito isso, estas classes do sped-da, que são legadas do projeto NFePHP, deverão ser refatoradas, assim que esse novo projeto tc-lib-pdf estiver em uma versão usável.
+>Uma novo projeto oriundo do TCPDF está em desenvolvimento por NIcola Azuni. Este novo projeto é uma evolução do TCPDF e está sendo estruturado de acordo com as práticas mais atuais do PHP.
+
+>Dito isso, estas classes do sped-da, que são legadas do projeto NFePHP, deverão ser refatoradas, assim que esse novo projeto [tc-lib-pdf](https://github.com/tecnickcom/tc-lib-pdf) estiver em uma versão usável.
 
 ## Estrutura das classes
 
@@ -26,3 +40,24 @@ Para a geração dos documentos auxiliares devem feitas as seguintes consideraç
 * Para a conversão dos dados em PDF é necessário o uso de uma biblioteca que seja ativamente mantida, usada por um grande contingênte de programadores e que atenda minimamente os PSR. Uma grande atenção deve ser dedicada a esse ponto pois com a inclusão do PHP7 podem surgir problemas de incompatibilidade com bibliotecas que não sejam mantidas atualizadas.
 
 [DANFE](DANFE.md) 
+
+[ico-stars]: https://img.shields.io/github/stars/nfephp-org/sped-nfe.svg?style=flat-square
+[ico-forks]: https://img.shields.io/github/forks/nfephp-org/sped-da.svg?style=flat-square
+[ico-issues]: https://img.shields.io/github/issues/nfephp-org/sped-da.svg?style=flat-square
+[ico-travis]: https://img.shields.io/travis/nfephp-org/sped-da/master.svg?style=flat-square
+[ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/nfephp-org/sped-da.svg?style=flat-square
+[ico-code-quality]: https://img.shields.io/scrutinizer/g/nfephp-org/sped-da.svg?style=flat-square
+[ico-downloads]: https://img.shields.io/packagist/dt/nfephp-org/sped-da.svg?style=flat-square
+[ico-version]: https://img.shields.io/packagist/v/nfephp-org/sped-da.svg?style=flat-square
+[ico-license]: https://poser.pugx.org/nfephp-org/nfephp/license.svg?style=flat-square
+
+[link-packagist]: https://packagist.org/packages/nfephp-org/sped-da
+[link-travis]: https://travis-ci.org/nfephp-org/sped-da
+[link-scrutinizer]: https://scrutinizer-ci.com/g/nfephp-org/sped-da/code-structure
+[link-code-quality]: https://scrutinizer-ci.com/g/nfephp-org/sped-da
+[link-downloads]: https://packagist.org/packages/nfephp-org/sped-da
+[link-author]: https://github.com/nfephp-org
+[link-issues]: https://github.com/nfephp-org/sped-da/issues
+[link-forks]: https://github.com/nfephp-org/sped-da/network
+[link-stars]: https://github.com/nfephp-org/sped-da/stargazers
+
