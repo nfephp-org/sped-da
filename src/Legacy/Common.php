@@ -2,7 +2,7 @@
 
 namespace NFePHP\DA\Legacy;
 
-class CommonNFePHP
+class Common
 {
     /**
      * pAdicionaLogoPeloCnpj
@@ -300,7 +300,8 @@ class CommonNFePHP
      * @param  string  $hAlign  Alinhamento horizontal do texto, L-esquerda, C-centro, R-direita
      * @param  boolean $border  TRUE ou 1 desenha a borda, FALSE ou 0 Sem borda
      * @param  string  $link    Insere um hiperlink
-     * @param  boolean $force   Se for true força a caixa com uma unica linha e para isso atera o tamanho do fonte até caber no espaço, se falso mantem o tamanho do fonte e usa quantas linhas forem necessárias
+     * @param  boolean $force   Se for true força a caixa com uma unica linha e para isso atera o tamanho do
+     * fonte até caber no espaço, se falso mantem o tamanho do fonte e usa quantas linhas forem necessárias
      * e para isso atera o tamanho do fonte até caber no espaço,
      * se falso mantem o tamanho do fonte e usa quantas linhas forem necessárias
      * @param  number  $hmax
@@ -346,7 +347,7 @@ class CommonNFePHP
         //estabelecer o fonte
         $this->pdf->SetFont($aFont['font'], $aFont['style'], $aFont['size']);
         //calcular o incremento
-        $incY = $this->pdf->FontSize; //tamanho da fonte na unidade definida
+        $incY = $this->pdf->fontSize; //tamanho da fonte na unidade definida
         if (!$force) {
             //verificar se o texto cabe no espaço
             $n = $this->pdf->WordWrap($text, $w);
@@ -374,13 +375,13 @@ class CommonNFePHP
         foreach ($lines as $line) {
             //verificar o comprimento da frase
             $texto = trim($line);
-            $comp = $this->pdf->GetStringWidth($texto);
+            $comp = $this->pdf->getStringWidth($texto);
             if ($force) {
                 $newSize = $aFont['size'];
                 while ($comp > $w) {
                     //estabelecer novo fonte
                     $this->pdf->SetFont($aFont['font'], $aFont['style'], --$newSize);
-                    $comp = $this->pdf->GetStringWidth($texto);
+                    $comp = $this->pdf->getStringWidth($texto);
                 }
             }
             //ajustar ao alinhamento horizontal
@@ -434,7 +435,8 @@ class CommonNFePHP
      * @param  string  $hAlign  Alinhamento horizontal do texto, L-esquerda, C-centro, R-direita
      * @param  boolean $border  TRUE ou 1 desenha a borda, FALSE ou 0 Sem borda
      * @param  string  $link    Insere um hiperlink
-     * @param  boolean $force   Se for true força a caixa com uma unica linha e para isso atera o tamanho do fonte até caber no espaço, se falso mantem o tamanho do fonte e usa quantas linhas forem necessárias
+     * @param  boolean $force   Se for true força a caixa com uma unica linha e para isso atera o tamanho do
+     *  fonte até caber no espaço, se falso mantem o tamanho do fonte e usa quantas linhas forem necessárias
      * linha e para isso atera o tamanho do fonte até caber no espaço,
      * se falso mantem o tamanho do fonte e usa quantas linhas forem necessárias
      * @param  number  $hmax
@@ -482,7 +484,7 @@ class CommonNFePHP
         //estabelecer o fonte
         $this->pdf->SetFont($aFont['font'], $aFont['style'], $aFont['size']);
         //calcular o incremento
-        $incY = $this->pdf->FontSize; //tamanho da fonte na unidade definida
+        $incY = $this->pdf->fontSize; //tamanho da fonte na unidade definida
         if (!$force) {
             //verificar se o texto cabe no espaço
             $n = $this->pdf->WordWrap($text, $w);

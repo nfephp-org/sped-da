@@ -6,8 +6,8 @@ namespace NFePHP\DA;
  * Classe para a impressão em PDF do Docuimento Auxiliar de NFe Consumidor
  *
  * @category  NFePHP
- * @package   NFePHP\NFe\ConvertNFe
- * @copyright Copyright (c) 2008-2015
+ * @package   NFePHP\DA\Danfce
+ * @copyright Copyright (c) 2008
  * @license   http://www.gnu.org/licenses/lesser.html LGPL v3
  * @author    Roberto Spadim <roberto at spadim dot com dot br>
  * @link      http://github.com/nfephp-org/nfephp for the canonical source repository
@@ -17,16 +17,6 @@ namespace NFePHP\DA;
  *            Mario Almeida <mario at grupopmz dot com dot br>
  */
 
-
-//define o caminho base da instalação do sistema
-if (!defined('PATH_ROOT')) {
-    define('PATH_ROOT', dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR);
-}
-
-//ajuste do tempo limite de resposta do processo
-set_time_limit(1800);
-
-//classes utilizadas
 use mPDF;
 use Endroid\QrCode\QrCode;
 use NFePHP\DA\Legacy\CommonNFePHP;
@@ -148,8 +138,14 @@ class Danfce extends CommonNFePHP implements DocumentoNFePHP
      * @param string $idToken
      * @param string $Token
      */
-    public function __construct($docXML = '', $sPathLogo = '', $mododebug = 0, $idToken = '', $emitToken = '', $urlQR = '')
-    {
+    public function __construct(
+        $docXML = '',
+        $sPathLogo = '',
+        $mododebug = 0,
+        $idToken = '',
+        $emitToken = '',
+        $urlQR = ''
+    ) {
         if (is_numeric($mododebug)) {
             $this->debugMode = $mododebug;
         }
@@ -162,6 +158,14 @@ class Danfce extends CommonNFePHP implements DocumentoNFePHP
             error_reporting(0);
             ini_set('display_errors', 'Off');
         }
+        
+        //define o caminho base da instalação do sistema
+        if (!defined('PATH_ROOT')) {
+            define('PATH_ROOT', dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR);
+        }
+        //ajuste do tempo limite de resposta do processo
+        set_time_limit(1800);
+
         $this->papel = array(80, 'one-page');
         $this->xml          = $docXML;
         
@@ -424,7 +428,12 @@ class Danfce extends CommonNFePHP implements DocumentoNFePHP
         $this->html .= "<td colspan=\"2\">".htmlspecialchars($emitRazao)."<br>CNPJ:$emitCnpj I.E.:$emitIE<br>".
                 htmlspecialchars($emitLgr . ", nº" . $emitNro). "<br>".
                 htmlspecialchars($emitCpl) . "<br>".
-                htmlspecialchars($emitBairro . ", " . $emitMun . ", " . $emitUF) . "<br>CEP: $emitCEP $emitFone</td>\n";
+                htmlspecialchars($emitBairro
+                    . ", "
+                    . $emitMun
+                    . ", "
+                    . $emitUF)
+                    . "<br>CEP: $emitCEP $emitFone</td>\n";
         $this->html .= "</tr>\n";
         $this->html .= "</table>\n";
         
@@ -432,7 +441,8 @@ class Danfce extends CommonNFePHP implements DocumentoNFePHP
         $this->html .= "<table width=\"100%\">\n";
         $this->html .= "<tr>\n";
         $this->html .= "<td colspan=\"3\" class=\"tCenter\"><strong>".
-                htmlspecialchars("DANFE NFC-e - DOCUMENTO AUXILIAR DA NOTA FISCAL DE CONSUMIDOR ELETRÔNICA")."</strong></td>\n";
+            htmlspecialchars("DANFE NFC-e - DOCUMENTO AUXILIAR DA NOTA "
+                . "FISCAL DE CONSUMIDOR ELETRÔNICA")."</strong></td>\n";
         $this->html .= "</tr>\n";
         $this->html .= "</table>\n";
         
@@ -526,7 +536,9 @@ class Danfce extends CommonNFePHP implements DocumentoNFePHP
         $this->html .= "</tr>\n";
         if ($tpEmis == 1) {
             $this->html .= "<tr>\n";
-            $this->html .= "<td colspan=\"3\">Protocolo de autorização: {$nProt} - ".date('d/m/y H:i:s', $tsProt)."</td>\n";
+            $this->html .= "<td colspan=\"3\">Protocolo de autorização: {$nProt} - "
+                    . date('d/m/y H:i:s', $tsProt)
+                    . "</td>\n";
             $this->html .= "</tr>\n";
         }
         $this->html .= "</table>\n";
@@ -621,6 +633,7 @@ class Danfce extends CommonNFePHP implements DocumentoNFePHP
                 break;
             case '99':
                 $tBandNome = 'Outros';
+                break;
             default:
                 $tBandNome = 'Outros';
         }

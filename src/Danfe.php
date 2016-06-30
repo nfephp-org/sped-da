@@ -2,361 +2,300 @@
 
 namespace NFePHP\DA;
 
-use NFePHP\DA\Legacy\NfephpException;
-use NFePHP\DA\Legacy\PdfNFePHP;
-use NFePHP\DA\Legacy\CommonNFePHP;
-use NFePHP\DA\Legacy\DocumentoNFePHP;
-use NFePHP\DA\Legacy\DomDocumentNFePHP;
+use Exception;
+use NFePHP\Common\Dom\Dom;
+use NFePHP\DA\Legacy\Pdf;
+use NFePHP\DA\Legacy\Common;
 
-//ajuste do tempo limite de resposta do processo
-//set_time_limit(1800);
-//definição do caminho para o diretorio com as fontes do FDPF
-if (!defined('FPDF_FONTPATH')) {
-    define('FPDF_FONTPATH', 'font/');
-}
-//situação externa do documento
-if (!defined('NFEPHP_SITUACAO_EXTERNA_CANCELADA')) {
-    define('NFEPHP_SITUACAO_EXTERNA_CANCELADA', 1);
-    define('NFEPHP_SITUACAO_EXTERNA_DENEGADA', 2);
-    define('NFEPHP_SITUACAO_EXTERNA_DPEC', 3);
-    define('NFEPHP_SITUACAO_EXTERNA_NONE', 0);
-}
-
-class Danfe extends CommonNFePHP implements DocumentoNFePHP
+class Danfe extends Common
 {
 
+    const FPDF_FONTPATH = 'font/';
+    const SIT_CANCELADA = 1;
+    const SIT_DENEGADA = 2;
+    const SIT_DPEC = 3;
+    const SIT_NONE = 0;
+    
     /**
      * alinhamento padrão do logo (C-Center)
      *
      * @var string
      */
-    public $logoAlign='C';
+    public $logoAlign = 'C';
     /**
      * Posição
-     *
      * @var float
      */
-    public $yDados=0;
+    public $yDados = 0;
     /**
      * Situação
-     *
      * @var integer
      */
-    public $situacaoExterna=0;
+    public $situacaoExterna = 0;
     /**
      * Numero DPEC
      *
      * @var string
      */
-    public $numero_registro_dpec='';
+    public $numero_registro_dpec = '';
     /**
      * quantidade de canhotos a serem montados, geralmente 1 ou 2
      *
      * @var integer
      */
-    public $qCanhoto=1;
+    public $qCanhoto = 1;
 
+    //###########################################################
     // INÍCIO ATRIBUTOS DE PARÂMETROS DE EXIBIÇÃO
+    //###########################################################
+    
     /**
      * Parâmetro para exibir ou ocultar os valores do PIS/COFINS.
-     *
      * @var boolean
      */
-    public $exibirPIS=true;
-
-    // INÍCIO ATRIBUTOS DE PARÂMETROS DE EXIBIÇÃO
+    public $exibirPIS = true;
     /**
      * Parâmetro para exibir ou ocultar os valores do ICMS Interestadual e Valor Total dos Impostos.
-     *
      * @var boolean
      */
-    public $exibirIcmsInterestadual=true;
-
-
+    public $exibirIcmsInterestadual = true;
     /**
      * Parâmetro para exibir ou ocultar o texto sobre valor aproximado dos tributos.
-     *
      * @var boolean
      */
-    public $exibirValorTributos=true;
+    public $exibirValorTributos = true;
     /**
      * Parâmetro para exibir ou ocultar o texto adicional sobre a forma de pagamento
      * e as informações de fatura/duplicata.
-     *
      * @var boolean
      */
-    public $exibirTextoFatura=false;
+    public $exibirTextoFatura = false;
     /**
      * Parâmetro do controle se deve concatenar automaticamente informações complementares
      * na descrição do produto, como por exemplo, informações sobre impostos.
-     *
      * @var boolean
      */
-    public $descProdInfoComplemento=true;
+    public $descProdInfoComplemento = true;
     /**
      * Parâmetro do controle se deve gerar quebras de linha com "\n" a partir de ";" na descrição do produto.
-     *
      * @var boolean
      */
-    public $descProdQuebraLinha=true;
-    // FIM ATRIBUTOS DE PARÂMETROS DE EXIBIÇÃO
-
+    public $descProdQuebraLinha = true;
+    
+    //###########################################################
+    //PROPRIEDADES DA CLASSE
+    //###########################################################
+    
     /**
      * objeto fpdf()
-     *
      * @var object
      */
     protected $pdf;
     /**
      * XML NFe
-     *
      * @var string
      */
     protected $xml;
     /**
      * path para logomarca em jpg
-     *
      * @var string
      */
-    protected $logomarca='';
+    protected $logomarca = '';
     /**
      * mesagens de erro
-     *
      * @var string
      */
-    protected $errMsg='';
+    protected $errMsg = '';
     /**
      * status de erro true um erro ocorreu false sem erros
-     *
      * @var boolean
      */
-    protected $errStatus=false;
+    protected $errStatus = false;
     /**
      * orientação da DANFE
-     * P-Retrato ou
-     * L-Paisagem
-     *
+     * P-Retrato ou L-Paisagem
      * @var string
      */
-    protected $orientacao='P';
+    protected $orientacao = 'P';
     /**
      * formato do papel
-     *
      * @var string
      */
-    protected $papel='A4';
+    protected $papel = 'A4';
     /**
      * destino do arquivo pdf
-     * I-borwser,
-     * S-retorna o arquivo,
-     * D-força download,
-     * F-salva em arquivo local
-     *
+     * I-borwser, S-retorna o arquivo, D-força download, F-salva em arquivo local
      * @var string
      */
     protected $destino = 'I';
     /**
      * diretorio para salvar o pdf com a opção de destino = F
-     *
      * @var string
      */
-    protected $pdfDir='';
+    protected $pdfDir = '';
     /**
      * Nome da Fonte para gerar o DANFE
-     *
      * @var string
      */
-    protected $fontePadrao='Times';
+    protected $fontePadrao = 'Times';
     /**
      * versão
-     *
      * @var string
      */
     protected $version = '2.2.8';
     /**
      * Texto
-     *
      * @var string
      */
     protected $textoAdic = '';
     /**
      * Largura
-     *
      * @var float
      */
     protected $wAdic = 0;
     /**
      * largura imprimivel, em milímetros
-     *
      * @var float
      */
     protected $wPrint;
     /**
      * Comprimento (altura) imprimivel, em milímetros
-     *
      * @var float
      */
     protected $hPrint;
     /**
      * largura do canhoto (25mm) apenas para a formatação paisagem
-     *
      * @var float
      */
-    protected $wCanhoto=25;
+    protected $wCanhoto = 25;
     /**
      * Formato chave
-     *
      * @var string
      */
-    protected $formatoChave="#### #### #### #### #### #### #### #### #### #### ####";
+    protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     /**
      * quantidade de itens já processados na montagem do DANFE
-     *
      * @var integer
      */
     protected $qtdeItensProc;
 
     /**
      * Document
-     *
      * @var DOMDocument
      */
     protected $dom;
     /**
      * Node
-     *
      * @var DOMNode
      */
     protected $infNFe;
     /**
      * Node
-     *
      * @var DOMNode
      */
     protected $ide;
     /**
      * Node
-     *
      * @var DOMNode
      */
     protected $entrega;
     /**
      * Node
-     *
      * @var DOMNode
      */
     protected $retirada;
     /**
      * Node
-     *
      * @var DOMNode
      */
     protected $emit;
     /**
      * Node
-     *
      * @var DOMNode
      */
     protected $dest;
     /**
      * Node
-     *
      * @var DOMNode
      */
     protected $enderEmit;
     /**
      * Node
-     *
      * @var DOMNode
      */
     protected $enderDest;
     /**
      * Node
-     *
      * @var DOMNode
      */
     protected $det;
     /**
      * Node
-     *
      * @var DOMNode
      */
     protected $cobr;
     /**
      * Node
-     *
      * @var DOMNode
      */
     protected $dup;
     /**
      * Node
-     *
      * @var DOMNode
      */
     protected $ICMSTot;
     /**
      * Node
-     *
      * @var DOMNode
      */
     protected $ISSQNtot;
     /**
      * Node
-     *
      * @var DOMNode
      */
     protected $transp;
     /**
      * Node
-     *
      * @var DOMNode
      */
     protected $transporta;
     /**
      * Node
-     *
      * @var DOMNode
      */
     protected $veicTransp;
     /**
      * Node reboque
-     *
      * @var DOMNode
      */
     protected $reboque;
     /**
      * Node infAdic
-     *
      * @var DOMNode
      */
     protected $infAdic;
     /**
      * Tipo de emissão
-     *
      * @var integer
      */
     protected $tpEmis;
     /**
      * Node infProt
-     *
      * @var DOMNode
      */
     protected $infProt;
     /**
      * 1-Retrato/ 2-Paisagem
-     *
      * @var integer
      */
     protected $tpImp;
     /**
      * Node compra
-     *
      * @var DOMNode
      */
     protected $compra;
     /**
      * ativa ou desativa o modo de debug
-     *
      * @var integer
      */
     protected $debugMode=2;
@@ -384,11 +323,12 @@ class Danfe extends CommonNFePHP implements DocumentoNFePHP
         $fonteDANFE = '',
         $mododebug = 2
     ) {
+        //set_time_limit(1800);
         //verificacao temporária de segurança apenas para alertar se tentar instanciar
         //a classe com 9 parâmetros, pois o "$exibirPIS" foi removido em 20/08/2014
         // e parametrizado como atributo público para simplificar o construtor
         if (func_num_args() == 9) {
-            throw new NfephpException("ATENCAO: o construtor da classe DanfeNFePHP nao possui mais 9 parametros");
+            throw new Exception("ATENCAO: o construtor da classe Danfe nao possui mais 9 parametros");
         }
         if (is_numeric($mododebug)) {
             $this->debugMode = $mododebug;
@@ -418,7 +358,7 @@ class Danfe extends CommonNFePHP implements DocumentoNFePHP
         }
         //se for passado o xml
         if (! empty($this->xml)) {
-            $this->dom = new DomDocumentNFePHP();
+            $this->dom = new Dom();
             $this->dom->loadXML($this->xml);
             $this->nfeProc    = $this->dom->getElementsByTagName("nfeProc")->item(0);
             $this->infNFe     = $this->dom->getElementsByTagName("infNFe")->item(0);
@@ -445,23 +385,10 @@ class Danfe extends CommonNFePHP implements DocumentoNFePHP
             $this->infProt    = $this->dom->getElementsByTagName("infProt")->item(0);
             //valida se o XML é uma NF-e modelo 55, pois não pode ser 65 (NFC-e)
             if ($this->pSimpleGetValue($this->ide, "mod") != '55') {
-                throw new NfephpException("O xml do DANFE deve ser uma NF-e modelo 55");
+                throw new Exception("O xml do DANFE deve ser uma NF-e modelo 55");
             }
         }
-    } //fim __construct
-
-    /**
-     * simpleConsistencyCheck
-     *
-     * @return bool Retorna se o documento se parece com um DANFE (condicao necessaria porem nao suficiente)
-    */
-    public function simpleConsistencyCheck()
-    {
-        if ($this->xml == null || $this->infNFe == null || $this->ide == null) {
-            return false;
-        }
-        return true;
-    } //fim simpleConsistencyCheck
+    }
 
     /**
      * monta
@@ -476,7 +403,7 @@ class Danfe extends CommonNFePHP implements DocumentoNFePHP
         $orientacao = '',
         $papel = 'A4',
         $logoAlign = 'C',
-        $situacaoExterna = NFEPHP_SITUACAO_EXTERNA_NONE,
+        $situacaoExterna = self::SIT_NONE,
         $classPdf = false,
         $dpecNumReg = '',
         $margSup = 2,
@@ -494,7 +421,7 @@ class Danfe extends CommonNFePHP implements DocumentoNFePHP
             $margEsq,
             $margInf
         );
-    }//fim monta
+    }
 
     /**
      * printDocument
@@ -525,7 +452,7 @@ class Danfe extends CommonNFePHP implements DocumentoNFePHP
         $orientacao = '',
         $papel = 'A4',
         $logoAlign = 'C',
-        $situacaoExterna = NFEPHP_SITUACAO_EXTERNA_NONE,
+        $situacaoExterna = self::SIT_NONE,
         $classPdf = false,
         $depecNumReg = '',
         $margSup = 2,
@@ -550,7 +477,7 @@ class Danfe extends CommonNFePHP implements DocumentoNFePHP
         if ($classPdf) {
             $this->pdf = $classPdf;
         } else {
-            $this->pdf = new PdfNFePHP($this->orientacao, 'mm', $this->papel);
+            $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         }
         //margens do PDF, em milímetros. Obs.: a margem direita é sempre igual à
         //margem esquerda. A margem inferior *não* existe na FPDF, é definida aqui
@@ -579,17 +506,17 @@ class Danfe extends CommonNFePHP implements DocumentoNFePHP
         //superior e inferior
         $this->hPrint = $maxH-$margSup-$margInf;
         // estabelece contagem de paginas
-        $this->pdf->AliasNbPages();
+        $this->pdf->aliasNbPages();
         // fixa as margens
-        $this->pdf->SetMargins($margEsq, $margSup);
-        $this->pdf->SetDrawColor(0, 0, 0);
-        $this->pdf->SetFillColor(255, 255, 255);
+        $this->pdf->setMargins($margEsq, $margSup);
+        $this->pdf->setDrawColor(0, 0, 0);
+        $this->pdf->setFillColor(255, 255, 255);
         // inicia o documento
-        $this->pdf->Open();
+        $this->pdf->open();
         // adiciona a primeira página
-        $this->pdf->AddPage($this->orientacao, $this->papel);
-        $this->pdf->SetLineWidth(0.1);
-        $this->pdf->SetTextColor(0, 0, 0);
+        $this->pdf->addPage($this->orientacao, $this->papel);
+        $this->pdf->setLineWidth(0.1);
+        $this->pdf->setTextColor(0, 0, 0);
 
         //##################################################################
         // CALCULO DO NUMERO DE PAGINAS A SEREM IMPRESSAS
@@ -728,7 +655,7 @@ class Danfe extends CommonNFePHP implements DocumentoNFePHP
         foreach ($alinhas as $linha) {
             $numlinhasdados += $this->pGetNumLines($linha, $this->wAdic, $fontProduto);
         }
-        $hdadosadic = round(($numlinhasdados+3) * $this->pdf->FontSize, 0);
+        $hdadosadic = round(($numlinhasdados+3) * $this->pdf->fontSize, 0);
         if ($hdadosadic < 10) {
             $hdadosadic = 10;
         }
@@ -765,7 +692,7 @@ class Danfe extends CommonNFePHP implements DocumentoNFePHP
         while ($i < $this->det->length) {
             $texto = $this->pDescricaoProduto($this->det->item($i));
             $numlinhas = $this->pGetNumLines($texto, $w2, $fontProduto);
-            $hUsado += round(($numlinhas * $this->pdf->FontSize) + ($numlinhas * 0.5), 2);
+            $hUsado += round(($numlinhas * $this->pdf->fontSize) + ($numlinhas * 0.5), 2);
             if ($hUsado > $hDispo) {
                 $totPag++;
                 $hDispo = $hDispo2;
@@ -822,13 +749,13 @@ class Danfe extends CommonNFePHP implements DocumentoNFePHP
         //loop para páginas seguintes
         for ($n = 2; $n <= $totPag; $n++) {
             // fixa as margens
-            $this->pdf->SetMargins($margEsq, $margSup);
+            $this->pdf->setMargins($margEsq, $margSup);
             //adiciona nova página
-            $this->pdf->AddPage($this->orientacao, $this->papel);
+            $this->pdf->addPage($this->orientacao, $this->papel);
             //ajusta espessura das linhas
-            $this->pdf->SetLineWidth(0.1);
+            $this->pdf->setLineWidth(0.1);
             //seta a cor do texto para petro
-            $this->pdf->SetTextColor(0, 0, 0);
+            $this->pdf->setTextColor(0, 0, 0);
             // posição inicial do relatorio
             $x = $xInic;
             $y = $yInic;
@@ -905,7 +832,7 @@ class Danfe extends CommonNFePHP implements DocumentoNFePHP
             $cdata = $parte2;
         }
         //carrega o xml CDATA em um objeto DOM
-        $dom = new DomDocumentNFePHP();
+        $dom = new Dom();
         $dom->loadXML($cdata, LIBXML_NOBLANKS | LIBXML_NOEMPTYTAG);
         //$xml = $dom->saveXML();
         //grupo CDATA infADprod
@@ -1002,78 +929,33 @@ class Danfe extends CommonNFePHP implements DocumentoNFePHP
             }
         }
         return $texto;
-    }//fim anfavea
-
+    }
+    
     /**
-     * printDANFE
-     * Esta função envia a DANFE em PDF criada para o dispositivo informado.
-     * O destino da impressão pode ser :
-     * I-browser
-     * D-browser com download
-     * F-salva em um arquivo local com o nome informado
-     * S-retorna o documento como uma string e o nome é ignorado.
-     * Para enviar o pdf diretamente para uma impressora indique o
-     * nome da impressora e o destino deve ser 'S'.
-     *
-     * @param  string $nome    Path completo com o nome do arquivo pdf
-     * @param  string $destino Direção do envio do PDF
-     * @param  string $printer Identificação da impressora no sistema
-     * @return string Caso o destino seja S o pdf é retornado como uma string
-     * @todo   Rotina de impressão direta do arquivo pdf criado
+     * Dados brutos do PDF
+     * @return string
      */
-    public function printDANFE($nome = '', $destino = 'I', $printer = '')
+    public function render()
     {
-        $arq = $this->pdf->Output($nome, $destino);
-        if ($destino == 'S') {
-            //aqui pode entrar a rotina de impressão direta
-        }
-        return $arq;
-
-        /*
-           Opção 1 - exemplo de script shell usando acroread
-             #!/bin/sh
-            if ($# == 2) then
-                set printer=$2
-            else
-                set printer=$PRINTER
-            fi
-            if ($1 != "") then
-                cat ${1} | acroread -toPostScript | lpr -P $printer
-                echo ${1} sent to $printer ... OK!
-            else
-                echo PDF Print: No filename defined!
-            fi
-            Opção 2 -
-            salvar pdf em arquivo temporario
-            converter pdf para ps usando pdf2ps do linux
-            imprimir ps para printer usando lp ou lpr
-            remover os arquivos temporarios pdf e ps
-            Opção 3 -
-            salvar pdf em arquivo temporario
-            imprimir para printer usando lp ou lpr com system do php
-            remover os arquivos temporarios pdf
-        */
-    } //fim função printDANFE
-
+        return $this->pdf->getPdf();
+    }
 
     protected function pNotaCancelada()
     {
         if (!isset($this->nfeProc)) {
             return false;
         }
-        //NÃO ERA NECESSÁRIO ESSA FUNÇÃO POIS SÓ SE USA 1
-        //VEZ NO ARQUIVO INTEIRO
         $cStat = $this->pSimpleGetValue($this->nfeProc, "cStat");
         return $cStat == '101' ||
                 $cStat == '151' ||
                 $cStat == '135' ||
                 $cStat == '155' ||
-                $this->situacao_externa == NFEPHP_SITUACAO_EXTERNA_CANCELADA;
+                $this->situacao_externa == self::SIT_CANCELADA;
     }
 
     protected function pNotaDPEC()
     {
-        return $this->situacao_externa==NFEPHP_SITUACAO_EXTERNA_DPEC && $this->numero_registro_dpec!='';
+        return $this->situacao_externa == self::SIT_DPEC && $this->numero_registro_dpec != '';
     }
 
     protected function pNotaDenegada()
@@ -1087,7 +969,7 @@ class Danfe extends CommonNFePHP implements DocumentoNFePHP
         return $cStat == '110' ||
                $cStat == '301' ||
                $cStat == '302' ||
-               $this->situacao_externa==NFEPHP_SITUACAO_EXTERNA_DENEGADA;
+               $this->situacao_externa == self::SIT_DENEGADA;
     }
 
     /**
@@ -2512,7 +2394,7 @@ class Danfe extends CommonNFePHP implements DocumentoNFePHP
                 $IPI  = $imposto->getElementsByTagName("IPI")->item(0);
                 $textoProduto = $this->pDescricaoProduto($thisItem);
                 $linhaDescr = $this->pGetNumLines($textoProduto, $w2, $aFont);
-                $h = round(($linhaDescr * $this->pdf->FontSize)+ ($linhaDescr * 0.5), 2);
+                $h = round(($linhaDescr * $this->pdf->fontSize)+ ($linhaDescr * 0.5), 2);
                 $hUsado += $h;
                 if ($pag != $totpag) {
                     if ($hUsado >= $hmax && $i < $totItens) {
