@@ -4,7 +4,7 @@ namespace NFePHP\DA\Legacy;
 
 use \DOMDocument;
 
-class DomDocumentNFePHP extends DOMDocument
+class Dom extends DOMDocument
 {
 
     /**
