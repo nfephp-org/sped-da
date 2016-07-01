@@ -3,8 +3,8 @@
 namespace NFePHP\DA\NFe;
 
 /**
- * Esta classe gera a represnetação PDF de um evento de NFe
- * NOTA: Este documento não está NORMALIZADO, nem é requerido pela SEFAZ
+ * Esta classe gera a representação em PDF de um evento de NFe
+ * NOTA: Esse documento NÃO É NORMALIZADO, nem é requerido pela SEFAZ
  *
  * @category  Library
  * @package   nfephp-org/sped-da
