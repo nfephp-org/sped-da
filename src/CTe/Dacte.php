@@ -237,7 +237,7 @@ class Dacte extends Common
      * @param string $orientacao L ou P
      * @param string $papel      A4
      * @param string $logoAlign  C, L ou R
-     * @param Pdf $classPDF 
+     * @param Pdf $classPDF
      * @return string montagem
      */
     public function monta(
@@ -254,7 +254,7 @@ class Dacte extends Common
      * @param string $nome
      * @param string $destino
      * @param string $printer
-     * @return 
+     * @return
      */
     public function printDocument($nome = '', $destino = 'I', $printer = '')
     {
@@ -926,8 +926,7 @@ class Dacte extends Common
         } else {
             $texto = $this->pSimpleGetValue($this->protCTe, "nProt") . " - ";
             // empty($volume->getElementsByTagName("qVol")->item(0)->nodeValue)
-            if (
-                !empty($this->protCTe)
+            if (!empty($this->protCTe)
                 &&  !empty($this->protCTe->getElementsByTagName("dhRecbto")->item(0)->nodeValue)
             ) {
                 $texto .= date(
@@ -1657,13 +1656,14 @@ class Dacte extends Common
         $texto .= number_format(
             $this->pSimpleGetValue(
                 $this->infQ->item(0),
-                "qCarga")
+                "qCarga"
+            )
                 /$this->zMultiUniPeso(
                     $this->pSimpleGetValue(
                         $this->infQ->item(0),
                         "cUnid"
                     )
-            ),
+                ),
             3,
             ".",
             ""
@@ -1684,7 +1684,13 @@ class Dacte extends Common
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $texto = $this->pSimpleGetValue($this->infQ->item(1), "tpMed") . "\r\n";
         $texto .= number_format(
-            $this->pSimpleGetValue($this->infQ->item(1), "qCarga") / $this->zMultiUniPeso($this->pSimpleGetValue($this->infQ->item(1), "cUnid")),
+            $this->pSimpleGetValue(
+                $this->infQ->item(1),
+                "qCarga"
+            )
+                /$this->zMultiUniPeso(
+                    $this->pSimpleGetValue($this->infQ->item(1), "cUnid")
+                ),
             3,
             ".",
             ""
@@ -1714,7 +1720,8 @@ class Dacte extends Common
                 ),
                 3,
                 ".",
-                "") :
+                ""
+            ) :
             '';
         $texto = $this->pSimpleGetValue($this->infQ->item(2), "qCarga") == '' ? '' : $texto;
         $texto .= ' ' . $this->zUnidade($this->pSimpleGetValue($this->infQ->item(2), "cUnid"));
@@ -1874,7 +1881,8 @@ class Dacte extends Common
         $yIniDados += 4;
         foreach ($this->Comp as $k => $d) {
             $nome = $this->Comp->item($k)->getElementsByTagName('xNome')->item(0)->nodeValue;
-            $valor = number_format($this->Comp->item($k)->getElementsByTagName('vComp')->item(0)->nodeValue,
+            $valor = number_format(
+                $this->Comp->item($k)->getElementsByTagName('vComp')->item(0)->nodeValue,
                 2,
                 ",",
                 "."
@@ -2654,11 +2662,32 @@ class Dacte extends Common
         $aFont = $this->formatPadrao;
         $this->pTextBox($x, $y, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
         if ($this->infNF->item(0) !== null && $this->infNF->item(0)->getElementsByTagName('infUnidCarga') !== null) {
-            $texto = $this->infNF->item(0)->getElementsByTagName('infUnidCarga')->item(0)->getElementsByTagName('idUnidCarga')->item(0)->nodeValue;
-        } elseif ($this->infNFe->item(0) !== null && $this->infNFe->item(0)->getElementsByTagName('infUnidCarga') !== null) {
-            $texto = $this->infNFe->item(0)->getElementsByTagName('infUnidCarga')->item(0)->getElementsByTagName('idUnidCarga')->item(0)->nodeValue;
-        } elseif ($this->infOutros->item(0) !== null && $this->infOutros->item(0)->getElementsByTagName('infUnidCarga') !== null) {
-            $texto = $this->infOutros->item(0)->getElementsByTagName('infUnidCarga')->item(0)->getElementsByTagName('idUnidCarga')->item(0)->nodeValue;
+            $texto = $this->infNF
+                ->item(0)
+                ->getElementsByTagName('infUnidCarga')
+                ->item(0)
+                ->getElementsByTagName('idUnidCarga')
+                ->item(0)->nodeValue;
+        } elseif ($this->infNFe->item(0) !== null
+            && $this->infNFe->item(0)->getElementsByTagName('infUnidCarga') !== null
+        ) {
+            $texto = $this->infNFe
+                ->item(0)
+                ->getElementsByTagName('infUnidCarga')
+                ->item(0)
+                ->getElementsByTagName('idUnidCarga')
+                ->item(0)
+                ->nodeValue;
+        } elseif ($this->infOutros->item(0) !== null
+            && $this->infOutros->item(0)->getElementsByTagName('infUnidCarga') !== null
+        ) {
+            $texto = $this->infOutros
+                ->item(0)
+                ->getElementsByTagName('infUnidCarga')
+                ->item(0)
+                ->getElementsByTagName('idUnidCarga')
+                ->item(0)
+                ->nodeValue;
         } else {
             $texto = '';
         }
@@ -2673,9 +2702,21 @@ class Dacte extends Common
         if ($this->pSimpleGetValue($this->aquav, "balsa") !== '') {
             foreach ($this->aquav->getElementsByTagName('balsa') as $k => $d) {
                 if ($k == 0) {
-                    $texto = $this->aquav->getElementsByTagName('balsa')->item($k)->getElementsByTagName('xBalsa')->item(0)->nodeValue;
+                    $texto = $this->aquav
+                        ->getElementsByTagName('balsa')
+                        ->item($k)
+                        ->getElementsByTagName('xBalsa')
+                        ->item(0)
+                        ->nodeValue;
                 } else {
-                    $texto = $texto . ' / ' . $this->aquav->getElementsByTagName('balsa')->item($k)->getElementsByTagName('xBalsa')->item(0)->nodeValue;
+                    $texto = $texto
+                        . ' / '
+                        . $this->aquav
+                            ->getElementsByTagName('balsa')
+                            ->item($k)
+                            ->getElementsByTagName('xBalsa')
+                            ->item(0)
+                            ->nodeValue;
                 }
             }
         }
