@@ -13,7 +13,7 @@ Classes para geração dos documentos auxiliares usados pelos padrões Sped
 [![Issues][ico-issues]][link-issues]
 [![Forks][ico-forks]][link-forks]
 [![Stars][ico-stars]][link-stars]
-
+[![Chat][ico-gitter]][link-gitter]
 
 
 # Orientação
@@ -50,6 +50,8 @@ Para a geração dos documentos auxiliares devem feitas as seguintes consideraç
 [ico-downloads]: https://img.shields.io/packagist/dt/nfephp-org/sped-da.svg?style=flat-square
 [ico-version]: https://img.shields.io/packagist/v/nfephp-org/sped-da.svg?style=flat-square
 [ico-license]: https://poser.pugx.org/nfephp-org/nfephp/license.svg?style=flat-square
+[ico-gitter]: https://img.shields.io/badge/GITTER-4%20users%20online-green.svg?style=flat-square
+
 
 [link-packagist]: https://packagist.org/packages/nfephp-org/sped-da
 [link-travis]: https://travis-ci.org/nfephp-org/sped-da
@@ -60,4 +62,5 @@ Para a geração dos documentos auxiliares devem feitas as seguintes consideraç
 [link-issues]: https://github.com/nfephp-org/sped-da/issues
 [link-forks]: https://github.com/nfephp-org/sped-da/network
 [link-stars]: https://github.com/nfephp-org/sped-da/stargazers
+[link-gitter]: https://gitter.im/nfephp-org/sped-da?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
