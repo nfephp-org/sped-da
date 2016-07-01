@@ -3,7 +3,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 require_once '../bootstrap.php';
 
-use NFePHP\DA\Danfe;
+use NFePHP\DA\NFe\Danfe;
 use NFePHP\Common\Files\FilesFolders;
 
 $xml = 'xml/mod55-nfe.xml';

@@ -453,7 +453,7 @@ class Fpdf
         return $w*$this->fontSize/1000;
     }
 
-    public function SetLineWidth($width)
+    public function setLineWidth($width)
     {
         //Set line width
         $this->lineWidth = $width;
@@ -465,7 +465,15 @@ class Fpdf
     public function line($x1, $y1, $x2, $y2)
     {
         //Draw a line
-        $this->out(sprintf('%.2F %.2F m %.2F %.2F l S', $x1*$this->k, ($this->h-$y1)*$this->k, $x2*$this->k, ($this->h-$y2)*$this->k));
+        $this->out(
+            sprintf(
+                '%.2F %.2F m %.2F %.2F l S',
+                $x1*$this->k,
+                ($this->h-$y1)*$this->k,
+                $x2*$this->k,
+                ($this->h-$y2)*$this->k
+            )
+        );
     }
 
     public function rect($x, $y, $w, $h, $style = '')
@@ -478,7 +486,16 @@ class Fpdf
         } else {
             $op = 'S';
         }
-        $this->out(sprintf('%.2F %.2F %.2F %.2F re %s', $x*$this->k, ($this->h-$y)*$this->k, $w*$this->k, -$h*$this->k, $op));
+        $this->out(
+            sprintf(
+                '%.2F %.2F %.2F %.2F re %s',
+                $x*$this->k,
+                ($this->h-$y)*$this->k,
+                $w*$this->k,
+                -$h*$this->k,
+                $op
+            )
+        );
     }
 
     public function addFont($family, $style = '', $file = '')
@@ -504,7 +521,17 @@ class Fpdf
             $this->error('Could not include font definition file');
         }
         $i = count($this->fonts)+1;
-        $this->fonts[$fontkey]=array('i'=>$i, 'type'=>$type, 'name'=>$name, 'desc'=>$desc, 'up'=>$up, 'ut'=>$ut, 'cw'=>$cw, 'enc'=>$enc, 'file'=>$file);
+        $this->fonts[$fontkey] = [
+            'i'=>$i,
+            'type'=>$type,
+            'name'=>$name,
+            'desc'=>$desc,
+            'up'=>$up,
+            'ut'=>$ut,
+            'cw'=>$cw,
+            'enc'=>$enc,
+            'file'=>$file
+        ];
         if ($diff) {
             //Search existing encodings
             $d = 0;
@@ -579,7 +606,7 @@ class Fpdf
                 $i = count($this->fonts)+1;
                 $name = $this->coreFonts[$fontkey];
                 $cw = $fpdf_charwidths[$fontkey];
-                $this->fonts[$fontkey] = array('i'=>$i, 'type'=>'core', 'name'=>$name, 'up'=>-100, 'ut'=>50, 'cw'=>$cw);
+                $this->fonts[$fontkey] = ['i'=>$i, 'type'=>'core', 'name'=>$name, 'up'=>-100, 'ut'=>50, 'cw'=>$cw];
             } else {
                 $this->error('Undefined font: '.$family.' '.$style);
             }
@@ -704,10 +731,22 @@ class Fpdf
                 $s .= sprintf('%.2F %.2F m %.2F %.2F l S ', $x*$k, ($this->h-$y)*$k, ($x+$w)*$k, ($this->h-$y)*$k);
             }
             if (strpos($border, 'R') !== false) {
-                $s .= sprintf('%.2F %.2F m %.2F %.2F l S ', ($x+$w)*$k, ($this->h-$y)*$k, ($x+$w)*$k, ($this->h-($y+$h))*$k);
+                $s .= sprintf(
+                    '%.2F %.2F m %.2F %.2F l S ',
+                    ($x+$w)*$k,
+                    ($this->h-$y)*$k,
+                    ($x+$w)*$k,
+                    ($this->h-($y+$h))*$k
+                );
             }
             if (strpos($border, 'B') !== false) {
-                $s .= sprintf('%.2F %.2F m %.2F %.2F l S ', $x*$k, ($this->h-($y+$h))*$k, ($x+$w)*$k, ($this->h-($y+$h))*$k);
+                $s .= sprintf(
+                    '%.2F %.2F m %.2F %.2F l S ',
+                    $x*$k,
+                    ($this->h-($y+$h))*$k,
+                    ($x+$w)*$k,
+                    ($this->h-($y+$h))*$k
+                );
             }
         }
         if ($txt !== '') {
@@ -722,7 +761,12 @@ class Fpdf
                 $s .= 'q '.$this->textColor.' ';
             }
             $txt2 = str_replace(')', '\\)', str_replace('(', '\\(', str_replace('\\', '\\\\', $txt)));
-            $s .= sprintf('BT %.2F %.2F Td (%s) Tj ET', ($this->x+$dx)*$k, ($this->h-($this->y+.5*$h+.3*$this->fontSize))*$k, $txt2);
+            $s .= sprintf(
+                'BT %.2F %.2F Td (%s) Tj ET',
+                ($this->x+$dx)*$k,
+                ($this->h-($this->y+.5*$h+.3*$this->fontSize))*$k,
+                $txt2
+            );
             if ($this->underline) {
                 $s .= ' '.$this->doUnderLine($this->x+$dx, $this->y+.5*$h+.3*$this->fontSize, $txt);
             }
@@ -730,7 +774,13 @@ class Fpdf
                 $s.=' Q';
             }
             if ($link) {
-                $this->link($this->x+$dx, $this->y+.5*$h-.5*$this->fontSize, $this->getStringWidth($txt), $this->fontSize, $link);
+                $this->link(
+                    $this->x+$dx,
+                    $this->y+.5*$h-.5*$this->fontSize,
+                    $this->getStringWidth($txt),
+                    $this->fontSize,
+                    $link
+                );
             }
         }
         if ($s) {
@@ -994,7 +1044,16 @@ class Fpdf
         if ($x === null) {
             $x = $this->x;
         }
-        $this->out(sprintf('q %.2F 0 0 %.2F %.2F %.2F cm /I%d Do Q', $w*$this->k, $h*$this->k, $x*$this->k, ($this->h-($y+$h))*$this->k, $info['i']));
+        $this->out(
+            sprintf(
+                'q %.2F 0 0 %.2F %.2F %.2F cm /I%d Do Q',
+                $w*$this->k,
+                $h*$this->k,
+                $x*$this->k,
+                ($this->h-($y+$h))*$this->k,
+                $info['i']
+            )
+        );
         if ($link) {
             $this->link($x, $y, $w, $h, $link);
         }
@@ -1331,7 +1390,13 @@ class Fpdf
             $this->error('Interlacing not supported: '.$file);
         }
         $this->readstream($f, 4);
-        $parms = '/DecodeParms <</Predictor 15 /Colors '.($ct==2 ? 3 : 1).' /BitsPerComponent '.$bpc.' /Columns '.$w.'>>';
+        $parms = '/DecodeParms <</Predictor 15 /Colors '
+            . ($ct==2 ? 3 : 1)
+            . ' /BitsPerComponent '
+            . $bpc
+            . ' /Columns '
+            . $w
+            . '>>';
         //Scan chunks looking for palette, transparency and image data
         $pal = '';
         $trns = '';
@@ -1371,7 +1436,17 @@ class Fpdf
             $this->error('Missing palette in '.$file);
         }
         fclose($f);
-        return array('w'=>$w, 'h'=>$h, 'cs'=>$colspace, 'bpc'=>$bpc, 'f'=>'FlateDecode', 'parms'=>$parms, 'pal'=>$pal, 'trns'=>$trns, 'data'=>$data);
+        return [
+            'w'=>$w,
+            'h'=>$h,
+            'cs'=>$colspace,
+            'bpc'=>$bpc,
+            'f'=>'FlateDecode',
+            'parms'=>$parms,
+            'pal'=>$pal,
+            'trns'=>$trns,
+            'data'=>$data
+        ];
     }
 
     protected function readstream($f, $n)

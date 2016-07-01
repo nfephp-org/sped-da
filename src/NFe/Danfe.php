@@ -1,6 +1,6 @@
 <?php
 
-namespace NFePHP\DA;
+namespace NFePHP\DA\NFe;
 
 use Exception;
 use NFePHP\Common\Dom\Dom;

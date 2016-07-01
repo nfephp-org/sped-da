@@ -1,10 +1,18 @@
 <?php
 
-namespace NFePHP\DA;
+namespace NFePHP\DA\NFe;
 
 /**
+ * Classe para a impressão do Documento Auxiliar de NFe Consumidor
+ * em impressoras térmicas ESCPOS
  *
- * em caso de contingência criar duas vias consumidor e estabelecimento
+ * @category  Library
+ * @package   nfephp-org/sped-da
+ * @name      DanfcePos.php
+ * @copyright 2009-2016 NFePHP
+ * @license   http://www.gnu.org/licenses/lesser.html LGPL v3
+ * @link      http://github.com/nfephp-org/sped-da for the canonical source repository
+ * @author    Roberto L. Machado <linux dot rlm at gmail dot com>
  */
 
 use Posprint\Printers\PrinterInterface;
