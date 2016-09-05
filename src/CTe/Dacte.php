@@ -8,7 +8,7 @@ namespace NFePHP\DA\CTe;
  *
  * @category  Library
  * @package   nfephp-org/sped-da
- * @name      Dacte.php
+ * @name      Dacte .php
  * @copyright 2009-2016 NFePHP
  * @license   http://www.gnu.org/licenses/lesser.html LGPL v3
  * @link      http://github.com/nfephp-org/sped-da for the canonical source repository
@@ -16,12 +16,16 @@ namespace NFePHP\DA\CTe;
  */
 
 use Exception;
-use NFePHP\DA\Common\Dom;
+use NFePHP\Common\Dom\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
 
 class Dacte extends Common
 {
+    const NFEPHP_SITUACAO_EXTERNA_CANCELADA = 1;
+    const NFEPHP_SITUACAO_EXTERNA_DENEGADA = 2;
+    const SIT_DPEC = 3;
+
     protected $logoAlign = 'C';
     protected $yDados = 0;
     protected $situacao_externa = 0;
@@ -81,18 +85,18 @@ class Dacte extends Common
     protected $formatPadrao;
     protected $formatNegrito;
     protected $aquav;
-    
+
     /**
      * __construct
      *
-     * @param string $docXML      Arquivo XML da CTe
+     * @param string $docXML Arquivo XML da CTe
      * @param string $sOrientacao (Opcional) Orientação da impressão P ou L
-     * @param string $sPapel      Tamanho do papel (Ex. A4)
-     * @param string $sPathLogo   Caminho para o arquivo do logo
-     * @param string $sDestino    Estabelece a direção do envio do documento PDF
-     * @param string $sDirPDF     Caminho para o diretorio de armaz. dos PDF
-     * @param string $fonteDACTE  Nome da fonte a ser utilizada
-     * @param number $mododebug   0-Não 1-Sim e 2-nada (2 default)
+     * @param string $sPapel Tamanho do papel (Ex. A4)
+     * @param string $sPathLogo Caminho para o arquivo do logo
+     * @param string $sDestino Estabelece a direção do envio do documento PDF
+     * @param string $sDirPDF Caminho para o diretorio de armaz. dos PDF
+     * @param string $fonteDACTE Nome da fonte a ser utilizada
+     * @param number $mododebug 0-Não 1-Sim e 2-nada (2 default)
      */
     public function __construct(
         $docXML = '',
@@ -104,6 +108,7 @@ class Dacte extends Common
         $fonteDACTE = '',
         $mododebug = 2
     ) {
+    
         if (is_numeric($mododebug)) {
             $this->debugMode = $mododebug;
         }
@@ -137,7 +142,7 @@ class Dacte extends Common
             'style' => 'B');
         //se for passado o xml
         if (!empty($this->xml)) {
-            $this->dom = new DomDocument;
+            $this->dom = new Dom();
             $this->dom->loadXML($this->xml);
             $this->cteProc = $this->dom->getElementsByTagName("cteProc")->item(0);
             $this->infCte = $this->dom->getElementsByTagName("infCte")->item(0);
@@ -231,12 +236,12 @@ class Dacte extends Common
             $this->protCTe = $this->dom->getElementsByTagName("protCTe")->item(0);
         }
     }
-    
+
     /**
      * monta
      * @param string $orientacao L ou P
-     * @param string $papel      A4
-     * @param string $logoAlign  C, L ou R
+     * @param string $papel A4
+     * @param string $logoAlign C, L ou R
      * @param Pdf $classPDF
      * @return string montagem
      */
@@ -246,9 +251,10 @@ class Dacte extends Common
         $logoAlign = 'C',
         $classPDF = false
     ) {
+    
         return $this->montaDACTE($orientacao, $papel, $logoAlign, $classPDF);
     }
-    
+
     /**
      * printDocument
      * @param string $nome
@@ -260,7 +266,23 @@ class Dacte extends Common
     {
         return $this->printDACTE($nome, $destino, $printer);
     }
-    
+
+    /**
+     * Dados brutos do PDF
+     * @return string
+     */
+    public function render()
+    {
+        return $this->pdf->getPdf();
+    }
+
+
+    protected function zCteDPEC()
+    {
+        return $this->situacao_externa == self::SIT_DPEC && $this->numero_registro_dpec != '';
+    }
+
+
     /**
      * montaDACTE
      * Esta função monta a DACTE conforme as informações fornecidas para a classe
@@ -271,7 +293,7 @@ class Dacte extends Common
      * @param  string $orientacao (Opcional) Estabelece a orientação da
      *                impressão (ex. P-retrato), se nada for fornecido será
      *                usado o padrão da NFe
-     * @param  string $papel      (Opcional) Estabelece o tamanho do papel (ex. A4)
+     * @param  string $papel (Opcional) Estabelece o tamanho do papel (ex. A4)
      * @return string O ID da NFe numero de 44 digitos extraido do arquivo XML
      */
     public function montaDACTE(
@@ -280,6 +302,7 @@ class Dacte extends Common
         $logoAlign = 'C',
         $classPDF = false
     ) {
+    
         //se a orientação estiver em branco utilizar o padrão estabelecido na NF
         if ($orientacao == '') {
             if ($this->tpImp == '1') {
@@ -291,7 +314,8 @@ class Dacte extends Common
         $this->orientacao = $orientacao;
         $this->papel = $papel;
         $this->logoAlign = $logoAlign;
-        $this->situacao_externa = $situacao_externa;
+
+        //$this->situacao_externa = $situacao_externa;
         //instancia a classe pdf
         if ($classPDF !== false) {
             $this->pdf = $classPDF;
@@ -465,6 +489,7 @@ class Dacte extends Common
             return str_replace('CTe', '', $this->infCte->getAttribute("Id"));
         }
     } //fim da função montaDACTE
+
     /**
      * printDACTE
      * Esta função envia a DACTE em PDF criada para o dispositivo informado.
@@ -476,7 +501,7 @@ class Dacte extends Common
      * Para enviar o pdf diretamente para uma impressora indique o
      * nome da impressora e o destino deve ser 'S'.
      *
-     * @param  string $nome    Path completo com o nome do arquivo pdf
+     * @param  string $nome Path completo com o nome do arquivo pdf
      * @param  string $destino Direção do envio do PDF
      * @param  string $printer Identificação da impressora no sistema
      * @return string Caso o destino seja S o pdf é retornado como uma string
@@ -490,13 +515,14 @@ class Dacte extends Common
         }
         return $arq;
     } //fim função printDACTE
+
     /**
      * zCabecalho
      * Monta o cabelhalho da DACTE ( retrato e paisagem )
      *
-     * @param  number $x      Posição horizontal inicial, canto esquerdo
-     * @param  number $y      Posição vertical inicial, canto superior
-     * @param  number $pag    Número da Página
+     * @param  number $x Posição horizontal inicial, canto esquerdo
+     * @param  number $y Posição vertical inicial, canto superior
+     * @param  number $pag Número da Página
      * @param  number $totPag Total de páginas
      * @return number Posição vertical final
      */
@@ -594,8 +620,8 @@ class Dacte extends Common
         $UF = $this->pSimpleGetValue($this->enderEmit, "UF");
         $xPais = $this->pSimpleGetValue($this->enderEmit, "xPais");
         $texto = $lgr . "," . $nro . "\n" . $bairro . " - "
-                . $CEP . " - " . $mun . " - " . $UF . " " . $xPais
-                . "\n  Fone/Fax: " . $fone;
+            . $CEP . " - " . $mun . " - " . $UF . " " . $xPais
+            . "\n  Fone/Fax: " . $fone;
         $this->pTextBox($x1 - 5, $y1 + 2, $tw + 5, 8, $texto, $aFont, 'T', 'C', 0, '');
         //CNPJ/CPF IE
         $cpfCnpj = $this->zFormatCNPJCPF($this->emit);
@@ -927,7 +953,7 @@ class Dacte extends Common
             $texto = $this->pSimpleGetValue($this->protCTe, "nProt") . " - ";
             // empty($volume->getElementsByTagName("qVol")->item(0)->nodeValue)
             if (!empty($this->protCTe)
-                &&  !empty($this->protCTe->getElementsByTagName("dhRecbto")->item(0)->nodeValue)
+                && !empty($this->protCTe->getElementsByTagName("dhRecbto")->item(0)->nodeValue)
             ) {
                 $texto .= date(
                     'd/m/Y   H:i:s',
@@ -987,7 +1013,7 @@ class Dacte extends Common
         $tpAmb = $this->ide->getElementsByTagName('tpAmb')->item(0)->nodeValue;
         //indicar cancelamento
         $cStat = $this->pSimpleGetValue($this->cteProc, "cStat");
-        if ($cStat == '101' || $cStat == '135' || $this->situacao_externa == NFEPHP_SITUACAO_EXTERNA_CANCELADA) {
+        if ($cStat == '101' || $cStat == '135' || $this->situacao_externa == self::NFEPHP_SITUACAO_EXTERNA_CANCELADA) {
             //101 Cancelamento
             $x = 10;
             $y = $this->hPrint - 130;
@@ -1006,7 +1032,7 @@ class Dacte extends Common
         if ($cStat == '110' ||
             $cStat == '301' ||
             $cStat == '302' ||
-            $this->situacao_externa == NFEPHP_SITUACAO_EXTERNA_DENEGADA
+            $this->situacao_externa == self::NFEPHP_SITUACAO_EXTERNA_DENEGADA
         ) {
             //110 Denegada
             $x = 10;
@@ -1109,8 +1135,8 @@ class Dacte extends Common
                     $w = $maxW - (2 * $x);
                     $this->pdf->SetTextColor(200, 200, 200); // 90,90,90 é muito escuro
                     $texto = "DACTE impresso em contingência -\n"
-                            . "DPEC regularmente recebido pela Receita\n"
-                            . "Federal do Brasil";
+                        . "DPEC regularmente recebido pela Receita\n"
+                        . "Federal do Brasil";
                     $aFont = array(
                         'font' => $this->fontePadrao,
                         'size' => 48,
@@ -1123,11 +1149,12 @@ class Dacte extends Common
         }
         return $oldY;
     } //fim zCabecalho
+
     /**
      * rodapeDACTE
      * Monta o rodape no final da DACTE ( retrato e paisagem )
      *
-     * @param number $xInic  Posição horizontal canto esquerdo
+     * @param number $xInic Posição horizontal canto esquerdo
      * @param number $yFinal Posição vertical final para impressão
      */
     protected function zRodape($x, $y)
@@ -1146,6 +1173,7 @@ class Dacte extends Common
             'style' => '');
         $this->pTextBox($x, $y, $w, 4, $texto, $aFont, 'T', 'R', 0, 'http://www.nfephp.org');
     } //fim zRodape
+
     /**
      * zRemetente
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
@@ -1180,7 +1208,7 @@ class Dacte extends Common
         $texto = $this->pSimpleGetValue($this->enderReme, "xLgr") . ',';
         $texto .= $this->pSimpleGetValue($this->enderReme, "nro");
         $texto .= ($this->pSimpleGetValue($this->enderReme, "xCpl") != "") ?
-                ' - ' . $this->pSimpleGetValue($this->enderReme, "xCpl") : '';
+            ' - ' . $this->pSimpleGetValue($this->enderReme, "xCpl") : '';
         $this->pTextBox($x1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $y += 3;
         $texto = $this->pSimpleGetValue($this->enderReme, "xBairro");
@@ -1221,7 +1249,7 @@ class Dacte extends Common
         $aFont = $this->formatPadrao;
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $texto = $this->pSimpleGetValue($this->rem, "xPais") != "" ?
-                $this->pSimpleGetValue($this->rem, "xPais") : 'BRASIL';
+            $this->pSimpleGetValue($this->rem, "xPais") : 'BRASIL';
         $aFont = $this->formatNegrito;
         $this->pTextBox($x1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x = $w - 25;
@@ -1232,6 +1260,7 @@ class Dacte extends Common
         $aFont = $this->formatNegrito;
         $this->pTextBox($x + 8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
     } //fim da função remetenteDACTE
+
     /**
      * zDestinatario
      * Monta o campo com os dados do destinatário na DACTE.
@@ -1266,7 +1295,7 @@ class Dacte extends Common
         $texto = $this->pSimpleGetValue($this->enderDest, "xLgr") . ',';
         $texto .= $this->pSimpleGetValue($this->enderDest, "nro");
         $texto .= $this->pSimpleGetValue($this->enderDest, "xCpl") != "" ?
-                ' - ' . $this->pSimpleGetValue($this->enderDest, "xCpl") : '';
+            ' - ' . $this->pSimpleGetValue($this->enderDest, "xCpl") : '';
         $this->pTextBox($x1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $y += 3;
         $texto = $this->pSimpleGetValue($this->enderDest, "xBairro");
@@ -1317,6 +1346,7 @@ class Dacte extends Common
         $aFont = $this->formatNegrito;
         $this->pTextBox($x + 8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
     } //fim da função destinatarioDACTE
+
     /**
      * zExpedidor
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
@@ -1413,6 +1443,7 @@ class Dacte extends Common
             $this->pTextBox($x + 8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         }
     } //fim da função remetenteDACTE
+
     /**
      * zRecebedor
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
@@ -1509,6 +1540,7 @@ class Dacte extends Common
             $this->pTextBox($x + 8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         }
     } //fim da função recebedorDACTE
+
     /**
      * zTomador
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
@@ -1564,7 +1596,7 @@ class Dacte extends Common
         $texto = $this->pSimpleGetValue($this->toma, "xLgr") . ',';
         $texto .= $this->pSimpleGetValue($this->toma, "nro");
         $texto .= ($this->pSimpleGetValue($this->toma, "xCpl") != "") ?
-                ' - ' . $this->pSimpleGetValue($this->toma, "xCpl") : '';
+            ' - ' . $this->pSimpleGetValue($this->toma, "xCpl") : '';
         $texto .= ' - ' . $this->pSimpleGetValue($this->toma, "xBairro");
         $this->pTextBox($x + 16, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $y += 3;
@@ -1586,7 +1618,7 @@ class Dacte extends Common
         $aFont = $this->formatPadrao;
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $texto = $this->pSimpleGetValue($this->toma, "xPais") != "" ?
-                $this->pSimpleGetValue($this->toma, "xPais") : 'BRASIL';
+            $this->pSimpleGetValue($this->toma, "xPais") : 'BRASIL';
         $aFont = $this->formatNegrito;
         $this->pTextBox($x + 6, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x = $w - 27;
@@ -1597,6 +1629,7 @@ class Dacte extends Common
         $aFont = $this->formatNegrito;
         $this->pTextBox($x + 8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
     } //fim da função tomadorDACTE
+
     /**
      * zDescricaoCarga
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
@@ -1658,12 +1691,12 @@ class Dacte extends Common
                 $this->infQ->item(0),
                 "qCarga"
             )
-                /$this->zMultiUniPeso(
-                    $this->pSimpleGetValue(
-                        $this->infQ->item(0),
-                        "cUnid"
-                    )
-                ),
+            / $this->zMultiUniPeso(
+                $this->pSimpleGetValue(
+                    $this->infQ->item(0),
+                    "cUnid"
+                )
+            ),
             3,
             ".",
             ""
@@ -1688,9 +1721,9 @@ class Dacte extends Common
                 $this->infQ->item(1),
                 "qCarga"
             )
-                /$this->zMultiUniPeso(
-                    $this->pSimpleGetValue($this->infQ->item(1), "cUnid")
-                ),
+            / $this->zMultiUniPeso(
+                $this->pSimpleGetValue($this->infQ->item(1), "cUnid")
+            ),
             3,
             ".",
             ""
@@ -1715,7 +1748,7 @@ class Dacte extends Common
         $texto .= !empty($qCarga) ?
             number_format(
                 $qCarga
-                /$this->zMultiUniPeso(
+                / $this->zMultiUniPeso(
                     $this->pSimpleGetValue($this->infQ->item(2), "cUnid")
                 ),
                 3,
@@ -1803,6 +1836,7 @@ class Dacte extends Common
             'style' => 'B');
         $this->pTextBox($x, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
     } //fim da função zDescricaoCarga
+
     /**
      * zCompValorServ
      * Monta o campo com os componentes da prestação de serviços.
@@ -1901,6 +1935,7 @@ class Dacte extends Common
             $auxX += $w * 0.14;
         }
     } //fim da função compValorDACTE
+
     /**
      * zImpostos
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
@@ -2008,6 +2043,7 @@ class Dacte extends Common
         $aFont = $this->formatNegrito;
         $this->pTextBox($x, $y, $w * 0.14, $h, $texto, $aFont, 'T', 'L', 0, '');
     } //fim da função compValorDACTE
+
     /**
      * zGeraChaveAdicCont
      *
@@ -2048,6 +2084,7 @@ class Dacte extends Common
         $chave = $chave . $this->pModulo11($chave);
         return $chave;
     } //fim zGeraChaveAdicCont
+
     /**
      * zDocOrig
      * Monta o campo com os documentos originarios.
@@ -2217,6 +2254,7 @@ class Dacte extends Common
             $auxX += $w * 0.14;
         }
     } //fim da função zDocOrig
+
     /**
      * zDocCompl
      * Monta o campo com os dados do remetente na DACTE.
@@ -2279,6 +2317,7 @@ class Dacte extends Common
             'style' => '');
         $this->pTextBox($w * 0.40, $yIniDados, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
     } //fim da função zDocCompl
+
     /**
      * zObs
      * Monta o campo com os dados do remetente na DACTE.
@@ -2318,6 +2357,7 @@ class Dacte extends Common
             'style' => '');
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '', false);
     } //fim da função obsDACTE
+
     /**
      * zLocalEntrega
      *
@@ -2341,6 +2381,7 @@ class Dacte extends Common
         }
         return "";
     } //fim zLocalEntrega
+
     /**
      * zModalRod
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
@@ -2554,6 +2595,7 @@ class Dacte extends Common
             $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         }
     } //fim da função zModalRod
+
     /**
      * zModalAquaviario
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
@@ -2723,6 +2765,7 @@ class Dacte extends Common
         $aFont = $this->formatNegrito;
         $this->pTextBox($x, $y + 3, $w * 0.50, $h, $texto, $aFont, 'T', 'L', 0, '');
     } //fim da função zModalRod
+
     /**
      * zModalFerr
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
@@ -3000,6 +3043,7 @@ class Dacte extends Common
             'style' => 'B');
         $this->pTextBox($x, $y + 9, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
     } //fim da função zModalFerr
+
     /**
      * zCanhoto
      * Monta o campo com os dados do remetente na DACTE.
@@ -3073,6 +3117,7 @@ class Dacte extends Common
         $x = $oldX;
         $this->zhDashedLine($x, $y + 7.5, $this->wPrint, 0.1, 80);
     } //fim da função canhotoDACTE
+
     /**
      * zDadosAdic
      * Coloca o grupo de dados adicionais da DACTE.
@@ -3154,6 +3199,7 @@ class Dacte extends Common
         $this->pTextBox($x, $y + 2, $w - 2, $h - 3, $texto, $aFont, 'T', 'L', 0, '', false);
         return $y + $h;
     } //fim zDadosAdic
+
     /**
      * zhDashedLine
      * Desenha uma linha horizontal tracejada com o FPDF
@@ -3177,15 +3223,16 @@ class Dacte extends Common
             }
         }
     } //fim função hDashedLine
+
     /**
      * zhDashedVerticalLine
      * Desenha uma linha vertical tracejada com o FPDF
      *
-     * @param  number $x      Posição horizontal inicial, em mm
-     * @param  number $y      Posição vertical inicial, em mm
-     * @param  number $w      Comprimento da linha, em mm
+     * @param  number $x Posição horizontal inicial, em mm
+     * @param  number $y Posição vertical inicial, em mm
+     * @param  number $w Comprimento da linha, em mm
      * @param  number $yfinal Espessura da linha, em mm
-     * @param  number $n      Numero de traços na seção da linha com o comprimento $w
+     * @param  number $n Numero de traços na seção da linha com o comprimento $w
      * @return none
      */
     protected function zhDashedVerticalLine($x, $y, $w, $yfinal, $n)
@@ -3203,6 +3250,7 @@ class Dacte extends Common
             $n--;
         }
     } //fim função hDashedVerticalLine
+
     /**
      * zFormatCNPJCPF
      * Formata campo CnpjCpf contida na CTe
@@ -3225,6 +3273,7 @@ class Dacte extends Common
         }
         return $cnpj;
     } //fim formatCNPJCPF
+
     /**
      * zFormatFone
      * Formata campo fone contida na CTe
@@ -3246,6 +3295,7 @@ class Dacte extends Common
         }
         return $fone;
     } //fim formatFone
+
     /**
      * zUnidade
      * Converte a imformação de peso contida na CTe
@@ -3279,6 +3329,7 @@ class Dacte extends Common
         }
         return $r;
     } //fim unidade
+
     /**
      * zConvertUnidTrafego
      * Converte a imformação de peso contida na CTe
@@ -3306,6 +3357,7 @@ class Dacte extends Common
             return $stringU;
         }
     } //fim da função zConvertUnidTrafego
+
     /**
      * zMultiUniPeso
      * Fornece a imformação multiplicação de peso contida na CTe
