@@ -823,7 +823,7 @@ class Pdf extends Fpdf
     */
     public function dashedVLine($x, $y, $w, $yfinal, $n)
     {
-        $this->detLineWidth($w);
+        $this->setLineWidth($w);
         //Organizando valores
         if ($y > $yfinal) {
             $aux = $yfinal;
