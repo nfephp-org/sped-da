@@ -236,7 +236,7 @@ class Daevento extends Common
         // fixa as margens
         $this->pdf->setMargins($margEsq, $margSup, $margDir);
         $this->pdf->setDrawColor(0, 0, 0);
-        $this->pdf->sSetFillColor(255, 255, 255);
+        $this->pdf->setFillColor(255, 255, 255);
         // inicia o documento
         $this->pdf->open();
         // adiciona a primeira página
