@@ -16,7 +16,7 @@ namespace NFePHP\DA\MDFe;
  */
 
 use Exception;
-use NFePHP\DA\Common\Dom;
+use NFePHP\Common\Dom\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
 
@@ -132,7 +132,7 @@ class Damdfe extends Common
             exit();
         }
         $docxml = file_get_contents($xmlfile);
-        $this->dom = new DomDocument;
+        $this->dom = new Dom;
         $this->dom->loadXML($docxml);
         $this->mdfeProc = $this->dom->getElementsByTagName("mdfeProc")->item(0);
         $this->infMDFe = $this->dom->getElementsByTagName("infMDFe")->item(0);
@@ -202,7 +202,7 @@ class Damdfe extends Common
      */
     private function buildMDFe()
     {
-        $this->pdf = new PdfNFePHP($this->orientacao, 'mm', $this->papel);
+        $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         if ($this->orientacao == 'P') {
             // margens do PDF
             $margSup = 7;
@@ -330,7 +330,7 @@ class Damdfe extends Common
         $CEP = 'CEP: '.$this->pFormat($CEP, "##.###-###");
         $mun = 'Municipio: '.$this->xMun;
         $UF = 'UF: '.$this->UF;
-        
+
         $texto = $razao . "\n" . $cnpj . ' - ' . $ie . "\n";
         $texto .= $lgr . ' - ' . $nro . "\n";
         $texto .= $bairro . "\n";
@@ -372,7 +372,7 @@ class Damdfe extends Common
         $aFont = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'I');
         $texto = 'PROTOCOLO DE AUTORIZACAO DE USO';
         $this->pTextBox($x, $y, $w, 8, $texto, $aFont, 'T', 'L', 0, '');
-        
+
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'');
         if (is_object($this->mdfeProc)) {
             $tsHora = $this->pConvertTime($this->dhRecbto);
@@ -422,7 +422,7 @@ class Damdfe extends Common
         }
         return $y;
     }// fim headerMDFe
-    
+
     /**
      * headerMDFeRetrato
      *
@@ -586,7 +586,7 @@ class Damdfe extends Common
         }
         return $y+12;
     }// fim headerMDFe
-    
+
     /**
      * bodyMDFe
      *
@@ -874,7 +874,7 @@ class Damdfe extends Common
         } else {
             $file = $this->pdfDir.$nome;
         }
-        if (($destino != 'I' || $destino != 'S') && $destino != 'F') {
+        if ($destino != 'I' && $destino != 'S' && $destino != 'F') {
             $destino = 'I';
         }
         if ($printer != '') {
@@ -885,7 +885,7 @@ class Damdfe extends Common
         if ($destino == 'S') {
             //aqui pode entrar a rotina de impressão direta
             $command = "lpr $command $file";
-            system($comando, $retorno);
+            system($command, $retorno);
         }
         return $arq;
     }//fim printMDFe
