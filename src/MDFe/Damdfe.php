@@ -874,7 +874,7 @@ class Damdfe extends Common
         } else {
             $file = $this->pdfDir.$nome;
         }
-        if (($destino != 'I' || $destino != 'S') && $destino != 'F') {
+        if ($destino != 'I' && $destino != 'S' && $destino != 'F') {
             $destino = 'I';
         }
         if ($printer != '') {
@@ -885,7 +885,7 @@ class Damdfe extends Common
         if ($destino == 'S') {
             //aqui pode entrar a rotina de impressão direta
             $command = "lpr $command $file";
-            system($comando, $retorno);
+            system($command, $retorno);
         }
         return $arq;
     }//fim printMDFe
