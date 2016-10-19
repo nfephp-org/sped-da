@@ -288,7 +288,7 @@ class Fpdf
 
     public function error($msg)
     {
-        throw Exception($msg);
+        throw new Exception($msg);
     }
 
     public function open()
