@@ -7,7 +7,7 @@ use Exception;
 class Fpdf
 {
     const FPDF_VERSION = '1.6';
-    
+
     public $page;               //current page number
     public $n;                  //current object number
     public $offsets;            //array of object offsets
@@ -66,7 +66,7 @@ class Fpdf
     public $creator;            //creator
     public $aliasNbPages;       //alias for total number of pages
     public $pdfVersion;         //PDF version number
-    
+
     public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4')
     {
         //Some checks
@@ -288,7 +288,7 @@ class Fpdf
 
     public function error($msg)
     {
-        throw Exception($msg);
+        throw new Exception($msg);
     }
 
     public function open()
@@ -1098,7 +1098,7 @@ class Fpdf
         $this->setY($y);
         $this->setX($x);
     }
-    
+
     public function getPdf()
     {
         if ($this->state < 3) {
@@ -1106,7 +1106,7 @@ class Fpdf
         }
         return $this->buffer;
     }
-    
+
     public function output($name = '', $dest = '')
     {
         //Output PDF to some destination
