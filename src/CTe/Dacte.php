@@ -85,6 +85,7 @@ class Dacte extends Common
     protected $formatPadrao;
     protected $formatNegrito;
     protected $aquav;
+    protected $preVisualizar;
 
     /**
      * __construct
@@ -97,6 +98,7 @@ class Dacte extends Common
      * @param string $sDirPDF Caminho para o diretorio de armaz. dos PDF
      * @param string $fonteDACTE Nome da fonte a ser utilizada
      * @param number $mododebug 0-Não 1-Sim e 2-nada (2 default)
+     * @param string $preVisualizar 0-Não 1-Sim
      */
     public function __construct(
         $docXML = '',
@@ -106,7 +108,8 @@ class Dacte extends Common
         $sDestino = 'I',
         $sDirPDF = '',
         $fonteDACTE = '',
-        $mododebug = 2
+        $mododebug = 2,
+        $preVisualizar = false
     ) {
     
         if (is_numeric($mododebug)) {
@@ -128,17 +131,18 @@ class Dacte extends Common
         $this->logomarca = $sPathLogo;
         $this->destino = $sDestino;
         $this->pdfDir = $sDirPDF;
+        $this->preVisualizar = $preVisualizar;
         // verifica se foi passa a fonte a ser usada
         if (!empty($fonteDACTE)) {
             $this->fontePadrao = $fonteDACTE;
         }
         $this->formatPadrao = array(
             'font' => $this->fontePadrao,
-            'size' => 7,
+            'size' => 6,
             'style' => '');
         $this->formatNegrito = array(
             'font' => $this->fontePadrao,
-            'size' => 8,
+            'size' => 7,
             'style' => 'B');
         //se for passado o xml
         if (!empty($this->xml)) {
@@ -375,8 +379,6 @@ class Dacte extends Common
         $x = $xInic;
         $y = $yInic;
         //coloca o cabeçalho
-        $y = $this->zCanhoto($x, $y);
-        $y += 19;
         $r = $this->zCabecalho($x, $y, $pag, $totPag);
         $y += 70;
         $r = $this->zRemetente($x, $y);
@@ -475,6 +477,11 @@ class Dacte extends Common
         }
         $x = $xInic;
         $r = $this->zDadosAdic($x, $y, $pag, $totPag);
+        // ini - maison
+        $y += 19;
+        $y = $this->zCanhoto($x, $y);
+        
+        // fim - maison
         //coloca o rodapé da página
         if ($this->orientacao == 'P') {
             $this->zRodape(2, $this->hPrint - 2);
@@ -1058,7 +1065,7 @@ class Dacte extends Common
             $this->pdf->SetTextColor(0, 0, 0);
         }
         //indicar sem valor
-        if ($tpAmb != 1) {
+        if ($tpAmb != 1 && $this->preVisualizar=='0') { // caso não seja uma DA de produção
             $x = 10;
             if ($this->orientacao == 'P') {
                 $y = round($this->hPrint * 2 / 3, 0);
@@ -1081,6 +1088,33 @@ class Dacte extends Common
             $texto = "AMBIENTE DE HOMOLOGAÇÃO";
             $this->pTextBox($x, $y + 14, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $this->pdf->SetTextColor(0, 0, 0);
+        } elseif ($this->preVisualizar=='1') { // caso seja uma DA de Pré-Visualização
+            $h = 5;
+            $w = $maxW - (2 * 10);
+            $x = 55;
+            $y = 240;
+            $this->pdf->SetTextColor(255, 100, 100);
+            $aFont = array(
+                'font' => $this->fontePadrao,
+                'size' => 40,
+                'style' => 'B');
+            $texto = "Pré-visualização";
+            $this->pTextBox90($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+            $this->pdf->SetTextColor(255, 100, 100);
+            $aFont = array(
+                'font' => $this->fontePadrao,
+                'size' => 41,
+                'style' => 'B');
+            $texto = "Sem Validade Jurídica";
+            $this->pTextBox90($x+20, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+            $this->pdf->SetTextColor(90, 90, 90);
+            $texto = "SEM VALOR FISCAL";
+            $aFont = array(
+                'font' => $this->fontePadrao,
+                'size' => 48,
+                'style' => 'B');
+            $this->pTextBox90($x+40, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+            $this->pdf->SetTextColor(0, 0, 0); // voltar a cor default
         } else {
             $x = 10;
             if ($this->orientacao == 'P') {
@@ -3054,6 +3088,8 @@ class Dacte extends Common
      */
     protected function zCanhoto($x = 0, $y = 0)
     {
+        $this->zhDashedLine($x, $y+2, $this->wPrint, 0.1, 80);
+        $y = $y + 2;
         $oldX = $x;
         $oldY = $y;
         if ($this->orientacao == 'P') {
@@ -3115,7 +3151,7 @@ class Dacte extends Common
             'style' => '');
         $this->pTextBox($x, $y - 8, $w * 0.15, $h, $texto, $aFont, 'C', 'C', 0, '');
         $x = $oldX;
-        $this->zhDashedLine($x, $y + 7.5, $this->wPrint, 0.1, 80);
+        //$this->zhDashedLine($x, $y + 7.5, $this->wPrint, 0.1, 80);
     } //fim da função canhotoDACTE
 
     /**
