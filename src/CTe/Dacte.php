@@ -2612,7 +2612,7 @@ class Dacte extends Common
         $aFont = $this->formatPadrao;
         $this->pTextBox($x, $y, $w, $h * 3.2, $texto, $aFont, 'T', 'C', 1, '');
         if ($this->lota == 1) {
-            $this->pdf->Line($x, $y + 12, $w + 1, $y + 12); // LINHA DE BAIXO            
+            $this->pdf->Line($x, $y + 12, $w + 1, $y + 12); // LINHA DE BAIXO
         }
         $y += 3.4;
         $this->pdf->Line($x, $y, $w + 1, $y); // LINHA DE CIMA
