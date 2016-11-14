@@ -84,7 +84,7 @@ class Dacte extends Common
     protected $debugMode = 2;
     protected $formatPadrao;
     protected $formatNegrito;
-    protected $aquav;   
+    protected $aquav;
     protected $preVisualizar;
     protected $flagDocOrigContinuacao;
     protected $arrayNFe = array();
@@ -382,7 +382,7 @@ class Dacte extends Common
         $pag = 1;
         $x = $xInic;
         $y = $yInic;
-        //coloca o cabeçalho                
+        //coloca o cabeçalho
         //$r = $this->zCabecalho($x, $y, $pag, $totPag);
         $y += 70;
         $r = $this->zRemetente($x, $y);
@@ -481,7 +481,7 @@ class Dacte extends Common
             $r = $this->zObs($x, $y);
             $y += 15;
         }
-        $x = $xInic;        
+        $x = $xInic;
         $r = $this->zDadosAdic($x, $y, $pag, $totPag);
         
         //$y += 19;
@@ -966,8 +966,8 @@ class Dacte extends Common
                 'style' => 'B');
             $texto = $this->pFormat($chaveContingencia, "#### #### #### #### #### #### #### #### ####");
             $cStat = '';
-        } else {            
-            $texto = $this->pSimpleGetValue($this->protCTe, "nProt") . " - ";            
+        } else {
+            $texto = $this->pSimpleGetValue($this->protCTe, "nProt") . " - ";
             // empty($volume->getElementsByTagName("qVol")->item(0)->nodeValue)
             if (!empty($this->protCTe)
                 && !empty($this->protCTe->getElementsByTagName("dhRecbto")->item(0)->nodeValue)
@@ -1085,7 +1085,7 @@ class Dacte extends Common
             $h = 5;
             $w = $maxW - (2 * $x);
             $this->pdf->SetTextColor(90, 90, 90);
-            $texto = "SEM VALOR FISCAL";            
+            $texto = "SEM VALOR FISCAL";
             $aFont = array(
                 'font' => $this->fontePadrao,
                 'size' => 48,
@@ -1110,22 +1110,22 @@ class Dacte extends Common
                 'size' => 40,
                 'style' => 'B');
             $texto = "Pré-visualização";
-            $this->pTextBox90($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');            
+            $this->pTextBox90($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $this->pdf->SetTextColor(255, 100,100);
             $aFont = array(
                 'font' => $this->fontePadrao,
                 'size' => 41,
                 'style' => 'B');
             $texto = "Sem Validade Jurídica";
-            $this->pTextBox90($x+20, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');            
+            $this->pTextBox90($x+20, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $this->pdf->SetTextColor(90, 90, 90);
             $texto = "SEM VALOR FISCAL";
             $aFont = array(
                 'font' => $this->fontePadrao,
                 'size' => 48,
                 'style' => 'B');
-            $this->pTextBox90($x+40, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');            
-            $this->pdf->SetTextColor(0, 0, 0); // voltar a cor default          
+            $this->pTextBox90($x+40, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+            $this->pdf->SetTextColor(0, 0, 0); // voltar a cor default
         } else {
             $x = 10;
             if ($this->orientacao == 'P') {
@@ -2167,7 +2167,7 @@ class Dacte extends Common
             $h = $this->lota == 1 ? 35 : 53; // 0 - Não; 1 - Sim Será lotação quando houver um único conhecimento de transporte por veículo, ou combinação veicular, e por viagem
         } elseif ($this->modal == '3') {
             $h = 37.6;
-        } else {            
+        } else {
             $h = 35;
         }
         $texto = 'DOCUMENTOS ORIGINÁRIOS';
@@ -2196,7 +2196,7 @@ class Dacte extends Common
         
         $x += $w * 0.14;
         if ($this->modal == '1') {
-            if ($this->lota == 1) {                
+            if ($this->lota == 1) {
                 $this->pdf->Line($x, $y, $x, $y + 31.5);
             } else {
                 $this->pdf->Line($x, $y, $x, $y + 49.5);
@@ -2252,7 +2252,7 @@ class Dacte extends Common
                 'font' => $this->fontePadrao,
                 'size' => 8,
                 'style' => '');
-            $this->pTextBox($auxX, $yIniDados, $w * 0.13, $h, $texto, $aFont, 'T', 'L', 0, '');            
+            $this->pTextBox($auxX, $yIniDados, $w * 0.13, $h, $texto, $aFont, 'T', 'L', 0, '');
             $auxX += $w * 0.15;
         }
         
@@ -2614,7 +2614,7 @@ class Dacte extends Common
         if ($this->lota == 1) {
             $this->pdf->Line($x, $y + 12, $w + 1, $y + 12); // LINHA DE BAIXO            
         }
-        $y += 3.4;        
+        $y += 3.4;
         $this->pdf->Line($x, $y, $w + 1, $y); // LINHA DE CIMA
         $texto = 'RNTRC DA EMPRESA';
         $aFont = $this->formatPadrao;
@@ -3277,7 +3277,7 @@ class Dacte extends Common
             $maxW = $this->wPrint;
         } else {
             $maxW = $this->wPrint - $this->wCanhoto;
-        }                
+        }
         $w = $maxW - 1;
         $h = 20;
         $y = $y + 1;
@@ -3293,7 +3293,7 @@ class Dacte extends Common
             'font' => $this->fontePadrao,
             'size' => 6,
             'style' => '');
-        $this->pTextBox($x, $y, $w * 0.25, $h, $texto, $aFont, 'T', 'L', 0, '');        
+        $this->pTextBox($x, $y, $w * 0.25, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x += $w * 0.25;
         
         $this->pdf->Line($x, $y, $x, $y + 16.5);
@@ -3486,7 +3486,7 @@ class Dacte extends Common
      * @return string
      */
     protected function zFormatCNPJCPF($field)
-    {        
+    {
         if (!isset($field)) {
             return '';
         }
