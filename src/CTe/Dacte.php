@@ -243,6 +243,8 @@ class Dacte extends Common
             $this->tpAmb = $this->pSimpleGetValue($this->ide, "tpAmb");
             $this->tpCTe = $this->pSimpleGetValue($this->ide, "tpCTe");
             $this->protCTe = $this->dom->getElementsByTagName("protCTe")->item(0);
+            //01-Rodoviário; //02-Aéreo; //03-Aquaviário; //04-Ferroviário;//05-Dutoviário
+            $this->modal = $this->pSimpleGetValue($this->ide, "modal");
         }
     }
 
@@ -467,6 +469,7 @@ class Dacte extends Common
                 $y += 37;
             }
         } else {
+            $r = $this->zCabecalho(1, 1, $pag, $totPag);
             //Complementado
             $y += 10;
             $x = $xInic;
@@ -796,10 +799,7 @@ class Dacte extends Common
             'size' => 8,
             'style' => '');
         $this->pTextBox($x1, $y + 1, $w, $h, $texto, $aFont, 'T', 'C', 0, '');
-        //01-Rodoviário; //02-Aéreo; //03-Aquaviário; //04-Ferroviário;//05-Dutoviário
-        $modal = $this->pSimpleGetValue($this->ide, "modal");
-        $this->modal = $modal;
-        switch ($modal) {
+        switch ($this->modal) {
             case '1':
                 $texto = 'Rodoviário';
                 break;
@@ -2181,7 +2181,7 @@ class Dacte extends Common
         $descr3 = 'SÉRIE/NRO. DOCUMENTO';
         
         $y += 3.4;
-        $this->pdf->Line($x, $y, $w + 1, $y);
+        $this->pdf->Line($x, $y, $w + 1, $y); // LINHA ABAIXO DO TEXTO: "DOCUMENTOS ORIGINÁRIOS
         $texto = $descr1;
         $aFont = $this->formatPadrao;
         $this->pTextBox($x, $y, $w * 0.10, $h, $texto, $aFont, 'T', 'L', 0, '');
@@ -2200,9 +2200,9 @@ class Dacte extends Common
         $x += $w * 0.14;
         if ($this->modal == '1') {
             if ($this->lota == 1) {
-                $this->pdf->Line($x, $y, $x, $y + 31.5);
+                $this->pdf->Line($x, $y, $x, $y + 31.5); // TESTE
             } else {
-                $this->pdf->Line($x, $y, $x, $y + 49.5);
+                $this->pdf->Line($x, $y, $x, $y + 49.5); // TESTE
             }
         } elseif ($this->modal == '3') {
             $this->pdf->Line($x, $y, $x, $y + 34.1);
@@ -2270,10 +2270,12 @@ class Dacte extends Common
             $totPag = '1';
         }
         $totPag = count($this->arrayNFe) >15 ? '2' : '1';
-        
         $r = $this->zCabecalho(1, 1, '1', $totPag);
         $contador = 0;
-        while ($contador < 16) {
+        while ($contador < count($this->arrayNFe)) {
+            if ($contador == 15) {
+                break;
+            }
             $tp = 'NF-e';
             $chaveNFe = $this->arrayNFe[$contador];
             $numNFe = substr($chaveNFe, 25, 9);
@@ -2609,10 +2611,9 @@ class Dacte extends Common
         $w = $maxW;
         if ($this->modal == '1') {
             $h = $this->lota == 1 ? 12.5 : 3.7;
-            $lotacao = 'Sim';
+            $lotacao = $this->lota == 1 ? 'Sim' : 'Não';
         } else {
             $h = 12.5;
-            $lotacao = 'Não';
         }
         $textolota = $this->lota == 1 ? 'LOTAÇÃO' : 'CARGA FRACIONADA';
         $texto = 'DADOS ESPECÍFICOS DO MODAL RODOVIÁRIO - ' . $textolota;
