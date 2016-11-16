@@ -3513,21 +3513,26 @@ class Dacte extends Common
      * zFormatFone
      * Formata campo fone contida na CTe
      *
-     * @param  string $field campo fone da CT-e
+     * @param  \DOMElement $field campo fone da CT-e
      * @return string
      */
     protected function zFormatFone($field)
     {
-        $fone = !empty($field->getElementsByTagName("fone")->item(0)->nodeValue) ?
-            $field->getElementsByTagName("fone")->item(0)->nodeValue : '';
+        $fone = '';
+        if (is_null($field)){
+            return $fone;
+        }
+        if ($field->getElementsByTagName("fone")->length > 0){
+            $fone = $field->getElementsByTagName("fone")->item(0)->nodeValue;
+        }
+
         $foneLen = strlen($fone);
         if ($foneLen > 0) {
             $fone2 = substr($fone, 0, $foneLen - 4);
             $fone1 = substr($fone, 0, $foneLen - 8);
             $fone = '(' . $fone1 . ') ' . substr($fone2, -4) . '-' . substr($fone, -4);
-        } else {
-            $fone = '';
         }
+
         return $fone;
     } //fim formatFone
 
