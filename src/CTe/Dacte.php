@@ -15,7 +15,6 @@ namespace NFePHP\DA\CTe;
  * @author    Roberto L. Machado <linux dot rlm at gmail dot com>
  */
 
-use Exception;
 use NFePHP\Common\Dom\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
@@ -3519,10 +3518,10 @@ class Dacte extends Common
     protected function zFormatFone($field)
     {
         $fone = '';
-        if (is_null($field)){
+        if (is_null($field)) {
             return $fone;
         }
-        if ($field->getElementsByTagName("fone")->length > 0){
+        if ($field->getElementsByTagName("fone")->length > 0) {
             $fone = $field->getElementsByTagName("fone")->item(0)->nodeValue;
         }
 
