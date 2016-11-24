@@ -2302,10 +2302,13 @@ class Danfe extends Common
         $aFont = array('font'=>$this->fontePadrao, 'size'=>6, 'style'=>'');
         $this->pTextBox($x, $y, $w3, $h, $texto, $aFont, 'C', 'C', 0, '', false);
         $this->pdf->Line($x+$w3, $y, $x+$w3, $y+$hmax);
-        //O/CST
+        //O/CST ou O/CSOSN
         $x += $w3;
-        $w4 = round($w*0.04, 0);
-        $texto = 'O/CST';
+        $w4 = round($w*0.05, 0);
+        $texto = 'O/CSOSN';//Regime do Simples CRT = 1 ou CRT = 2
+        if ($this->pSimpleGetValue($this->emit, 'CRT') == '3') {
+             $texto = 'O/CST';//Regime Normal
+        }
         $aFont = array('font'=>$this->fontePadrao, 'size'=>6, 'style'=>'');
         $this->pTextBox($x, $y, $w4, $h, $texto, $aFont, 'C', 'C', 0, '', false);
         $this->pdf->Line($x+$w4, $y, $x+$w4, $y+$hmax);
