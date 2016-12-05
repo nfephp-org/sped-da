@@ -15,7 +15,6 @@ namespace NFePHP\DA\CTe;
  * @author    Roberto L. Machado <linux dot rlm at gmail dot com>
  */
 
-use Exception;
 use NFePHP\Common\Dom\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
@@ -183,7 +182,7 @@ class Dacte extends Common
             $this->ICMS = $this->dom->getElementsByTagName("ICMS")->item(0);
             $this->ICMSSN = $this->dom->getElementsByTagName("ICMSSN")->item(0);
             $this->imp = $this->dom->getElementsByTagName("imp")->item(0);
-            $textoAdic = number_format($this->pSimpleGetValue($this->imp, "vTotTrib"), 2, ",", ".");
+            $textoAdic = number_format((double)$this->pSimpleGetValue($this->imp, "vTotTrib"), 2, ",", ".");
             $this->textoAdic = "o valor aproximado de tributos incidentes sobre o preço deste serviço é de R$"
                     .$textoAdic;
             $this->toma4 = $this->dom->getElementsByTagName("toma4")->item(0);
@@ -3513,21 +3512,26 @@ class Dacte extends Common
      * zFormatFone
      * Formata campo fone contida na CTe
      *
-     * @param  string $field campo fone da CT-e
+     * @param  \DOMElement $field campo fone da CT-e
      * @return string
      */
     protected function zFormatFone($field)
     {
-        $fone = !empty($field->getElementsByTagName("fone")->item(0)->nodeValue) ?
-            $field->getElementsByTagName("fone")->item(0)->nodeValue : '';
+        $fone = '';
+        if (is_null($field)) {
+            return $fone;
+        }
+        if ($field->getElementsByTagName("fone")->length > 0) {
+            $fone = $field->getElementsByTagName("fone")->item(0)->nodeValue;
+        }
+
         $foneLen = strlen($fone);
         if ($foneLen > 0) {
             $fone2 = substr($fone, 0, $foneLen - 4);
             $fone1 = substr($fone, 0, $foneLen - 8);
             $fone = '(' . $fone1 . ') ' . substr($fone2, -4) . '-' . substr($fone, -4);
-        } else {
-            $fone = '';
         }
+
         return $fone;
     } //fim formatFone
 
