@@ -2102,7 +2102,6 @@ class Dacte extends Common
             number_format($this->pSimpleGetValue($this->ICMS, "pRedBC"), 2, ",", ".").'%' :'';
         $aFont = $this->formatNegrito;
         $this->pTextBox($x, $y, $w * $wCol02, $h, $texto, $aFont, 'T', 'L', 0, '');
-        
     } //fim da função compValorDACTE
 
     /**
