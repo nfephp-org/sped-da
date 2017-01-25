@@ -71,6 +71,7 @@ class Dacte extends Common
     protected $infNFe;
     protected $infOutros;
     protected $idDocAntEle;
+    protected $infCteAnu;
     protected $compl;
     protected $ICMS;
     protected $imp;
@@ -91,6 +92,7 @@ class Dacte extends Common
     protected $arrayNFe = array();
     protected $siteDesenvolvedor;
     protected $nomeDesenvolvedor;
+    protected $totPag;
 
     /**
      * __construct
@@ -189,6 +191,7 @@ class Dacte extends Common
             $this->infNFe = $this->dom->getElementsByTagName("infNFe");
             $this->infOutros = $this->dom->getElementsByTagName("infOutros");
             $this->idDocAntEle = $this->dom->getElementsByTagName("idDocAntEle");
+            $this->infCteAnu = $this->dom->getElementsByTagName("infCteAnu")->item(0);
             $this->compl = $this->dom->getElementsByTagName("compl");
             $this->ICMS = $this->dom->getElementsByTagName("ICMS")->item(0);
             $this->ICMSSN = $this->dom->getElementsByTagName("ICMSSN")->item(0);
@@ -478,6 +481,22 @@ class Dacte extends Common
             } else {
                 $y += 37;
             }
+        } elseif ($this->tpCTe == '2') {
+            //Anulação de valores
+            $r = $this->zCabecalho(1, 1, $pag, $totPag);
+            $y += 10;
+            $x = $xInic;
+            $r = $this->zDocAnu($x, $y);
+            $y += 80;
+            $x = $xInic;
+            $r = $this->zCompValorServ($x, $y);
+            $y += 25;
+            $x = $xInic;
+            $r = $this->zImpostos($x, $y);
+            $y += 13;
+            $x = $xInic;
+            $r = $this->zObs($x, $y);
+            $y += 15;
         } else {
             $r = $this->zCabecalho(1, 1, $pag, $totPag);
             //Complementado
@@ -2266,15 +2285,46 @@ class Dacte extends Common
         }
         if (count($this->arrayNFe) >15) {
             $this->flagDocOrigContinuacao = 1;
-            $totPag = '2';
-        } else {
-            $totPag = '1';
         }
-        $totPag = count($this->arrayNFe) >15 ? '2' : '1';
-        $r = $this->zCabecalho(1, 1, '1', $totPag);
+        $qtdeNFe = count($this->arrayNFe);
+//        $totPag = count($this->arrayNFe) > 15 ? '2' : '1';
+        switch ($qtdeNFe){
+            case ($qtdeNFe >= 1044):
+                $this->totPag = 11;
+                break;
+            case ($qtdeNFe > 928):
+                $this->totPag = 10;
+                break;
+            case ($qtdeNFe > 812):
+                $this->totPag = 9;
+                break;
+            case ($qtdeNFe > 696):
+                $this->totPag = 8;
+                break;
+            case ($qtdeNFe > 580):
+                $this->totPag = 7;
+                break;
+            case ($qtdeNFe > 464):
+                $this->totPag = 6;
+                break;
+            case ($qtdeNFe > 348):
+                $this->totPag = 5;
+                break;
+            case ($qtdeNFe > 232):
+                $this->totPag = 4;
+                break;
+            case ($qtdeNFe > 116):
+                $this->totPag = 3;
+                break;
+            case ($qtdeNFe > 16):
+                $this->totPag = 2;
+                break;
+            default: $this->totPag = 1;
+        }
+        $r = $this->zCabecalho(1, 1, '1', $this->totPag);
         $contador = 0;
         while ($contador < count($this->arrayNFe)) {
-            if ($contador == 15) {
+            if ($contador == 16) {
                 break;
             }
             $tp = 'NF-e';
@@ -2388,110 +2438,121 @@ class Dacte extends Common
      */
     protected function zDocOrigContinuacao($x = 0, $y = 0)
     {
-        $this->pdf->AddPage($this->orientacao, $this->papel);
-        $r = $this->zCabecalho(1, 1, '2', '2');
-        $oldX = $x;
-        $oldY = $y;
-        if ($this->orientacao == 'P') {
-            $maxW = $this->wPrint;
-        } else {
-            $maxW = $this->wPrint - $this->wCanhoto;
-        }
-        $w = $maxW;
-        
-        //$h = 6; // de sub-titulo
-        //$h = 6 + 3; // de altura do texto (primeira linha
-        //$h = 9 + 3.5 ;// segunda linha
-        //$h = 9 + 3.5+ 3.5 ;// segunda linha
-        $h = (( ( count($this->arrayNFe)/2 ) - 9) * 3.5)+9;
-        if (count($this->arrayNFe)%2 !=0) {
-            $h = $h+3.5;
-        } // Caso tenha apenas 1 registro na ultima linha
-        
-        $texto = 'DOCUMENTOS ORIGINÁRIOS - CONTINUACÃO';
-        $aFont = $this->formatPadrao;
-        $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'C', 1, '');
-        $descr1 = 'TIPO DOC';
-        $descr2 = 'CNPJ/CHAVE/OBS';
-        $descr3 = 'SÉRIE/NRO. DOCUMENTO';
-        
-        $y += 3.4;
-        $this->pdf->Line($x, $y, $w + 1, $y);
-        $texto = $descr1;
-        $aFont = $this->formatPadrao;
-        $this->pTextBox($x, $y, $w * 0.10, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $yIniDados = $y;
-        
-        $x += $w * 0.07; // COLUNA CNPJ/CHAVE/OBS
-        $texto = $descr2;
-        $aFont = $this->formatPadrao;
-        $this->pTextBox($x, $y, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
-        
-        $x += $w * 0.28;
-        $texto = $descr3;
-        $aFont = $this->formatPadrao;
-        $this->pTextBox($x, $y, $w * 0.13, $h, $texto, $aFont, 'T', 'L', 0, '');
-        
-        $x += $w * 0.14;
-        if ($this->modal == '1') {
-            if ($this->lota == 1) {
-                $this->pdf->Line($x, $y, $x, $y + 31.5);
-            } else {
-                $this->pdf->Line($x, $y, $x, $y + 49.5);
-            }
-        } elseif ($this->modal == '3') {
-            $this->pdf->Line($x, $y, $x, $y + 34.1);
-        } else {
-            $this->pdf->Line($x, $y, $x, $y + 21.5);
-        }
-        $texto = $descr1;
-        $aFont = $this->formatPadrao;
-        $this->pTextBox($x, $y, $w * 0.10, $h, $texto, $aFont, 'T', 'L', 0, '');
-                
-        $x += $w * 0.08;
-        $texto = $descr2;
-        $aFont = $this->formatPadrao;
-        $this->pTextBox($x, $y, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
-        
-        $x += $w * 0.28; // COLUNA SÉRIE/NRO.DOCUMENTO DA DIREITA
-        $texto = $descr3;
-        $aFont = $this->formatPadrao;
-        $this->pTextBox($x, $y, $w * 0.13, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $auxX = $oldX;
-        $yIniDados += 3;
-        
+        $x2 = $x;
+        $y2 = $y;
         $contador = 16;
-        for ($contador = 16; $contador < count($this->arrayNFe); $contador++) {
-            $tp = 'NF-e';
-            $chaveNFe = $this->arrayNFe[$contador];
-            $numNFe = substr($chaveNFe, 25, 9);
-            $serieNFe = substr($chaveNFe, 22, 3);
-            $doc = $serieNFe . '/' . $numNFe;
-            if ($auxX > $w * 0.90) {
-                $yIniDados = $yIniDados + 3.5;
-                $auxX = $oldX;
+        for($i = 2; $i <= $this->totPag;$i++){
+            $x = $x2;
+            $y = $y2;
+            $this->pdf->AddPage($this->orientacao, $this->papel);
+            $r = $this->zCabecalho(1, 1, $i, $this->totPag);
+            $oldX = $x;
+            $oldY = $y;
+            if ($this->orientacao == 'P') {
+                $maxW = $this->wPrint;
+            } else {
+                $maxW = $this->wPrint - $this->wCanhoto;
             }
-            $texto = $tp;
-            $aFont = array(
-                'font' => $this->fontePadrao,
-                'size' => 7,
-                'style' => '');
-            $this->pTextBox($auxX, $yIniDados, $w * 0.10, $h, $texto, $aFont, 'T', 'L', 0, '');
-            $auxX += $w * 0.07;
-            $texto = $chaveNFe;
-            $aFont = array(
-                'font' => $this->fontePadrao,
-                'size' => 7,
-                'style' => '');
-            $this->pTextBox($auxX, $yIniDados, $w * 0.27, $h, $texto, $aFont, 'T', 'L', 0, '');
-            $auxX += $w * 0.28;
-            $texto = $doc;
-            $aFont = array(
-                'font' => $this->fontePadrao,
-                'size' => 7,
-                'style' => '');
-            $this->pTextBox($auxX, $yIniDados, $w * 0.30, $h, $texto, $aFont, 'T', 'L', 0, '');
-            $auxX += $w * 0.15;
+            $w = $maxW;
+
+            //$h = 6; // de sub-titulo
+            //$h = 6 + 3; // de altura do texto (primeira linha
+            //$h = 9 + 3.5 ;// segunda linha
+            //$h = 9 + 3.5+ 3.5 ;// segunda linha
+            $h = (( ( count($this->arrayNFe)/2 ) - 9) * 3.5)+9;
+            if (count($this->arrayNFe)%2 !=0) {
+                $h = $h+3.5;
+            } // Caso tenha apenas 1 registro na ultima linha
+
+            $texto = 'DOCUMENTOS ORIGINÁRIOS - CONTINUACÃO';
+            $aFont = $this->formatPadrao;
+            $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'C', 1, '');
+            $descr1 = 'TIPO DOC';
+            $descr2 = 'CNPJ/CHAVE/OBS';
+            $descr3 = 'SÉRIE/NRO. DOCUMENTO';
+
+            $y += 3.4;
+            $this->pdf->Line($x, $y, $w + 1, $y);
+            $texto = $descr1;
+            $aFont = $this->formatPadrao;
+            $this->pTextBox($x, $y, $w * 0.10, $h, $texto, $aFont, 'T', 'L', 0, '');
+            $yIniDados = $y;
+
+            $x += $w * 0.07; // COLUNA CNPJ/CHAVE/OBS
+            $texto = $descr2;
+            $aFont = $this->formatPadrao;
+            $this->pTextBox($x, $y, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
+
+            $x += $w * 0.28;
+            $texto = $descr3;
+            $aFont = $this->formatPadrao;
+            $this->pTextBox($x, $y, $w * 0.13, $h, $texto, $aFont, 'T', 'L', 0, '');
+
+            $x += $w * 0.14;
+            if ($this->modal == '1') {
+                if ($this->lota == 1) {
+                    $this->pdf->Line($x, $y, $x, $y + 31.5);
+                } else {
+                    $this->pdf->Line($x, $y, $x, $y + 49.5);
+                }
+            } elseif ($this->modal == '3') {
+                $this->pdf->Line($x, $y, $x, $y + 34.1);
+            } else {
+                $this->pdf->Line($x, $y, $x, $y + 21.5);
+            }
+            $texto = $descr1;
+            $aFont = $this->formatPadrao;
+            $this->pTextBox($x, $y, $w * 0.10, $h, $texto, $aFont, 'T', 'L', 0, '');
+
+            $x += $w * 0.08;
+            $texto = $descr2;
+            $aFont = $this->formatPadrao;
+            $this->pTextBox($x, $y, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
+
+            $x += $w * 0.28; // COLUNA SÉRIE/NRO.DOCUMENTO DA DIREITA
+            $texto = $descr3;
+            $aFont = $this->formatPadrao;
+            $this->pTextBox($x, $y, $w * 0.13, $h, $texto, $aFont, 'T', 'L', 0, '');
+            $auxX = $oldX;
+            $yIniDados += 3;
+
+            while ($contador < (count($this->arrayNFe))) {
+                if($contador%(116*($i-1)) == 0){
+//                    $contador++;
+                    break;
+                }
+                $tp = 'NF-e';
+                $chaveNFe = $this->arrayNFe[$contador];
+                $numNFe = substr($chaveNFe, 25, 9);
+                $serieNFe = substr($chaveNFe, 22, 3);
+                $doc = $serieNFe . '/' . $numNFe;
+                if ($auxX > $w * 0.90) {
+                    $yIniDados = $yIniDados + 3.5;
+                    $auxX = $oldX;
+                }
+                $texto = $tp;
+                $aFont = array(
+                    'font' => $this->fontePadrao,
+                    'size' => 7,
+                    'style' => '');
+                $this->pTextBox($auxX, $yIniDados, $w * 0.10, $h, $texto, $aFont, 'T', 'L', 0, '');
+                $auxX += $w * 0.07;
+                $texto = $chaveNFe;
+                $aFont = array(
+                    'font' => $this->fontePadrao,
+                    'size' => 7,
+                    'style' => '');
+                $this->pTextBox($auxX, $yIniDados, $w * 0.27, $h, $texto, $aFont, 'T', 'L', 0, '');
+                $auxX += $w * 0.28;
+                $texto = $doc;
+                $aFont = array(
+                    'font' => $this->fontePadrao,
+                    'size' => 7,
+                    'style' => '');
+                $this->pTextBox($auxX, $yIniDados, $w * 0.30, $h, $texto, $aFont, 'T', 'L', 0, '');
+                $auxX += $w * 0.15;
+                $contador++;
+            }
         }
     } //fim da função zDocOrigContinuacao
 
@@ -2551,6 +2612,69 @@ class Dacte extends Common
             'style' => '');
         $this->pTextBox($auxX, $yIniDados, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $texto = number_format($this->pSimpleGetValue($this->vPrest, "vTPrest"), 2, ",", ".");
+        $aFont = array(
+            'font' => $this->fontePadrao,
+            'size' => 8,
+            'style' => '');
+        $this->pTextBox($w * 0.40, $yIniDados, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+    } //fim da função zDocCompl
+
+    /**
+     * zDocAnu
+     * Monta o campo com os dados do remetente na DACTE.
+     *
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
+     * @return number Posição vertical final
+     */
+    protected function zDocAnu($x = 0, $y = 0)
+    {
+        $oldX = $x;
+        $oldY = $y;
+        if ($this->orientacao == 'P') {
+            $maxW = $this->wPrint;
+        } else {
+            $maxW = $this->wPrint - $this->wCanhoto;
+        }
+        $w = $maxW;
+        $h = 80;
+        $texto = 'DETALHAMENTO DO CT-E ANULADO';
+        $aFont = $this->formatPadrao;
+        $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'C', 1, '');
+        $descr1 = 'CHAVE DO CT-E ANULADO';
+        $descr2 = 'DATA DE EMISSÃO';
+        $y += 3.4;
+        $this->pdf->Line($x, $y, $w + 1, $y);
+        $texto = $descr1;
+        $aFont = $this->formatPadrao;
+        $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $yIniDados = $y;
+        $x += $w * 0.37;
+        $texto = $descr2;
+        $aFont = $this->formatPadrao;
+        $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $x += $w * 0.13;
+        $this->pdf->Line($x, $y, $x, $y + 76.5);
+        $texto = $descr1;
+        $aFont = $this->formatPadrao;
+        $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $x += $w * 0.3;
+        $texto = $descr2;
+        $aFont = $this->formatPadrao;
+        $this->pTextBox($x + 8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $auxX = $oldX;
+        $yIniDados += 4;
+        if ($auxX > $w * 0.90) {
+            $yIniDados = $yIniDados + 4;
+            $auxX = $oldX;
+        }
+        $texto = $this->pSimpleGetValue($this->infCteAnu, "chCte");
+        $aFont = array(
+            'font' => $this->fontePadrao,
+            'size' => 8,
+            'style' => '');
+        $this->pTextBox($auxX, $yIniDados, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $texto = date('d/m/Y', $this->pConvertTime($this->pSimpleGetValue($this->infCteAnu, "dEmi")));
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 8,
