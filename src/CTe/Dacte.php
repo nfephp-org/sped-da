@@ -2289,7 +2289,8 @@ class Dacte extends Common
         $qtdeNFe = count($this->arrayNFe);
 //        $totPag = count($this->arrayNFe) > 15 ? '2' : '1';
         switch ($qtdeNFe) {
-            default: $this->totPag = 1;
+            default:
+                $this->totPag = 1;
             case ($qtdeNFe >= 1044):
                 $this->totPag = 11;
                 break;
