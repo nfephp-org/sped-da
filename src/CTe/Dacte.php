@@ -2288,7 +2288,8 @@ class Dacte extends Common
         }
         $qtdeNFe = count($this->arrayNFe);
 //        $totPag = count($this->arrayNFe) > 15 ? '2' : '1';
-        switch ($qtdeNFe){
+        switch ($qtdeNFe) {
+            default: $this->totPag = 1;
             case ($qtdeNFe >= 1044):
                 $this->totPag = 11;
                 break;
@@ -2319,7 +2320,6 @@ class Dacte extends Common
             case ($qtdeNFe > 16):
                 $this->totPag = 2;
                 break;
-            default: $this->totPag = 1;
         }
         $r = $this->zCabecalho(1, 1, '1', $this->totPag);
         $contador = 0;
@@ -2441,7 +2441,7 @@ class Dacte extends Common
         $x2 = $x;
         $y2 = $y;
         $contador = 16;
-        for($i = 2; $i <= $this->totPag;$i++){
+        for ($i = 2; $i <= $this->totPag; $i++) {
             $x = $x2;
             $y = $y2;
             $this->pdf->AddPage($this->orientacao, $this->papel);
@@ -2517,7 +2517,7 @@ class Dacte extends Common
             $yIniDados += 3;
 
             while ($contador < (count($this->arrayNFe))) {
-                if($contador%(116*($i-1)) == 0){
+                if ($contador%(116*($i-1)) == 0) {
 //                    $contador++;
                     break;
                 }
