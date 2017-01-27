@@ -15,6 +15,7 @@ namespace NFePHP\DA\MDFe;
  * @author    Leandro C. Lopez <leandro dot castoldi at gmail dot com>
  */
 
+use Exception;
 use NFePHP\Common\Dom\Dom;
 use NFePHP\DA\Legacy\Common;
 use NFePHP\DA\Legacy\Pdf;
@@ -130,6 +131,7 @@ class Damdfe extends Common
         }
 
         $docxml = file_get_contents($xmlfile);
+
         $this->dom = new Dom();
         $this->dom->loadXML($docxml);
         $this->mdfeProc = $this->dom->getElementsByTagName("mdfeProc")->item(0);
@@ -328,7 +330,7 @@ class Damdfe extends Common
         $CEP = 'CEP: '.$this->pFormat($CEP, "##.###-###");
         $mun = 'Municipio: '.$this->xMun;
         $UF = 'UF: '.$this->UF;
-        
+
         $texto = $razao . "\n" . $cnpj . ' - ' . $ie . "\n";
         $texto .= $lgr . ' - ' . $nro . "\n";
         $texto .= $bairro . "\n";
@@ -370,7 +372,7 @@ class Damdfe extends Common
         $aFont = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'I');
         $texto = 'PROTOCOLO DE AUTORIZACAO DE USO';
         $this->pTextBox($x, $y, $w, 8, $texto, $aFont, 'T', 'L', 0, '');
-        
+
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'');
         if (is_object($this->mdfeProc)) {
             $tsHora = $this->pConvertTime($this->dhRecbto);
@@ -420,7 +422,7 @@ class Damdfe extends Common
         }
         return $y;
     }// fim headerMDFe
-    
+
     /**
      * headerMDFeRetrato
      *
@@ -584,7 +586,7 @@ class Damdfe extends Common
         }
         return $y+12;
     }// fim headerMDFe
-    
+
     /**
      * bodyMDFe
      *
@@ -881,7 +883,7 @@ class Damdfe extends Common
         } else {
             $file = $this->pdfDir.$nome;
         }
-        if (($destino != 'I' || $destino != 'S') && $destino != 'F') {
+        if ($destino != 'I' && $destino != 'S' && $destino != 'F') {
             $destino = 'I';
         }
         if ($printer != '') {
@@ -892,7 +894,7 @@ class Damdfe extends Common
         if ($destino == 'S') {
             //aqui pode entrar a rotina de impressão direta
             $command = "lpr $command $file";
-            system($comando, $retorno);
+            system($command, $retorno);
         }
         return $arq;
     }//fim printMDFe

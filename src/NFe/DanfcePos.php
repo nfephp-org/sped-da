@@ -241,8 +241,8 @@ class DanfcePos
         $pag = $this->nfce->infNFe->pag;
         $tot = $pag->count();
         for ($x=0; $x<=$tot-1; $x++) {
-            $tPag = (string) $this->tipoPag($pag[0]->tPag);
-            $vPag = (float) $pag[0]->vPag;
+            $tPag = $this->tipoPag((string) $pag[$x]->tPag);
+            $vPag = (float) $pag[$x]->vPag;
             $this->printer->text($tPag . '                  R$ '. $vPag);
         }
         //linha divisória ??
