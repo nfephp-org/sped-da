@@ -109,7 +109,7 @@ class Damdfe extends Common
         $this->orientacao   = $sOrientacao;
         $this->papel        = $sPapel;
         $this->pdf          = '';
-        //$this->xml          = $xmlfile;
+        $this->xml          = $xmlfile;
         $this->logomarca    = $sPathLogo;
         $this->destino      = $sDestino;
         $this->pdfDir       = $sDirPDF;
@@ -129,60 +129,61 @@ class Damdfe extends Common
             $this->errStatus = true;
         }
 
-        $docxml = file_get_contents($xmlfile);
+//        $docxml = file_get_contents($xmlfile);
         $this->dom = new Dom();
-        $this->dom->loadXML($docxml);
+        $this->dom->loadXML($this->xml);
         $this->mdfeProc = $this->dom->getElementsByTagName("mdfeProc")->item(0);
         $this->infMDFe = $this->dom->getElementsByTagName("infMDFe")->item(0);
-        $this->emit = $this->infMDFe->getElementsByTagName("emit")->item(0);
-        $this->CNPJ = $this->emit->getElementsByTagName("CNPJ")->item(0)->nodeValue;
-        $this->IE = $this->emit->getElementsByTagName("IE")->item(0)->nodeValue;
-        $this->xNome = $this->emit->getElementsByTagName("xNome")->item(0)->nodeValue;
-        $this->enderEmit = $this->emit->getElementsByTagName("enderEmit")->item(0);
-        $this->xLgr = $this->enderEmit->getElementsByTagName("xLgr")->item(0)->nodeValue;
-        $this->nro = $this->enderEmit->getElementsByTagName("nro")->item(0)->nodeValue;
-        $this->xBairro = $this->enderEmit->getElementsByTagName("xBairro")->item(0)->nodeValue;
-        $this->UF = $this->enderEmit->getElementsByTagName("UF")->item(0)->nodeValue;
-        $this->xMun = $this->enderEmit->getElementsByTagName("xMun")->item(0)->nodeValue;
-        $this->CEP = $this->enderEmit->getElementsByTagName("CEP")->item(0)->nodeValue;
-        $this->ide = $this->infMDFe->getElementsByTagName("ide")->item(0);
-        $this->tpAmb = $this->ide->getElementsByTagName("tpAmb")->item(0)->nodeValue;
-        $this->mod = $this->ide->getElementsByTagName("mod")->item(0)->nodeValue;
-        $this->serie = $this->ide->getElementsByTagName("serie")->item(0)->nodeValue;
-        $this->dhEmi = $this->ide->getElementsByTagName("dhEmi")->item(0)->nodeValue;
-        $this->UFIni = $this->ide->getElementsByTagName("UFIni")->item(0)->nodeValue;
-        $this->nMDF = $this->ide->getElementsByTagName("nMDF")->item(0)->nodeValue;
-        $this->tpEmis = $this->ide->getElementsByTagName("tpEmis")->item(0)->nodeValue;
-        $this->tot = $this->infMDFe->getElementsByTagName("tot")->item(0);
+        $this->emit = $this->dom->getElementsByTagName("emit")->item(0);
+        $this->CNPJ = $this->dom->getElementsByTagName("CNPJ")->item(0)->nodeValue;
+        $this->IE = $this->dom->getElementsByTagName("IE")->item(0)->nodeValue;
+        $this->xNome = $this->dom->getElementsByTagName("xNome")->item(0)->nodeValue;
+        $this->enderEmit = $this->dom->getElementsByTagName("enderEmit")->item(0);
+        $this->xLgr = $this->dom->getElementsByTagName("xLgr")->item(0)->nodeValue;
+        $this->nro = $this->dom->getElementsByTagName("nro")->item(0)->nodeValue;
+        $this->xBairro = $this->dom->getElementsByTagName("xBairro")->item(0)->nodeValue;
+        $this->UF = $this->dom->getElementsByTagName("UF")->item(0)->nodeValue;
+        $this->xMun = $this->dom->getElementsByTagName("xMun")->item(0)->nodeValue;
+        $this->CEP = $this->dom->getElementsByTagName("CEP")->item(0)->nodeValue;
+        $this->ide = $this->dom->getElementsByTagName("ide")->item(0);
+        $this->tpAmb = $this->dom->getElementsByTagName("tpAmb")->item(0)->nodeValue;
+        $this->mod = $this->dom->getElementsByTagName("mod")->item(0)->nodeValue;
+        $this->serie = $this->dom->getElementsByTagName("serie")->item(0)->nodeValue;
+        $this->dhEmi = $this->dom->getElementsByTagName("dhEmi")->item(0)->nodeValue;
+        $this->UFIni = $this->dom->getElementsByTagName("UFIni")->item(0)->nodeValue;
+        $this->nMDF = $this->dom->getElementsByTagName("nMDF")->item(0)->nodeValue;
+        $this->tpEmis = $this->dom->getElementsByTagName("tpEmis")->item(0)->nodeValue;
+        $this->tot = $this->dom->getElementsByTagName("tot")->item(0);
         $this->qNFe = "";
-        if ($this->tot->getElementsByTagName("qNFe")->item(0) != "") {
-            $this->qNFe = $this->tot->getElementsByTagName("qNFe")->item(0)->nodeValue;
+        if ($this->dom->getElementsByTagName("qNFe")->item(0) != "") {
+            $this->qNFe = $this->dom->getElementsByTagName("qNFe")->item(0)->nodeValue;
         }
         $this->qNF = "";
-        if ($this->tot->getElementsByTagName("qNF")->item(0) != "") {
-            $this->qNF = $this->tot->getElementsByTagName("qNF")->item(0)->nodeValue;
+        if ($this->dom->getElementsByTagName("qNF")->item(0) != "") {
+            $this->qNF = $this->dom->getElementsByTagName("qNF")->item(0)->nodeValue;
         }
         $this->qCTe = "";
-        if ($this->tot->getElementsByTagName("qCTe")->item(0) != "") {
-            $this->qCTe = $this->tot->getElementsByTagName("qCTe")->item(0)->nodeValue;
+        if ($this->dom->getElementsByTagName("qCTe")->item(0) != "") {
+            $this->qCTe = $this->dom->getElementsByTagName("qCTe")->item(0)->nodeValue;
         }
         $this->qCT = "";
-        if ($this->tot->getElementsByTagName("qCT")->item(0) != "") {
-            $this->qCT = $this->tot->getElementsByTagName("qCT")->item(0)->nodeValue;
+        if ($this->dom->getElementsByTagName("qCT")->item(0) != "") {
+            $this->qCT = $this->dom->getElementsByTagName("qCT")->item(0)->nodeValue;
         }
-        $this->qCarga = $this->tot->getElementsByTagName("qCarga")->item(0)->nodeValue;
-        $this->infModal = $this->infMDFe->getElementsByTagName("infModal")->item(0);
-        $this->rodo = $this->infModal->getElementsByTagName("rodo")->item(0);
+        $this->qCarga = $this->dom->getElementsByTagName("qCarga")->item(0)->nodeValue;
+        $this->infModal = $this->dom->getElementsByTagName("infModal")->item(0);
+        $this->rodo = $this->dom->getElementsByTagName("rodo")->item(0);
         $this->ciot = "";
-        if ($this->rodo->getElementsByTagName('CIOT')->item(0) != "") {
-            $this->ciot = $this->rodo->getElementsByTagName('CIOT')->item(0)->nodeValue;
+        if ($this->dom->getElementsByTagName('CIOT')->item(0) != "") {
+            $this->ciot = $this->dom->getElementsByTagName('CIOT')->item(0)->nodeValue;
         }
-        $this->veicTracao = $this->rodo->getElementsByTagName("veicTracao")->item(0);
-        $this->veicReboque = $this->rodo->getElementsByTagName("veicReboque");
+        $this->veicTracao = $this->dom->getElementsByTagName("veicTracao")->item(0);
+        $this->veicReboque = $this->dom->getElementsByTagName("veicReboque");
         $this->valePed = "";
-        if ($this->rodo->getElementsByTagName("valePed")->item(0) != "") {
-            $this->valePed = $this->rodo->getElementsByTagName("valePed")->item(0)->getElementsByTagName("disp");
+        if ($this->dom->getElementsByTagName("valePed")->item(0) != "") {
+            $this->valePed = $this->dom->getElementsByTagName("valePed")->item(0)->getElementsByTagName("disp");
         }
+        $this->infCpl = $this->dom->getElementsByTagName("infCpl")->item(0)->nodeValue;
         $this->chMDFe = str_replace(
             'MDFe',
             '',
@@ -198,7 +199,7 @@ class Damdfe extends Common
      *buildMDFe
      *
      */
-    private function buildMDFe()
+    public function buildMDFe()
     {
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         if ($this->orientacao == 'P') {
@@ -449,7 +450,7 @@ class Damdfe extends Common
             //altura da imagem em mm
             $logoHmm = ($logoInfo[1]/72)*25.4;
             if ($this->logoAlign=='L') {
-                $nImgW = round($w/4.5, 0);
+                $nImgW = round($w/8, 0);
                 $nImgH = round($logoHmm * ($nImgW/$logoWmm), 0);
                 $xImg = $x+1;
                 $yImg = round(($h-$nImgH)/2, 0)+$y;
@@ -478,14 +479,14 @@ class Damdfe extends Common
             }
             $this->pdf->Image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, 'jpeg');
         } else {
-            $x1 = $x;
-            $y1 = round($h/3+$y, 0);
+            $x1 = $x+40;
+            $y1 = $y;
             $tw = $w;
         }
         $aFont = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'');
         $razao = $this->xNome;
         $cnpj = 'CNPJ: '.$this->pFormat($this->CNPJ, "###.###.###/####-##");
-        $ie = 'IE: '.$this->pFormat($this->IE, '##/########');
+        $ie = 'IE: '.$this->pFormat($this->IE, '###/#######');
         $lgr = 'Logradouro: '.$this->xLgr;
         $nro = 'Nº: '.$this->nro;
         $bairro = 'Bairro: '.$this->xBairro;
@@ -855,7 +856,8 @@ class Damdfe extends Common
         $maxW = $this->wPrint;
         $x2 = $maxW;
         $this->pTextBox($x, $y, $x2, 30);
-        $texto = 'Observações ';
+        $texto = 'Observações  
+        '.$this->infCpl;
         $aFont = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'');
         $this->pTextBox($x, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
         $y = $this->hPrint -4;
@@ -894,6 +896,16 @@ class Damdfe extends Common
             $command = "lpr $command $file";
             system($comando, $retorno);
         }
+
         return $arq;
     }//fim printMDFe
+
+    /**
+     * Dados brutos do PDF
+     * @return string
+     */
+    public function render()
+    {
+        return $this->pdf->getPdf();
+    }
 }
