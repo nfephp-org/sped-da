@@ -3,6 +3,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 require_once '../bootstrap.php';
 
+/*
 use NFePHP\DA\CTe\Dacte;
 use NFePHP\Common\Files\FilesFolders;
 
@@ -22,6 +23,7 @@ try {
 } catch (Exception $e) {
     echo "Ocorreu um erro durante o processamento :" . $e->getMessage();
 }
+*/
 
 //use NFePHP\NFe\ToolsNFe;
 //use NFePHP\Extras\Danfce;

@@ -3,7 +3,7 @@
 namespace NFePHP\DA\NFe;
 
 use Exception;
-use NFePHP\Common\Dom\Dom;
+use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
 

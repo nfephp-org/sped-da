@@ -15,13 +15,14 @@ namespace NFePHP\DA\NFe;
  * @author    Roberto L. Machado <linux.rlm at gmail dot com>
  */
 
-use Exception;
-use NFePHP\Common\Dom\Dom;
+use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
 
 class Daevento extends Common
 {
+    public $chNFe;
+    
     protected $logoAlign = 'C';
     protected $yDados = 0;
     protected $debugMode = 0;
@@ -42,7 +43,6 @@ class Daevento extends Common
     protected $wCanhoto;
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     protected $id;
-    protected $chNFe;
     protected $tpAmb;
     protected $cOrgao;
     protected $xCorrecao;

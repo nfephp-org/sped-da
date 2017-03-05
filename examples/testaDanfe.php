@@ -4,7 +4,7 @@ ini_set('display_errors', 'On');
 require_once '../bootstrap.php';
 
 use NFePHP\DA\NFe\Danfe;
-use NFePHP\Common\Files\FilesFolders;
+use NFePHP\DA\Legacy\FilesFolders;
 
 $xml = 'xml/mod55-nfe.xml';
 $docxml = FilesFolders::readFile($xml);

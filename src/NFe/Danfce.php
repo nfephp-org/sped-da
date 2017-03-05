@@ -4,7 +4,8 @@ namespace NFePHP\DA\NFe;
 
 /**
  * Classe para a impressão em PDF do Documento Auxiliar de NFe Consumidor
- * NOTA: Esta classe não é a indicada para quem faz uso de impressoras térmicas ESCPOS
+ * NOTA: Esta classe não é a indicada para quem faz uso de impressoras
+ * térmicas ESCPOS
  *
  * @category  Library
  * @package   nfephp-org/sped-da
@@ -14,8 +15,8 @@ namespace NFePHP\DA\NFe;
  * @author    Roberto Spadim <roberto at spadim dot com dot br>
  */
 
-use Exception;
-use NFePHP\Common\Dom\Dom;
+use \InvalidArgumentException;
+use \DOMDocument;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
 use Endroid\QrCode\QrCode;
@@ -51,61 +52,42 @@ class Danfce extends Common
     protected $hLinha = 3;
     
     /**
-     * __contruct
+     * Constructor
      *
-     * @param string $docXML
-     * @param string $sPathLogo
-     * @param string $mododebug
-     * @param string $idToken
-     * @param string $Token
+     * @param string $xml XML of NFCe in string or path to file
+     * @param string $logo path to logo
      */
     public function __construct(
-        $docXML = '',
-        $sPathLogo = '',
-        $mododebug = 0,
-        // habilita os erros do sistema
-        $idToken = '',
-        $emitToken = '',
-        $urlQR = ''
+        $xml,
+        $logo = ''
     ) {
-        if (is_numeric($mododebug)) {
-            $this->debugMode = $mododebug;
+        if (!empty($xml)) {
+            throw new \InvalidArgumentException("Um xml de NFCE deve ser passado");
         }
-        if ($this->debugMode) {
-            //ativar modo debug
-            error_reporting(E_ALL);
-            ini_set('display_errors', 'On');
-        } else {
-            //desativar modo debug
-            error_reporting(0);
-            ini_set('display_errors', 'Off');
+        if (is_file($xml)) {
+            $xml = file_get_contents($xml);
         }
-        $this->xml = $docXML;
-        $this->logomarca = $sPathLogo;
-        if (empty($fonteDANFE)) {
-            $this->fontePadrao = 'Times';
-        } else {
-            $this->fontePadrao = $fonteDANFE;
-        }
-        if (!empty($this->xml)) {
-            $this->dom = new DomDocumentNFePHP();
-            $this->dom->loadXML($this->xml);
-            $this->nfeProc    = $this->dom->getElementsByTagName("nfeProc")->item(0);
-            $this->nfe        = $this->dom->getElementsByTagName("NFe")->item(0);
-            $this->infNFe     = $this->dom->getElementsByTagName("infNFe")->item(0);
-            $this->ide        = $this->dom->getElementsByTagName("ide")->item(0);
-            $this->emit       = $this->dom->getElementsByTagName("emit")->item(0);
-            $this->enderEmit  = $this->dom->getElementsByTagName("enderEmit")->item(0);
-            $this->det        = $this->dom->getElementsByTagName("det");
-            $this->dest       = $this->dom->getElementsByTagName("dest")->item(0);
-            $this->pag        = $this->dom->getElementsByTagName("pag");
-            $this->imposto    = $this->dom->getElementsByTagName("imposto")->item(0);
-            $this->ICMSTot    = $this->dom->getElementsByTagName("ICMSTot")->item(0);
-            $this->tpImp      = $this->ide->getElementsByTagName("tpImp")->item(0)->nodeValue;
-        }
+        $this->xml = $xml;
+        $this->logomarca = $logo;
+        $this->fontePadrao = 'Times';
+        $this->dom = new DOMDocument();
+        $this->dom->loadXML($this->xml);
+        $this->nfeProc = $this->dom->getElementsByTagName("nfeProc")->item(0);
+        $this->nfe = $this->dom->getElementsByTagName("NFe")->item(0);
+        $this->infNFe = $this->dom->getElementsByTagName("infNFe")->item(0);
+        $this->ide = $this->dom->getElementsByTagName("ide")->item(0);
+        $this->emit = $this->dom->getElementsByTagName("emit")->item(0);
+        $this->enderEmit = $this->dom->getElementsByTagName("enderEmit")->item(0);
+        $this->det = $this->dom->getElementsByTagName("det");
+        $this->dest = $this->dom->getElementsByTagName("dest")->item(0);
+        $this->pag = $this->dom->getElementsByTagName("pag");
+        $this->imposto = $this->dom->getElementsByTagName("imposto")->item(0);
+        $this->ICMSTot = $this->dom->getElementsByTagName("ICMSTot")->item(0);
+        $this->tpImp = $this->ide->getElementsByTagName("tpImp")->item(0)->nodeValue;
         $this->qrCode = $this->dom->getElementsByTagName('qrCode')->item(0)->nodeValue;
-        if ($this->pSimpleGetValue($this->ide, "mod") != '65') {
-            throw new nfephpException("O xml do DANFE deve ser uma NFC-e modelo 65");
+        $mod = $this->dom->getElementsByTagName('mod')->item(0)->nodeValue;
+        if ($mod != '65') {
+            throw new \InvalidArgumentException("O xml deve ser uma NFC-e modelo 65");
         }
     }
     
@@ -114,9 +96,9 @@ class Danfce extends Common
         return $this->papel;
     }
     
-    public function setPapel($aPap)
+    public function setPapel($formato)
     {
-        $this->papel = $aPap;
+        $this->papel = $formato;
     }
     
     public function montaDANFE(
@@ -145,7 +127,7 @@ class Danfce extends Common
         if ($classPdf) {
             $this->pdf = $classPdf;
         } else {
-            $this->pdf = new PdfNFePHP($this->orientacao, 'mm', $this->papel);
+            $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         }
         //margens do PDF, em milímetros. Obs.: a margem direita é sempre igual à
         //margem esquerda. A margem inferior *não* existe na FPDF, é definida aqui

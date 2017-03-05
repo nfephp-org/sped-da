@@ -16,12 +16,14 @@ namespace NFePHP\DA\NFe;
  */
 
 use Exception;
-use NFePHP\Common\Dom\Dom;
+use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
 
 class Dacce extends Common
 {
+    public $chNFe;
+    
     protected $logoAlign = 'C';
     protected $yDados = 0;
     protected $debugMode = 0;
@@ -42,7 +44,6 @@ class Dacce extends Common
     protected $wCanhoto;
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     protected $id;
-    protected $chNFe;
     protected $tpAmb;
     protected $cOrgao;
     protected $xCorrecao;

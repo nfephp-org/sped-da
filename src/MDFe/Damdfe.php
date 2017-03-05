@@ -16,7 +16,7 @@ namespace NFePHP\DA\MDFe;
  */
 
 use Exception;
-use NFePHP\DA\Common\Dom;
+use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
 
