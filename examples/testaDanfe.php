@@ -19,6 +19,6 @@ try {
     //ou ainda gravado na base de dados
     header('Content-Type: application/pdf');
     echo $pdf;
-} catch (Exception $e) {
+} catch (InvalidArgumentException $e) {
     echo "Ocorreu um erro durante o processamento :" . $e->getMessage();
 }    
