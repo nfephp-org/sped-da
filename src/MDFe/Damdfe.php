@@ -16,9 +16,9 @@ namespace NFePHP\DA\MDFe;
  */
 
 use Exception;
-use NFePHP\Common\Dom\Dom;
-use NFePHP\DA\Legacy\Common;
+use NFePHP\DA\Common\Dom;
 use NFePHP\DA\Legacy\Pdf;
+use NFePHP\DA\Legacy\Common;
 
 class Damdfe extends Common
 {
@@ -124,15 +124,15 @@ class Damdfe extends Common
         if (empty($xmlfile)) {
             $this->errMsg = 'Um caminho para o arquivo xml da MDFe deve ser passado!';
             $this->errStatus = true;
+            exit();
         }
         if (!is_file($xmlfile)) {
             $this->errMsg = 'Um caminho para o arquivo xml da MDFe deve ser passado!';
             $this->errStatus = true;
+            exit();
         }
-
         $docxml = file_get_contents($xmlfile);
-
-        $this->dom = new Dom();
+        $this->dom = new DomDocument;
         $this->dom->loadXML($docxml);
         $this->mdfeProc = $this->dom->getElementsByTagName("mdfeProc")->item(0);
         $this->infMDFe = $this->dom->getElementsByTagName("infMDFe")->item(0);
@@ -202,7 +202,7 @@ class Damdfe extends Common
      */
     private function buildMDFe()
     {
-        $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
+        $this->pdf = new PdfNFePHP($this->orientacao, 'mm', $this->papel);
         if ($this->orientacao == 'P') {
             // margens do PDF
             $margSup = 7;
@@ -727,12 +727,9 @@ class Damdfe extends Common
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'');
         $this->pTextBox($x1, $y+4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
         $altura = $y + 4;
-        /** @var \DOMNodeList $veicReboque */
-        $veicReboque = $this->veicReboque;
-        foreach ($veicReboque as $item) {
-            /** @var \DOMElement $item */
+        for ($i = 0; $i < $this->veicReboque->length; $i++) {
             $altura += 4;
-            $texto = $item->getElementsByTagName('placa')->item(0)->nodeValue;
+            $texto = $this->veicReboque->item($i)->getElementsByTagName('placa')->item(0)->nodeValue;
             $this->pTextBox($x1, $altura, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
         }
         $x1 += $x2;
@@ -744,16 +741,10 @@ class Damdfe extends Common
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'');
         $this->pTextBox($x1, $y+4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
         $altura = $y + 4;
-        /** @var \DOMNodeList $veicReboque */
-        $veicReboque = $this->veicReboque;
-        foreach ($veicReboque as $item) {
-            /** @var \DOMElement $item */
-            $DOMNodeList = $item->getElementsByTagName('RNTRC');
-            if ($DOMNodeList->length > 0) {
-                $altura += 4;
-                $texto = $DOMNodeList->item(0)->nodeValue;
-                $this->pTextBox($x1, $altura, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
-            }
+        for ($i = 0; $i < $this->veicReboque->length; $i++) {
+            $altura += 4;
+            $texto = $this->veicReboque->item($i)->getElementsByTagName('RNTRC')->item(0)->nodeValue;
+            $this->pTextBox($x1, $altura, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
         }
         $x1 = $x;
         $y += 22;
@@ -883,7 +874,7 @@ class Damdfe extends Common
         } else {
             $file = $this->pdfDir.$nome;
         }
-        if ($destino != 'I' && $destino != 'S' && $destino != 'F') {
+        if (($destino != 'I' || $destino != 'S') && $destino != 'F') {
             $destino = 'I';
         }
         if ($printer != '') {
@@ -894,7 +885,7 @@ class Damdfe extends Common
         if ($destino == 'S') {
             //aqui pode entrar a rotina de impressão direta
             $command = "lpr $command $file";
-            system($command, $retorno);
+            system($comando, $retorno);
         }
         return $arq;
     }//fim printMDFe

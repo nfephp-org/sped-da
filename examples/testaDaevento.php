@@ -5,12 +5,12 @@
  */
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
-require_once '../../bootstrap.php';
+require_once '../bootstrap.php';
 
-use NFePHP\Extras\Daevento;
-use NFePHP\Common\Files\FilesFolders;
+use NFePHP\DA\NFe\Daevento;
+use NFePHP\DA\Legacy\FilesFolders;
 
-$xml = '../xml/proccce.xml';
+$xml = 'xml/proccce.xml';
 
 $aEnd = array(
     'razao' => 'QQ Comercio e Ind. Ltda',
@@ -25,7 +25,13 @@ $aEnd = array(
     'email' => 'qq@gmail.com'
 );
 
-$docxml = FilesFolders::readFile($xml);
-$daevento = new Daevento($docxml, 'P', 'A4', '../../images/logo.jpg', 'I', '', '', $aEnd);
-$id = $daevento->chNFe . '';
-$teste = $daevento->printDocument($id.'.pdf', 'I');
+try {
+    $docxml = FilesFolders::readFile($xml);
+    $daevento = new Daevento($docxml, 'P', 'A4', 'images/logo.jpg', 'I', '', '', $aEnd);
+    $id = $daevento->chNFe . '';
+    $teste = $daevento->printDocument($id.'.pdf', 'I');
+} catch (InvalidArgumentException $e) {
+    echo $e->getMessage();
+} catch (RuntimeException $e) {
+    echo $e->getMessage();
+}    

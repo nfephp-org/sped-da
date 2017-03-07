@@ -2,8 +2,8 @@
 
 namespace NFePHP\DA\NFe;
 
-use Exception;
-use NFePHP\Common\Dom\Dom;
+use InvalidArgumentException;
+use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
 
@@ -324,12 +324,6 @@ class Danfe extends Common
         $mododebug = 2
     ) {
         //set_time_limit(1800);
-        //verificacao temporária de segurança apenas para alertar se tentar instanciar
-        //a classe com 9 parâmetros, pois o "$exibirPIS" foi removido em 20/08/2014
-        // e parametrizado como atributo público para simplificar o construtor
-        if (func_num_args() == 9) {
-            throw new Exception("ATENCAO: o construtor da classe Danfe nao possui mais 9 parametros");
-        }
         if (is_numeric($mododebug)) {
             $this->debugMode = $mododebug;
         }
@@ -385,7 +379,7 @@ class Danfe extends Common
             $this->infProt    = $this->dom->getElementsByTagName("infProt")->item(0);
             //valida se o XML é uma NF-e modelo 55, pois não pode ser 65 (NFC-e)
             if ($this->pSimpleGetValue($this->ide, "mod") != '55') {
-                throw new Exception("O xml do DANFE deve ser uma NF-e modelo 55");
+                throw new InvalidArgumentException("O xml do DANFE deve ser uma NF-e modelo 55");
             }
         }
     }

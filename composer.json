@@ -19,7 +19,6 @@
     ],
     "require": {
         "php" : "~5.5|~7.0",
-        "nfephp-org/sped-common" : "^4.1",
         "nfephp-org/posprint": "^0.1",
         "zendframework/zend-barcode": "^2.6"
     },
@@ -43,7 +42,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.1-dev"
+            "dev-master": "0.1.x-dev"
         }
     },
     "minimum-stability": "dev"
