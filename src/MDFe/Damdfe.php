@@ -131,7 +131,7 @@ class Damdfe extends Common
             exit();
         }
         $docxml = file_get_contents($xmlfile);
-        $this->dom = new DomDocument;
+        $this->dom = new Dom;
         $this->dom->loadXML($docxml);
         $this->mdfeProc = $this->dom->getElementsByTagName("mdfeProc")->item(0);
         $this->infMDFe = $this->dom->getElementsByTagName("infMDFe")->item(0);
@@ -202,7 +202,7 @@ class Damdfe extends Common
      */
     private function buildMDFe()
     {
-        $this->pdf = new PdfNFePHP($this->orientacao, 'mm', $this->papel);
+        $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         if ($this->orientacao == 'P') {
             // margens do PDF
             $margSup = 7;
