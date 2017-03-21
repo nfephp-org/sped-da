@@ -744,7 +744,6 @@ class Damdfe extends Common
         } else {
             $texto = "";
         }
-        $texto = $this->rodo->getElementsByTagName("RNTRC")->item(0)->nodeValue;
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'');
         $this->pTextBox($x1, $y+4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
         $altura = $y + 4;
