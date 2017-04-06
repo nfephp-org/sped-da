@@ -16,12 +16,14 @@ namespace NFePHP\DA\NFe;
  */
 
 use Exception;
-use NFePHP\Common\Dom\Dom;
+use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
 
 class Dacce extends Common
 {
+    public $chNFe;
+    
     protected $logoAlign = 'C';
     protected $yDados = 0;
     protected $debugMode = 0;
@@ -42,7 +44,6 @@ class Dacce extends Common
     protected $wCanhoto;
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     protected $id;
-    protected $chNFe;
     protected $tpAmb;
     protected $cOrgao;
     protected $xCorrecao;
@@ -54,6 +55,7 @@ class Dacce extends Common
     protected $CPFDest = '';
     protected $dhRegEvento;
     protected $nProt;
+    
     private $dom;
     private $procEventoNFe;
     private $evento;
@@ -62,8 +64,7 @@ class Dacce extends Common
     private $retInfEvento;
 
     /**
-     * __construct
-     *
+     * Construtor recebe parametro pra impressao
      * @param string $docXML      Arquivo XML (diretório ou string)
      * @param string $sOrientacao (Opcional) Orientação da impressão P-retrato L-Paisagem
      * @param string $sPapel      Tamanho do papel (Ex. A4)
@@ -152,8 +153,7 @@ class Dacce extends Common
     }
 
     /**
-     * monta
-     *
+     * Monta o pdf
      * @param string $orientacao
      * @param string $papel
      * @param string $logoAlign
@@ -227,8 +227,7 @@ class Dacce extends Common
     }
 
     /**
-     * pHeader
-     *
+     * Monta o cabeçalho
      * @param  number $x
      * @param  number $y
      * @param  number $pag
@@ -417,8 +416,7 @@ class Dacce extends Common
     }
 
     /**
-     * pBody
-     *
+     * Monta o corpo da pagina
      * @param number $x
      * @param number $y
      */
@@ -470,8 +468,7 @@ class Dacce extends Common
     }
 
     /**
-     * pFooter
-     *
+     * Monta o rodapé
      * @param number $x
      * @param number $y
      */
@@ -506,8 +503,7 @@ class Dacce extends Common
     }
 
     /**
-     * printDocument
-     *
+     * Gera a saida
      * @param  string $nome
      * @param  string $destino
      * @param  string $printer
@@ -519,8 +515,7 @@ class Dacce extends Common
     }
 
     /**
-     * printDACCE
-     *
+     * Gera a saida
      * @param  string $nome
      * @param  string $destino
      * @param  string $printer
