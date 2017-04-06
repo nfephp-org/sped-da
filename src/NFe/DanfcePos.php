@@ -169,7 +169,8 @@ class DanfcePos
         $this->printer->text('CNPJ: '.$cnpj.'     '.'IE: ' . $ie);
         $this->printer->text('IM: '.$im);
         $this->printer->setAlign('L');
-        //o que acontece quando o texto é maior que o numero de carecteres da linha ??
+        //o que acontece quando o texto é maior que o numero de carecteres
+        //da linha ??
         $this->printer->text($log . ', ' . $nro . ' ' . $bairro . ' ' . $mun . ' ' . $uf);
         //linha divisória ??
     }
