@@ -16,12 +16,14 @@ namespace NFePHP\DA\CTe;
  */
 
 use Exception;
-use NFePHP\DA\Common\Dom;
+use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
 
 class Daevento extends Common
 {
+    public $chCTe;
+    
     protected $logoAlign = 'C';
     protected $yDados = 0;
     protected $debugMode = 0;
@@ -42,7 +44,6 @@ class Daevento extends Common
     protected $wCanhoto;
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     protected $id;
-    protected $chCTe;
     protected $tpAmb;
     protected $cOrgao;
     protected $xCorrecao;
@@ -56,6 +57,7 @@ class Daevento extends Common
     protected $dhRegEvento;
     protected $nProt;
     protected $tpEvento;
+
     private $dom;
     private $procEventoCTe;
     private $evento;

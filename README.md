@@ -10,7 +10,7 @@ Classes para geração dos documentos auxiliares usados pelos padrões Sped
  
 ## Versão : Alpha-dev, ainda sem classes funcionais, apenas estruturação do pacote
 
-#UNDER DEVELOPMENT (NOT FULLY READY)
+# UNDER DEVELOPMENT (NOT FULLY READY)
 
 [![Build Status][ico-travis]][link-travis]
 [![Coverage Status][ico-scrutinizer]][link-scrutinizer]
