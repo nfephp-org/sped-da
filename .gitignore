@@ -5,5 +5,4 @@ vendor
 nbproject
 build
 composer.lock
-docs
 config.json

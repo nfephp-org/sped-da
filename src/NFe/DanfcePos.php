@@ -133,7 +133,7 @@ class DanfcePos
     }
     
     /**
-     * Recupera a sequiencia de comandos para envio
+     * Recupera a sequencia de comandos para envio
      * posterior para a impressora por outro
      * meio como o QZ.io (tray)
      *
@@ -241,9 +241,10 @@ class DanfcePos
         $this->printer->text('FORMA PAGAMENTO          VALOR PAGO');
         $pag = $this->nfce->infNFe->pag;
         $tot = $pag->count();
-        for ($x=0; $x<=$tot-1; $x++) {
-            $tPag = $this->tipoPag((string) $pag[$x]->tPag);
-            $vPag = (float) $pag[$x]->vPag;
+        foreach ($pag as $pg) {
+            $std = json_decode(json_encode($pg));
+            $tPag = (string) $this->tipoPag($std->tPag);
+            $vPag = (float) $std->vPag;
             $this->printer->text($tPag . '                  R$ '. $vPag);
         }
         //linha divisória ??
