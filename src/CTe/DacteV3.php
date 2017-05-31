@@ -244,7 +244,7 @@ class DacteV3 extends Common
             $this->tpCTe = $this->pSimpleGetValue($this->ide, "tpCTe");
             $this->protCTe = $this->dom->getElementsByTagName("protCTe")->item(0);
             //01-Rodoviário; //02-Aéreo; //03-Aquaviário; //04-Ferroviário;//05-Dutoviário
-            $this->modal = $this->pSimpleGetValue($this->ide, "modal");        
+            $this->modal = $this->pSimpleGetValue($this->ide, "modal");
         }
     }
 
@@ -414,7 +414,7 @@ class DacteV3 extends Common
             $x = $xInic;
             $r = $this->zDocOrig($x, $y);
             if ($this->modal == '1') {
-                if ($this->lota == 1) {                    
+                if ($this->lota == 1) {
                     //$y += 24.95;
                     $y += 35;
                 } else {
@@ -722,14 +722,13 @@ class DacteV3 extends Common
         $this->pdf->Line($x, $y1 + 8, $w + 3, $y1 + 8);
         $toma = $this->pSimpleGetValue($this->ide, "indGlobalizado");
         //0-Remetente;1-Expedidor;2-Recebedor;3-Destinatário;4 - Outros
-        if($toma==1){
+        if ($toma==1) {
             $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 11,
             'style' => '');
             $this->pTextBox($x-14.5, $y2 + 3.5, $w * 0.5, $h1, 'X', $aFont, 'T', 'C', 0, '', false);
-        }
-        else {
+        } else {
             $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 11,
@@ -788,7 +787,7 @@ class DacteV3 extends Common
             'font' => $this->fontePadrao,
             'size' => 8,
             'style' => '');
-        $this->pTextBox($x1, $y + 1, $w, $h, $texto, $aFont, 'T', 'C', 0, '');        
+        $this->pTextBox($x1, $y + 1, $w, $h, $texto, $aFont, 'T', 'C', 0, '');
         switch ($this->modal) {
             case '1':
                 $texto = 'Rodoviário';
@@ -1754,7 +1753,7 @@ class DacteV3 extends Common
             3,
             ",",
             "."
-        );  
+        );
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
@@ -2138,7 +2137,7 @@ class DacteV3 extends Common
         $w = $maxW;
         
         // SE FOR RODOVIARIO ( BTR-SEMPRE SERÁ )
-        if ($this->modal == '1') {            
+        if ($this->modal == '1') {
             // 0 - Não; 1 - Sim Será lotação quando houver um único conhecimento de transporte por veículo,
             // ou combinação veicular, e por viagem
             $h = $this->lota == 1 ? 35 : 53;
@@ -2176,11 +2175,11 @@ class DacteV3 extends Common
             if ($this->lota == 1) {
                 $this->pdf->Line($x, $y, $x, $y + 31.5); // TESTE
             } else {
-                $this->pdf->Line($x, $y, $x, $y + 49.5); // TESTE                
+                $this->pdf->Line($x, $y, $x, $y + 49.5); // TESTE
             }
         } elseif ($this->modal == '3') {
             $this->pdf->Line($x, $y, $x, $y + 34.1);
-        } else {            
+        } else {
             $this->pdf->Line($x, $y, $x, $y + 21.5);
         }
         $texto = $descr1;
@@ -2241,11 +2240,13 @@ class DacteV3 extends Common
         } else {
             $totPag = '1';
         }
-        $totPag = count($this->arrayNFe) >15 ? '2' : '1';        
+        $totPag = count($this->arrayNFe) >15 ? '2' : '1';
         $r = $this->zCabecalho(1, 1, '1', $totPag);
         $contador = 0;
-        while ($contador < count($this->arrayNFe) ) {
-            if( $contador == 15){ break; }
+        while ($contador < count($this->arrayNFe)) {
+            if ($contador == 15) {
+                break;
+            }
             $tp = 'NF-e';
             $chaveNFe = $this->arrayNFe[$contador];
             $numNFe = substr($chaveNFe, 25, 9);
@@ -2536,7 +2537,7 @@ class DacteV3 extends Common
             'size' => 7.5,
             'style' => '');
         $this->pTextBox($x, $y, $w, $h, $textoObs[0], $aFont, 'T', 'L', 0, '', false);
-        $this->pTextBox($x, $y+11.5, $w, $h,$textoObs[1] , $aFont, 'T', 'L', 0, '', false);
+        $this->pTextBox($x, $y+11.5, $w, $h, $textoObs[1], $aFont, 'T', 'L', 0, '', false);
     } //fim da função obsDACTE
 
     /**
@@ -2604,7 +2605,6 @@ class DacteV3 extends Common
         $texto = 'ESTE CONHECIMENTO DE TRANSPORTE ATENDE À LEGISLAÇÃO DE TRANSPORTE RODOVIÁRIO EM VIGOR';
         $aFont = $this->formatPadrao;
         $this->pTextBox($x-20, $y + 3, $w * 0.50, $h, $texto, $aFont, 'T', 'C', 0, '');
-        
     } //fim da função zModalRod
 
     /**
@@ -3305,7 +3305,7 @@ class DacteV3 extends Common
      * @return string
      */
     protected function zFormatFone($field)
-    {   
+    {
         try {
             $fone = !empty($field->getElementsByTagName("fone")->item(0)->nodeValue) ?
             $field->getElementsByTagName("fone")->item(0)->nodeValue : '';
@@ -3321,7 +3321,6 @@ class DacteV3 extends Common
         } catch (Exception $exc) {
             return '';
         }
-        
     } //fim formatFone
 
     /**
