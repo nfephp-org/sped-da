@@ -133,7 +133,7 @@ class DanfcePos
     }
     
     /**
-     * Recupera a sequiencia de comandos para envio
+     * Recupera a sequencia de comandos para envio
      * posterior para a impressora por outro
      * meio como o QZ.io (tray)
      *
@@ -169,7 +169,8 @@ class DanfcePos
         $this->printer->text('CNPJ: '.$cnpj.'     '.'IE: ' . $ie);
         $this->printer->text('IM: '.$im);
         $this->printer->setAlign('L');
-        //o que acontece quando o texto é maior que o numero de carecteres da linha ??
+        //o que acontece quando o texto é maior que o numero de carecteres
+        //da linha ??
         $this->printer->text($log . ', ' . $nro . ' ' . $bairro . ' ' . $mun . ' ' . $uf);
         //linha divisória ??
     }
@@ -240,9 +241,10 @@ class DanfcePos
         $this->printer->text('FORMA PAGAMENTO          VALOR PAGO');
         $pag = $this->nfce->infNFe->pag;
         $tot = $pag->count();
-        for ($x=0; $x<=$tot-1; $x++) {
-            $tPag = (string) $this->tipoPag($pag[0]->tPag);
-            $vPag = (float) $pag[0]->vPag;
+        foreach ($pag as $pg) {
+            $std = json_decode(json_encode($pg));
+            $tPag = (string) $this->tipoPag($std->tPag);
+            $vPag = (float) $std->vPag;
             $this->printer->text($tPag . '                  R$ '. $vPag);
         }
         //linha divisória ??

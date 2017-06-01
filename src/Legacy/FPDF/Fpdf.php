@@ -2,8 +2,6 @@
 
 namespace NFePHP\DA\Legacy\FPDF;
 
-use Exception;
-
 class Fpdf
 {
     const FPDF_VERSION = '1.6';
@@ -288,7 +286,7 @@ class Fpdf
 
     public function error($msg)
     {
-        throw Exception($msg);
+        throw new \Exception($msg);
     }
 
     public function open()

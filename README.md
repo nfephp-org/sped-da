@@ -8,9 +8,7 @@ Classes para geração dos documentos auxiliares usados pelos padrões Sped
 > Serão retiradas das classes todas os recursos considerados como não "pertencentes" ao escopo das mesmas e não serão mais aceitas inclusões de métodos referentes a particuliaridades de qualuqer sistema.
 > Estas classes devem ser e permanecer o tão genéricas quanto possivel.
  
-## Versão : Alpha-dev, ainda sem classes funcionais, apenas estruturação do pacote
-
-#UNDER DEVELOPMENT (NOT FULLY READY)
+# UNDER DEVELOPMENT (NOT FULLY READY)
 
 [![Build Status][ico-travis]][link-travis]
 [![Coverage Status][ico-scrutinizer]][link-scrutinizer]
@@ -28,9 +26,9 @@ Classes para geração dos documentos auxiliares usados pelos padrões Sped
 # Orientação
 Abaixo seguem as orientações gerais para desenvolvedores que desejarem contribuir para a construção e melhoria dos códigos.
 
->Uma novo projeto oriundo do TCPDF está em desenvolvimento por Nicola Azuni. Este novo projeto é uma evolução do TCPDF e está sendo estruturado de acordo com as práticas mais atuais do PHP.
+> Uma novo projeto oriundo do TCPDF está em desenvolvimento por Nicola Azuni. Este novo projeto é uma evolução do TCPDF e está sendo estruturado de acordo com as práticas mais atuais do PHP.
 
->Dito isso, estas classes do sped-da, que são legadas do projeto NFePHP, deverão ser refatoradas, assim que esse novo projeto [tc-lib-pdf](https://github.com/tecnickcom/tc-lib-pdf) estiver em uma versão usável.
+> Dito isso, estas classes do sped-da, que são legadas do projeto NFePHP, deverão ser refatoradas, assim que esse novo projeto [tc-lib-pdf](https://github.com/tecnickcom/tc-lib-pdf) estiver em uma versão usável.
 
 ## Estrutura das classes
 
