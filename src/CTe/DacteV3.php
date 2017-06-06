@@ -1815,7 +1815,7 @@ class DacteV3 extends Common
         $qCarga = '';
         if ($this->pSimpleGetValue($this->infQ->item(2), "cUnid") == 03) {
             $qCarga = $this->pSimpleGetValue($this->infQ->item(2), "qCarga");
-        } elseif($this->pSimpleGetValue($this->infQ->item(1), "cUnid") == 03) {
+        } elseif ($this->pSimpleGetValue($this->infQ->item(1), "cUnid") == 03) {
             $qCarga = $this->pSimpleGetValue($this->infQ->item(1), "qCarga");
         }
         $texto = !empty($qCarga) ? number_format($qCarga, 3, ",", ".") : '';
