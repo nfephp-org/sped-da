@@ -738,7 +738,12 @@ class Damdfe extends Common
         $texto = 'RNTRC';
         $aFont = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'');
         $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-        $texto = $this->rodo->getElementsByTagName("RNTRC")->item(0)->nodeValue;
+        // RNTRC Não informado
+        if ($this->rodo->getElementsByTagName("RNTRC")->length > 0) {
+            $texto = $this->rodo->getElementsByTagName("RNTRC")->item(0)->nodeValue;
+        } else {
+            $texto = "";
+        }
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'');
         $this->pTextBox($x1, $y+4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
         $altura = $y + 4;
