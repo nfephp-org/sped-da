@@ -2,13 +2,9 @@
 
 Classes para geração dos documentos auxiliares usados pelos padrões Sped
 
-> NOTA: Este repositório contêm as classes "LEGADAS", para criação dos PDF's do projeto original NFePHP.
-> Porém essas classes foram ajustadas e alguns recursos estarão ausentes ou pelo menos diferentes das suas contrapartes originais.
+> NOTA: Este repositório é para desenvolvimento usando as novas bibliotecas do TCPDF.
 
-> Serão retiradas das classes todas os recursos considerados como não "pertencentes" ao escopo das mesmas e não serão mais aceitas inclusões de métodos referentes a particuliaridades de qualuqer sistema.
-> Estas classes devem ser e permanecer o tão genéricas quanto possivel.
- 
-# UNDER DEVELOPMENT (NOT FULLY READY)
+# UNDER DEVELOPMENT 
 
 [![Build Status][ico-travis]][link-travis]
 [![Coverage Status][ico-scrutinizer]][link-scrutinizer]
@@ -26,9 +22,6 @@ Classes para geração dos documentos auxiliares usados pelos padrões Sped
 # Orientação
 Abaixo seguem as orientações gerais para desenvolvedores que desejarem contribuir para a construção e melhoria dos códigos.
 
-> Uma novo projeto oriundo do TCPDF está em desenvolvimento por Nicola Azuni. Este novo projeto é uma evolução do TCPDF e está sendo estruturado de acordo com as práticas mais atuais do PHP.
-
-> Dito isso, estas classes do sped-da, que são legadas do projeto NFePHP, deverão ser refatoradas, assim que esse novo projeto [tc-lib-pdf](https://github.com/tecnickcom/tc-lib-pdf) estiver em uma versão usável.
 
 ## Estrutura das classes
 
@@ -46,7 +39,6 @@ Para a geração dos documentos auxiliares devem feitas as seguintes consideraç
 * No caso especifico da NFC-e (Nota fiscal do consumidor) existe um outro pacote que poderá vir a ser usado, trata-se do [*"posprint"*](https://github.com/nfephp-org/posprint) devido ao fato desse documento auxiliar normalmente ser impresso em impressoras térmicas POS, que não trabalham adequadamente com PDF e devem receber os dados em sua pópria linguagem (RAW data). Dessa forma o pacote *"posprint"* poderá tornar-se ser uma das dependências desse pacote.
 * Para a conversão dos dados em PDF é necessário o uso de uma biblioteca que seja ativamente mantida, usada por um grande contingênte de programadores e que atenda minimamente os PSR. Uma grande atenção deve ser dedicada a esse ponto pois com a inclusão do PHP7 podem surgir problemas de incompatibilidade com bibliotecas que não sejam mantidas atualizadas.
 
-[DANFE](DANFE.md) 
 
 [ico-stars]: https://img.shields.io/github/stars/nfephp-org/sped-nfe.svg?style=flat-square
 [ico-forks]: https://img.shields.io/github/forks/nfephp-org/sped-da.svg?style=flat-square

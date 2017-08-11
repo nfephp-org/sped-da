@@ -10,7 +10,7 @@
          processIsolation="false"
          stopOnFailure="false">
     <testsuites>
-        <testsuite name="Sped-Da Test Suite">
+        <testsuite name="sped-da Test Suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
