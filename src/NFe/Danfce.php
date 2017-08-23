@@ -19,6 +19,7 @@ use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
 use Endroid\QrCode\QrCode;
+use DateTime;
 
 class Danfce extends Common
 {
@@ -88,7 +89,7 @@ class Danfce extends Common
             $this->fontePadrao = $fonteDANFE;
         }
         if (!empty($this->xml)) {
-            $this->dom = new DomDocumentNFePHP();
+            $this->dom = new Dom();
             $this->dom->loadXML($this->xml);
             $this->nfeProc    = $this->dom->getElementsByTagName("nfeProc")->item(0);
             $this->nfe        = $this->dom->getElementsByTagName("NFe")->item(0);
@@ -131,7 +132,7 @@ class Danfce extends Common
         $hMaxLinha = $this->hMaxLinha;
         $hBoxLinha = $this->hBoxLinha;
         $hLinha = $this->hLinha;
-        $tamPapelVert = 160 + (($qtdItens-1)*$hMaxLinha) + ($qtdPgto*$hLinha);
+        $tamPapelVert = 160 +16+ (($qtdItens-1)*$hMaxLinha) + ($qtdPgto*$hLinha);
         //se a orientação estiver em branco utilizar o padrão estabelecido na NF
         if ($orientacao == '') {
             $orientacao = 'P';
@@ -145,7 +146,7 @@ class Danfce extends Common
         if ($classPdf) {
             $this->pdf = $classPdf;
         } else {
-            $this->pdf = new PdfNFePHP($this->orientacao, 'mm', $this->papel);
+            $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         }
         //margens do PDF, em milímetros. Obs.: a margem direita é sempre igual à
         //margem esquerda. A margem inferior *não* existe na FPDF, é definida aqui
@@ -272,7 +273,7 @@ class Danfce extends Common
         } else {
             $xRs = $margemInterna;
             $wRs = ($maxW*1);
-            $alignEmit = 'C';
+            $alignEmit = 'L';
         }
         //COLOCA RAZÃO SOCIAL
         $texto = $emitRazao;
@@ -507,6 +508,7 @@ class Danfce extends Common
     
     protected function pPagamentosDANFE($x = 0, $y = 0, $h = 0)
     {
+        $y += 4;
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
         $qtdPgto = $this->pag->length;
@@ -568,6 +570,7 @@ class Danfce extends Common
     
     protected function pFiscalDANFE($x = 0, $y = 0, $h = 0)
     {
+        $y += 4;
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
         $w = ($maxW*1);
@@ -602,6 +605,7 @@ class Danfce extends Common
     
     protected function pConsumidorDANFE($x = 0, $y = 0, $h = 0)
     {
+        $y += 4;
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
         $w = ($maxW*1);
@@ -633,11 +637,36 @@ class Danfce extends Common
             $considEstrangeiro = $this->pSimpleGetValue($this->dest, "idEstrangeiro");
             $consCPF = $this->pSimpleGetValue($this->dest, "CPF");
             $consCNPJ = $this->pSimpleGetValue($this->dest, "CNPJ");
-            $consDoc = $consCPF.$consCNPJ.$considEstrangeiro; //documentos do consumidor
+            $consDoc = "";
+            if (!empty($consCNPJ)) {
+                $consDoc = "CNPJ: $consCNPJ";
+            } elseif (!empty($consCPF)) {
+                $consDoc = "CPF: $consCPF";
+            } elseif (!empty($considEstrangeiro)) {
+                $consDoc = "id: $considEstrangeiro";
+            }
+            $consEnd = "";
+            if (!empty($consLgr)) {
+                $consEnd = $consLgr 
+                    . ","
+                    . $consNro
+                    . " "
+                    . $consCpl
+                    . ","
+                    . $consBairro
+                    . ". CEP:"
+                    . $consCEP
+                    . ". "
+                    . $consMun
+                    . "-"
+                    . $consUF;
+            }
             $yTex1 = $y + $hLinha;
-            $texto = $consNome ." - ". $consDoc . "\n" . $consLgr . "," . $consNro . " "
-                    . $consCpl . "," . $consBairro . ". CEP:" . $consCEP . ". " . $consMun . "-" . $consUF;
-            $this->pTextBox($x, $yTex1, $w, $hLinha*3, $texto, $aFontTex, 'C', 'C', 0, '', false);
+            $texto = $consNome;
+            if (!empty($consDoc)) {
+                $texto .= " - ". $consDoc . "\n" . $consEnd;
+                $this->pTextBox($x, $yTex1, $w, $hLinha*3, $texto, $aFontTex, 'C', 'C', 0, '', false);
+            }    
         } else {
             $yTex1 = $y + $hLinha;
             $texto = "Consumidor não identificado";
@@ -647,6 +676,7 @@ class Danfce extends Common
     
     protected function pQRDANFE($x = 0, $y = 0, $h = 0)
     {
+        $y += 4;
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
         $w = ($maxW*1);
@@ -665,10 +695,14 @@ class Danfce extends Common
         $hQr = 50;
         $yQr = ($y+$margemInterna);
         $xQr = ($w/2) - ($wQr/2);
-        $qrcode->displayFPDF($this->pdf, $xQr, $yQr, $wQr);
+        // prepare a base64 encoded "data url"
+        $pic = 'data://text/plain;base64,' . base64_encode($qrcode->writeString());
+        $info = getimagesize($pic);
+        $this->pdf->image($pic, $xQr, $yQr, $wQr, $hQr, 'PNG');
+        $dt = new DateTime($dhRecbto);
         $yQr = ($yQr+$hQr+$margemInterna);
         $this->pTextBox($x, $yQr, $w, $hBoxLinha, "Protocolo de Autorização: " . $nProt . "\n"
-                . $dhRecbto, $aFontTex, 'C', 'C', 0, '', false);
+            . $dt->format('d/m/Y H:i:s'), $aFontTex, 'C', 'C', 0, '', false);
     }
    
     /**
