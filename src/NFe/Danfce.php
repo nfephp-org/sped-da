@@ -647,7 +647,7 @@ class Danfce extends Common
             }
             $consEnd = "";
             if (!empty($consLgr)) {
-                $consEnd = $consLgr 
+                $consEnd = $consLgr
                     . ","
                     . $consNro
                     . " "
@@ -666,7 +666,7 @@ class Danfce extends Common
             if (!empty($consDoc)) {
                 $texto .= " - ". $consDoc . "\n" . $consEnd;
                 $this->pTextBox($x, $yTex1, $w, $hLinha*3, $texto, $aFontTex, 'C', 'C', 0, '', false);
-            }    
+            }
         } else {
             $yTex1 = $y + $hLinha;
             $texto = "Consumidor não identificado";
