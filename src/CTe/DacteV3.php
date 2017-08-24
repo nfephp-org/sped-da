@@ -91,6 +91,7 @@ class DacteV3 extends Common
     protected $siteDesenvolvedor;
     protected $nomeDesenvolvedor;
     protected $totPag;
+    protected $idDocAntEle = [];
 
     /**
      * __construct
@@ -190,7 +191,13 @@ class DacteV3 extends Common
             $this->ICMS = $this->dom->getElementsByTagName("ICMS")->item(0);
             $this->ICMSSN = $this->dom->getElementsByTagName("ICMSSN")->item(0);
             $this->imp = $this->dom->getElementsByTagName("imp")->item(0);
-            $textoAdic = number_format($this->pSimpleGetValue($this->imp, "vTotTrib"), 2, ",", ".");
+
+            $vTrib = $this->pSimpleGetValue($this->imp, "vTotTrib");
+            if (!is_numeric($vTrib)) {
+                $vTrib = 0;
+            }
+            $textoAdic = number_format($vTrib, 2, ",", ".");
+
             $this->textoAdic = "o valor aproximado de tributos incidentes sobre o preço deste serviço é de R$"
                     .$textoAdic;
             $this->toma4 = $this->dom->getElementsByTagName("toma4")->item(0);
@@ -1206,13 +1213,13 @@ class DacteV3 extends Common
             'font' => $this->fontePadrao,
             'size' => 6,
             'style' => '');
-        $this->pTextBox($x, $y, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = 'Desenvolvido por '.$this->nomeDesenvolvedor . ' - '. $this->siteDesenvolvedor;
+        $this->pTextBox($x-1, $y+2, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
+        $texto = $this->nomeDesenvolvedor . ' - '. $this->siteDesenvolvedor;
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 6,
             'style' => '');
-        $this->pTextBox($x, $y, $w, 4, $texto, $aFont, 'T', 'R', 0, $this->siteDesenvolvedor);
+        $this->pTextBox($x-50, $y+2, $w, 4, $texto, $aFont, 'T', 'R', 0, $this->siteDesenvolvedor);
     } //fim zRodape
 
     /**
