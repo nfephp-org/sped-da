@@ -1708,7 +1708,6 @@ class DacteOSV3 extends Common
         $aFont = $this->formatNegrito;
         $this->pTextBox($x, $y, $w * $wCol02, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x += $w * $wCol02;
-
     } //fim da função zSeguro
 
     /**
@@ -1789,7 +1788,8 @@ class DacteOSV3 extends Common
 
         $texto = !empty($this->pSimpleGetValue($this->veic->item(0), "CPF")) ?
             $this->pSimpleGetValue($this->veic->item(0), "CPF") :
-            (!empty($this->pSimpleGetValue($this->veic->item(0), "CNPJ")) ? $this->pSimpleGetValue($this->veic->item(0), "CNPJ") : '' );
+            (!empty($this->pSimpleGetValue($this->veic->item(0), "CNPJ")) ? 
+             $this->pSimpleGetValue($this->veic->item(0), "CNPJ") : '' );
         $aFont = $this->formatNegrito;
         $this->pTextBox($x, $y, $w * $wCol02, $h, $texto, $aFont, 'T', 'L', 0, '');
 
