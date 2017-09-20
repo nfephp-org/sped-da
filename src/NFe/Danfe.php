@@ -1267,11 +1267,22 @@ class Danfe extends Common
         //CNPJ
         $x += $w;
         $w = ($maxW-(2*$w));
-        $texto = 'CNPJ';
+        $texto = 'CNPJ / CPF';
         $aFont = array('font'=>$this->fontePadrao, 'size'=>6, 'style'=>'');
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
-        $texto = $this->emit->getElementsByTagName("CNPJ")->item(0)->nodeValue;
-        $texto = $this->pFormat($texto, "##.###.###/####-##");
+        //Pegando valor do CPF/CNPJ
+        if (! empty($this->emit->getElementsByTagName("CNPJ")->item(0)->nodeValue)) {
+            $texto = $this->pFormat(
+                $this->emit->getElementsByTagName("CNPJ")->item(0)->nodeValue,
+                "###.###.###/####-##"
+            );
+        } else {
+            $texto = ! empty($this->emit->getElementsByTagName("CPF")->item(0)->nodeValue) ?
+                $this->pFormat(
+                    $this->emit->getElementsByTagName("CPF")->item(0)->nodeValue,
+                    "###.###.###-##"
+                ) : '';
+        }
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B');
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'B', 'C', 0, '');
 
