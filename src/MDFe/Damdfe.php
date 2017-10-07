@@ -82,8 +82,7 @@ class Damdfe extends Common
         $sDestino = 'I',
         $sDirPDF = '',
         $fontePDF = '',
-        $mododebug = 2
-    )
+        $mododebug = 2)
     {
         //define o caminho base da instalação do sistema
         if (!defined('PATH_ROOT')) {
