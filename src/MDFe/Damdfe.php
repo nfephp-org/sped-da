@@ -878,18 +878,19 @@ class Damdfe extends Common
         } else {
             $file = $this->pdfDir.$nome;
         }
-        if (($destino != 'I' || $destino != 'S') && $destino != 'F') {
+        if ($destino != 'I' && $destino != 'S' && $destino != 'F') {
             $destino = 'I';
         }
         if ($printer != '') {
             $command = "-P $printer";
         }
+
         $this->buildMDFe();
         $arq = $this->pdf->Output($file, $destino);
-        if ($destino == 'S') {
+        if ($destino == 'S' && $command != '') {
             //aqui pode entrar a rotina de impressão direta
             $command = "lpr $command $file";
-            system($comando, $retorno);
+            system($command, $retorno);
         }
 
         return $arq;
