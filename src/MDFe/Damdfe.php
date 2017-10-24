@@ -185,7 +185,9 @@ class Damdfe extends Common
         if ($this->dom->getElementsByTagName("valePed")->item(0) != "") {
             $this->valePed = $this->dom->getElementsByTagName("valePed")->item(0)->getElementsByTagName("disp");
         }
-        $this->infCpl = $this->dom->getElementsByTagName("infCpl")->item(0)->nodeValue;
+        if (isset($this->infAdic)) {
+            $this->infCpl = $this->dom->getElementsByTagName("infCpl")->item(0)->nodeValue;
+        }
         $this->chMDFe = str_replace(
             'MDFe',
             '',
