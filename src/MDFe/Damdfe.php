@@ -855,8 +855,10 @@ class Damdfe extends Common
         $maxW = $this->wPrint;
         $x2 = $maxW;
         $this->pTextBox($x, $y, $x2, 30);
-        $texto = 'Observação
-        '.$this->infCpl;
+        $texto = 'Observação ';
+        if (isset($this->infAdic)) {
+            $texto .= $this->infCpl;
+        }
         $aFont = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'');
         $this->pTextBox($x, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
         $y = $this->hPrint -4;
