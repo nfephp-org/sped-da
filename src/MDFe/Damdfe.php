@@ -155,6 +155,7 @@ class Damdfe extends Common
         $this->UFFim = $this->dom->getElementsByTagName("UFFim")->item(0)->nodeValue;
         $this->nMDF = $this->dom->getElementsByTagName("nMDF")->item(0)->nodeValue;
         $this->tpEmis = $this->dom->getElementsByTagName("tpEmis")->item(0)->nodeValue;
+        $this->infAdic = $this->dom->getElementsByTagName("infAdic")->item(0);
         $this->tot = $this->dom->getElementsByTagName("tot")->item(0);
         $this->qNFe = "";
         if ($this->dom->getElementsByTagName("qNFe")->item(0) != "") {
