@@ -220,6 +220,16 @@ class Danfce extends Common
         $this->papel = $aPap;
     }
     
+    public function monta(
+        $orientacao = 'P',
+        $papel = '',
+        $logoAlign = 'C',
+        $classPdf = false,
+        $depecNumReg = ''
+    ) {
+        $this->montaDANFE($orientacao, $papel, $logoAlign, $classPdf, $depecNumReg);
+    }
+    
     public function montaDANFE(
         $orientacao = 'P',
         $papel = '',
@@ -832,6 +842,15 @@ class Danfce extends Common
             //aqui pode entrar a rotina de impressão direta
         }
         return $arq;
+    }
+
+    /**
+     * Dados brutos do PDF
+     * @return string
+     */
+    public function render()
+    {
+        return $this->pdf->getPdf();
     }
     
     /**
