@@ -205,7 +205,7 @@ class Danfce extends Common
 
             // se for o layout 4.0 busca pelas tags de detalhe do pagamento
             // senao, busca pelas tags de pagamento normal
-            if($this->infNFe->getAttribute("versao") == '4.00') {
+            if($this->infNFe->getAttribute("versao") == "4.00") {
                 $this->pag    = $this->dom->getElementsByTagName("detPag");
             }else {                
                 $this->pag    = $this->dom->getElementsByTagName("pag");
