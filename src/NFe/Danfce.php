@@ -50,7 +50,107 @@ class Danfce extends Common
     protected $hMaxLinha = 9;
     protected $hBoxLinha = 6;
     protected $hLinha = 3;
-    
+
+    /*
+     * Retorna a sigla da UF
+     * @var string
+     */
+    protected $UFSigla = [
+        '12' => 'AC',
+        '27' => 'AL',
+        '13' => 'AM',
+        '16' => 'AP',
+        '29' => 'BA',
+        '23' => 'CE',
+        '53' => 'DF',
+        '32' => 'ES',
+        '52' => 'GO',
+        '31' => 'MG',
+        '50' => 'MS',
+        '51' => 'MT',
+        '21' => 'MA',
+        '15' => 'PA',
+        '25' => 'PB',
+        '26' => 'PE',
+        '22' => 'PI',
+        '41' => 'PR',
+        '33' => 'RJ',
+        '11' => 'RO',
+        '24' => 'RN',
+        '14' => 'RR',
+        '43' => 'RS',
+        '42' => 'SC',
+        '28' => 'SE',
+        '35' => 'SP',
+        '17' => 'TO'
+    ];
+
+    /*
+     * Fonte: http://nfce.encat.org/consumidor/consulte-sua-nota/
+     * URL referente a pagina de consulta da NFCe pela chave de acesso
+     * @var string
+     */
+    protected $urlConsulta = [
+        '1' => [
+            'AC' => 'www.sefaznet.ac.gov.br/nfce/consulta',
+            'AL' => 'http://nfce.sefaz.al.gov.br/consultaNFCe.htm',
+            'AP' => 'https://www.sefaz.ap.gov.br/sate/seg/SEGf_AcessarFuncao.jsp?cdFuncao=FIS_1261',
+            'AM' => 'sistemas.sefaz.am.gov.br/nfceweb/formConsulta.do',
+            'BA' => 'nfe.sefaz.ba.gov.br/servicos/nfce/default.aspx',
+            'CE' => '',
+            'DF' => 'http://dec.fazenda.df.gov.br/NFCE/',
+            'ES' => 'http://app.sefaz.es.gov.br/ConsultaNFCe',
+            'GO' => '',
+            'MA' => 'http://www.nfce.sefaz.ma.gov.br/portal/consultaNFe.do?method=preFilterCupom&',
+            'MT' => 'http://www.sefaz.mt.gov.br/nfce/consultanfce',
+            'MS' => 'http://www.dfe.ms.gov.br/nfce',
+            'MG' => '',
+            'PA' => 'https://appnfc.sefa.pa.gov.br/portal/view/consultas/nfce/consultanfce.seam',
+            'PB' => 'www.receita.pb.gov.br/nfce',
+            'PR' => 'http://www.fazenda.pr.gov.br',
+            'PE' => '',
+            'PI' => 'http://webas.sefaz.pi.gov.br/nfceweb/consultarNFCe.jsf',
+            'RJ' => 'www.nfce.fazenda.rj.gov.br/consulta',
+            'RN' => 'http://nfce.set.rn.gov.br/consultarNFCe.aspx',
+            'RS' => 'https://www.sefaz.rs.gov.br/NFCE/NFCE-COM.aspx',
+            'RO' => 'http://www.nfce.sefin.ro.gov.br',
+            'RR' => 'https://www.sefaz.rr.gov.br/nfce/servlet/wp_consulta_nfce',
+            'SC' => '',
+            'SP' => 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx',
+            'SE' => 'http://www.nfce.se.gov.br/portal/portalNoticias.jsp',
+            'TO' => ''
+        ],
+        '2' => [
+            'AC' => 'http://hml.sefaznet.ac.gov.br/nfce/consulta',
+            'AL' => 'http://nfce.sefaz.al.gov.br/consultaNFCe.htm',
+            'AP' => 'https://www.sefaz.ap.gov.br/sate1/seg/SEGf_AcessarFuncao.jsp?cdFuncao=FIS_1261',
+            'AM' => 'homnfce.sefaz.am.gov.br/nfceweb/formConsulta.do',
+            'BA' => 'http://hnfe.sefaz.ba.gov.br/servicos/nfce/default.aspx',
+            'CE' => 'http://nfceh.sefaz.ce.gov.br/pages/consultaNota.jsf',
+            'DF' => 'http://dec.fazenda.df.gov.br/NFCE/',
+            'ES' => 'http://homologacao.sefaz.es.gov.br/ConsultaNFCe',
+            'GO' => '',
+            'MA' => 'http://www.hom.nfce.sefaz.ma.gov.br/portal/consultarNFCe.jsp',
+            'MT' => 'http://homologacao.sefaz.mt.gov.br/nfce/consultanfce',
+            'MS' => 'http://www.dfe.ms.gov.br/nfce',
+            'MG' => '',
+            'PA' => 'https://appnfc.sefa.pa.gov.br/portal-homologacao/view/consultas/nfce/consultanfce.seam',
+            'PB' => '',
+            'PR' => 'http://www.fazenda.pr.gov.br',
+            'PE' => '',
+            'PI' => 'http://webas.sefaz.pi.gov.br/nfceweb-homologacao/consultarNFCe.jsf',
+            'RJ' => 'www.nfce.fazenda.rj.gov.br/consulta',
+            'RN' => 'http://nfce.set.rn.gov.br/consultarNFCe.aspx',
+            'RS' => 'https://www.sefaz.rs.gov.br/NFCE/NFCE-COM.aspx',
+            'RO' => 'http://www.nfce.sefin.ro.gov.br',
+            'RR' => 'http://200.174.88.103:8080/nfce/servlet/wp_consulta_nfce',
+            'SC' => '',
+            'SP' => 'https://www.homologacao.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx',
+            'SE' => 'http://www.hom.nfe.se.gov.br/portal/portalNoticias.jsp',
+            'TO' => ''
+        ],
+    ];
+
     /**
      * __contruct
      *
@@ -120,6 +220,16 @@ class Danfce extends Common
         $this->papel = $aPap;
     }
     
+    public function monta(
+        $orientacao = 'P',
+        $papel = '',
+        $logoAlign = 'C',
+        $classPdf = false,
+        $depecNumReg = ''
+    ) {
+        $this->montaDANFE($orientacao, $papel, $logoAlign, $classPdf, $depecNumReg);
+    }
+    
     public function montaDANFE(
         $orientacao = 'P',
         $papel = '',
@@ -140,7 +250,7 @@ class Danfce extends Common
         $this->orientacao = $orientacao;
         $this->papel = array(80,$tamPapelVert);
         $this->logoAlign = $logoAlign;
-        $this->situacao_externa = $situacaoExterna;
+        //$this->situacao_externa = $situacaoExterna;
         $this->numero_registro_dpec = $depecNumReg;
         //instancia a classe pdf
         if ($classPdf) {
@@ -244,6 +354,7 @@ class Danfce extends Common
         if ($foneLen>0) {
             $ddd = substr($emitFone, 0, 2);
             $fone1 = substr($emitFone, -8);
+            $digito9 = ' ';
             if ($foneLen == 11) {
                 $digito9 = substr($emitFone, 2, 1);
             }
@@ -284,6 +395,7 @@ class Danfce extends Common
         }
         $texto = $texto . "\n" . $emitLgr . "," . $emitNro . " " . $emitCpl . "," . $emitBairro
                 . ". CEP:" . $emitCEP . ". " . $emitMun . "-" . $emitUF . $emitFone;
+        $aFont = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'');
         $this->pTextBox($xRs, $y, $wRs, $h, $texto, $aFont, 'C', $alignEmit, 0, '', false);
     }
     
@@ -470,6 +582,7 @@ class Danfce extends Common
         $vProd = $this->pSimpleGetValue($this->ICMSTot, "vProd");
         $vNF = $this->pSimpleGetValue($this->ICMSTot, "vNF");
         $vDesc  = $this->pSimpleGetValue($this->ICMSTot, "vDesc");
+        $vTotTrib = $this->pSimpleGetValue($this->ICMSTot, "vTotTrib");
         $texto = "Qtd. Total de Itens";
         $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
         $this->pTextBox($x, $y, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
@@ -546,7 +659,7 @@ class Danfce extends Common
                 $yBoxProd = $y + $hLinha + ($cont*$hLinha);
                 //COLOCA PRODUTO CÓDIGO
                 $texto = $tPagNome;
-                $this->pTextBox($x, $yBoxProd, $wBoxEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
+                $this->pTextBox($x, $yBoxProd, $wBoxEsq, $hLinha, $texto, $aFontPgto, 'T', 'L', 0, '', false);
                 //COLOCA PRODUTO DESCRIÇÃO
                 $xBoxDescricao = $wBoxEsq + $x;
                 $texto = "R$ " . $vPag;
@@ -556,7 +669,7 @@ class Danfce extends Common
                     $wBoxDir,
                     $hLinha,
                     $texto,
-                    $aFontProdutos,
+                    $aFontPgto,
                     'C',
                     'R',
                     0,
@@ -584,7 +697,7 @@ class Danfce extends Common
         $nNF = $this->pSimpleGetValue($this->ide, 'nNF');
         $serieNF = str_pad($this->pSimpleGetValue($this->ide, "serie"), 3, "0", STR_PAD_LEFT);
         $dhEmi = $this->pSimpleGetValue($this->ide, "dhEmi");
-        $urlChave = $this->urlConsulta[$tpAmb][$cUF]['chave'];
+        $urlChave = $this->urlConsulta[$tpAmb][$this->UFSigla[$cUF]];
         $texto = "ÁREA DE MENSAGEM FISCAL";
         $this->pTextBox($x, $y, $w, $hLinha, $texto, $aFontTit, 'C', 'C', 0, '', false);
         $yTex1 = $y + ($hLinha*1);
@@ -729,6 +842,15 @@ class Danfce extends Common
             //aqui pode entrar a rotina de impressão direta
         }
         return $arq;
+    }
+
+    /**
+     * Dados brutos do PDF
+     * @return string
+     */
+    public function render()
+    {
+        return $this->pdf->getPdf();
     }
     
     /**
