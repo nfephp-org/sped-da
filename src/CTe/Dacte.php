@@ -187,8 +187,8 @@ class Dacte extends Common
             if (!is_numeric($vTrib)) {
                 $vTrib = 0;
             }
-            $textoAdic = number_format($vTrib, 2, ",", ".");
 
+            $textoAdic = number_format($vTrib, 2, ",", ".");
             $this->textoAdic = "o valor aproximado de tributos incidentes sobre o preço deste serviço é de R$"
                     .$textoAdic;
             $this->toma4 = $this->dom->getElementsByTagName("toma4")->item(0);

@@ -15,6 +15,7 @@ namespace NFePHP\DA\MDFe;
  * @author    Leandro C. Lopez <leandro dot castoldi at gmail dot com>
  */
 
+
 use NFePHP\Common\Dom\Dom;
 use NFePHP\DA\Legacy\Common;
 use NFePHP\DA\Legacy\Pdf;
@@ -372,7 +373,7 @@ class Damdfe extends Common
         $aFont = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'I');
         $texto = 'PROTOCOLO DE AUTORIZACAO DE USO';
         $this->pTextBox($x, $y, $w, 8, $texto, $aFont, 'T', 'L', 0, '');
-        
+
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'');
         if (is_object($this->mdfeProc)) {
             $tsHora = $this->pConvertTime($this->dhRecbto);
@@ -586,7 +587,7 @@ class Damdfe extends Common
         }
         return $y+12;
     }// fim headerMDFe
-    
+
     /**
      * bodyMDFe
      *
@@ -904,4 +905,5 @@ class Damdfe extends Common
     {
         return $this->pdf->getPdf();
     }
+
 }
