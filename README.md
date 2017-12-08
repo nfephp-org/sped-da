@@ -46,7 +46,61 @@ Para a geração dos documentos auxiliares devem feitas as seguintes consideraç
 * No caso especifico da NFC-e (Nota fiscal do consumidor) existe um outro pacote que poderá vir a ser usado, trata-se do [*"posprint"*](https://github.com/nfephp-org/posprint) devido ao fato desse documento auxiliar normalmente ser impresso em impressoras térmicas POS, que não trabalham adequadamente com PDF e devem receber os dados em sua pópria linguagem (RAW data). Dessa forma o pacote *"posprint"* poderá tornar-se ser uma das dependências desse pacote.
 * Para a conversão dos dados em PDF é necessário o uso de uma biblioteca que seja ativamente mantida, usada por um grande contingênte de programadores e que atenda minimamente os PSR. Uma grande atenção deve ser dedicada a esse ponto pois com a inclusão do PHP7 podem surgir problemas de incompatibilidade com bibliotecas que não sejam mantidas atualizadas.
 
+## Contribuindo
+Este é um projeto totalmente *OpenSource*, para usa-lo e modifica-lo você não paga absolutamente nada. Porém para continuarmos a mante-lo é necessário qua alguma contribuição seja feita, seja auxiliando na codificação, na documentação ou na realização de testes e identificação de falhas e BUGs.
+
+**Este pacote esta listado no [Packgist](https://packagist.org/) foi desenvolvido para uso do [Composer](https://getcomposer.org/), portanto não será explicitada nenhuma alternativa de instalação.**
+
+*Durante a fase de desenvolvimento e testes este pacote deve ser instalado com:*
+```bash
+composer require nfephp-org/sped-da:dev-master
+```
+
+*Ou ainda alterando o composer.json do seu aplicativo inserindo:*
+```json
+"require": {
+    "nfephp-org/sped-da" : "dev-master"
+}
+```
+
+> NOTA: Ao utilizar este pacote ainda na fase de desenvolvimento não se esqueça de alterar o composer.json da sua aplicação para aceitar pacotes em desenvolvimento, alterando a propriedade "minimum-stability" de "stable" para "dev".
+> ```json
+> "minimum-stability": "dev"
+> ```
+
+*Os stable realeases estão disponíveis (mas com algumas classes ainda em desenvolvimento), pode ser instalado com:*
+```bash
+composer require nfephp-org/sped-da
+```
+Ou ainda alterando o composer.json do seu aplicativo inserindo:
+```json
+"require": {
+    "nfephp-org/sped-da" : "^0.1"
+}
+```
+
+## Forma de uso
 [DANFE](DANFE.md) 
+
+## Log de mudanças e versões
+Acompanhe o [CHANGELOG](CHANGELOG.md) para maiores informações sobre as alterações recentes.
+
+## Testing
+
+Todos os testes são desenvolvidos para operar com o PHPUNIT
+
+## Security
+
+Caso você encontre algum problema relativo a segurança, por favor envie um email diretamente aos mantenedores do pacote ao invés de abrir um ISSUE.
+
+## Credits
+
+Roberto L. Machado (owner and developer)
+
+## License
+
+Este pacote está diponibilizado sob LGPLv3 ou MIT License (MIT). Leia  [Arquivo de Licença](LICENSE.md) para maiores informações.
+
 
 [ico-stars]: https://img.shields.io/github/stars/nfephp-org/sped-nfe.svg?style=flat-square
 [ico-forks]: https://img.shields.io/github/forks/nfephp-org/sped-da.svg?style=flat-square
