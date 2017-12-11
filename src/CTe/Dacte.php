@@ -3523,9 +3523,9 @@ class Dacte extends Common
      */
     protected function zFormatFone($field)
     {
-        if(is_null($field))
+        if(is_null($field)) {
             return '';
-        
+        }
         $fone = !empty($field->getElementsByTagName("fone")->item(0)->nodeValue) ?
             $field->getElementsByTagName("fone")->item(0)->nodeValue : '';
         $foneLen = strlen($fone);
