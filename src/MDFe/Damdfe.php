@@ -15,7 +15,7 @@ namespace NFePHP\DA\MDFe;
  * @author    Leandro C. Lopez <leandro dot castoldi at gmail dot com>
  */
 
-use NFePHP\Common\Dom\Dom;
+use NFePHP\Common\DOMImproved as Dom;
 use NFePHP\DA\Legacy\Common;
 use NFePHP\DA\Legacy\Pdf;
 
