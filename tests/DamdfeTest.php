@@ -26,7 +26,7 @@ class DamdfeTest extends \PHPUnit_Framework_TestCase
         }
 
         $xmlFile = file_get_contents($pathXml);
-        $damdfe = new Damdfe($xmlFile, 'P', 'A4', '', 'F', $pathPdf, '', '2');
+        $damdfe = new Damdfe($xmlFile, 'P', 'A4', '', 'F', $pathPdf, '', '0');
         $damdfe->printMDFe($pdfName, 'F');
         Assert::assertFileExists($pathPdf . $pdfName);
     }
