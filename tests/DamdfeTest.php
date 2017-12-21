@@ -10,15 +10,15 @@ namespace NFePHP\DA\Tests;
 use NFePHP\DA\MDFe\Damdfe;
 use PHPUnit\Framework\Assert;
 
-class GeraDamdfeTest extends \PHPUnit_Framework_TestCase
+class DamdfeTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
      */
     public function imprimirDamdfe() {
-        $pathBase = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-        $pathXml =   $pathBase . 'xmls' . DIRECTORY_SEPARATOR . 'mdfe_modelo_nao_valido.xml';
-        $pathPdf =   $pathBase . 'pdfs' . DIRECTORY_SEPARATOR;
+        $pathBase = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR;
+        $pathXml =   $pathBase . 'xml' . DIRECTORY_SEPARATOR . 'mdfe_modelo_nao_valido.xml';
+        $pathPdf =   $pathBase . 'pdf' . DIRECTORY_SEPARATOR;
         $pdfName = 'mdfe_modelo_nao_valido.pdf';
 
         if (file_exists($pathPdf . $pdfName)) {
