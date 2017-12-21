@@ -19,6 +19,7 @@
     ],
     "require": {
         "php" : "~5.5|~7.0",
+        "nfephp-org/sped-common": "5.0.13",
         "nfephp-org/posprint": "^0.1",
         "zendframework/zend-barcode": "^2.6"
     },
