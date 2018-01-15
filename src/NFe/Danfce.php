@@ -199,10 +199,17 @@ class Danfce extends Common
             $this->enderEmit  = $this->dom->getElementsByTagName("enderEmit")->item(0);
             $this->det        = $this->dom->getElementsByTagName("det");
             $this->dest       = $this->dom->getElementsByTagName("dest")->item(0);
-            $this->pag        = $this->dom->getElementsByTagName("pag");
             $this->imposto    = $this->dom->getElementsByTagName("imposto")->item(0);
             $this->ICMSTot    = $this->dom->getElementsByTagName("ICMSTot")->item(0);
             $this->tpImp      = $this->ide->getElementsByTagName("tpImp")->item(0)->nodeValue;
+            
+            //se for o layout 4.0 busca pelas tags de detalhe do pagamento
+            //senao, busca pelas tags de pagamento principal
+            if ($this->infNFe->getAttribute("versao") == "4.00") {
+                $this->pag = $this->dom->getElementsByTagName("detPag");
+            } else {
+                $this->pag = $this->dom->getElementsByTagName("pag");
+            }
         }
         $this->qrCode = $this->dom->getElementsByTagName('qrCode')->item(0)->nodeValue;
         if ($this->pSimpleGetValue($this->ide, "mod") != '65') {
