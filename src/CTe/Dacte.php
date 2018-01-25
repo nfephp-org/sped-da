@@ -2932,7 +2932,7 @@ class Dacte extends Common
         $aFont = $this->formatPadrao;
         $this->pTextBox($x, $y, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
         if ($this->infNF->item(0) !== null 
-                && $this->infNF->item(0)->getElementsByTagName('infUnidCarga')->length > 0) {
+            && $this->infNF->item(0)->getElementsByTagName('infUnidCarga')->length > 0) {
             $texto = $this->infNF
                 ->item(0)
                 ->getElementsByTagName('infUnidCarga')
