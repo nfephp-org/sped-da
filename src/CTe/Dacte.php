@@ -1766,7 +1766,8 @@ class Dacte extends Common
             'style' => '');
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $texto = $this->pSimpleGetValue($this->infQ->item(1), "tpMed") . "\r\n";
-        $texto .= number_format(
+        $qCarga = $this->pSimpleGetValue($this->infQ->item(1), "qCarga");
+        $texto .= !empty($qCarga) ? number_format(
             $this->pSimpleGetValue(
                 $this->infQ->item(1),
                 "qCarga"
@@ -1777,7 +1778,7 @@ class Dacte extends Common
             3,
             ".",
             ""
-        );
+        ) : "";
         $texto = $this->pSimpleGetValue($this->infQ->item(1), "qCarga") == '' ? '' : $texto;
         $texto .= ' ' . $this->zUnidade($this->pSimpleGetValue($this->infQ->item(1), "cUnid"));
         $aFont = array(
