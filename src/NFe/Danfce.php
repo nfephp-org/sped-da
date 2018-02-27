@@ -1,5 +1,4 @@
 <?php
-
 namespace NFePHP\DA\NFe;
 
 /**
@@ -13,7 +12,6 @@ namespace NFePHP\DA\NFe;
  * @link      http://github.com/nfephp-org/sped-da for the canonical source repository
  * @author    Roberto Spadim <roberto at spadim dot com dot br>
  */
-
 use Exception;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
@@ -43,6 +41,8 @@ class Danfce extends Common
     protected $det;
     protected $pag;
     protected $dest;
+    protected $infAdic;
+    protected $textoAdic;
     protected $imgQRCode;
     protected $urlQR = '';
     protected $pdf;
@@ -50,7 +50,6 @@ class Danfce extends Common
     protected $hMaxLinha = 9;
     protected $hBoxLinha = 6;
     protected $hLinha = 3;
-
     /*
      * Retorna a sigla da UF
      * @var string
@@ -84,7 +83,6 @@ class Danfce extends Common
         '35' => 'SP',
         '17' => 'TO'
     ];
-
     /*
      * Fonte: http://nfce.encat.org/consumidor/consulte-sua-nota/
      * URL referente a pagina de consulta da NFCe pela chave de acesso
@@ -150,7 +148,6 @@ class Danfce extends Common
             'TO' => ''
         ],
     ];
-
     /**
      * __contruct
      *
@@ -202,6 +199,7 @@ class Danfce extends Common
             $this->imposto    = $this->dom->getElementsByTagName("imposto")->item(0);
             $this->ICMSTot    = $this->dom->getElementsByTagName("ICMSTot")->item(0);
             $this->tpImp      = $this->ide->getElementsByTagName("tpImp")->item(0)->nodeValue;
+            $this->infAdic    = $this->dom->getElementsByTagName("infAdic")->item(0);
             
             //se for o layout 4.0 busca pelas tags de detalhe do pagamento
             //senao, busca pelas tags de pagamento principal
@@ -244,27 +242,6 @@ class Danfce extends Common
         $classPdf = false,
         $depecNumReg = ''
     ) {
-        $qtdItens = $this->det->length;
-        $qtdPgto = $this->pag->length;
-        $hMaxLinha = $this->hMaxLinha;
-        $hBoxLinha = $this->hBoxLinha;
-        $hLinha = $this->hLinha;
-        $tamPapelVert = 160 +16+ (($qtdItens-1)*$hMaxLinha) + ($qtdPgto*$hLinha);
-        //se a orientação estiver em branco utilizar o padrão estabelecido na NF
-        if ($orientacao == '') {
-            $orientacao = 'P';
-        }
-        $this->orientacao = $orientacao;
-        $this->papel = array(80,$tamPapelVert);
-        $this->logoAlign = $logoAlign;
-        //$this->situacao_externa = $situacaoExterna;
-        $this->numero_registro_dpec = $depecNumReg;
-        //instancia a classe pdf
-        if ($classPdf) {
-            $this->pdf = $classPdf;
-        } else {
-            $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
-        }
         //margens do PDF, em milímetros. Obs.: a margem direita é sempre igual à
         //margem esquerda. A margem inferior *não* existe na FPDF, é definida aqui
         //apenas para controle se necessário ser maior do que a margem superior
@@ -274,25 +251,70 @@ class Danfce extends Common
         // posição inicial do conteúdo, a partir do canto superior esquerdo da página
         $xInic = $margEsq;
         $yInic = $margSup;
-        $maxW = 80;
-        $maxH = $tamPapelVert;
+        $maxW  = 80;
         //total inicial de paginas
         $totPag = 1;
         //largura imprimivel em mm: largura da folha menos as margens esq/direita
         $this->wPrint = $maxW-($margEsq*2);
+        
+        $qtdItens     = $this->det->length;
+        $qtdPgto      = $this->pag->length;
+        $hMaxLinha    = $this->hMaxLinha;
+        $hBoxLinha    = $this->hBoxLinha;
+        $hLinha       = $this->hLinha;
+        $tamPapelVert = 160 + 16 + (($qtdItens-1) * $hMaxLinha) + ($qtdPgto * $hLinha);
+
+        // verifica se existe informações adicionais
+        $this->textoAdic = '';
+        if (isset($this->infAdic)) {
+            $this->textoAdic .= !empty($this->infAdic->getElementsByTagName("infCpl")->item(0)->nodeValue) ?
+            'Inf. Contribuinte: ' .
+            trim($this->pAnfavea($this->infAdic->getElementsByTagName("infCpl")->item(0)->nodeValue)) : '';
+            
+            if (!empty($this->textoAdic)) {
+                $tempPDF = new Pdf(); // cria uma instancia temporaria da class pdf
+                $tempPDF->SetFont('Times', '', '8'); // seta a font do PDF
+                $linhasCount = $tempPDF->WordWrap($this->textoAdic, $this->wPrint);
+                // seta a quantidade de linhas que o texto vai ocupar
+                // e deixa uma folga para a margem bottom
+                $tamPapelVert += $linhasCount + ceil(2.9 * $linhasCount);
+            }
+        }
+        
+        // se a orientação estiver em branco utilizar o padrão estabelecido na NF
+        if ($orientacao == '') {
+            $orientacao = 'P';
+        }
+
+        $this->orientacao = $orientacao;
+        $this->papel = array($maxW, $tamPapelVert);
+        $this->logoAlign = $logoAlign;
+        //$this->situacao_externa = $situacaoExterna;
+        $this->numero_registro_dpec = $depecNumReg;
+        //instancia a classe pdf
+        if ($classPdf) {
+            $this->pdf = $classPdf;
+        } else {
+            $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
+        }
+        
+        // seta heigth do documento
+        $maxH = $tamPapelVert;
         //comprimento (altura) imprimivel em mm: altura da folha menos as margens
         //superior e inferior
         $this->hPrint = $maxH-$margSup-$margInf;
+        
         // estabelece contagem de paginas
         $this->pdf->aliasNbPages();
         $this->pdf->setMargins($margEsq, $margSup); // fixa as margens
         $this->pdf->setDrawColor(0, 0, 0);
         $this->pdf->setFillColor(255, 255, 255);
         $this->pdf->open(); // inicia o documento
-        $this->pdf->addPage($this->orientacao, $this->papel); // adiciona a primeira página
         $this->pdf->setLineWidth(0.1); // define a largura da linha
         $this->pdf->setTextColor(0, 0, 0);
+        $this->pdf->addPage($this->orientacao, $this->papel); // adiciona a primeira página
         $this->pTextBox(0, 0, $maxW, $maxH); // POR QUE PRECISO DESA LINHA?
+        
         $hcabecalho = 27;//para cabeçalho (dados emitente mais logomarca)  (FIXO)
         $hcabecalhoSecundario = 10;//para cabeçalho secundário (cabeçalho sefaz) (FIXO)
         $hprodutos = $hLinha + ($qtdItens*$hMaxLinha) ;//box poduto
@@ -312,6 +334,7 @@ class Danfce extends Common
         $totPag = 1;
         $pag = 1;
         $x = $xInic;
+        
         //COLOCA CABEÇALHO
         $y = $yInic;
         $y = $this->pCabecalhoDANFE($x, $y, $hcabecalho, $pag, $totPag);
@@ -337,6 +360,14 @@ class Danfce extends Common
         $y = $xInic + $hcabecalho + $hcabecalhoSecundario + $hprodutos
             + $hTotal + $hpagamentos + $hmsgfiscal + $hcliente;
         $y = $this->pQRDANFE($x, $y, $hQRCode);
+        
+        //adiciona as informações opcionais
+        if (!empty($this->textoAdic)) {
+            $y = $xInic + $hcabecalho + $hcabecalhoSecundario + $hprodutos
+            + $hTotal + $hpagamentos + $hmsgfiscal + $hcliente + $hQRCode;
+            $y = $this->pInfAdic($x, $y, $hInfAdic);
+        }
+        
         //retorna o ID na NFe
         if ($classPdf!==false) {
             $aR = [
@@ -826,6 +857,35 @@ class Danfce extends Common
     }
    
     /**
+     * Insere as informações adicionais ao PDF
+     * 
+     * @param number $x
+     * @param number $y
+     * @param number $h
+     */
+    protected function pInfAdic($x = 0, $y = 0, $h = 0)
+    {
+        $y += 17;
+        $margemInterna = $this->margemInterna;
+        $maxW = $this->wPrint;
+        $w = ($maxW * 1);
+        $hLinha = $this->hLinha;
+        $aFontTit = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
+        $aFontTex = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+        // seta o textbox do titulo
+        $texto = "INFORMAÇÃO ADICIONAL";
+        $heigthText = $this->pTextBox($x, $y, $w, $hLinha, $texto, $aFontTit, 'C', 'C', 0, '', false);
+        // atribui o text adicional
+        $texto = $this->textoAdic; 
+        // seta a quantidade de linhas que o texto vai ocupar
+        $linhasCount = $this->pdf->WordWrap($texto, $w) + 1;
+        // atribui a quantidade de linhas do texto adicional conforme o tamanho do texto
+        $y += $heigthText + $linhasCount + floor($linhasCount * 0.3);
+        // seta o textbox do texto adicional
+        $this->pTextBox($x, $y, $w, $hLinha, $texto, $aFontTex, 'C', 'L', 0, '', false);
+    }
+    
+    /**
      * printDANFE
      * Esta função envia a DANFE em PDF criada para o dispositivo informado.
      * O destino da impressão pode ser :
@@ -850,7 +910,7 @@ class Danfce extends Common
         }
         return $arq;
     }
-
+    
     /**
      * Dados brutos do PDF
      * @return string
@@ -858,6 +918,152 @@ class Danfce extends Common
     public function render()
     {
         return $this->pdf->getPdf();
+    }
+    
+    /**
+     * anfavea
+     * Função para transformar o campo cdata do padrão ANFAVEA para
+     * texto imprimível
+     *
+     * @param  string $cdata campo CDATA
+     * @return string conteúdo do campo CDATA como string
+     */
+    protected function pAnfavea($cdata = '')
+    {
+        if ($cdata == '') {
+            return '';
+        }
+        //remove qualquer texto antes ou depois da tag CDATA
+        $cdata = str_replace('<![CDATA[', '<CDATA>', $cdata);
+        $cdata = str_replace(']]>', '</CDATA>', $cdata);
+        $cdata = preg_replace('/\s\s+/', ' ', $cdata);
+        $cdata = str_replace("> <", "><", $cdata);
+        $len = strlen($cdata);
+        $startPos = strpos($cdata, '<');
+        if ($startPos === false) {
+            return $cdata;
+        }
+        for ($x=$len; $x>0; $x--) {
+            if (substr($cdata, $x, 1) == '>') {
+                $endPos = $x;
+                break;
+            }
+        }
+        if ($startPos > 0) {
+            $parte1 = substr($cdata, 0, $startPos);
+        } else {
+            $parte1 = '';
+        }
+        $parte2 = substr($cdata, $startPos, $endPos-$startPos+1);
+        if ($endPos < $len) {
+            $parte3 = substr($cdata, $endPos + 1, $len - $endPos - 1);
+        } else {
+            $parte3 = '';
+        }
+        $texto = trim($parte1).' '.trim($parte3);
+        if (strpos($parte2, '<CDATA>') === false) {
+            $cdata = '<CDATA>'.$parte2.'</CDATA>';
+        } else {
+            $cdata = $parte2;
+        }
+        //carrega o xml CDATA em um objeto DOM
+        $dom = new Dom();
+        $dom->loadXML($cdata, LIBXML_NOBLANKS | LIBXML_NOEMPTYTAG);
+        //$xml = $dom->saveXML();
+        //grupo CDATA infADprod
+        $id = $dom->getElementsByTagName('id')->item(0);
+        $div = $dom->getElementsByTagName('div')->item(0);
+        $entg = $dom->getElementsByTagName('entg')->item(0);
+        $dest = $dom->getElementsByTagName('dest')->item(0);
+        $ctl = $dom->getElementsByTagName('ctl')->item(0);
+        $ref = $dom->getElementsByTagName('ref')->item(0);
+        if (isset($id)) {
+            if ($id->hasAttributes()) {
+                foreach ($id->attributes as $attr) {
+                    $name = $attr->nodeName;
+                    $value = $attr->nodeValue;
+                    $texto .= " $name : $value";
+                }
+            }
+        }
+        if (isset($div)) {
+            if ($div->hasAttributes()) {
+                foreach ($div->attributes as $attr) {
+                    $name = $attr->nodeName;
+                    $value = $attr->nodeValue;
+                    $texto .= " $name : $value";
+                }
+            }
+        }
+        if (isset($entg)) {
+            if ($entg->hasAttributes()) {
+                foreach ($entg->attributes as $attr) {
+                    $name = $attr->nodeName;
+                    $value = $attr->nodeValue;
+                    $texto .= " $name : $value";
+                }
+            }
+        }
+        if (isset($dest)) {
+            if ($dest->hasAttributes()) {
+                foreach ($dest->attributes as $attr) {
+                    $name = $attr->nodeName;
+                    $value = $attr->nodeValue;
+                    $texto .= " $name : $value";
+                }
+            }
+        }
+        if (isset($ctl)) {
+            if ($ctl->hasAttributes()) {
+                foreach ($ctl->attributes as $attr) {
+                    $name = $attr->nodeName;
+                    $value = $attr->nodeValue;
+                    $texto .= " $name : $value";
+                }
+            }
+        }
+        if (isset($ref)) {
+            if ($ref->hasAttributes()) {
+                foreach ($ref->attributes as $attr) {
+                    $name = $attr->nodeName;
+                    $value = $attr->nodeValue;
+                    $texto .= " $name : $value";
+                }
+            }
+        }
+        //grupo CADATA infCpl
+        $t = $dom->getElementsByTagName('transmissor')->item(0);
+        $r = $dom->getElementsByTagName('receptor')->item(0);
+        $versao = ! empty($dom->getElementsByTagName('versao')->item(0)->nodeValue) ?
+        'Versao:'.$dom->getElementsByTagName('versao')->item(0)->nodeValue.' ' : '';
+        $especieNF = ! empty($dom->getElementsByTagName('especieNF')->item(0)->nodeValue) ?
+        'Especie:'.$dom->getElementsByTagName('especieNF')->item(0)->nodeValue.' ' : '';
+        $fabEntrega = ! empty($dom->getElementsByTagName('fabEntrega')->item(0)->nodeValue) ?
+        'Entrega:'.$dom->getElementsByTagName('fabEntrega')->item(0)->nodeValue.' ' : '';
+        $dca = ! empty($dom->getElementsByTagName('dca')->item(0)->nodeValue) ?
+        'dca:'.$dom->getElementsByTagName('dca')->item(0)->nodeValue.' ' : '';
+        $texto .= "".$versao.$especieNF.$fabEntrega.$dca;
+        if (isset($t)) {
+            if ($t->hasAttributes()) {
+                $texto .= " Transmissor ";
+                foreach ($t->attributes as $attr) {
+                    $name = $attr->nodeName;
+                    $value = $attr->nodeValue;
+                    $texto .= " $name : $value";
+                }
+            }
+        }
+        if (isset($r)) {
+            if ($r->hasAttributes()) {
+                $texto .= " Receptor ";
+                foreach ($r->attributes as $attr) {
+                    $name = $attr->nodeName;
+                    $value = $attr->nodeValue;
+                    $texto .= " $name : $value";
+                }
+            }
+        }
+        return $texto;
     }
     
     /**
@@ -879,7 +1085,7 @@ class Danfce extends Common
             $iCount++;
         } while ($iCount < strlen($str));
         return $hex;
-    }//fim str2Hex
+    }
     
     protected static function getCardName($tBand)
     {
