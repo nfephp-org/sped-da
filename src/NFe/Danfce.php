@@ -1,5 +1,5 @@
 <?php
-	namespace NFePHP\DA\NFe;
+namespace NFePHP\DA\NFe;
 
 /**
  * Classe para a impressão em PDF do Documento Auxiliar de NFe Consumidor
@@ -90,63 +90,63 @@ class Danfce extends Common
      */
 	protected $urlConsulta = [
 		'1' => [
-		'AC' => 'www.sefaznet.ac.gov.br/nfce/consulta',
-		'AL' => 'http://nfce.sefaz.al.gov.br/consultaNFCe.htm',
-		'AP' => 'https://www.sefaz.ap.gov.br/sate/seg/SEGf_AcessarFuncao.jsp?cdFuncao=FIS_1261',
-		'AM' => 'sistemas.sefaz.am.gov.br/nfceweb/formConsulta.do',
-		'BA' => 'nfe.sefaz.ba.gov.br/servicos/nfce/default.aspx',
-		'CE' => '',
-		'DF' => 'http://dec.fazenda.df.gov.br/NFCE/',
-		'ES' => 'http://app.sefaz.es.gov.br/ConsultaNFCe',
-		'GO' => '',
-		'MA' => 'http://www.nfce.sefaz.ma.gov.br/portal/consultaNFe.do?method=preFilterCupom&',
-		'MT' => 'http://www.sefaz.mt.gov.br/nfce/consultanfce',
-		'MS' => 'http://www.dfe.ms.gov.br/nfce',
-		'MG' => '',
-		'PA' => 'https://appnfc.sefa.pa.gov.br/portal/view/consultas/nfce/consultanfce.seam',
-		'PB' => 'www.receita.pb.gov.br/nfce',
-		'PR' => 'http://www.fazenda.pr.gov.br',
-		'PE' => '',
-		'PI' => 'http://webas.sefaz.pi.gov.br/nfceweb/consultarNFCe.jsf',
-		'RJ' => 'www.nfce.fazenda.rj.gov.br/consulta',
-		'RN' => 'http://nfce.set.rn.gov.br/consultarNFCe.aspx',
-		'RS' => 'https://www.sefaz.rs.gov.br/NFCE/NFCE-COM.aspx',
-		'RO' => 'http://www.nfce.sefin.ro.gov.br',
-		'RR' => 'https://www.sefaz.rr.gov.br/nfce/servlet/wp_consulta_nfce',
-		'SC' => '',
-		'SP' => 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx',
-		'SE' => 'http://www.nfce.se.gov.br/portal/portalNoticias.jsp',
-		'TO' => ''
-	],
+    		'AC' => 'www.sefaznet.ac.gov.br/nfce/consulta',
+    		'AL' => 'http://nfce.sefaz.al.gov.br/consultaNFCe.htm',
+    		'AP' => 'https://www.sefaz.ap.gov.br/sate/seg/SEGf_AcessarFuncao.jsp?cdFuncao=FIS_1261',
+    		'AM' => 'sistemas.sefaz.am.gov.br/nfceweb/formConsulta.do',
+    		'BA' => 'nfe.sefaz.ba.gov.br/servicos/nfce/default.aspx',
+    		'CE' => '',
+    		'DF' => 'http://dec.fazenda.df.gov.br/NFCE/',
+    		'ES' => 'http://app.sefaz.es.gov.br/ConsultaNFCe',
+    		'GO' => '',
+    		'MA' => 'http://www.nfce.sefaz.ma.gov.br/portal/consultaNFe.do?method=preFilterCupom&',
+    		'MT' => 'http://www.sefaz.mt.gov.br/nfce/consultanfce',
+    		'MS' => 'http://www.dfe.ms.gov.br/nfce',
+    		'MG' => '',
+    		'PA' => 'https://appnfc.sefa.pa.gov.br/portal/view/consultas/nfce/consultanfce.seam',
+    		'PB' => 'www.receita.pb.gov.br/nfce',
+    		'PR' => 'http://www.fazenda.pr.gov.br',
+    		'PE' => '',
+    		'PI' => 'http://webas.sefaz.pi.gov.br/nfceweb/consultarNFCe.jsf',
+    		'RJ' => 'www.nfce.fazenda.rj.gov.br/consulta',
+    		'RN' => 'http://nfce.set.rn.gov.br/consultarNFCe.aspx',
+    		'RS' => 'https://www.sefaz.rs.gov.br/NFCE/NFCE-COM.aspx',
+    		'RO' => 'http://www.nfce.sefin.ro.gov.br',
+    		'RR' => 'https://www.sefaz.rr.gov.br/nfce/servlet/wp_consulta_nfce',
+    		'SC' => '',
+    		'SP' => 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx',
+    		'SE' => 'http://www.nfce.se.gov.br/portal/portalNoticias.jsp',
+    		'TO' => ''
+    	],
 		'2' => [
-		'AC' => 'http://hml.sefaznet.ac.gov.br/nfce/consulta',
-		'AL' => 'http://nfce.sefaz.al.gov.br/consultaNFCe.htm',
-		'AP' => 'https://www.sefaz.ap.gov.br/sate1/seg/SEGf_AcessarFuncao.jsp?cdFuncao=FIS_1261',
-		'AM' => 'homnfce.sefaz.am.gov.br/nfceweb/formConsulta.do',
-		'BA' => 'http://hnfe.sefaz.ba.gov.br/servicos/nfce/default.aspx',
-		'CE' => 'http://nfceh.sefaz.ce.gov.br/pages/consultaNota.jsf',
-		'DF' => 'http://dec.fazenda.df.gov.br/NFCE/',
-		'ES' => 'http://homologacao.sefaz.es.gov.br/ConsultaNFCe',
-		'GO' => '',
-		'MA' => 'http://www.hom.nfce.sefaz.ma.gov.br/portal/consultarNFCe.jsp',
-		'MT' => 'http://homologacao.sefaz.mt.gov.br/nfce/consultanfce',
-		'MS' => 'http://www.dfe.ms.gov.br/nfce',
-		'MG' => '',
-		'PA' => 'https://appnfc.sefa.pa.gov.br/portal-homologacao/view/consultas/nfce/consultanfce.seam',
-		'PB' => '',
-		'PR' => 'http://www.fazenda.pr.gov.br',
-		'PE' => '',
-		'PI' => 'http://webas.sefaz.pi.gov.br/nfceweb-homologacao/consultarNFCe.jsf',
-		'RJ' => 'www.nfce.fazenda.rj.gov.br/consulta',
-		'RN' => 'http://nfce.set.rn.gov.br/consultarNFCe.aspx',
-		'RS' => 'https://www.sefaz.rs.gov.br/NFCE/NFCE-COM.aspx',
-		'RO' => 'http://www.nfce.sefin.ro.gov.br',
-		'RR' => 'http://200.174.88.103:8080/nfce/servlet/wp_consulta_nfce',
-		'SC' => '',
-		'SP' => 'https://www.homologacao.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx',
-		'SE' => 'http://www.hom.nfe.se.gov.br/portal/portalNoticias.jsp',
-		'TO' => ''
-	],
+    		'AC' => 'http://hml.sefaznet.ac.gov.br/nfce/consulta',
+    		'AL' => 'http://nfce.sefaz.al.gov.br/consultaNFCe.htm',
+    		'AP' => 'https://www.sefaz.ap.gov.br/sate1/seg/SEGf_AcessarFuncao.jsp?cdFuncao=FIS_1261',
+    		'AM' => 'homnfce.sefaz.am.gov.br/nfceweb/formConsulta.do',
+    		'BA' => 'http://hnfe.sefaz.ba.gov.br/servicos/nfce/default.aspx',
+    		'CE' => 'http://nfceh.sefaz.ce.gov.br/pages/consultaNota.jsf',
+    		'DF' => 'http://dec.fazenda.df.gov.br/NFCE/',
+    		'ES' => 'http://homologacao.sefaz.es.gov.br/ConsultaNFCe',
+    		'GO' => '',
+    		'MA' => 'http://www.hom.nfce.sefaz.ma.gov.br/portal/consultarNFCe.jsp',
+    		'MT' => 'http://homologacao.sefaz.mt.gov.br/nfce/consultanfce',
+    		'MS' => 'http://www.dfe.ms.gov.br/nfce',
+    		'MG' => '',
+    		'PA' => 'https://appnfc.sefa.pa.gov.br/portal-homologacao/view/consultas/nfce/consultanfce.seam',
+    		'PB' => '',
+    		'PR' => 'http://www.fazenda.pr.gov.br',
+    		'PE' => '',
+    		'PI' => 'http://webas.sefaz.pi.gov.br/nfceweb-homologacao/consultarNFCe.jsf',
+    		'RJ' => 'www.nfce.fazenda.rj.gov.br/consulta',
+    		'RN' => 'http://nfce.set.rn.gov.br/consultarNFCe.aspx',
+    		'RS' => 'https://www.sefaz.rs.gov.br/NFCE/NFCE-COM.aspx',
+    		'RO' => 'http://www.nfce.sefin.ro.gov.br',
+    		'RR' => 'http://200.174.88.103:8080/nfce/servlet/wp_consulta_nfce',
+    		'SC' => '',
+    		'SP' => 'https://www.homologacao.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx',
+    		'SE' => 'http://www.hom.nfe.se.gov.br/portal/portalNoticias.jsp',
+    		'TO' => ''
+    	],
 	];
 	/**
      * __contruct
@@ -214,17 +214,14 @@ class Danfce extends Common
 			throw new nfephpException("O xml do DANFE deve ser uma NFC-e modelo 65");
 		}
 	}
-
 	public function getPapel()
 	{
 		return $this->papel;
 	}
-
 	public function setPapel($aPap)
 	{
 		$this->papel = $aPap;
 	}
-
 	public function monta(
 		$orientacao = 'P',
 		$papel = '',
@@ -234,7 +231,6 @@ class Danfce extends Common
 	) {
 		$this->montaDANFE($orientacao, $papel, $logoAlign, $classPdf, $depecNumReg);
 	}
-
 	public function montaDANFE(
 		$orientacao = 'P',
 		$papel = '',
@@ -379,7 +375,6 @@ class Danfce extends Common
 			return str_replace('NFe', '', $this->infNFe->getAttribute("Id"));
 		}
 	}
-
 	protected function pCabecalhoDANFE($x = 0, $y = 0, $h = 0, $pag = '1', $totPag = '1')
 	{
 		$emitRazao  = $this->pSimpleGetValue($this->emit, "xNome");
@@ -436,7 +431,6 @@ class Danfce extends Common
 		$aFont = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'');
 		$this->pTextBox($xRs, $y, $wRs, $h, $texto, $aFont, 'C', $alignEmit, 0, '', false);
 	}
-
 	protected function pCabecalhoSecundarioDANFE($x = 0, $y = 0, $h = 0)
 	{
 		$margemInterna = $this->margemInterna;
@@ -452,7 +446,6 @@ class Danfce extends Common
 		$aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'');
 		$this->pTextBox($x, $yBox2, $w, $hBox2, $texto, $aFont, 'C', 'C', 0, '', false);
 	}
-
 	protected function pProdutosDANFE($x = 0, $y = 0, $h = 0)
 	{
 		$margemInterna = $this->margemInterna;
@@ -607,7 +600,6 @@ class Danfce extends Common
 			}
 		}
 	}
-
 	protected function pTotalDANFE($x = 0, $y = 0, $h = 0)
 	{
 		$margemInterna = $this->margemInterna;
@@ -656,7 +648,6 @@ class Danfce extends Common
 		$aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
 		$this->pTextBox($xValor, $yTotalFinal, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', 0, '', false);
 	}
-
 	protected function pPagamentosDANFE($x = 0, $y = 0, $h = 0)
 	{
 		$y += 4;
@@ -718,7 +709,6 @@ class Danfce extends Common
 			}
 		}
 	}
-
 	protected function pFiscalDANFE($x = 0, $y = 0, $h = 0)
 	{
 		$y += 4;
@@ -753,7 +743,6 @@ class Danfce extends Common
 		$texto = $chNFe;
 		$this->pTextBox($x, $yTex3, $w, $hLinha, $texto, $aFontTex, 'C', 'C', 0, '', false);
 	}
-
 	protected function pConsumidorDANFE($x = 0, $y = 0, $h = 0)
 	{
 		$y += 4;
@@ -824,7 +813,6 @@ class Danfce extends Common
 			$this->pTextBox($x, $yTex1, $w, $hLinha, $texto, $aFontTex, 'C', 'C', 0, '', false);
 		}
 	}
-
 	protected function pQRDANFE($x = 0, $y = 0, $h = 0)
 	{
 		$y += 4;
@@ -855,7 +843,6 @@ class Danfce extends Common
 		$this->pTextBox($x, $yQr, $w, $hBoxLinha, "Protocolo de Autorização: " . $nProt . "\n"
 						. $dt->format('d/m/Y H:i:s'), $aFontTex, 'C', 'C', 0, '', false);
 	}
-
 	/**
      * Insere as informações adicionais ao PDF
      * 
@@ -884,7 +871,6 @@ class Danfce extends Common
 		// seta o textbox do texto adicional
 		$this->pTextBox($x, $y, $w, $hLinha, $texto, $aFontTex, 'C', 'L', 0, '', false);
 	}
-
 	/**
      * printDANFE
      * Esta função envia a DANFE em PDF criada para o dispositivo informado.
@@ -910,7 +896,6 @@ class Danfce extends Common
 		}
 		return $arq;
 	}
-
 	/**
      * Dados brutos do PDF
      * @return string
@@ -919,7 +904,6 @@ class Danfce extends Common
 	{
 		return $this->pdf->getPdf();
 	}
-
 	/**
      * anfavea
      * Função para transformar o campo cdata do padrão ANFAVEA para
@@ -1065,7 +1049,6 @@ class Danfce extends Common
 		}
 		return $texto;
 	}
-
 	/**
      * str2Hex
      * Converte string para haxadecimal ASCII
@@ -1086,7 +1069,6 @@ class Danfce extends Common
 		} while ($iCount < strlen($str));
 		return $hex;
 	}
-
 	protected static function getCardName($tBand)
 	{
 		switch ($tBand) {
@@ -1107,7 +1089,6 @@ class Danfce extends Common
 		}
 		return $tBandNome;
 	}
-
 	protected function tipoPag($tPag)
 	{
 		switch ($tPag) {
@@ -1143,7 +1124,6 @@ class Danfce extends Common
 		}
 		return $tPagNome;
 	}
-
 	/**
      * hex2Str
      * Converte hexadecimal ASCII para string
