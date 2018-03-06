@@ -16,7 +16,7 @@ namespace NFePHP\DA\CTe;
  */
 
 use Exception;
-use NFePHP\Common\Dom\Dom;
+use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
 
@@ -72,6 +72,8 @@ class DacteV3 extends Common
     protected $infNFe;
     protected $compl;
     protected $ICMS;
+    protected $ICMSSN;
+    protected $ICMSOutraUF;
     protected $imp;
     protected $toma4;
     protected $toma03;
@@ -190,6 +192,7 @@ class DacteV3 extends Common
             $this->compl = $this->dom->getElementsByTagName("compl");
             $this->ICMS = $this->dom->getElementsByTagName("ICMS")->item(0);
             $this->ICMSSN = $this->dom->getElementsByTagName("ICMSSN")->item(0);
+            $this->ICMSOutraUF = $this->dom->getElementsByTagName("ICMSOutraUF")->item(0);
             $this->imp = $this->dom->getElementsByTagName("imp")->item(0);
 
             $vTrib = $this->pSimpleGetValue($this->imp, "vTotTrib");
@@ -202,6 +205,10 @@ class DacteV3 extends Common
                     .$textoAdic;
             $this->toma4 = $this->dom->getElementsByTagName("toma4")->item(0);
             $this->toma03 = $this->dom->getElementsByTagName("toma3")->item(0);
+            //Tag tomador é identificado por toma03 na versão 2.00
+            if ($this->infCte->getAttribute("versao")=="2.00") {
+                $this->toma03 = $this->dom->getElementsByTagName("toma03")->item(0);
+            }
             //modal aquaviário
             $this->aquav = $this->dom->getElementsByTagName("aquav")->item(0);
             $tomador = $this->pSimpleGetValue($this->toma03, "toma");
@@ -1729,23 +1736,23 @@ class DacteV3 extends Common
         $y += 8;
         $x = $oldX;
         $this->pdf->Line($x, $y, $w + 1, $y);
+        
+        //Identifica código da unidade
+        //01 = KG (QUILOS)
+        if ($this->pSimpleGetValue($this->infQ->item(0), "cUnid") == '01') {
+            $qCarga = $this->pSimpleGetValue($this->infQ->item(0), "qCarga");
+        } elseif ($this->pSimpleGetValue($this->infQ->item(1), "cUnid") == '01') {
+            $qCarga = $this->pSimpleGetValue($this->infQ->item(1), "qCarga");
+        } elseif ($this->pSimpleGetValue($this->infQ->item(2), "cUnid") == '01') {
+            $qCarga = $this->pSimpleGetValue($this->infQ->item(2), "qCarga");
+        }
         $texto = 'PESO BRUTO (KG)';
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 5,
             'style' => '');
         $this->pTextBox($x+8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        //$texto = $this->pSimpleGetValue($this->infQ->item(0), "qCarga") . "\r\n";
-        $texto = number_format(
-            $this->pSimpleGetValue(
-                $this->infQ->item(0),
-                "qCarga"
-            ),
-            3,
-            ",",
-            "."
-        );
-        //$texto .= ' ' . $this->zUnidade($this->pSimpleGetValue($this->infQ->item(0), "cUnid"));
+        $texto = number_format($qCarga, 3, ",", ".");
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
@@ -1753,21 +1760,14 @@ class DacteV3 extends Common
         $this->pTextBox($x+2, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x = $w * 0.12;
         $this->pdf->Line($x+13.5, $y, $x+13.5, $y + 9);
+        
         $texto = 'PESO BASE CÁLCULO (KG)';
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 5,
             'style' => '');
         $this->pTextBox($x+20, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = number_format(
-            $this->pSimpleGetValue(
-                $this->infQ->item(0),
-                "qCarga"
-            ),
-            3,
-            ",",
-            "."
-        );
+        $texto = number_format($qCarga, 3, ",", ".");
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
@@ -1775,21 +1775,14 @@ class DacteV3 extends Common
         $this->pTextBox($x+17, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x = $w * 0.24;
         $this->pdf->Line($x+25, $y, $x+25, $y + 9);
+        
         $texto = 'PESO AFERIDO (KG)';
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 5,
             'style' => '');
         $this->pTextBox($x+35, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = number_format(
-            $this->pSimpleGetValue(
-                $this->infQ->item(0),
-                "qCarga"
-            ),
-            3,
-            ",",
-            "."
-        );
+        $texto = number_format($qCarga, 3, ",", ".");
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
@@ -2060,11 +2053,15 @@ class DacteV3 extends Common
                 $texto = "60 - ICMS cobrado anteriormente por substituição tributária";
                 break;
             case '90':
-                $texto = "90 - ICMS outros";
+                if ($this->ICMSOutraUF) {
+                    $texto = "90 - ICMS Outra UF";
+                } elseif ($this->ICMSSN) {
+                    $texto = "90 - ICMS Simples Nacional";
+                } else {
+                    $texto = "90 - ICMS Outros";
+                }
                 break;
         }
-        $texto .= $this->pSimpleGetValue($this->ICMSSN, "indSN");
-        $texto = $texto == 1 ? 'Simples Nacional' : $texto;
         $aFont = $this->formatNegrito;
         $this->pTextBox($x, $y, $w * 0.26, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x += $w * 0.26;
@@ -2267,44 +2264,44 @@ class DacteV3 extends Common
         switch ($qtdeNFe) {
             default:
                 $this->totPag = 1;
-            case ($qtdeNFe >= 1044):
+            case ($qtdeNFe >= 1134):
                 $this->totPag = 11;
                 break;
-            case ($qtdeNFe > 928):
+            case ($qtdeNFe > 1008):
                 $this->totPag = 10;
                 break;
-            case ($qtdeNFe > 812):
+            case ($qtdeNFe > 882):
                 $this->totPag = 9;
                 break;
-            case ($qtdeNFe > 696):
+            case ($qtdeNFe > 756):
                 $this->totPag = 8;
                 break;
-            case ($qtdeNFe > 580):
+            case ($qtdeNFe > 630):
                 $this->totPag = 7;
                 break;
-            case ($qtdeNFe > 464):
+            case ($qtdeNFe > 504):
                 $this->totPag = 6;
                 break;
-            case ($qtdeNFe > 348):
+            case ($qtdeNFe > 378):
                 $this->totPag = 5;
                 break;
-            case ($qtdeNFe > 232):
+            case ($qtdeNFe > 252):
                 $this->totPag = 4;
                 break;
-            case ($qtdeNFe > 116):
+            case ($qtdeNFe > 126):
                 $this->totPag = 3;
                 break;
-            case ($qtdeNFe > 16):
+            case ($qtdeNFe > 26):
                 $this->totPag = 2;
                 break;
-            case ($qtdeNFe <= 16):
+            case ($qtdeNFe <= 26):
                 $this->totPag = 1;
                 break;
         }
         $r = $this->zCabecalho(1, 1, '1', $this->totPag);
         $contador = 0;
         while ($contador < count($this->arrayNFe)) {
-            if ($contador == 15) {
+            if ($contador == 26) {
                 break;
             }
             $tp = 'NF-e';
@@ -2420,7 +2417,7 @@ class DacteV3 extends Common
     {
         $x2 = $x;
         $y2 = $y;
-        $contador = 16;
+        $contador = 26;
         for ($i = 2; $i <= $this->totPag; $i++) {
             $x = $x2;
             $y = $y2;
@@ -2634,7 +2631,6 @@ class DacteV3 extends Common
         $textoObs = explode("Motorista:", $texto);
         $textoObs[1] = isset($textoObs[1]) ? "Motorista: ".$textoObs[1]: '';
         $texto .= $this->pSimpleGetValue($this->imp, "infAdFisco", "\r\n");
-        $texto .= $this->zLocalEntrega();
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7.5,
@@ -2642,30 +2638,6 @@ class DacteV3 extends Common
         $this->pTextBox($x, $y, $w, $h, $textoObs[0], $aFont, 'T', 'L', 0, '', false);
         $this->pTextBox($x, $y+11.5, $w, $h, $textoObs[1], $aFont, 'T', 'L', 0, '', false);
     } //fim da função obsDACTE
-
-    /**
-     * zLocalEntrega
-     *
-     * @return string
-     */
-    protected function zLocalEntrega()
-    {
-        $locEntX = $this->dest->getElementsByTagName('locEnt');
-        if ($locEntX->length > 0) {
-            $locEnt = $locEntX->item(0);
-            $output = "Entrega: " . $output = $this->zFormatCNPJCPF($locEnt);
-            $output .= $this->pSimpleGetValue($locEnt, "CPF") . " ";
-            $output .= $this->pSimpleGetValue($locEnt, "xNome") . " ";
-            $output .= $this->pSimpleGetValue($locEnt, "xLgr") . " ";
-            $output .= $this->pSimpleGetValue($locEnt, "nro ") . " ";
-            $output .= $this->pSimpleGetValue($locEnt, "xCpl") . " ";
-            $output .= $this->pSimpleGetValue($locEnt, "xBairro") . " ";
-            $output .= $this->pSimpleGetValue($locEnt, "xMun") . " ";
-            $output .= $this->pSimpleGetValue($locEnt, "UF") . " ";
-            return $output;
-        }
-        return "";
-    } //fim zLocalEntrega
 
     /**
      * zModalRod
