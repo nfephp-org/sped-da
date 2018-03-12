@@ -1613,9 +1613,9 @@ class Danfe extends Common
             if (isset($fat)) {
                 $textoIndPag="";
                 $indPag = $this->pSimpleGetValue($this->ide, "indPag");
-                if ($indPag == 0) {
+                if ($indPag === 0) {
                     $textoIndPag = "Pagamento à Vista - ";
-                } elseif ($indPag == 1) {
+                } elseif ($indPag === 1) {
                     $textoIndPag = "Pagamento à Prazo - ";
                 }
                 $nFat = $this->pSimpleGetValue($fat, "nFat", "Fatura: ");
