@@ -2798,6 +2798,7 @@ class DacteV3 extends Common
                 ->item(0)->nodeValue;
         } elseif ($this->infNFe->item(0) !== null
             && $this->infNFe->item(0)->getElementsByTagName('infUnidCarga') !== null
+            && $this->infNFe->item(0)->getElementsByTagName('infUnidCarga')->item(0) !== null
         ) {
             $texto = $this->infNFe
                 ->item(0)
