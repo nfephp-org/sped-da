@@ -825,6 +825,8 @@ class Danfe extends Common
         } else {
             $cdata = $parte2;
         }
+        //Retira a tag <FONTE IBPT> (caso existir) pois não é uma estrutura válida XML
+        $cdata = str_replace('<FONTE IBPT>', '', $cdata);
         //carrega o xml CDATA em um objeto DOM
         $dom = new Dom();
         $dom->loadXML($cdata, LIBXML_NOBLANKS | LIBXML_NOEMPTYTAG);
