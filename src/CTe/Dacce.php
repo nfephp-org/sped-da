@@ -23,7 +23,7 @@ use NFePHP\DA\Legacy\Common;
 class Dacce extends Common
 {
     public $chCTe;
-    
+
     protected $logoAlign = 'C';
     protected $yDados = 0;
     protected $debugMode = 0;
@@ -53,6 +53,8 @@ class Dacce extends Common
     protected $xMotivo;
     protected $dhRegEvento;
     protected $nProt;
+    protected $siteDesenvolvedor;
+    protected $nomeDesenvolvedor;
 
     private $dom;
     private $procEventoCTe;
@@ -83,7 +85,9 @@ class Dacce extends Common
         $aEnd = '',
         $sDirPDF = '',
         $fontePDF = '',
-        $mododebug = 0
+        $mododebug = 0,
+        $nomeDesenvolvedor = 'Dacce ver. 0.1.1 Powered by NFePHP (GNU/GPLv3 GNU/LGPLv3) © www.nfephp.org',
+        $siteDesenvolvedor = 'http://www.nfephp.org'
     ) {
         if (is_numeric($mododebug)) {
             $this->debugMode = (int) $mododebug;
@@ -107,6 +111,8 @@ class Dacce extends Common
         $this->logomarca = $sPathLogo;
         $this->destino = $sDestino;
         $this->pdfDir = $sDirPDF;
+        $this->siteDesenvolvedor = $siteDesenvolvedor;
+        $this->nomeDesenvolvedor = $nomeDesenvolvedor;
         // verifica se foi passa a fonte a ser usada
         if (empty($fontePDF)) {
             $this->fontePadrao = 'Times';
@@ -224,6 +230,7 @@ class Dacce extends Common
         $y = $this->pBody($x, $y + 15);
         // coloca o rodapé
         $y = $this->pFooter($x, $y + $this->hPrint - 20);
+        //retorna o ID na CTe
     }
 
     /**
@@ -313,24 +320,16 @@ class Dacce extends Common
         $cpl = $this->aEnd['complemento'];
         $bairro = $this->aEnd['bairro'];
         $CEP = $this->aEnd['CEP'];
-        $CEP = $this->pFormat($CEP, "#####-###");
+        // $CEP = $this->pFormat($CEP, "#####-###");
         $mun = $this->aEnd['municipio'];
         $UF = $this->aEnd['UF'];
         $fone = $this->aEnd['telefone'];
         $email = $this->aEnd['email'];
-        $foneLen = strlen($fone);
-        if ($foneLen > 0) {
-            $fone2 = substr($fone, 0, $foneLen - 4);
-            $fone1 = substr($fone, 0, $foneLen - 8);
-            $fone = '(' . $fone1 . ') ' . substr($fone2, - 4) . '-' . substr($fone, - 4);
-        } else {
-            $fone = '';
-        }
         if ($email != '') {
             $email = 'Email: ' . $email;
         }
         $texto = $lgr . ", " . $nro . $cpl . "\n" . $bairro . " - " . $CEP . "\n"
-            . $mun . " - " . $UF . " " . $fone . "\n" . $email;
+            . $mun . " - " . $UF . " - " . $fone . "\n" . $email;
         $this->pTextBox($x1, $y1 - 2, $tw, 8, $texto, $aFont, 'T', 'C', 0, '');
         // ##################################################
         $w2 = round($maxW - $w, 0);
@@ -382,7 +381,7 @@ class Dacce extends Common
             'size' => 12,
             'style' => 'B'
         );
-        
+
         $numNF = substr($this->chCTe, 25, 9);
         $serie = substr($this->chCTe, 22, 3);
         $numNF = $this->pFormat($numNF, "###.###.###");
@@ -439,8 +438,8 @@ class Dacce extends Common
         $this->pTextBox($x, $y, $maxW, 5, $texto, $aFont, 'T', 'L', 0, '', false);
         $y += 5;
         $this->pTextBox($x, $y, $maxW, $maxH);
-        
-        
+
+
          $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 9,
@@ -450,7 +449,7 @@ class Dacce extends Common
         $this->pTextBox($x = $maxW, $y, $maxW, 5, "Campo", $aFont, 'T', 'C', 0, '', false);
         $this->pTextBox($x = ($maxW*2), $y, $maxW, 5, "Número", $aFont, 'T', 'C', 0, '', false);
         $this->pTextBox($x = ($maxW*3), $y, ($this->wPrint-$x), 5, "Valor", $aFont, 'T', 'C', 0, '', false);
-        
+
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 9,
@@ -467,7 +466,7 @@ class Dacce extends Common
             $campo = $this->infCorrecao->item($i)->getElementsByTagName('campoAlterado')->item(0)->nodeValue;
             $numero = $this->infCorrecao->item($i)->getElementsByTagName('nroItemAlterado')->item(0)->nodeValue;
             $valor = $this->infCorrecao->item($i)->getElementsByTagName('valorAlterado')->item(0)->nodeValue;
-                                    
+
             $i++;
             $this->pTextBox($x, $y, $maxW = ($maxW/5), 5, $grupo, $aFont, 'T', 'C', 0, '', false);
             $this->pTextBox($x = $maxW, $y, $maxW, 5, $campo, $aFont, 'T', 'C', 0, '', false);
@@ -475,8 +474,8 @@ class Dacce extends Common
             $this->pTextBox($x = ($maxW*3), $y, ($this->wPrint-$x), 5, $valor, $aFont, 'T', 'C', 0, '', false);
             $numlinhas = $this->pGetNumLines($valor, ($this->wPrint-$x), $aFont);
         } //fim da soma das areas de itens usadas
-                        
-        
+
+
         //$texto = str_replace(";", PHP_EOL, $this->xCorrecao);
         $aFont = array(
             'font' => $this->fontePadrao,
@@ -540,7 +539,8 @@ class Dacce extends Common
             'style' => 'I'
         );
         $this->pTextBox($x, $y, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = "Dacce ver. " . $this->version . "  Powered by NFePHP (GNU/GPLv3 GNU/LGPLv3) © www.nfephp.org";
+
+        $texto = "Dacce ver. " . $this->version . " - Desenvolvido por " . $this->nomeDesenvolvedor . " - " . $this->siteDesenvolvedor;
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 6,
@@ -577,7 +577,7 @@ class Dacce extends Common
         }
         return $this->pdf->Output($nome, $destino);
     }
-    
+
     /**
      * Dados brutos do PDF
      * @return string
