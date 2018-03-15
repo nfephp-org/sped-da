@@ -577,4 +577,16 @@ class Dacce extends Common
         }
         return $this->pdf->Output($nome, $destino);
     }
+    
+    /**
+     * Dados brutos do PDF
+     * @return string
+     */
+    public function render()
+    {
+        if ($this->pdf == null) {
+            $this->pBuildDACCE();
+        }
+        return $this->pdf->getPdf();
+    }
 }
