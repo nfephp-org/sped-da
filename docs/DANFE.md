@@ -65,5 +65,5 @@ Por exemplo:
    * Pode ser desativado ou alterado pelo desenvolvedor na sua aplicação;
    * Este rodapé deve ocupar uma única linha no final da área imprimível e com fonte tamanho 8dpi ou menor.
    * Deve estar presente em todas as páginas
-   * Deve indica a versão, a origem do processo de impressão e outros dados relevantes como data e hora
+   * Deve indicar a versão, a origem do processo de impressão e outros dados relevantes como data e hora
    * É **recomendado** que seja seja mantida mensagem *"Powered by NFePHP (GNU/GPLv3 GNU/LGPLv3) © www.nfephp.org"*  como forma de divulgação e contribuição pelo o uso da biblioteca.

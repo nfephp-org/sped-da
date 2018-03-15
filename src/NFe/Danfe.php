@@ -81,6 +81,18 @@ class Danfe extends Common
      * @var boolean
      */
     public $descProdQuebraLinha = true;
+    /**
+     * Parâmetro para controlar o que é escrito nos créditos do rodapé
+     * (Caso seja necessário personalizar com os créditos de sua empresa)
+     * @var string
+     */
+    public $creditosFooter = "";
+    /**
+     * Parâmetro para controlar o website que será criado no footer do Danfe
+     * (Caso seja necessário personalizar com os créditos de sua empresa)
+     * @var string
+     */
+    public $creditosSite = "http://www.nfephp.org";
     
     //###########################################################
     //PROPRIEDADES DA CLASSE
@@ -312,6 +324,7 @@ class Danfe extends Common
      * @param string  $sDirPDF     Caminho para o diretorio de armazenamento dos arquivos PDF
      * @param string  $fonteDANFE  Nome da fonte alternativa do DAnfe
      * @param integer $mododebug   0-Não 1-Sim e 2-nada (2 default)
+     * @param string  $creditosFooter Mensagem no footer do DANFE com os créditos (Concatenando com mensagem de divulgação do NFePHP)
      */
     public function __construct(
         $docXML = '',
@@ -321,7 +334,8 @@ class Danfe extends Common
         $sDestino = 'I',
         $sDirPDF = '',
         $fonteDANFE = '',
-        $mododebug = 2
+        $mododebug = 2,
+        $creditosFooter = ''
     ) {
         //set_time_limit(1800);
         if (is_numeric($mododebug)) {
@@ -349,6 +363,12 @@ class Danfe extends Common
             $this->fontePadrao = 'Times';
         } else {
             $this->fontePadrao = $fonteDANFE;
+        }
+        // Estabelece o que será escrito no footer
+        if(!empty($creditosFooter)){
+            $this->creditosFooter = trim($creditosFooter) . " - Powered by NFePHP (GNU/GPLv3 GNU/LGPLv3) © www.nfephp.org";
+        } else {
+            $this->creditosFooter = "DanfeNFePHP ver. " . $this->version .  "  Powered by NFePHP (GNU/GPLv3 GNU/LGPLv3) © www.nfephp.org";
         }
         //se for passado o xml
         if (! empty($this->xml)) {
@@ -959,8 +979,6 @@ class Danfe extends Common
         if (!isset($this->nfeProc)) {
             return false;
         }
-        //NÃO ERA NECESSÁRIO ESSA FUNÇÃO POIS SÓ SE USA
-        //1 VEZ NO ARQUIVO INTEIRO
         $cStat = $this->pSimpleGetValue($this->nfeProc, "cStat");
         return $cStat == '110' ||
                $cStat == '301' ||
@@ -1169,6 +1187,9 @@ class Danfe extends Common
             $cabecalhoProtoAutorizacao = 'NÚMERO DE REGISTRO DPEC';
         } else {
             $cabecalhoProtoAutorizacao = 'PROTOCOLO DE AUTORIZAÇÃO DE USO';
+        }
+        if($this->pNotaDenegada()){
+            $cabecalhoProtoAutorizacao = 'PROTOCOLO DE DENEGAÇÃO DE USO';
         }
         if (($this->tpEmis == 2 || $this->tpEmis == 5) && !$this->pNotaDPEC()) {
             $cabecalhoProtoAutorizacao = "DADOS DA NF-E";
@@ -2722,8 +2743,7 @@ class Danfe extends Common
         $aFont = array('font'=>$this->fontePadrao, 'size'=>6, 'style'=>'I');
         $texto = "Impresso em ". date('d/m/Y') . " as " . date('H:i:s');
         $this->pTextBox($x, $y, $w, 0, $texto, $aFont, 'T', 'L', false);
-        $texto = "DanfeNFePHP ver. " . $this->version .  "  Powered by NFePHP (GNU/GPLv3 GNU/LGPLv3) © www.nfephp.org";
-        $this->pTextBox($x, $y, $w, 0, $texto, $aFont, 'T', 'R', false, 'http://www.nfephp.org');
+        $this->pTextBox($x, $y, $w, 0, $this->creditosFooter, $aFont, 'T', 'R', false, $this->creditosSite);
     }
 
     /**
