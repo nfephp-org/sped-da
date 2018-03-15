@@ -540,7 +540,8 @@ class Dacce extends Common
         );
         $this->pTextBox($x, $y, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
 
-        $texto = "Dacce ver. " . $this->version . " - Desenvolvido por " . $this->nomeDesenvolvedor . " - " . $this->siteDesenvolvedor;
+        $texto = "Dacce ver. " . $this->version . " - Desenvolvido por "
+            . $this->nomeDesenvolvedor . " - " . $this->siteDesenvolvedor;
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 6,
