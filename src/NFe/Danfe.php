@@ -15,7 +15,7 @@ class Danfe extends Common
     const SIT_DENEGADA = 2;
     const SIT_DPEC = 3;
     const SIT_NONE = 0;
-    
+
     /**
      * alinhamento padrão do logo (C-Center)
      *
@@ -48,7 +48,7 @@ class Danfe extends Common
     //###########################################################
     // INÍCIO ATRIBUTOS DE PARÂMETROS DE EXIBIÇÃO
     //###########################################################
-    
+
     /**
      * Parâmetro para exibir ou ocultar os valores do PIS/COFINS.
      * @var boolean
@@ -81,11 +81,11 @@ class Danfe extends Common
      * @var boolean
      */
     public $descProdQuebraLinha = true;
-    
+
     //###########################################################
     //PROPRIEDADES DA CLASSE
     //###########################################################
-    
+
     /**
      * objeto fpdf()
      * @var object
@@ -427,7 +427,11 @@ class Danfe extends Common
      */
     public function printDocument($nome = '', $destino = 'I', $printer = '')
     {
-        return $this->printDANFE($nome, $destino, $printer);
+        $arq = $this->pdf->Output($nome, $destino);
+        if ($destino == 'S') {
+            //aqui pode entrar a rotina de impressão direta
+        }
+        return $arq;
     }
 
     /**
@@ -926,7 +930,7 @@ class Danfe extends Common
         }
         return $texto;
     }
-    
+
     /**
      * Dados brutos do PDF
      * @return string
