@@ -1766,7 +1766,8 @@ class Dacte extends Common
             'style' => '');
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $texto = $this->pSimpleGetValue($this->infQ->item(1), "tpMed") . "\r\n";
-        $texto .= number_format(
+        $qCarga = $this->pSimpleGetValue($this->infQ->item(1), "qCarga");
+        $texto .= !empty($qCarga) ? number_format(
             $this->pSimpleGetValue(
                 $this->infQ->item(1),
                 "qCarga"
@@ -1777,7 +1778,7 @@ class Dacte extends Common
             3,
             ".",
             ""
-        );
+        ) : "";
         $texto = $this->pSimpleGetValue($this->infQ->item(1), "qCarga") == '' ? '' : $texto;
         $texto .= ' ' . $this->zUnidade($this->pSimpleGetValue($this->infQ->item(1), "cUnid"));
         $aFont = array(
@@ -2931,7 +2932,8 @@ class Dacte extends Common
         $texto = 'IDENTIFICAÇÃO DOS CONTEINERS';
         $aFont = $this->formatPadrao;
         $this->pTextBox($x, $y, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
-        if ($this->infNF->item(0) !== null && $this->infNF->item(0)->getElementsByTagName('infUnidCarga') !== null) {
+        if ($this->infNF->item(0) !== null 
+            && $this->infNF->item(0)->getElementsByTagName('infUnidCarga')->length > 0) {
             $texto = $this->infNF
                 ->item(0)
                 ->getElementsByTagName('infUnidCarga')
@@ -2939,7 +2941,7 @@ class Dacte extends Common
                 ->getElementsByTagName('idUnidCarga')
                 ->item(0)->nodeValue;
         } elseif ($this->infNFe->item(0) !== null
-            && $this->infNFe->item(0)->getElementsByTagName('infUnidCarga') !== null
+            && $this->infNFe->item(0)->getElementsByTagName('infUnidCarga')->length > 0
         ) {
             $texto = $this->infNFe
                 ->item(0)
@@ -2949,7 +2951,7 @@ class Dacte extends Common
                 ->item(0)
                 ->nodeValue;
         } elseif ($this->infOutros->item(0) !== null
-            && $this->infOutros->item(0)->getElementsByTagName('infUnidCarga') !== null
+            && $this->infOutros->item(0)->getElementsByTagName('infUnidCarga')->length > 0
         ) {
             $texto = $this->infOutros
                 ->item(0)
