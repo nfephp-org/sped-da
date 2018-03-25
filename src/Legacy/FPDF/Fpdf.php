@@ -2,6 +2,12 @@
 
 namespace NFePHP\DA\Legacy\FPDF;
 
+/**
+ * Classe origial adaptada para PHP 7.2
+ * @author Americo Belmiro de Souza Neto
+ * @email americoneto1001@gmail.com
+ */
+
 class Fpdf
 {
     const FPDF_VERSION = '1.6';
@@ -1701,12 +1707,78 @@ class Fpdf
             }
         }
     }
-
+    
     protected function putImages()
+    {
+        foreach (array_keys($this->images) as $file) {
+            $this->putimage($this->images[$file]);
+            unset($this->images[$file]['data']);
+            unset($this->images[$file]['smask']);
+        }
+    }
+    
+    protected function putimage(&$info)
+    {
+        $this->newobj();
+        $info['n'] = $this->n;
+        $this->out('<</Type /XObject');
+        $this->out('/Subtype /Image');
+        $this->out('/Width '.$info['w']);
+        $this->out('/Height '.$info['h']);
+        if ($info['cs']=='Indexed') {
+            $this->out('/ColorSpace [/Indexed /DeviceRGB '.(strlen($info['pal'])/3-1).' '.($this->n+1).' 0 R]');
+        } else {
+            $this->out('/ColorSpace /'.$info['cs']);
+            if ($info['cs']=='DeviceCMYK') {
+                $this->out('/Decode [1 0 1 0 1 0 1 0]');
+            }
+        }
+        $this->out('/BitsPerComponent '.$info['bpc']);
+        if (isset($info['f'])) {
+            $this->out('/Filter /'.$info['f']);
+        }
+        if (isset($info['dp'])) {
+            $this->out('/DecodeParms <<'.$info['dp'].'>>');
+        }
+        if (isset($info['trns']) && is_array($info['trns'])) {
+            $trns = '';
+            for ($i=0; $i<count($info['trns']); $i++) {
+                $trns .= $info['trns'][$i].' '.$info['trns'][$i].' ';
+            }
+            $this->out('/Mask ['.$trns.']');
+        }
+        if (isset($info['smask'])) {
+            $this->out('/SMask '.($this->n+1).' 0 R');
+        }
+        $this->out('/Length '.strlen($info['data']).'>>');
+        $this->putstream($info['data']);
+        $this->out('endobj');
+    // Soft mask
+        if (isset($info['smask'])) {
+            $dp = '/Predictor 15 /Colors 1 /BitsPerComponent 8 /Columns '.$info['w'];
+            $smask = [
+                'w'=>$info['w'],
+                'h'=>$info['h'],
+                'cs'=>'DeviceGray',
+                'bpc'=>8,
+                'f'=>$info['f'],
+                'dp'=>$dp,
+                'data'=>$info['smask']
+            ];
+            $this->putimage($smask);
+        }
+    // Palette
+        if ($info['cs']=='Indexed') {
+            $this->putstreamobject($info['pal']);
+        }
+    }
+    
+
+    /*protected function putImages()
     {
         $filter = ($this->compress) ? '/Filter /FlateDecode ' : '';
         reset($this->images);
-        while (list($file,$info) = each($this->images)) {
+        foreach (list($file,$info) as each($this->images)) {
             $this->newObj();
             $this->images[$file]['n'] = $this->n;
             $this->out('<</Type /XObject');
@@ -1748,7 +1820,7 @@ class Fpdf
                 $this->out('endobj');
             }
         }
-    }
+    }*/
 
     protected function putXobjectDict()
     {
