@@ -1675,9 +1675,11 @@ class Dacte extends Common
         $texto = 'FONE';
         $aFont = $this->formatPadrao;
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = $this->zFormatFone($this->toma);
-        $aFont = $this->formatNegrito;
-        $this->pTextBox($x + 8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+        if (isset($this->toma)) {
+            $texto = $this->zFormatFone($this->toma);
+            $aFont = $this->formatNegrito;
+            $this->pTextBox($x + 8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+        }
     } //fim da função tomadorDACTE
 
     /**
