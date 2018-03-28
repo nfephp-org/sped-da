@@ -23,7 +23,7 @@ use NFePHP\DA\Legacy\Common;
 class Dacce extends Common
 {
     public $chNFe;
-    
+
     protected $logoAlign = 'C';
     protected $yDados = 0;
     protected $debugMode = 0;
@@ -55,7 +55,7 @@ class Dacce extends Common
     protected $CPFDest = '';
     protected $dhRegEvento;
     protected $nProt;
-    
+
     private $dom;
     private $procEventoNFe;
     private $evento;
@@ -119,13 +119,14 @@ class Dacce extends Common
             if (is_file($this->xml)) {
                 $this->xml = file_get_contents($this->xml);
             }
+
             $this->dom = new Dom();
-            $this->dom->loadXML($this->xml);
-            $this->procEventoNFe = $this->dom->getElementsByTagName("procEventoNFe")->item(0);
-            $this->evento = $this->procEventoNFe->getElementsByTagName("evento")->item(0);
-            $this->retEvento = $this->procEventoNFe->getElementsByTagName("retEvento")->item(0);
-            $this->infEvento = $this->evento->getElementsByTagName("infEvento")->item(0);
-            $this->retInfEvento = $this->retEvento->getElementsByTagName("infEvento")->item(0);
+            $this->dom->loadXMLString($this->xml);
+            $nfeResultMsg = $this->dom->getElementsByTagName("nfeResultMsg")->item(0);
+            $retEnvEvento = $nfeResultMsg->getElementsByTagName("retEnvEvento")->item(0);
+
+            $this->retEvento = $retEnvEvento->getElementsByTagName("retEvento")->item(0);
+            $this->infEvento = $this->retEvento->getElementsByTagName("infEvento")->item(0);
             $tpEvento = $this->infEvento->getElementsByTagName("tpEvento")->item(0)->nodeValue;
             if ($tpEvento != '110110') {
                 $this->errMsg = 'Um evento de CC-e deve ser passado.';
@@ -139,16 +140,16 @@ class Dacce extends Common
             $this->xCorrecao = $this->infEvento->getElementsByTagName("xCorrecao")->item(0)->nodeValue;
             $this->xCondUso = $this->infEvento->getElementsByTagName("xCondUso")->item(0)->nodeValue;
             $this->dhEvento = $this->infEvento->getElementsByTagName("dhEvento")->item(0)->nodeValue;
-            $this->cStat = $this->retInfEvento->getElementsByTagName("cStat")->item(0)->nodeValue;
-            $this->xMotivo = $this->retInfEvento->getElementsByTagName("xMotivo")->item(0)->nodeValue;
-            $this->CNPJDest = !empty($this->retInfEvento->getElementsByTagName("CNPJDest")->item(0)->nodeValue)
-                ? $this->retInfEvento->getElementsByTagName("CNPJDest")->item(0)->nodeValue
+            $this->cStat = $this->infEvento->getElementsByTagName("cStat")->item(0)->nodeValue;
+            $this->xMotivo = $this->infEvento->getElementsByTagName("xMotivo")->item(0)->nodeValue;
+            $this->CNPJDest = !empty($this->infEvento->getElementsByTagName("CNPJDest")->item(0)->nodeValue)
+                ? $this->infEvento->getElementsByTagName("CNPJDest")->item(0)->nodeValue
                 : '';
-            $this->CPFDest = !empty($this->retInfEvento->getElementsByTagName("CPFDest")->item(0)->nodeValue)
-                ? $this->retInfEvento->getElementsByTagName("CPFDest")->item(0)->nodeValue
+            $this->CPFDest = !empty($this->infEvento->getElementsByTagName("CPFDest")->item(0)->nodeValue)
+                ? $this->infEvento->getElementsByTagName("CPFDest")->item(0)->nodeValue
                 : '';
-            $this->dhRegEvento = $this->retInfEvento->getElementsByTagName("dhRegEvento")->item(0)->nodeValue;
-            $this->nProt = $this->retInfEvento->getElementsByTagName("nProt")->item(0)->nodeValue;
+            $this->dhRegEvento = $this->infEvento->getElementsByTagName("dhRegEvento")->item(0)->nodeValue;
+            $this->nProt = $this->infEvento->getElementsByTagName("nProt")->item(0)->nodeValue;
         }
     }
 
