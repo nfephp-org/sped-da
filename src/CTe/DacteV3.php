@@ -73,6 +73,8 @@ class DacteV3 extends Common
     protected $infNFe;
     protected $compl;
     protected $ICMS;
+    protected $ICMSSN;
+    protected $ICMSOutraUF;
     protected $imp;
     protected $toma4;
     protected $toma03;
@@ -92,6 +94,7 @@ class DacteV3 extends Common
     protected $siteDesenvolvedor;
     protected $nomeDesenvolvedor;
     protected $totPag;
+    protected $idDocAntEle;
 
     /**
      * __construct
@@ -198,12 +201,17 @@ class DacteV3 extends Common
             $this->compl = $this->dom->getElementsByTagName("compl");
             $this->ICMS = $this->dom->getElementsByTagName("ICMS")->item(0);
             $this->ICMSSN = $this->dom->getElementsByTagName("ICMSSN")->item(0);
+            $this->ICMSOutraUF = $this->dom->getElementsByTagName("ICMSOutraUF")->item(0);
             $this->imp = $this->dom->getElementsByTagName("imp")->item(0);
             $textoAdic = number_format($this->pSimpleGetValue($this->imp, "vTotTrib"), 2, ",", ".");
             $this->textoAdic = "o valor aproximado de tributos incidentes sobre o preço deste serviço é de R$"
                     .$textoAdic;
             $this->toma4 = $this->dom->getElementsByTagName("toma4")->item(0);
             $this->toma03 = $this->dom->getElementsByTagName("toma3")->item(0);
+            //Tag tomador é identificado por toma03 na versão 2.00
+            if ($this->infCte->getAttribute("versao")=="2.00") {
+                $this->toma03 = $this->dom->getElementsByTagName("toma03")->item(0);
+            }
             //modal aquaviário
             $this->aquav = $this->dom->getElementsByTagName("aquav")->item(0);
             $tomador = $this->pSimpleGetValue($this->toma03, "toma");
@@ -257,6 +265,7 @@ class DacteV3 extends Common
             $this->tpEmis = $this->pSimpleGetValue($this->ide, "tpEmis");
             $this->tpImp = $this->pSimpleGetValue($this->ide, "tpImp");
             $this->tpAmb = $this->pSimpleGetValue($this->ide, "tpAmb");
+            $this->tpCTe = $this->pSimpleGetValue($this->ide, "tpCTe");
 
             $this->protCTe = $this->dom->getElementsByTagName("protCTe")->item(0);
             //01-Rodoviário; //02-Aéreo; //03-Aquaviário; //04-Ferroviário;//05-Dutoviário
@@ -1734,23 +1743,22 @@ class DacteV3 extends Common
         $y += 8;
         $x = $oldX;
         $this->pdf->Line($x, $y, $w + 1, $y);
+        //Identifica código da unidade
+        //01 = KG (QUILOS)
+        if ($this->pSimpleGetValue($this->infQ->item(0), "cUnid") == '01') {
+            $qCarga = $this->pSimpleGetValue($this->infQ->item(0), "qCarga");
+        } elseif ($this->pSimpleGetValue($this->infQ->item(1), "cUnid") == '01') {
+            $qCarga = $this->pSimpleGetValue($this->infQ->item(1), "qCarga");
+        } elseif ($this->pSimpleGetValue($this->infQ->item(2), "cUnid") == '01') {
+            $qCarga = $this->pSimpleGetValue($this->infQ->item(2), "qCarga");
+        }
         $texto = 'PESO BRUTO (KG)';
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 5,
             'style' => '');
         $this->pTextBox($x+8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        //$texto = $this->pSimpleGetValue($this->infQ->item(0), "qCarga") . "\r\n";
-        $texto = number_format(
-            $this->pSimpleGetValue(
-                $this->infQ->item(0),
-                "qCarga"
-            ),
-            3,
-            ",",
-            "."
-        );
-        //$texto .= ' ' . $this->zUnidade($this->pSimpleGetValue($this->infQ->item(0), "cUnid"));
+        $texto = number_format($qCarga, 3, ",", ".");
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
@@ -1764,15 +1772,7 @@ class DacteV3 extends Common
             'size' => 5,
             'style' => '');
         $this->pTextBox($x+20, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = number_format(
-            $this->pSimpleGetValue(
-                $this->infQ->item(0),
-                "qCarga"
-            ),
-            3,
-            ",",
-            "."
-        );
+        $texto = number_format($qCarga, 3, ",", ".");
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
@@ -1786,15 +1786,7 @@ class DacteV3 extends Common
             'size' => 5,
             'style' => '');
         $this->pTextBox($x+35, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = number_format(
-            $this->pSimpleGetValue(
-                $this->infQ->item(0),
-                "qCarga"
-            ),
-            3,
-            ",",
-            "."
-        );
+        $texto = number_format($qCarga, 3, ",", ".");
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
@@ -2065,7 +2057,11 @@ class DacteV3 extends Common
                 $texto = "60 - ICMS cobrado anteriormente por substituição tributária";
                 break;
             case '90':
-                $texto = "90 - ICMS outros";
+                if ($this->ICMSOutraUF) {
+                    $texto = "90 - ICMS Outra UF";
+                } else {
+                    $texto = "90 - ICMS Outros";
+                }
                 break;
         }
         $texto = $this->pSimpleGetValue($this->ICMSSN, "indSN") == 1 ? 'Simples Nacional' : $texto;
