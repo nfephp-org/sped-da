@@ -1,7 +1,5 @@
 <?php
-
 namespace NFePHP\DA\NFe;
-
 /**
  * Classe para a impressão em PDF do Documento Auxiliar de NFe Consumidor
  * NOTA: Esta classe não é a indicada para quem faz uso de impressoras térmicas ESCPOS
@@ -13,14 +11,12 @@ namespace NFePHP\DA\NFe;
  * @link      http://github.com/nfephp-org/sped-da for the canonical source repository
  * @author    Roberto Spadim <roberto at spadim dot com dot br>
  */
-
 use Exception;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
 use Endroid\QrCode\QrCode;
 use DateTime;
-
 class Danfce extends Common
 {
     protected $papel;
@@ -52,7 +48,6 @@ class Danfce extends Common
     protected $hMaxLinha = 9;
     protected $hBoxLinha = 6;
     protected $hLinha = 3;
-
     /*
      * Retorna a sigla da UF
      * @var string
@@ -86,7 +81,6 @@ class Danfce extends Common
         '35' => 'SP',
         '17' => 'TO'
     ];
-
     /*
      * Fonte: http://nfce.encat.org/consumidor/consulte-sua-nota/
      * URL referente a pagina de consulta da NFCe pela chave de acesso
@@ -152,7 +146,6 @@ class Danfce extends Common
             'TO' => ''
         ],
     ];
-
     /**
      * __contruct
      *
@@ -615,6 +608,7 @@ class Danfce extends Common
         $vProd = $this->pSimpleGetValue($this->ICMSTot, "vProd");
         $vNF = $this->pSimpleGetValue($this->ICMSTot, "vNF");
         $vDesc  = $this->pSimpleGetValue($this->ICMSTot, "vDesc");
+        $vFrete = $this->pSimpleGetValue($this->ICMSTot, "vFrete");
         $vTotTrib = $this->pSimpleGetValue($this->ICMSTot, "vTotTrib");
         $texto = "Qtd. Total de Itens";
         $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
@@ -637,13 +631,20 @@ class Danfce extends Common
         $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
         $this->pTextBox($xValor, $yDesconto, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', 0, '', false);
         $yTotalFinal = $y + ($hLinha*3);
+        $texto = "Frete";
+        $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
+        $this->pTextBox($x, $yTotalFinal, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
+        $texto = "R$ " . $vFrete;
+        $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
+        $this->pTextBox($xValor, $yTotalFinal, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', 0, '', false);
+        $yTotalFinal = $y + ($hLinha*4);
         $texto = "Total";
         $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
         $this->pTextBox($x, $yTotalFinal, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
         $texto = "R$ " . $vNF;
         $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
         $this->pTextBox($xValor, $yTotalFinal, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', 0, '', false);
-        $yTotalFinal = $y + ($hLinha*4);
+        $yTotalFinal = $y + ($hLinha*5);
         $texto = "Informação dos Tributos Totais Incidentes";
         $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'');
         $this->pTextBox($x, $yTotalFinal, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
@@ -654,7 +655,7 @@ class Danfce extends Common
     
     protected function pPagamentosDANFE($x = 0, $y = 0, $h = 0)
     {
-        $y += 4;
+        $y += 6;
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
         $qtdPgto = $this->pag->length;
@@ -716,7 +717,7 @@ class Danfce extends Common
     
     protected function pFiscalDANFE($x = 0, $y = 0, $h = 0)
     {
-        $y += 4;
+        $y += 6;
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
         $w = ($maxW*1);
@@ -751,7 +752,7 @@ class Danfce extends Common
     
     protected function pConsumidorDANFE($x = 0, $y = 0, $h = 0)
     {
-        $y += 4;
+        $y += 6;
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
         $w = ($maxW*1);
@@ -822,7 +823,7 @@ class Danfce extends Common
     
     protected function pQRDANFE($x = 0, $y = 0, $h = 0)
     {
-        $y += 4;
+        $y += 6;
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
         $w = ($maxW*1);
@@ -898,7 +899,6 @@ class Danfce extends Common
         }
         return $arq;
     }
-
     /**
      * Dados brutos do PDF
      * @return string
