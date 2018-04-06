@@ -1,5 +1,7 @@
 <?php
+
 namespace NFePHP\DA\NFe;
+
 /**
  * Classe para a impressão em PDF do Documento Auxiliar de NFe Consumidor
  * NOTA: Esta classe não é a indicada para quem faz uso de impressoras térmicas ESCPOS
@@ -17,6 +19,7 @@ use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
 use Endroid\QrCode\QrCode;
 use DateTime;
+
 class Danfce extends Common
 {
     protected $papel;
