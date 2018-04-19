@@ -17,7 +17,7 @@ use Exception;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
-use Endroid\QrCode\QrCode;
+use Com\Tecnick\Barcode\Barcode;
 use DateTime;
 
 class Danfce extends Common
@@ -840,13 +840,22 @@ class Danfce extends Common
             $nProt = $this->pSimpleGetValue($this->nfeProc, "nProt");
             $dhRecbto  = $this->pSimpleGetValue($this->nfeProc, "dhRecbto");
         }
-        $qrcode = new QRcode($this->qrCode, 'M');
+        $barcode = new Barcode();
+        $bobj = $barcode->getBarcodeObj(
+            'QRCODE,M',
+            $this->qrCode,
+            -4,
+            -4,
+            'black',
+            array(-2, -2, -2, -2)
+        )->setBackgroundColor('white');
+        $qrcode = $bobj->getPngData();
         $wQr = 50;
         $hQr = 50;
         $yQr = ($y+$margemInterna);
         $xQr = ($w/2) - ($wQr/2);
         // prepare a base64 encoded "data url"
-        $pic = 'data://text/plain;base64,' . base64_encode($qrcode->writeString());
+        $pic = 'data://text/plain;base64,' . base64_encode($qrcode);
         $info = getimagesize($pic);
         $this->pdf->image($pic, $xQr, $yQr, $wQr, $hQr, 'PNG');
         $dt = new DateTime($dhRecbto);

@@ -9,7 +9,6 @@ use NFePHP\DA\Legacy\Common;
 
 class Danfe extends Common
 {
-
     const FPDF_FONTPATH = 'font/';
     const SIT_CANCELADA = 1;
     const SIT_DENEGADA = 2;
@@ -480,7 +479,6 @@ class Danfe extends Common
             }
         }
         $this->orientacao = $orientacao;
-        $this->pAdicionaLogoPeloCnpj();
         $this->papel = $papel;
         $this->logoAlign = $logoAlign;
         $this->situacao_externa = $situacaoExterna;
