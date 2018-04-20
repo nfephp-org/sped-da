@@ -1138,6 +1138,15 @@ class Danfce extends Common
             case '13':
                 $tPagNome = 'Vale Combustível';
                 break;
+            case '14':
+                $tPagNome = 'Duplicata Mercantil';
+                break;
+            case '15':
+                $tPagNome = 'Boleto Bancário';
+                break;
+            case '90':
+                $tPagNome = 'Sem Pagamento';
+                break;
             case '99':
                 $tPagNome = 'Outros';
         }
