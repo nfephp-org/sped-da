@@ -370,6 +370,7 @@ class Dacce extends Common
         // ############################################
         $x = $oldX;
         $y = $y1;
+        $texto = '';
         if ($this->CNPJDest != '') {
             $texto = 'CNPJ do Destinatário: ' . $this->pFormat($this->CNPJDest, "##.###.###/####-##");
         }
