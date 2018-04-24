@@ -356,6 +356,7 @@ class Danfce extends Common
         if (!empty($this->textoAdic)) {
             $y = $xInic + $hcabecalho + $hcabecalhoSecundario + $hprodutos
             + $hTotal + $hpagamentos + $hmsgfiscal + $hcliente + $hQRCode;
+            $hInfAdic = 0;
             $y = $this->pInfAdic($x, $y, $hInfAdic);
         }
         
