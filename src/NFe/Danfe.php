@@ -1628,7 +1628,7 @@ class Danfe extends Common
     {
         if (isset($this->cobr)) {
             $fat = $this->cobr->getElementsByTagName("fat")->item(0);
-            if (isset($fat)) {
+            if (isset($fat) && ! empty($this->pSimpleGetValue($this->ide, "indPag"))) {
                 $textoIndPag="";
                 $indPag = $this->pSimpleGetValue($this->ide, "indPag");
                 if ($indPag === "0") {
@@ -1642,6 +1642,10 @@ class Danfe extends Common
                 $vLiq = $this->pSimpleGetValue($fat, "vLiq", " Valor Líquido: ");
                 $texto = $textoIndPag . $nFat . $vOrig . $vDesc . $vLiq;
                 return $texto;
+            } else {
+                $pag = $this->dom->getElementsByTagName("pag");
+                $tPag = $this->pSimpleGetValue($pag->item(0), "tPag");
+                return $this->tipoPag($tPag);
             }
         }
         return "";
@@ -1924,23 +1928,29 @@ class Danfe extends Common
         //FRETE POR CONTA
         $x += $w1;
         $w2 = $maxW*0.15;
-        $texto = 'FRETE POR CONTA';
+        $texto = 'FRETE';
         $aFont = array('font'=>$this->fontePadrao, 'size'=>6, 'style'=>'');
         $this->pTextBox($x, $y, $w2, $h, $texto, $aFont, 'T', 'L', 1, '');
         $tipoFrete = ! empty($this->transp->getElementsByTagName("modFrete")->item(0)->nodeValue) ?
                 $this->transp->getElementsByTagName("modFrete")->item(0)->nodeValue : '0';
         switch ($tipoFrete) {
             case 0:
-                $texto = "(0) Emitente";
+                $texto = "0-Por conta do Rem";
                 break;
             case 1:
-                $texto = "(1) Dest/Rem";
+                $texto = "1-Por conta do Dest";
                 break;
             case 2:
-                $texto = "(2) Terceiros";
+                $texto = "2-Por conta de Terceiros";
+                break;
+            case 3:
+                $texto = "3-Próprio por conta do Rem";
+                break;
+            case 4:
+                $texto = "4-Próprio por conta do Dest";
                 break;
             case 9:
-                $texto = "(9) Sem Frete";
+                $texto = "9-Sem Transporte";
                 break;
         }
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B');
