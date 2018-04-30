@@ -13,12 +13,11 @@ namespace NFePHP\DA\NFe;
  * @link      http://github.com/nfephp-org/sped-da for the canonical source repository
  * @author    Roberto Spadim <roberto at spadim dot com dot br>
  */
-
 use Exception;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
-use Endroid\QrCode\QrCode;
+use Com\Tecnick\Barcode\Barcode;
 use DateTime;
 
 class Danfce extends Common
@@ -41,6 +40,8 @@ class Danfce extends Common
     protected $enderEmit;
     protected $qrCode;
     protected $det;
+    protected $infAdic;
+    protected $textoAdic;
     protected $pag;
     protected $dest;
     protected $imgQRCode;
@@ -50,7 +51,104 @@ class Danfce extends Common
     protected $hMaxLinha = 9;
     protected $hBoxLinha = 6;
     protected $hLinha = 3;
-    
+    /*
+     * Retorna a sigla da UF
+     * @var string
+     */
+    protected $UFSigla = [
+        '12' => 'AC',
+        '27' => 'AL',
+        '13' => 'AM',
+        '16' => 'AP',
+        '29' => 'BA',
+        '23' => 'CE',
+        '53' => 'DF',
+        '32' => 'ES',
+        '52' => 'GO',
+        '31' => 'MG',
+        '50' => 'MS',
+        '51' => 'MT',
+        '21' => 'MA',
+        '15' => 'PA',
+        '25' => 'PB',
+        '26' => 'PE',
+        '22' => 'PI',
+        '41' => 'PR',
+        '33' => 'RJ',
+        '11' => 'RO',
+        '24' => 'RN',
+        '14' => 'RR',
+        '43' => 'RS',
+        '42' => 'SC',
+        '28' => 'SE',
+        '35' => 'SP',
+        '17' => 'TO'
+    ];
+    /*
+     * Fonte: http://nfce.encat.org/consumidor/consulte-sua-nota/
+     * URL referente a pagina de consulta da NFCe pela chave de acesso
+     * @var string
+     */
+    protected $urlConsulta = [
+        '1' => [
+            'AC' => 'www.sefaznet.ac.gov.br/nfce/consulta',
+            'AL' => 'http://nfce.sefaz.al.gov.br/consultaNFCe.htm',
+            'AP' => 'https://www.sefaz.ap.gov.br/sate/seg/SEGf_AcessarFuncao.jsp?cdFuncao=FIS_1261',
+            'AM' => 'sistemas.sefaz.am.gov.br/nfceweb/formConsulta.do',
+            'BA' => 'nfe.sefaz.ba.gov.br/servicos/nfce/default.aspx',
+            'CE' => '',
+            'DF' => 'http://dec.fazenda.df.gov.br/NFCE/',
+            'ES' => 'http://app.sefaz.es.gov.br/ConsultaNFCe',
+            'GO' => '',
+            'MA' => 'http://www.nfce.sefaz.ma.gov.br/portal/consultaNFe.do?method=preFilterCupom&',
+            'MT' => 'http://www.sefaz.mt.gov.br/nfce/consultanfce',
+            'MS' => 'http://www.dfe.ms.gov.br/nfce',
+            'MG' => '',
+            'PA' => 'https://appnfc.sefa.pa.gov.br/portal/view/consultas/nfce/consultanfce.seam',
+            'PB' => 'www.receita.pb.gov.br/nfce',
+            'PR' => 'http://www.fazenda.pr.gov.br',
+            'PE' => '',
+            'PI' => 'http://webas.sefaz.pi.gov.br/nfceweb/consultarNFCe.jsf',
+            'RJ' => 'www.nfce.fazenda.rj.gov.br/consulta',
+            'RN' => 'http://nfce.set.rn.gov.br/consultarNFCe.aspx',
+            'RS' => 'https://www.sefaz.rs.gov.br/NFCE/NFCE-COM.aspx',
+            'RO' => 'http://www.nfce.sefin.ro.gov.br',
+            'RR' => 'https://www.sefaz.rr.gov.br/nfce/servlet/wp_consulta_nfce',
+            'SC' => '',
+            'SP' => 'https://www.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx',
+            'SE' => 'http://www.nfce.se.gov.br/portal/portalNoticias.jsp',
+            'TO' => ''
+        ],
+        '2' => [
+            'AC' => 'http://hml.sefaznet.ac.gov.br/nfce/consulta',
+            'AL' => 'http://nfce.sefaz.al.gov.br/consultaNFCe.htm',
+            'AP' => 'https://www.sefaz.ap.gov.br/sate1/seg/SEGf_AcessarFuncao.jsp?cdFuncao=FIS_1261',
+            'AM' => 'homnfce.sefaz.am.gov.br/nfceweb/formConsulta.do',
+            'BA' => 'http://hnfe.sefaz.ba.gov.br/servicos/nfce/default.aspx',
+            'CE' => 'http://nfceh.sefaz.ce.gov.br/pages/consultaNota.jsf',
+            'DF' => 'http://dec.fazenda.df.gov.br/NFCE/',
+            'ES' => 'http://homologacao.sefaz.es.gov.br/ConsultaNFCe',
+            'GO' => '',
+            'MA' => 'http://www.hom.nfce.sefaz.ma.gov.br/portal/consultarNFCe.jsp',
+            'MT' => 'http://homologacao.sefaz.mt.gov.br/nfce/consultanfce',
+            'MS' => 'http://www.dfe.ms.gov.br/nfce',
+            'MG' => '',
+            'PA' => 'https://appnfc.sefa.pa.gov.br/portal-homologacao/view/consultas/nfce/consultanfce.seam',
+            'PB' => '',
+            'PR' => 'http://www.fazenda.pr.gov.br',
+            'PE' => '',
+            'PI' => 'http://webas.sefaz.pi.gov.br/nfceweb-homologacao/consultarNFCe.jsf',
+            'RJ' => 'www.nfce.fazenda.rj.gov.br/consulta',
+            'RN' => 'http://nfce.set.rn.gov.br/consultarNFCe.aspx',
+            'RS' => 'https://www.sefaz.rs.gov.br/NFCE/NFCE-COM.aspx',
+            'RO' => 'http://www.nfce.sefin.ro.gov.br',
+            'RR' => 'http://200.174.88.103:8080/nfce/servlet/wp_consulta_nfce',
+            'SC' => '',
+            'SP' => 'https://www.homologacao.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaPublica.aspx',
+            'SE' => 'http://www.hom.nfe.se.gov.br/portal/portalNoticias.jsp',
+            'TO' => ''
+        ],
+    ];
     /**
      * __contruct
      *
@@ -99,10 +197,18 @@ class Danfce extends Common
             $this->enderEmit  = $this->dom->getElementsByTagName("enderEmit")->item(0);
             $this->det        = $this->dom->getElementsByTagName("det");
             $this->dest       = $this->dom->getElementsByTagName("dest")->item(0);
-            $this->pag        = $this->dom->getElementsByTagName("pag");
             $this->imposto    = $this->dom->getElementsByTagName("imposto")->item(0);
             $this->ICMSTot    = $this->dom->getElementsByTagName("ICMSTot")->item(0);
             $this->tpImp      = $this->ide->getElementsByTagName("tpImp")->item(0)->nodeValue;
+            $this->infAdic    = $this->dom->getElementsByTagName("infAdic")->item(0);
+            
+            //se for o layout 4.0 busca pelas tags de detalhe do pagamento
+            //senao, busca pelas tags de pagamento principal
+            if ($this->infNFe->getAttribute("versao") == "4.00") {
+                $this->pag = $this->dom->getElementsByTagName("detPag");
+            } else {
+                $this->pag = $this->dom->getElementsByTagName("pag");
+            }
         }
         $this->qrCode = $this->dom->getElementsByTagName('qrCode')->item(0)->nodeValue;
         if ($this->pSimpleGetValue($this->ide, "mod") != '65') {
@@ -120,6 +226,16 @@ class Danfce extends Common
         $this->papel = $aPap;
     }
     
+    public function monta(
+        $orientacao = 'P',
+        $papel = '',
+        $logoAlign = 'C',
+        $classPdf = false,
+        $depecNumReg = ''
+    ) {
+        $this->montaDANFE($orientacao, $papel, $logoAlign, $classPdf, $depecNumReg);
+    }
+    
     public function montaDANFE(
         $orientacao = 'P',
         $papel = '',
@@ -132,7 +248,22 @@ class Danfce extends Common
         $hMaxLinha = $this->hMaxLinha;
         $hBoxLinha = $this->hBoxLinha;
         $hLinha = $this->hLinha;
-        $tamPapelVert = 160 +16+ (($qtdItens-1)*$hMaxLinha) + ($qtdPgto*$hLinha);
+        $tamPapelVert = 160 + 16 + (($qtdItens - 1) * $hMaxLinha) + ($qtdPgto * $hLinha);
+        // verifica se existe informações adicionais
+        $this->textoAdic = '';
+        if (isset($this->infAdic)) {
+            $this->textoAdic .= !empty($this->infAdic->getElementsByTagName('infCpl')->item(0)->nodeValue) ?
+            'Inf. Contribuinte: '.
+            trim($this->pAnfavea($this->infAdic->getElementsByTagName('infCpl')->item(0)->nodeValue)) : '';
+            if (!empty($this->textoAdic)) {
+                $tempPDF = new Pdf(); // cria uma instancia temporaria da class pdf
+                $tempPDF->SetFont('Times', '', '8'); // seta a font do PDF
+                $linhasCount = $tempPDF->WordWrap($this->textoAdic, 76);
+                //seta a quantidade de linhas que o texto vai ocupar
+                //e deixa uma folga para a margem bottom
+                $tamPapelVert += $linhasCount + ceil(2.9 * $linhasCount);
+            }
+        }
         //se a orientação estiver em branco utilizar o padrão estabelecido na NF
         if ($orientacao == '') {
             $orientacao = 'P';
@@ -140,7 +271,7 @@ class Danfce extends Common
         $this->orientacao = $orientacao;
         $this->papel = array(80,$tamPapelVert);
         $this->logoAlign = $logoAlign;
-        $this->situacao_externa = $situacaoExterna;
+        //$this->situacao_externa = $situacaoExterna;
         $this->numero_registro_dpec = $depecNumReg;
         //instancia a classe pdf
         if ($classPdf) {
@@ -220,6 +351,14 @@ class Danfce extends Common
         $y = $xInic + $hcabecalho + $hcabecalhoSecundario + $hprodutos
             + $hTotal + $hpagamentos + $hmsgfiscal + $hcliente;
         $y = $this->pQRDANFE($x, $y, $hQRCode);
+        
+        //adiciona as informações opcionais
+        if (!empty($this->textoAdic)) {
+            $y = $xInic + $hcabecalho + $hcabecalhoSecundario + $hprodutos
+            + $hTotal + $hpagamentos + $hmsgfiscal + $hcliente + $hQRCode;
+            $y = $this->pInfAdic($x, $y, $hInfAdic);
+        }
+        
         //retorna o ID na NFe
         if ($classPdf!==false) {
             $aR = [
@@ -244,6 +383,7 @@ class Danfce extends Common
         if ($foneLen>0) {
             $ddd = substr($emitFone, 0, 2);
             $fone1 = substr($emitFone, -8);
+            $digito9 = ' ';
             if ($foneLen == 11) {
                 $digito9 = substr($emitFone, 2, 1);
             }
@@ -284,6 +424,7 @@ class Danfce extends Common
         }
         $texto = $texto . "\n" . $emitLgr . "," . $emitNro . " " . $emitCpl . "," . $emitBairro
                 . ". CEP:" . $emitCEP . ". " . $emitMun . "-" . $emitUF . $emitFone;
+        $aFont = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'');
         $this->pTextBox($xRs, $y, $wRs, $h, $texto, $aFont, 'C', $alignEmit, 0, '', false);
     }
     
@@ -470,6 +611,8 @@ class Danfce extends Common
         $vProd = $this->pSimpleGetValue($this->ICMSTot, "vProd");
         $vNF = $this->pSimpleGetValue($this->ICMSTot, "vNF");
         $vDesc  = $this->pSimpleGetValue($this->ICMSTot, "vDesc");
+        $vFrete = $this->pSimpleGetValue($this->ICMSTot, "vFrete");
+        $vTotTrib = $this->pSimpleGetValue($this->ICMSTot, "vTotTrib");
         $texto = "Qtd. Total de Itens";
         $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
         $this->pTextBox($x, $y, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
@@ -490,14 +633,21 @@ class Danfce extends Common
         $texto = "R$ " . $vDesc;
         $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
         $this->pTextBox($xValor, $yDesconto, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', 0, '', false);
-        $yTotalFinal = $y + ($hLinha*3);
+        $yFrete= $y + ($hLinha*3);
+        $texto = "Frete";
+        $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
+        $this->pTextBox($x, $yFrete, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
+        $texto = "R$ " . $vFrete;
+        $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
+        $this->pTextBox($xValor, $yFrete, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', 0, '', false);
+        $yTotalFinal = $y + ($hLinha*4);
         $texto = "Total";
         $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
         $this->pTextBox($x, $yTotalFinal, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
         $texto = "R$ " . $vNF;
         $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
         $this->pTextBox($xValor, $yTotalFinal, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', 0, '', false);
-        $yTotalFinal = $y + ($hLinha*4);
+        $yTotalFinal = $y + ($hLinha*5);
         $texto = "Informação dos Tributos Totais Incidentes";
         $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'');
         $this->pTextBox($x, $yTotalFinal, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
@@ -508,7 +658,7 @@ class Danfce extends Common
     
     protected function pPagamentosDANFE($x = 0, $y = 0, $h = 0)
     {
-        $y += 4;
+        $y += 6;
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
         $qtdPgto = $this->pag->length;
@@ -546,7 +696,7 @@ class Danfce extends Common
                 $yBoxProd = $y + $hLinha + ($cont*$hLinha);
                 //COLOCA PRODUTO CÓDIGO
                 $texto = $tPagNome;
-                $this->pTextBox($x, $yBoxProd, $wBoxEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
+                $this->pTextBox($x, $yBoxProd, $wBoxEsq, $hLinha, $texto, $aFontPgto, 'T', 'L', 0, '', false);
                 //COLOCA PRODUTO DESCRIÇÃO
                 $xBoxDescricao = $wBoxEsq + $x;
                 $texto = "R$ " . $vPag;
@@ -556,7 +706,7 @@ class Danfce extends Common
                     $wBoxDir,
                     $hLinha,
                     $texto,
-                    $aFontProdutos,
+                    $aFontPgto,
                     'C',
                     'R',
                     0,
@@ -570,7 +720,7 @@ class Danfce extends Common
     
     protected function pFiscalDANFE($x = 0, $y = 0, $h = 0)
     {
-        $y += 4;
+        $y += 6;
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
         $w = ($maxW*1);
@@ -584,7 +734,7 @@ class Danfce extends Common
         $nNF = $this->pSimpleGetValue($this->ide, 'nNF');
         $serieNF = str_pad($this->pSimpleGetValue($this->ide, "serie"), 3, "0", STR_PAD_LEFT);
         $dhEmi = $this->pSimpleGetValue($this->ide, "dhEmi");
-        $urlChave = $this->urlConsulta[$tpAmb][$cUF]['chave'];
+        $urlChave = $this->urlConsulta[$tpAmb][$this->UFSigla[$cUF]];
         $texto = "ÁREA DE MENSAGEM FISCAL";
         $this->pTextBox($x, $y, $w, $hLinha, $texto, $aFontTit, 'C', 'C', 0, '', false);
         $yTex1 = $y + ($hLinha*1);
@@ -605,7 +755,7 @@ class Danfce extends Common
     
     protected function pConsumidorDANFE($x = 0, $y = 0, $h = 0)
     {
-        $y += 4;
+        $y += 6;
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
         $w = ($maxW*1);
@@ -676,7 +826,7 @@ class Danfce extends Common
     
     protected function pQRDANFE($x = 0, $y = 0, $h = 0)
     {
-        $y += 4;
+        $y += 6;
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
         $w = ($maxW*1);
@@ -690,13 +840,22 @@ class Danfce extends Common
             $nProt = $this->pSimpleGetValue($this->nfeProc, "nProt");
             $dhRecbto  = $this->pSimpleGetValue($this->nfeProc, "dhRecbto");
         }
-        $qrcode = new QRcode($this->qrCode, 'M');
+        $barcode = new Barcode();
+        $bobj = $barcode->getBarcodeObj(
+            'QRCODE,M',
+            $this->qrCode,
+            -4,
+            -4,
+            'black',
+            array(-2, -2, -2, -2)
+        )->setBackgroundColor('white');
+        $qrcode = $bobj->getPngData();
         $wQr = 50;
         $hQr = 50;
         $yQr = ($y+$margemInterna);
         $xQr = ($w/2) - ($wQr/2);
         // prepare a base64 encoded "data url"
-        $pic = 'data://text/plain;base64,' . base64_encode($qrcode->writeString());
+        $pic = 'data://text/plain;base64,' . base64_encode($qrcode);
         $info = getimagesize($pic);
         $this->pdf->image($pic, $xQr, $yQr, $wQr, $hQr, 'PNG');
         $dt = new DateTime($dhRecbto);
@@ -705,6 +864,28 @@ class Danfce extends Common
             . $dt->format('d/m/Y H:i:s'), $aFontTex, 'C', 'C', 0, '', false);
     }
    
+    protected function pInfAdic($x = 0, $y = 0, $h = 0)
+    {
+        $y += 17;
+        $margemInterna = $this->margemInterna;
+        $maxW = $this->wPrint;
+        $w = ($maxW * 1);
+        $hLinha = $this->hLinha;
+        $aFontTit = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
+        $aFontTex = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+        // seta o textbox do titulo
+        $texto = "INFORMAÇÃO ADICIONAL";
+        $heigthText = $this->pTextBox($x, $y, $w, $hLinha, $texto, $aFontTit, 'C', 'C', 0, '', false);
+        // atribui o text adicional
+        $texto = $this->textoAdic;
+        // seta a quantidade de linhas que o texto vai ocupar
+        $linhasCount = $this->pdf->WordWrap($texto, $w) + 1;
+        // atribui a quantidade de linhas do texto adicional conforme o tamanho do texto
+        $y += $heigthText + $linhasCount + floor($linhasCount * 0.3);
+        // seta o textbox do texto adicional
+        $this->pTextBox($x, $y, $w, $hLinha, $texto, $aFontTex, 'C', 'L', 0, '', false);
+    }
+    
     /**
      * printDANFE
      * Esta função envia a DANFE em PDF criada para o dispositivo informado.
@@ -729,6 +910,160 @@ class Danfce extends Common
             //aqui pode entrar a rotina de impressão direta
         }
         return $arq;
+    }
+    /**
+     * Dados brutos do PDF
+     * @return string
+     */
+    public function render()
+    {
+        return $this->pdf->getPdf();
+    }
+    
+    /**
+     * anfavea
+     * Função para transformar o campo cdata do padrão ANFAVEA para
+     * texto imprimível
+     *
+     * @param  string $cdata campo CDATA
+     * @return string conteúdo do campo CDATA como string
+     */
+    protected function pAnfavea($cdata = '')
+    {
+        if ($cdata == '') {
+            return '';
+        }
+        //remove qualquer texto antes ou depois da tag CDATA
+        $cdata = str_replace('<![CDATA[', '<CDATA>', $cdata);
+        $cdata = str_replace(']]>', '</CDATA>', $cdata);
+        $cdata = preg_replace('/\s\s+/', ' ', $cdata);
+        $cdata = str_replace("> <", "><", $cdata);
+        $len = strlen($cdata);
+        $startPos = strpos($cdata, '<');
+        if ($startPos === false) {
+            return $cdata;
+        }
+        for ($x=$len; $x>0; $x--) {
+            if (substr($cdata, $x, 1) == '>') {
+                $endPos = $x;
+                break;
+            }
+        }
+        if ($startPos > 0) {
+            $parte1 = substr($cdata, 0, $startPos);
+        } else {
+            $parte1 = '';
+        }
+        $parte2 = substr($cdata, $startPos, $endPos-$startPos+1);
+        if ($endPos < $len) {
+            $parte3 = substr($cdata, $endPos + 1, $len - $endPos - 1);
+        } else {
+            $parte3 = '';
+        }
+        $texto = trim($parte1).' '.trim($parte3);
+        if (strpos($parte2, '<CDATA>') === false) {
+            $cdata = '<CDATA>'.$parte2.'</CDATA>';
+        } else {
+            $cdata = $parte2;
+        }
+        //carrega o xml CDATA em um objeto DOM
+        $dom = new Dom();
+        $dom->loadXML($cdata, LIBXML_NOBLANKS | LIBXML_NOEMPTYTAG);
+        //$xml = $dom->saveXML();
+        //grupo CDATA infADprod
+        $id = $dom->getElementsByTagName('id')->item(0);
+        $div = $dom->getElementsByTagName('div')->item(0);
+        $entg = $dom->getElementsByTagName('entg')->item(0);
+        $dest = $dom->getElementsByTagName('dest')->item(0);
+        $ctl = $dom->getElementsByTagName('ctl')->item(0);
+        $ref = $dom->getElementsByTagName('ref')->item(0);
+        if (isset($id)) {
+            if ($id->hasAttributes()) {
+                foreach ($id->attributes as $attr) {
+                    $name = $attr->nodeName;
+                    $value = $attr->nodeValue;
+                    $texto .= " $name : $value";
+                }
+            }
+        }
+        if (isset($div)) {
+            if ($div->hasAttributes()) {
+                foreach ($div->attributes as $attr) {
+                    $name = $attr->nodeName;
+                    $value = $attr->nodeValue;
+                    $texto .= " $name : $value";
+                }
+            }
+        }
+        if (isset($entg)) {
+            if ($entg->hasAttributes()) {
+                foreach ($entg->attributes as $attr) {
+                    $name = $attr->nodeName;
+                    $value = $attr->nodeValue;
+                    $texto .= " $name : $value";
+                }
+            }
+        }
+        if (isset($dest)) {
+            if ($dest->hasAttributes()) {
+                foreach ($dest->attributes as $attr) {
+                    $name = $attr->nodeName;
+                    $value = $attr->nodeValue;
+                    $texto .= " $name : $value";
+                }
+            }
+        }
+        if (isset($ctl)) {
+            if ($ctl->hasAttributes()) {
+                foreach ($ctl->attributes as $attr) {
+                    $name = $attr->nodeName;
+                    $value = $attr->nodeValue;
+                    $texto .= " $name : $value";
+                }
+            }
+        }
+        if (isset($ref)) {
+            if ($ref->hasAttributes()) {
+                foreach ($ref->attributes as $attr) {
+                    $name = $attr->nodeName;
+                    $value = $attr->nodeValue;
+                    $texto .= " $name : $value";
+                }
+            }
+        }
+        //grupo CADATA infCpl
+        $t = $dom->getElementsByTagName('transmissor')->item(0);
+        $r = $dom->getElementsByTagName('receptor')->item(0);
+        $versao = ! empty($dom->getElementsByTagName('versao')->item(0)->nodeValue) ?
+        'Versao:'.$dom->getElementsByTagName('versao')->item(0)->nodeValue.' ' : '';
+        $especieNF = ! empty($dom->getElementsByTagName('especieNF')->item(0)->nodeValue) ?
+        'Especie:'.$dom->getElementsByTagName('especieNF')->item(0)->nodeValue.' ' : '';
+        $fabEntrega = ! empty($dom->getElementsByTagName('fabEntrega')->item(0)->nodeValue) ?
+        'Entrega:'.$dom->getElementsByTagName('fabEntrega')->item(0)->nodeValue.' ' : '';
+        $dca = ! empty($dom->getElementsByTagName('dca')->item(0)->nodeValue) ?
+        'dca:'.$dom->getElementsByTagName('dca')->item(0)->nodeValue.' ' : '';
+        $texto .= "".$versao.$especieNF.$fabEntrega.$dca;
+        if (isset($t)) {
+            if ($t->hasAttributes()) {
+                $texto .= " Transmissor ";
+                foreach ($t->attributes as $attr) {
+                    $name = $attr->nodeName;
+                    $value = $attr->nodeValue;
+                    $texto .= " $name : $value";
+                }
+            }
+        }
+        if (isset($r)) {
+            if ($r->hasAttributes()) {
+                $texto .= " Receptor ";
+                foreach ($r->attributes as $attr) {
+                    $name = $attr->nodeName;
+                    $value = $attr->nodeValue;
+                    $texto .= " $name : $value";
+                }
+            }
+        }
+        return $texto;
     }
     
     /**
@@ -802,6 +1137,15 @@ class Danfce extends Common
                 break;
             case '13':
                 $tPagNome = 'Vale Combustível';
+                break;
+            case '14':
+                $tPagNome = 'Duplicata Mercantil';
+                break;
+            case '15':
+                $tPagNome = 'Boleto Bancário';
+                break;
+            case '90':
+                $tPagNome = 'Sem Pagamento';
                 break;
             case '99':
                 $tPagNome = 'Outros';

@@ -15,8 +15,7 @@ namespace NFePHP\DA\MDFe;
  * @author    Leandro C. Lopez <leandro dot castoldi at gmail dot com>
  */
 
-
-use NFePHP\Common\Dom\Dom;
+use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Common;
 use NFePHP\DA\Legacy\Pdf;
 
@@ -186,9 +185,7 @@ class Damdfe extends Common
         if ($this->dom->getElementsByTagName("valePed")->item(0) != "") {
             $this->valePed = $this->dom->getElementsByTagName("valePed")->item(0)->getElementsByTagName("disp");
         }
-        if (isset($this->infAdic)) {
-            $this->infCpl = $this->dom->getElementsByTagName("infCpl")->item(0)->nodeValue;
-        }
+        $this->infCpl = ($infCpl = $this->dom->getElementsByTagName('infCpl')->item(0)) ? $infCpl->nodeValue : "";
         $this->chMDFe = str_replace(
             'MDFe',
             '',
@@ -884,18 +881,19 @@ class Damdfe extends Common
         } else {
             $file = $this->pdfDir.$nome;
         }
-        if (($destino != 'I' || $destino != 'S') && $destino != 'F') {
+        if ($destino != 'I' && $destino != 'S' && $destino != 'F') {
             $destino = 'I';
         }
         if ($printer != '') {
             $command = "-P $printer";
         }
+
         $this->buildMDFe();
         $arq = $this->pdf->Output($file, $destino);
-        if ($destino == 'S') {
+        if ($destino == 'S' && $command != '') {
             //aqui pode entrar a rotina de impressão direta
             $command = "lpr $command $file";
-            system($comando, $retorno);
+            system($command, $retorno);
         }
 
         return $arq;

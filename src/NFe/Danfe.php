@@ -9,13 +9,12 @@ use NFePHP\DA\Legacy\Common;
 
 class Danfe extends Common
 {
-
     const FPDF_FONTPATH = 'font/';
     const SIT_CANCELADA = 1;
     const SIT_DENEGADA = 2;
     const SIT_DPEC = 3;
     const SIT_NONE = 0;
-    
+
     /**
      * alinhamento padrão do logo (C-Center)
      *
@@ -48,7 +47,7 @@ class Danfe extends Common
     //###########################################################
     // INÍCIO ATRIBUTOS DE PARÂMETROS DE EXIBIÇÃO
     //###########################################################
-    
+
     /**
      * Parâmetro para exibir ou ocultar os valores do PIS/COFINS.
      * @var boolean
@@ -81,11 +80,11 @@ class Danfe extends Common
      * @var boolean
      */
     public $descProdQuebraLinha = true;
-    
+
     //###########################################################
     //PROPRIEDADES DA CLASSE
     //###########################################################
-    
+
     /**
      * objeto fpdf()
      * @var object
@@ -299,6 +298,11 @@ class Danfe extends Common
      * @var integer
      */
     protected $debugMode=2;
+    /**
+     * Creditos para integrador
+     * @var string
+     */
+    protected $creditos = '';
 
     /**
      * __construct
@@ -385,6 +389,15 @@ class Danfe extends Common
     }
 
     /**
+     * Add the credits to the integrator in the footer message
+     * @param string $message
+     */
+    public function creditsIntegratorFooter($message = '')
+    {
+        $this->creditos = trim($message);
+    }
+    
+    /**
      * monta
      *
      * @name   monta
@@ -427,7 +440,11 @@ class Danfe extends Common
      */
     public function printDocument($nome = '', $destino = 'I', $printer = '')
     {
-        return $this->printDANFE($nome, $destino, $printer);
+        $arq = $this->pdf->Output($nome, $destino);
+        if ($destino == 'S') {
+            //aqui pode entrar a rotina de impressão direta
+        }
+        return $arq;
     }
 
     /**
@@ -462,7 +479,6 @@ class Danfe extends Common
             }
         }
         $this->orientacao = $orientacao;
-        $this->pAdicionaLogoPeloCnpj();
         $this->papel = $papel;
         $this->logoAlign = $logoAlign;
         $this->situacao_externa = $situacaoExterna;
@@ -825,6 +841,8 @@ class Danfe extends Common
         } else {
             $cdata = $parte2;
         }
+        //Retira a tag <FONTE IBPT> (caso existir) pois não é uma estrutura válida XML
+        $cdata = str_replace('<FONTE IBPT>', '', $cdata);
         //carrega o xml CDATA em um objeto DOM
         $dom = new Dom();
         $dom->loadXML($cdata, LIBXML_NOBLANKS | LIBXML_NOEMPTYTAG);
@@ -924,7 +942,7 @@ class Danfe extends Common
         }
         return $texto;
     }
-    
+
     /**
      * Dados brutos do PDF
      * @return string
@@ -1267,11 +1285,22 @@ class Danfe extends Common
         //CNPJ
         $x += $w;
         $w = ($maxW-(2*$w));
-        $texto = 'CNPJ';
+        $texto = 'CNPJ / CPF';
         $aFont = array('font'=>$this->fontePadrao, 'size'=>6, 'style'=>'');
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
-        $texto = $this->emit->getElementsByTagName("CNPJ")->item(0)->nodeValue;
-        $texto = $this->pFormat($texto, "##.###.###/####-##");
+        //Pegando valor do CPF/CNPJ
+        if (! empty($this->emit->getElementsByTagName("CNPJ")->item(0)->nodeValue)) {
+            $texto = $this->pFormat(
+                $this->emit->getElementsByTagName("CNPJ")->item(0)->nodeValue,
+                "###.###.###/####-##"
+            );
+        } else {
+            $texto = ! empty($this->emit->getElementsByTagName("CPF")->item(0)->nodeValue) ?
+                $this->pFormat(
+                    $this->emit->getElementsByTagName("CPF")->item(0)->nodeValue,
+                    "###.###.###-##"
+                ) : '';
+        }
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B');
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'B', 'C', 0, '');
 
@@ -1602,9 +1631,9 @@ class Danfe extends Common
             if (isset($fat)) {
                 $textoIndPag="";
                 $indPag = $this->pSimpleGetValue($this->ide, "indPag");
-                if ($indPag == 0) {
+                if ($indPag === "0") {
                     $textoIndPag = "Pagamento à Vista - ";
-                } elseif ($indPag == 1) {
+                } elseif ($indPag === "1") {
                     $textoIndPag = "Pagamento à Prazo - ";
                 }
                 $nFat = $this->pSimpleGetValue($fat, "nFat", "Fatura: ");
@@ -2190,7 +2219,7 @@ class Danfe extends Common
 
         if (!empty($ICMS)) {
             $impostos .= $this->pDescricaoProdutoHelper($ICMS, "pRedBC", " pRedBC=%s%%");
-            $impostos .= $this->pDescricaoProdutoHelper($ICMS, "pMVAST", " IVA=%s%%");
+            $impostos .= $this->pDescricaoProdutoHelper($ICMS, "pMVAST", " IVA/MVA=%s%%");
             $impostos .= $this->pDescricaoProdutoHelper($ICMS, "pICMSST", " pIcmsSt=%s%%");
             $impostos .= $this->pDescricaoProdutoHelper($ICMS, "vBCST", " BcIcmsSt=%s");
             $impostos .= $this->pDescricaoProdutoHelper($ICMS, "vICMSST", " vIcmsSt=%s");
@@ -2709,8 +2738,8 @@ class Danfe extends Common
         $aFont = array('font'=>$this->fontePadrao, 'size'=>6, 'style'=>'I');
         $texto = "Impresso em ". date('d/m/Y') . " as " . date('H:i:s');
         $this->pTextBox($x, $y, $w, 0, $texto, $aFont, 'T', 'L', false);
-        $texto = "DanfeNFePHP ver. " . $this->version .  "  Powered by NFePHP.org © LGPL-3.0 - Financial Sistemas ® financialsistemas.com.br";
-        $this->pTextBox($x, $y, $w, 0, $texto, $aFont, 'T', 'R', false, 'http://www.nfephp.org');
+        $texto = $this->creditos .  "  Powered by NFePHP";
+        $this->pTextBox($x, $y, $w, 0, $texto, $aFont, 'T', 'R', false, '');
     }
 
     /**
