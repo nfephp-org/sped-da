@@ -489,4 +489,49 @@ class Common
         $this->pdf->Rotate(0, $x, $y);
         return ($y1 - $y) - $incY;
     }
+      
+    protected function tipoPag($tPag)
+    {
+        switch ($tPag) {
+            case '01':
+                $tPagNome = 'Dinheiro';
+                break;
+            case '02':
+                $tPagNome = 'Cheque';
+                break;
+            case '03':
+                $tPagNome = 'Cartão de Crédito';
+                break;
+            case '04':
+                $tPagNome = 'Cartão de Débito';
+                break;
+            case '05':
+                $tPagNome = 'Crédito Loja';
+                break;
+            case '10':
+                $tPagNome = 'Vale Alimentação';
+                break;
+            case '11':
+                $tPagNome = 'Vale Refeição';
+                break;
+            case '12':
+                $tPagNome = 'Vale Presente';
+                break;
+            case '13':
+                $tPagNome = 'Vale Combustível';
+                break;
+            case '14':
+                $tPagNome = 'Duplicata Mercantil';
+                break;
+            case '15':
+                $tPagNome = 'Boleto Bancário';
+                break;
+            case '90':
+                $tPagNome = 'Sem Pagamento';
+                break;
+            case '99':
+                $tPagNome = 'Outros';
+        }
+        return $tPagNome;
+    }
 }
