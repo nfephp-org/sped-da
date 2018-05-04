@@ -1209,5 +1209,4 @@ class Danfce extends Common
                $cStat == '301' ||
                $cStat == '302';
     }
-    
 }
