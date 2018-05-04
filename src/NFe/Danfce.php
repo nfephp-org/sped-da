@@ -732,7 +732,7 @@ class Danfce extends Common
         $chNFe = str_replace('NFe', '', $this->infNFe->getAttribute("Id"));
         $tpAmb = $this->pSimpleGetValue($this->ide, 'tpAmb');
         
-        if ($this->pNotaCancelada()) {   
+        if ($this->pNotaCancelada()) {
             //101 Cancelamento
             $this->pdf->SetTextColor(255, 0, 0);
             $texto = "NFCe CANCELADA";
@@ -740,7 +740,7 @@ class Danfce extends Common
             $this->pdf->SetTextColor(0, 0, 0);
         }
         
-        if ($this->pNotaDenegada()) {   
+        if ($this->pNotaDenegada()) {
             //uso denegado
             $this->pdf->SetTextColor(255, 0, 0);
             $texto = "NFCe CANCELADA";
