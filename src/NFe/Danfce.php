@@ -731,6 +731,23 @@ class Danfce extends Common
         $digVal = $this->pSimpleGetValue($this->nfe, "DigestValue");
         $chNFe = str_replace('NFe', '', $this->infNFe->getAttribute("Id"));
         $tpAmb = $this->pSimpleGetValue($this->ide, 'tpAmb');
+        
+        if ($this->pNotaCancelada()) {
+            //101 Cancelamento
+            $this->pdf->SetTextColor(255, 0, 0);
+            $texto = "NFCe CANCELADA";
+            $this->pTextBox($x, $y - 25, $w, $h, $texto, $aFontTit, 'C', 'C', 0, '');
+            $this->pdf->SetTextColor(0, 0, 0);
+        }
+        
+        if ($this->pNotaDenegada()) {
+            //uso denegado
+            $this->pdf->SetTextColor(255, 0, 0);
+            $texto = "NFCe CANCELADA";
+            $this->pTextBox($x, $y - 25, $w, $h, $texto, $aFontTit, 'C', 'C', 0, '');
+            $this->pdf->SetTextColor(0, 0, 0);
+        }
+        
         $cUF = $this->pSimpleGetValue($this->ide, 'cUF');
         $nNF = $this->pSimpleGetValue($this->ide, 'nNF');
         $serieNF = str_pad($this->pSimpleGetValue($this->ide, "serie"), 3, "0", STR_PAD_LEFT);
@@ -1166,5 +1183,30 @@ class Danfce extends Common
             $seq = $url.''.$seq;
         }
         return $seq;
+    }
+    
+    protected function pNotaCancelada()
+    {
+        if (!isset($this->nfeProc)) {
+            return false;
+        }
+        $cStat = $this->pSimpleGetValue($this->nfeProc, "cStat");
+        return $cStat == '101' ||
+                $cStat == '151' ||
+                $cStat == '135' ||
+                $cStat == '155';
+    }
+
+    protected function pNotaDenegada()
+    {
+        if (!isset($this->nfeProc)) {
+            return false;
+        }
+        //NÃO ERA NECESSÁRIO ESSA FUNÇÃO POIS SÓ SE USA
+        //1 VEZ NO ARQUIVO INTEIRO
+        $cStat = $this->pSimpleGetValue($this->nfeProc, "cStat");
+        return $cStat == '110' ||
+               $cStat == '301' ||
+               $cStat == '302';
     }
 }
