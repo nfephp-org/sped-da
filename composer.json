@@ -4,7 +4,7 @@
     "description": "sped-da contêm as classes para criação dos documentos auxiliares referidos no projeto Sped.",
     "keywords": ["nfe", "sped", "nfephp", "Danfe", "Dacte", "CCe" ],
     "homepage": "https://github.com/nfephp-org/sped-da",
-    "license": ["LGPLv3+", "GPLv3+", "MIT"],
+    "license": ["LGPL-3.0-or-later+", "GPL-3.0-or-later", "MIT"],
     "authors": [
         {
             "name": "Roberto L. Machado",
