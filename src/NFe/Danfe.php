@@ -1622,30 +1622,32 @@ class Danfe extends Common
      * Gera a String do Texto da Fatura
       *
      * @name   getTextoFatura
-     * @return a String com o texto ou "";
+     * @return uma String com o texto ou "";
      */
     protected function pGetTextoFatura()
     {
         if (isset($this->cobr)) {
             $fat = $this->cobr->getElementsByTagName("fat")->item(0);
-            if (isset($fat) && ! empty($this->pSimpleGetValue($this->ide, "indPag"))) {
-                $textoIndPag="";
-                $indPag = $this->pSimpleGetValue($this->ide, "indPag");
-                if ($indPag === "0") {
-                    $textoIndPag = "Pagamento à Vista - ";
-                } elseif ($indPag === "1") {
-                    $textoIndPag = "Pagamento à Prazo - ";
+            if (isset($fat)) {
+                if (!empty($this->pSimpleGetValue($this->ide, "indPag"))) {
+                    $textoIndPag = "";
+                    $indPag = $this->pSimpleGetValue($this->ide, "indPag");
+                    if ($indPag === "0") {
+                        $textoIndPag = "Pagamento à Vista - ";
+                    } elseif ($indPag === "1") {
+                        $textoIndPag = "Pagamento à Prazo - ";
+                    }
+                    $nFat = $this->pSimpleGetValue($fat, "nFat", "Fatura: ");
+                    $vOrig = $this->pSimpleGetValue($fat, "vOrig", " Valor Original: ");
+                    $vDesc = $this->pSimpleGetValue($fat, "vDesc", " Desconto: ");
+                    $vLiq = $this->pSimpleGetValue($fat, "vLiq", " Valor Líquido: ");
+                    $texto = $textoIndPag . $nFat . $vOrig . $vDesc . $vLiq;
+                    return $texto;
+                } else {
+                    $pag = $this->dom->getElementsByTagName("pag");
+                    $tPag = $this->pSimpleGetValue($pag->item(0), "tPag");
+                    return $this->tipoPag($tPag);
                 }
-                $nFat = $this->pSimpleGetValue($fat, "nFat", "Fatura: ");
-                $vOrig = $this->pSimpleGetValue($fat, "vOrig", " Valor Original: ");
-                $vDesc = $this->pSimpleGetValue($fat, "vDesc", " Desconto: ");
-                $vLiq = $this->pSimpleGetValue($fat, "vLiq", " Valor Líquido: ");
-                $texto = $textoIndPag . $nFat . $vOrig . $vDesc . $vLiq;
-                return $texto;
-            } else {
-                $pag = $this->dom->getElementsByTagName("pag");
-                $tPag = $this->pSimpleGetValue($pag->item(0), "tPag");
-                return $this->tipoPag($tPag);
             }
         }
         return "";
