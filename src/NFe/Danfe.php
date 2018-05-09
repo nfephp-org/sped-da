@@ -2248,26 +2248,29 @@ class Danfe extends Common
             $infAdProd = trim($infAdProd);
             $infAdProd .= ' ';
         }
-        $medTxt='';
-        $med = $prod->getElementsByTagName("med");
-        if (isset($med)) {
+        $loteTxt ='';
+        $rastro = $prod->getElementsByTagName("med");
+        if (!isset($rastro)) {
+            $rastro = $prod->getElementsByTagName("rastro");
+        }
+        if (isset($rastro)) {
             $i = 0;
-            while ($i < $med->length) {
-                $medTxt .= $this->pSimpleGetValue($med->item($i), 'nLote', ' Lote: ');
-                $medTxt .= $this->pSimpleGetValue($med->item($i), 'qLote', ' Quant: ');
-                $medTxt .= $this->pSimpleGetDate($med->item($i), 'dFab', ' Fab: ');
-                $medTxt .= $this->pSimpleGetDate($med->item($i), 'dVal', ' Val: ');
-                $medTxt .= $this->pSimpleGetValue($med->item($i), 'vPMC', ' PMC: ');
+            while ($i < $rastro->length) {
+                $loteTxt .= $this->pSimpleGetValue($rastro->item($i), 'nLote', ' Lote: ');
+                $loteTxt .= $this->pSimpleGetValue($rastro->item($i), 'qLote', ' Quant: ');
+                $loteTxt .= $this->pSimpleGetDate($rastro->item($i), 'dFab', ' Fab: ');
+                $loteTxt .= $this->pSimpleGetDate($rastro->item($i), 'dVal', ' Val: ');
+                $loteTxt .= $this->pSimpleGetValue($rastro->item($i), 'vPMC', ' PMC: ');
                 $i++;
             }
-            if ($medTxt != '') {
-                $medTxt.= ' ';
+            if ($loteTxt != '') {
+                $loteTxt.= ' ';
             }
         }
         //NT2013.006 FCI
         $nFCI = (! empty($itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue)) ?
                 ' FCI:'.$itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue : '';
-        $tmp_ad=$infAdProd . ($this->descProdInfoComplemento ? $medTxt . $impostos . $nFCI : '');
+        $tmp_ad=$infAdProd . ($this->descProdInfoComplemento ? $loteTxt . $impostos . $nFCI : '');
         $texto = $prod->getElementsByTagName("xProd")->item(0)->nodeValue . (strlen($tmp_ad)!=0?"\n    ".$tmp_ad:'');
         if ($this->descProdQuebraLinha) {
             $texto = str_replace(";", "\n", $texto);
