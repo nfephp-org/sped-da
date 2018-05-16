@@ -803,7 +803,7 @@ class Danfe extends Common
      * @param  string $cdata campo CDATA
      * @return string conteúdo do campo CDATA como string
      */
-    private function pAnfavea($cdata = '')
+    protected function pAnfavea($cdata = '')
     {
         if ($cdata == '') {
             return '';
@@ -1645,8 +1645,9 @@ class Danfe extends Common
                     return $texto;
                 } else {
                     $pag = $this->dom->getElementsByTagName("pag");
-                    $tPag = $this->pSimpleGetValue($pag->item(0), "tPag");
-                    return $this->tipoPag($tPag);
+                    if ($tPag = $this->pSimpleGetValue($pag->item(0), "tPag")) {
+                        return $this->tipoPag($tPag);
+                    }
                 }
             }
         }
