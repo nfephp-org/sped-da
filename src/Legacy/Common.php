@@ -531,6 +531,10 @@ class Common
                 break;
             case '99':
                 $tPagNome = 'Outros';
+                break;
+            default:
+                $tPagNome = '';
+                // Adicionado default para impressão de notas da 3.10
         }
         return $tPagNome;
     }
