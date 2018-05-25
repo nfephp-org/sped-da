@@ -256,12 +256,21 @@ class Danfce extends Common
             'Inf. Contribuinte: '.
             trim($this->pAnfavea($this->infAdic->getElementsByTagName('infCpl')->item(0)->nodeValue)) : '';
             if (!empty($this->textoAdic)) {
+                $this->textoAdic = str_replace(";", "\n", $this->textoAdic);
+                $alinhas = explode("\n", $this->textoAdic);
+                $numlinhasdados = 0;
                 $tempPDF = new Pdf(); // cria uma instancia temporaria da class pdf
                 $tempPDF->SetFont('Times', '', '8'); // seta a font do PDF
-                $linhasCount = $tempPDF->WordWrap($this->textoAdic, 76);
-                //seta a quantidade de linhas que o texto vai ocupar
-                //e deixa uma folga para a margem bottom
-                $tamPapelVert += $linhasCount + ceil(2.9 * $linhasCount);
+                foreach ($alinhas as $linha) {
+                    $linha = trim($linha);
+                    $numlinhasdados += $tempPDF->WordWrap($linha, 76 - 0.2);
+                }
+                $hdadosadic = round(($numlinhasdados + 1) * $tempPDF->fontSize, 0);
+                if ($hdadosadic < 5) {
+                    $hdadosadic = 5;
+                }
+                // seta o tamanho do papel
+                $tamPapelVert += $hdadosadic;
             }
         }
         //se a orientação estiver em branco utilizar o padrão estabelecido na NF
@@ -894,14 +903,9 @@ class Danfce extends Common
         // seta o textbox do titulo
         $texto = "INFORMAÇÃO ADICIONAL";
         $heigthText = $this->pTextBox($x, $y, $w, $hLinha, $texto, $aFontTit, 'C', 'C', 0, '', false);
-        // atribui o text adicional
-        $texto = $this->textoAdic;
-        // seta a quantidade de linhas que o texto vai ocupar
-        $linhasCount = $this->pdf->WordWrap($texto, $w) + 1;
-        // atribui a quantidade de linhas do texto adicional conforme o tamanho do texto
-        $y += $heigthText + $linhasCount + floor($linhasCount * 0.3);
+                
         // seta o textbox do texto adicional
-        $this->pTextBox($x, $y, $w, $hLinha, $texto, $aFontTex, 'C', 'L', 0, '', false);
+        $this->pTextBox($x, $y+3, $w-2, $hLinha-3, $this->textoAdic, $aFontTex, 'T', 'L', 0, '', false);
     }
     
     /**
