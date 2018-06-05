@@ -43,6 +43,7 @@ class Danfce extends Common
     protected $infAdic;
     protected $textoAdic;
     protected $pag;
+    protected $vTroco;
     protected $dest;
     protected $imgQRCode;
     protected $urlQR = '';
@@ -206,6 +207,9 @@ class Danfce extends Common
             //senao, busca pelas tags de pagamento principal
             if ($this->infNFe->getAttribute("versao") == "4.00") {
                 $this->pag = $this->dom->getElementsByTagName("detPag");
+                
+                $tagPag = $this->dom->getElementsByTagName("pag")->item(0);
+                $this->vTroco = $this->pSimpleGetValue($tagPag, "vTroco");
             } else {
                 $this->pag = $this->dom->getElementsByTagName("pag");
             }
@@ -321,6 +325,9 @@ class Danfce extends Common
         $hprodutos = $hLinha + ($qtdItens*$hMaxLinha) ;//box poduto
         $hTotal = 12; //box total (FIXO)
         $hpagamentos = $hLinha + ($qtdPgto*$hLinha);//para pagamentos
+        if (!empty($this->vTroco)) {
+            $hpagamentos += $hLinha;
+        }
         $hmsgfiscal = 21;// para imposto (FIXO)
         if (!isset($this->dest)) {
             $hcliente = 6;// para cliente (FIXO)
@@ -724,6 +731,17 @@ class Danfce extends Common
                     false
                 );
                 $cont++;
+            }
+            
+            if (!empty($this->vTroco)) {
+                $yBoxProd = $y + $hLinha + ($cont*$hLinha);
+                //COLOCA PRODUTO CÓDIGO
+                $texto = 'Troco';
+                $this->pTextBox($x, $yBoxProd, $wBoxEsq, $hLinha, $texto, $aFontPgto, 'T', 'L', 0, '', false);
+                //COLOCA PRODUTO DESCRIÇÃO
+                $xBoxDescricao = $wBoxEsq + $x;
+                $texto = "R$ " . number_format($this->vTroco, 2, ",", ".");
+                $this->pTextBox($xBoxDescricao, $yBoxProd, $wBoxDir, $hLinha, $texto, $aFontPgto, 'C', 'R', 0, '', false);
             }
         }
     }
