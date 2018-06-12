@@ -747,11 +747,11 @@ class Danfce extends Common
                     $wBoxDir,
                     $hLinha,
                     $texto,
-                    $aFontPgto, 
-                    'C', 
-                    'R', 
-                    0, 
-                    '', 
+                    $aFontPgto,
+                    'C',
+                    'R',
+                    0,
+                    '',
                     false
                );
             }
