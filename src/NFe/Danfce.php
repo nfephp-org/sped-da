@@ -741,7 +741,8 @@ class Danfce extends Common
                 //COLOCA PRODUTO DESCRIÇÃO
                 $xBoxDescricao = $wBoxEsq + $x;
                 $texto = "R$ " . number_format($this->vTroco, 2, ",", ".");
-                $this->pTextBox($xBoxDescricao, $yBoxProd, $wBoxDir, $hLinha, $texto, $aFontPgto, 'C', 'R', 0, '', false);
+                $this->pTextBox($xBoxDescricao, $yBoxProd, $wBoxDir, $hLinha,
+                                $texto, $aFontPgto, 'C', 'R', 0, '', false);
             }
         }
     }
