@@ -152,7 +152,7 @@ class DacteOSV3 extends Common
         if (!empty($this->xml)) {
             $this->dom = new Dom();
             $this->dom->loadXML($this->xml);
-            $this->cteProc = $this->dom->getElementsByTagName("cteProc")->item(0);
+            $this->cteProc = $this->dom->getElementsByTagName("cteOSProc")->item(0);
             $this->infCte = $this->dom->getElementsByTagName("infCte")->item(0);
             $this->ide = $this->dom->getElementsByTagName("ide")->item(0);
             $this->emit = $this->dom->getElementsByTagName("emit")->item(0);
