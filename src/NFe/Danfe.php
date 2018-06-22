@@ -605,16 +605,19 @@ class Danfe extends Common
                     $this->textoAdic .= "Esp.: " . $nodeVolume->getElementsByTagName("esp")->item(0)->nodeValue . " ";
                 }
                 if ($nodeVolume->getElementsByTagName("marca")->item(0)->nodeValue != "") {
-                    $this->textoAdic .= "Marca: " . $nodeVolume->getElementsByTagName("marca")->item(0)->nodeValue . " ";
+                    $this->textoAdic .= "Marca: "
+                        . $nodeVolume->getElementsByTagName("marca")->item(0)->nodeValue . " ";
                 }
                 if ($nodeVolume->getElementsByTagName("nVol")->item(0)->nodeValue != "") {
                     $this->textoAdic .= "Num.: " . $nodeVolume->getElementsByTagName("nVol")->item(0)->nodeValue . " ";
                 }
                 if ($nodeVolume->getElementsByTagName("pesoB")->item(0)->nodeValue > 0) {
-                    $this->textoAdic .= "PesoB: " . $nodeVolume->getElementsByTagName("pesoB")->item(0)->nodeValue . " ";
+                    $this->textoAdic .= "PesoB: "
+                        . $nodeVolume->getElementsByTagName("pesoB")->item(0)->nodeValue . " ";
                 }
                 if ($nodeVolume->getElementsByTagName("pesoL")->item(0)->nodeValue > 0) {
-                    $this->textoAdic .= "PesoL: " . $nodeVolume->getElementsByTagName("pesoL")->item(0)->nodeValue . " ";
+                    $this->textoAdic .= "PesoL: "
+                        . $nodeVolume->getElementsByTagName("pesoL")->item(0)->nodeValue . " ";
                 }
 
                 $this->textoAdic .= "\r\n";
