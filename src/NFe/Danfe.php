@@ -594,35 +594,33 @@ class Danfe extends Common
                     $txRetUF .
                     "\r\n";
         }
-		
-		// Dados dos volumes
-        if ($this->transp->getElementsByTagName("vol")->length > 1)
-        {
-            foreach ($this->transp->getElementsByTagName("vol") as $nodeVolume)
-            {            
+
+        // Dados dos volumes
+        if ($this->transp->getElementsByTagName("vol")->length > 1) {
+            foreach ($this->transp->getElementsByTagName("vol") as $nodeVolume) {
                 if ($nodeVolume->getElementsByTagName("qVol")->item(0)->nodeValue > 0) {
                     $this->textoAdic .= "Qtd.: " . $nodeVolume->getElementsByTagName("qVol")->item(0)->nodeValue . " ";
-				}
+                }
                 if ($nodeVolume->getElementsByTagName("esp")->item(0)->nodeValue != "") {
                     $this->textoAdic .= "Esp.: " . $nodeVolume->getElementsByTagName("esp")->item(0)->nodeValue . " ";
-				}
+                }
                 if ($nodeVolume->getElementsByTagName("marca")->item(0)->nodeValue != "") {
                     $this->textoAdic .= "Marca: " . $nodeVolume->getElementsByTagName("marca")->item(0)->nodeValue . " ";
-				}
+                }
                 if ($nodeVolume->getElementsByTagName("nVol")->item(0)->nodeValue != "") {
                     $this->textoAdic .= "Num.: " . $nodeVolume->getElementsByTagName("nVol")->item(0)->nodeValue . " ";
-				}
+                }
                 if ($nodeVolume->getElementsByTagName("pesoB")->item(0)->nodeValue > 0) {
                     $this->textoAdic .= "PesoB: " . $nodeVolume->getElementsByTagName("pesoB")->item(0)->nodeValue . " ";
-				}
+                }
                 if ($nodeVolume->getElementsByTagName("pesoL")->item(0)->nodeValue > 0) {
                     $this->textoAdic .= "PesoL: " . $nodeVolume->getElementsByTagName("pesoL")->item(0)->nodeValue . " ";
-				}
-                
+                }
+
                 $this->textoAdic .= "\r\n";
             }
         }
-		
+
         //dados do local de entrega da mercadoria
         if (isset($this->entrega)) {
             $txRetCNPJ = ! empty($this->entrega->getElementsByTagName("CNPJ")->item(0)->nodeValue) ?
