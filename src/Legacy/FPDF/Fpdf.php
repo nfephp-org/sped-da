@@ -67,6 +67,8 @@ class Fpdf
     public $aliasNbPages;       //alias for total number of pages
     public $pdfVersion;         //PDF version number
     
+    var $tmpFiles = array();
+    
     public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4')
     {
         //Some checks
@@ -313,6 +315,8 @@ class Fpdf
         $this->endPage();
         //Close document
         $this->endDoc();
+        foreach ($this->tmpFiles as $tmp)
+            @unlink($tmp);
     }
     
     public function addPage($orientation = '', $format = '')
@@ -689,7 +693,7 @@ class Fpdf
     {
         //Output a cell
         $k = $this->k;
-        if ($this->y+$h > $this->PageBreakTrigger
+        if ($this->y+$h > $this->pageBreakTrigger
             && !$this->InHeader
             && !$this->InFooter
             && $this->acceptPageBreak()
@@ -990,7 +994,7 @@ class Fpdf
         }
     }
     
-    public function image($file, $x = null, $y = null, $w = 0, $h = 0, $type = '', $link = '')
+    public function image($file, $x = null, $y = null, $w = 0, $h = 0, $type = '', $link = '', $isMask = false, $maskImg = 0)
     {
         //Put an image on the page
         if (!isset($this->images[$file])) {
@@ -1003,15 +1007,36 @@ class Fpdf
                 $type = substr($file, $pos+1);
             }
             $type = strtolower($type);
-            if ($type == 'jpeg') {
-                $type = 'jpg';
+            if ($type == 'png') {
+                $info = $this->parsePNG($file);
+                if ($info == 'alpha') {
+                    return $this->ImagePngWithAlpha($file, $x, $y, $w, $h, $link);
+                }
+            } else {
+                if ($type == 'jpeg') {
+                    $type = 'jpg';
+                }
+                $mtd = '_parse'.$type;
+                if (!method_exists($this, $mtd)) {
+                    $this->error('Unsupported image type: '.$type);
+                }
+                $info = $this->$mtd($file);
             }
-            $mtd = 'parse'.strtoupper($type);
-            if (!method_exists($this, $mtd)) {
-                $this->error('Unsupported image type: '.$type);
+            if ($isMask) {
+                if (in_array($file, $this->tmpFiles)) {
+                    $info['cs'] = 'DeviceGray'; //hack necessary as GD can't produce gray scale images
+                }
+                if ($info['cs'] != 'DeviceGray') {
+                    $this->error('Mask must be a gray scale image');
+                }
+                if ($this->pdfVersion < '1.4') {
+                    $this->pdfVersion = '1.4';
+                }
             }
-            $info = $this->$mtd($file);
             $info['i'] = count($this->images)+1;
+            if ($maskImg > 0) {
+                $info['masked'] = $maskImg;
+            }
             $this->images[$file] = $info;
         } else {
             $info = $this->images[$file];
@@ -1044,19 +1069,22 @@ class Fpdf
         if ($x === null) {
             $x = $this->x;
         }
-        $this->out(
-            sprintf(
-                'q %.2F 0 0 %.2F %.2F %.2F cm /I%d Do Q',
-                $w*$this->k,
-                $h*$this->k,
-                $x*$this->k,
-                ($this->h-($y+$h))*$this->k,
-                $info['i']
-            )
-        );
+        if (!$isMask) {
+            $this->out(
+                    sprintf(
+                        'q %.2F 0 0 %.2F %.2F %.2F cm /I%d Do Q',
+                        $w*$this->k,
+                        $h*$this->k,
+                        $x*$this->k,
+                        ($this->h-($y+$h))*$this->k,
+                        $info['i']
+                    )
+            );
+        }
         if ($link) {
             $this->link($x, $y, $w, $h, $link);
         }
+        return $info['i'];
     }
     
     
@@ -1360,6 +1388,12 @@ class Fpdf
     }
     
     
+    // GD seems to use a different gamma, this method is used to correct it again
+    function gamma($v) {
+        return pow($v/255,2.2)*255;
+    }
+    
+    
     protected function parsePNG($file)
     {
         //Extract info from a PNG file
@@ -1390,7 +1424,8 @@ class Fpdf
         } elseif ($ct == 3) {
             $colspace = 'Indexed';
         } else {
-            $this->error('Alpha channel not supported: '.$file);
+            fclose($f);
+            return 'alpha';
         }
         if (ord($this->readstream($f, 1)) != 0) {
             $this->error('Unknown compression method: '.$file);
@@ -1725,6 +1760,47 @@ class Fpdf
     }
     
     
+    // needs GD 2.x extension
+    // pixel-wise operation, not very fast
+    function ImagePngWithAlpha($file, $x, $y, $w=0, $h=0, $link='')
+    {
+        $tmp_alpha = tempnam('.', 'mska');
+        $this->tmpFiles[] = $tmp_alpha;
+        $tmp_plain = tempnam('.', 'mskp');
+        $this->tmpFiles[] = $tmp_plain;
+        list($wpx, $hpx) = getimagesize($file);
+        $img = imagecreatefrompng($file);
+        $alpha_img = imagecreate($wpx, $hpx);
+        // generate gray scale pallete
+        for ($c=0; $c<256; $c++) {
+            ImageColorAllocate($alpha_img, $c, $c, $c);
+        }
+        // extract alpha channel
+        $xpx = 0;
+        while ($xpx < $wpx) {
+            $ypx = 0;
+            while ($ypx < $hpx) {
+                $color_index = imagecolorat($img, $xpx, $ypx);
+                $col = imagecolorsforindex($img, $color_index);
+                imagesetpixel($alpha_img, $xpx, $ypx, $this->gamma((127-$col['alpha'])*255/127));
+                ++$ypx;
+            }
+            ++$xpx;
+        }
+        imagepng($alpha_img, $tmp_alpha);
+        imagedestroy($alpha_img);
+        // extract image without alpha channel
+        $plain_img = imagecreatetruecolor($wpx, $hpx);
+        imagecopy($plain_img, $img, 0, 0, 0, 0, $wpx, $hpx);
+        imagepng($plain_img, $tmp_plain);
+        imagedestroy($plain_img);
+        //first embed mask image (w, h, x, will be ignored)
+        $maskImg = $this->Image($tmp_alpha, 0, 0, 0, 0, 'PNG', '', true);
+        //embed image, masked with previously embedded mask
+        $this->Image($tmp_plain, $x, $y, $w, $h, 'PNG', $link, false, $maskImg);
+    }
+    
+    
     protected function putImages()
     {
         $filter = ($this->compress) ? '/Filter /FlateDecode ' : '';
@@ -1737,6 +1813,9 @@ class Fpdf
             $this->out('/Subtype /Image');
             $this->out('/Width '.$info['w']);
             $this->out('/Height '.$info['h']);
+            if (isset($info['masked'])){
+                $this->out('/SMask ' . ($this->n-1) . ' 0 R');
+            }
             if ($info['cs']=='Indexed') {
                 $this->out('/ColorSpace [/Indexed /DeviceRGB '.(strlen($info['pal'])/3-1).' '.($this->n+1).' 0 R]');
             } else {
