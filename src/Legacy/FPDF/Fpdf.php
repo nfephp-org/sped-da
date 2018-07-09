@@ -1071,16 +1071,7 @@ class Fpdf
             $x = $this->x;
         }
         if (!$isMask) {
-            $this->out(
-                    sprintf(
-                        'q %.2F 0 0 %.2F %.2F %.2F cm /I%d Do Q',
-                        $w*$this->k,
-                        $h*$this->k,
-                        $x*$this->k,
-                        ($this->h-($y+$h))*$this->k,
-                        $info['i']
-                    )
-            );
+            $this->out(sprintf('q %.2F 0 0 %.2F %.2F %.2F cm /I%d Do Q', $w*$this->k, $h*$this->k, $x*$this->k, ($this->h-($y+$h))*$this->k, $info['i']));
         }
         if ($link) {
             $this->link($x, $y, $w, $h, $link);
