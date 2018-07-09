@@ -995,7 +995,7 @@ class Fpdf
         }
     }
     
-    public function image($file, $x = null, $y = null, $w = 0, $h = 0, $type = '', $link = '', $isMask = false, $maskImg = 0)
+    public function image($file, $x = null, $y = null, $w = 0, $h = 0, $type = '', $link = '', $mask = false, $img = 0)
     {
         //Put an image on the page
         if (!isset($this->images[$file])) {
@@ -1023,7 +1023,7 @@ class Fpdf
                 }
                 $info = $this->$mtd($file);
             }
-            if ($isMask) {
+            if ($mask) {
                 if (in_array($file, $this->tmpFiles)) {
                     $info['cs'] = 'DeviceGray'; //hack necessary as GD can't produce gray scale images
                 }
@@ -1035,8 +1035,8 @@ class Fpdf
                 }
             }
             $info['i'] = count($this->images)+1;
-            if ($maskImg > 0) {
-                $info['masked'] = $maskImg;
+            if ($img > 0) {
+                $info['masked'] = $img;
             }
             $this->images[$file] = $info;
         } else {
@@ -1070,8 +1070,17 @@ class Fpdf
         if ($x === null) {
             $x = $this->x;
         }
-        if (!$isMask) {
-            $this->out(sprintf('q %.2F 0 0 %.2F %.2F %.2F cm /I%d Do Q', $w*$this->k, $h*$this->k, $x*$this->k, ($this->h-($y+$h))*$this->k, $info['i']));
+        if (!$mask) {
+            $this->out(
+                sprintf(
+                    'q %.2F 0 0 %.2F %.2F %.2F cm /I%d Do Q',
+                    $w*$this->k,
+                    $h*$this->k,
+                    $x*$this->k,
+                    ($this->h-($y+$h))*$this->k,
+                    $info['i']
+                )
+            );
         }
         if ($link) {
             $this->link($x, $y, $w, $h, $link);
