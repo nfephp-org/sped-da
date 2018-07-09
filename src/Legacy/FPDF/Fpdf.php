@@ -67,7 +67,7 @@ class Fpdf
     public $aliasNbPages;       //alias for total number of pages
     public $pdfVersion;         //PDF version number
     
-    var $tmpFiles = array();
+    private $tmpFiles = array();
     
     public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4')
     {
@@ -315,8 +315,9 @@ class Fpdf
         $this->endPage();
         //Close document
         $this->endDoc();
-        foreach ($this->tmpFiles as $tmp)
+        foreach ($this->tmpFiles as $tmp) {
             @unlink($tmp);
+        }
     }
     
     public function addPage($orientation = '', $format = '')
@@ -1010,7 +1011,7 @@ class Fpdf
             if ($type == 'png') {
                 $info = $this->parsePNG($file);
                 if ($info == 'alpha') {
-                    return $this->ImagePngWithAlpha($file, $x, $y, $w, $h, $link);
+                    return $this->imagePngWithAlpha($file, $x, $y, $w, $h, $link);
                 }
             } else {
                 if ($type == 'jpeg') {
@@ -1389,8 +1390,9 @@ class Fpdf
     
     
     // GD seems to use a different gamma, this method is used to correct it again
-    function gamma($v) {
-        return pow($v/255,2.2)*255;
+    protected function gamma($v)
+    {
+        return pow($v/255, 2.2)*255;
     }
     
     
@@ -1762,7 +1764,7 @@ class Fpdf
     
     // needs GD 2.x extension
     // pixel-wise operation, not very fast
-    function ImagePngWithAlpha($file, $x, $y, $w=0, $h=0, $link='')
+    protected function imagePngWithAlpha($file, $x, $y, $w = 0, $h = 0, $link = '')
     {
         $tmp_alpha = tempnam('.', 'mska');
         $this->tmpFiles[] = $tmp_alpha;
@@ -1813,7 +1815,7 @@ class Fpdf
             $this->out('/Subtype /Image');
             $this->out('/Width '.$info['w']);
             $this->out('/Height '.$info['h']);
-            if (isset($info['masked'])){
+            if (isset($info['masked'])) {
                 $this->out('/SMask ' . ($this->n-1) . ' 0 R');
             }
             if ($info['cs']=='Indexed') {
