@@ -955,7 +955,7 @@ class Danfce extends Common
      * @return string Caso o destino seja S o pdf é retornado como uma string
      * @todo   Rotina de impressão direta do arquivo pdf criado
      */
-    public function printDANFE($nome = '', $destino = 'I', $printer = '')
+    public function printDocument($nome = '', $destino = 'I', $printer = '')
     {
         $arq = $this->pdf->Output($nome, $destino);
         if ($destino == 'S') {
