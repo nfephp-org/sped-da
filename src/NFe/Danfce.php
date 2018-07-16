@@ -886,7 +886,7 @@ class Danfce extends Common
         $y += 6;
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
-        $w = ($maxW*1);
+        $w = ($maxW*1)+4;
         $hLinha = $this->hLinha;
         $hBoxLinha = $this->hBoxLinha;
         $aFontTit = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'B');
@@ -917,7 +917,7 @@ class Danfce extends Common
         $this->pdf->image($pic, $xQr, $yQr, $wQr, $hQr, 'PNG');
         $dt = new DateTime($dhRecbto);
         $yQr = ($yQr+$hQr+$margemInterna);
-        $this->pTextBox($x, $yQr, $w, $hBoxLinha, "Protocolo de Autorização: " . $nProt . "\n"
+        $this->pTextBox($x, $yQr, $w-4, $hBoxLinha, "Protocolo de Autorização: " . $nProt . "\n"
             . $dt->format('d/m/Y H:i:s'), $aFontTex, 'C', 'C', 0, '', false);
     }
    
