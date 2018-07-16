@@ -1017,7 +1017,7 @@ class Fpdf
                 if ($type == 'jpeg') {
                     $type = 'jpg';
                 }
-                $mtd = '_parse'.$type;
+                $mtd = 'parse'.strtoupper($type);
                 if (!method_exists($this, $mtd)) {
                     $this->error('Unsupported image type: '.$type);
                 }
