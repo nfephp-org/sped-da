@@ -982,7 +982,7 @@ class Danfce extends Common
      */
     public function printDocument($nome = '', $destino = 'I', $printer = '')
     {
-        $arq = $this->printDANFE($nome, $destino, $printer);        
+        $arq = $this->printDANFE($nome, $destino, $printer);
         return $arq;
     }
     /**
