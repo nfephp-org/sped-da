@@ -955,12 +955,34 @@ class Danfce extends Common
      * @return string Caso o destino seja S o pdf é retornado como uma string
      * @todo   Rotina de impressão direta do arquivo pdf criado
      */
-    public function printDocument($nome = '', $destino = 'I', $printer = '')
+    public function printDANFE($nome = '', $destino = 'I', $printer = '')
     {
         $arq = $this->pdf->Output($nome, $destino);
         if ($destino == 'S') {
             //aqui pode entrar a rotina de impressão direta
         }
+        return $arq;
+    }
+    /**
+     * printDocument
+     * Esta função envia a DANFE em PDF criada para o dispositivo informado.
+     * O destino da impressão pode ser :
+     * I-browser
+     * D-browser com download
+     * F-salva em um arquivo local com o nome informado
+     * S-retorna o documento como uma string e o nome é ignorado.
+     * Para enviar o pdf diretamente para uma impressora indique o
+     * nome da impressora e o destino deve ser 'S'.
+     *
+     * @param  string $nome    Path completo com o nome do arquivo pdf
+     * @param  string $destino Direção do envio do PDF
+     * @param  string $printer Identificação da impressora no sistema
+     * @return string Caso o destino seja S o pdf é retornado como uma string
+     * @todo   Rotina de impressão direta do arquivo pdf criado
+     */
+    public function printDocument($nome = '', $destino = 'I', $printer = '')
+    {
+        $arq = $this->printDANFE($nome, $destino, $printer);        
         return $arq;
     }
     /**
