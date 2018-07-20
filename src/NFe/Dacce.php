@@ -65,7 +65,7 @@ class Dacce extends Common
 
     /**
      * Construtor recebe parametro pra impressao
-     * @param string $docXML      Arquivo XML (diretório ou string)
+     * @param string $docXML      conteudo do Arquivo XML
      * @param string $sOrientacao (Opcional) Orientação da impressão P-retrato L-Paisagem
      * @param string $sPapel      Tamanho do papel (Ex. A4)
      * @param string $sPathLogo   Caminho para o arquivo do logo
@@ -116,9 +116,6 @@ class Dacce extends Common
         }
         // se for passado o xml
         if (!empty($this->xml)) {
-            if (is_file($this->xml)) {
-                $this->xml = file_get_contents($this->xml);
-            }
             $this->dom = new Dom();
             $this->dom->loadXML($this->xml);
             $this->procEventoNFe = $this->dom->getElementsByTagName("procEventoNFe")->item(0);
@@ -370,6 +367,7 @@ class Dacce extends Common
         // ############################################
         $x = $oldX;
         $y = $y1;
+        $texto = '';
         if ($this->CNPJDest != '') {
             $texto = 'CNPJ do Destinatário: ' . $this->pFormat($this->CNPJDest, "##.###.###/####-##");
         }
