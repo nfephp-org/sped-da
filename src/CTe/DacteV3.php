@@ -204,9 +204,9 @@ class DacteV3 extends Common
             $this->ICMSOutraUF = $this->dom->getElementsByTagName("ICMSOutraUF")->item(0);
             $this->imp = $this->dom->getElementsByTagName("imp")->item(0);
             
-           if($this->imp->getElementsByTagName("vTotTrib")->length > 0) {
-                $vTotTrib = (float) $this->pSimpleGetValue($this->imp, "vTotTrib");
-                $textoAdic = number_format($vTotTrib, 2, ",", ".");
+            $vTotTrib = $this->imp->getElementsByTagName("vTotTrib");
+            if ($vTotTrib->length > 0) {
+                $textoAdic = number_format((float) $vTotTrib->item(0), 2, ",", ".");
                 $this->textoAdic = "o valor aproximado de tributos incidentes sobre o preço deste serviço é de R$"
                     .$textoAdic;
             }
