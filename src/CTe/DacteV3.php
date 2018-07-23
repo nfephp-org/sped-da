@@ -206,7 +206,7 @@ class DacteV3 extends Common
             
             $vTotTrib = $this->imp->getElementsByTagName("vTotTrib");
             if ($vTotTrib->length > 0) {
-                $textoAdic = number_format((float) $vTotTrib->item(0), 2, ",", ".");
+                $textoAdic = number_format((float) $vTotTrib->item(0)->nodeValue, 2, ",", ".");
                 $this->textoAdic = "o valor aproximado de tributos incidentes sobre o preço deste serviço é de R$"
                     .$textoAdic;
             }
