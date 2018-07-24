@@ -203,9 +203,11 @@ class DacteV3 extends Common
             $this->ICMSSN = $this->dom->getElementsByTagName("ICMSSN")->item(0);
             $this->ICMSOutraUF = $this->dom->getElementsByTagName("ICMSOutraUF")->item(0);
             $this->imp = $this->dom->getElementsByTagName("imp")->item(0);
-            $textoAdic = number_format($this->pSimpleGetValue($this->imp, "vTotTrib"), 2, ",", ".");
-            $this->textoAdic = "o valor aproximado de tributos incidentes sobre o preço deste serviço é de R$"
-                    .$textoAdic;
+            if (!empty($this->pSimpleGetValue($this->imp, "vTotTrib"))) {
+                $textoAdic = number_format($this->pSimpleGetValue($this->imp, "vTotTrib"), 2, ",", ".");
+                $this->textoAdic = "o valor aproximado de tributos incidentes sobre o preço deste serviço é de R$"
+                        .$textoAdic;
+            }
             $this->toma4 = $this->dom->getElementsByTagName("toma4")->item(0);
             $this->toma03 = $this->dom->getElementsByTagName("toma3")->item(0);
             //Tag tomador é identificado por toma03 na versão 2.00
