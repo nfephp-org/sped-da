@@ -1800,12 +1800,10 @@ class DacteV3 extends Common
         $aFont = $this->formatPadrao;
         $this->pTextBox($x+60, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $qCarga = '';
-        if ($this->pSimpleGetValue($this->infQ->item(0), "cUnid") == '00') {
-            $qCarga = $this->pSimpleGetValue($this->infQ->item(0), "qCarga");
-        } elseif ($this->pSimpleGetValue($this->infQ->item(1), "cUnid") == '00') {
-            $qCarga = $this->pSimpleGetValue($this->infQ->item(1), "qCarga");
-        } elseif ($this->pSimpleGetValue($this->infQ->item(2), "cUnid") == '00') {
-            $qCarga = $this->pSimpleGetValue($this->infQ->item(2), "qCarga");
+        foreach ($this->infQ as $infQ) {
+            if ($this->pSimpleGetValue($infQ, "cUnid") == '00') {
+                $qCarga = $this->pSimpleGetValue($infQ, "qCarga");
+            }
         }
         $texto = !empty($qCarga) ? number_format($qCarga, 3, ",", ".") : '';
         $aFont = array(
@@ -1819,10 +1817,10 @@ class DacteV3 extends Common
         $aFont = $this->formatPadrao;
         $this->pTextBox($x+85, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $qCarga = '';
-        if ($this->pSimpleGetValue($this->infQ->item(2), "cUnid") == 03) {
-            $qCarga = $this->pSimpleGetValue($this->infQ->item(2), "qCarga");
-        } elseif ($this->pSimpleGetValue($this->infQ->item(1), "cUnid") == 03) {
-            $qCarga = $this->pSimpleGetValue($this->infQ->item(1), "qCarga");
+        foreach ($this->infQ as $infQ) {
+            if ($this->pSimpleGetValue($infQ, "cUnid") == '03') {
+                $qCarga = $this->pSimpleGetValue($infQ, "qCarga");
+            }
         }
         $texto = !empty($qCarga) ? number_format($qCarga, 3, ",", ".") : '';
         $aFont = array(
