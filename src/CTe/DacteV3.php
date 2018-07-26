@@ -2070,7 +2070,7 @@ class DacteV3 extends Common
                 }
                 break;
         }
-        if ($texto == '60') {
+        if ($this->pSimpleGetValue($this->ICMS, "CST") == '60') {
             $aFont = $this->formatNegrito;
             $this->pTextBox($x, $y, $w * 0.26, $h, $texto, $aFont, 'T', 'L', 0, '');
             $x += $w * 0.26;
