@@ -1,5 +1,5 @@
 {
-    "name": "nfephp-org/sped-da",
+    "name": "caiquebb/sped-da",
     "type": "library",
     "description": "sped-da contêm as classes para criação dos documentos auxiliares referidos no projeto Sped.",
     "keywords": ["nfe", "sped", "nfephp", "Danfe", "Dacte", "CCe" ],
