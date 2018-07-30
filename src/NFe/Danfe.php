@@ -1029,8 +1029,13 @@ class Danfe extends Common
         //se for right separa 2/3 para os dados e o terço seguinte para o logo
         //se não houver logo centraliza dos dados do emitente
         // coloca o logo
-        if (is_file($this->logomarca)) {
-            $logoInfo=getimagesize($this->logomarca);
+        if (!empty($this->logomarca)) {
+            $logoInfo = getimagesize($this->logomarca);
+            $type = strtolower(explode('/', $logoInfo['mime'])[1]);
+            if ($type == 'png') {
+                $this->logomarca = $this->imagePNGtoJPG($this->logomarca);
+                $type == 'jpg';
+            }
             //largura da imagem em mm
             $logoWmm = ($logoInfo[0]/72)*25.4;
             //altura da imagem em mm
@@ -1069,7 +1074,8 @@ class Danfe extends Common
                 $y1 = round($yImg + $nImgH + 1, 0);
                 $tw = $w;
             }
-            $this->pdf->Image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH);
+            $type = (substr($this->logomarca, 0, 7) === 'data://') ? 'jpg' : null;
+            $this->pdf->Image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, $type);
         } else {
             $x1 = $x;
             $y1 = round($h/3+$y, 0);
@@ -3052,5 +3058,16 @@ class Danfe extends Common
             }
         }
         return $saida;
+    }
+    
+    private function imagePNGtoJPG($original)
+    {
+        $image = imagecreatefrompng($original);
+        ob_start();
+        imagejpeg($image, null, 100);
+        imagedestroy($image);
+        $stringdata = ob_get_contents(); // read from buffer
+        ob_end_clean();
+        return 'data://text/plain;base64,'.base64_encode($stringdata);
     }
 }
