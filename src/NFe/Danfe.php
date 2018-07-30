@@ -2237,11 +2237,17 @@ class Danfe extends Common
         $impostos = '';
 
         if (!empty($ICMS)) {
+            $impostos .= $this->pDescricaoProdutoHelper($ICMS, "vBCFCP", " BcFcp=%s");
+            $impostos .= $this->pDescricaoProdutoHelper($ICMS, "pFCP", " pFcp=%s%%");
+            $impostos .= $this->pDescricaoProdutoHelper($ICMS, "vFCP", " vFcp=%s");
             $impostos .= $this->pDescricaoProdutoHelper($ICMS, "pRedBC", " pRedBC=%s%%");
             $impostos .= $this->pDescricaoProdutoHelper($ICMS, "pMVAST", " IVA/MVA=%s%%");
             $impostos .= $this->pDescricaoProdutoHelper($ICMS, "pICMSST", " pIcmsSt=%s%%");
             $impostos .= $this->pDescricaoProdutoHelper($ICMS, "vBCST", " BcIcmsSt=%s");
             $impostos .= $this->pDescricaoProdutoHelper($ICMS, "vICMSST", " vIcmsSt=%s");
+            $impostos .= $this->pDescricaoProdutoHelper($ICMS, "vBCFCPST", " BcFcpSt=%s");
+            $impostos .= $this->pDescricaoProdutoHelper($ICMS, "pFCPST", " pFcpSt=%s%%");
+            $impostos .= $this->pDescricaoProdutoHelper($ICMS, "vFCPST", " vFcpSt=%s");
         }
         if (!empty($ICMSUFDest)) {
             $impostos .= $this->pDescricaoProdutoHelper($ICMSUFDest, "pFCPUFDest", " pFCPUFDest=%s%%");
