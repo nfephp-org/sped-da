@@ -14,6 +14,7 @@ namespace NFePHP\DA\NFe;
  * @author    Roberto Spadim <roberto at spadim dot com dot br>
  */
 use Exception;
+use InvalidArgumentException;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
@@ -43,6 +44,7 @@ class Danfce extends Common
     protected $infAdic;
     protected $textoAdic;
     protected $pag;
+    protected $vTroco;
     protected $dest;
     protected $imgQRCode;
     protected $urlQR = '';
@@ -206,13 +208,16 @@ class Danfce extends Common
             //senao, busca pelas tags de pagamento principal
             if ($this->infNFe->getAttribute("versao") == "4.00") {
                 $this->pag = $this->dom->getElementsByTagName("detPag");
+                
+                $tagPag = $this->dom->getElementsByTagName("pag")->item(0);
+                $this->vTroco = $this->pSimpleGetValue($tagPag, "vTroco");
             } else {
                 $this->pag = $this->dom->getElementsByTagName("pag");
             }
         }
         $this->qrCode = $this->dom->getElementsByTagName('qrCode')->item(0)->nodeValue;
         if ($this->pSimpleGetValue($this->ide, "mod") != '65') {
-            throw new nfephpException("O xml do DANFE deve ser uma NFC-e modelo 65");
+            throw new InvalidArgumentException("O xml do DANFE deve ser uma NFC-e modelo 65");
         }
     }
     
@@ -321,6 +326,9 @@ class Danfce extends Common
         $hprodutos = $hLinha + ($qtdItens*$hMaxLinha) ;//box poduto
         $hTotal = 12; //box total (FIXO)
         $hpagamentos = $hLinha + ($qtdPgto*$hLinha);//para pagamentos
+        if (!empty($this->vTroco)) {
+            $hpagamentos += $hLinha;
+        }
         $hmsgfiscal = 21;// para imposto (FIXO)
         if (!isset($this->dest)) {
             $hcliente = 6;// para cliente (FIXO)
@@ -725,6 +733,29 @@ class Danfce extends Common
                 );
                 $cont++;
             }
+            
+            if (!empty($this->vTroco)) {
+                $yBoxProd = $y + $hLinha + ($cont*$hLinha);
+                //COLOCA PRODUTO CÓDIGO
+                $texto = 'Troco';
+                $this->pTextBox($x, $yBoxProd, $wBoxEsq, $hLinha, $texto, $aFontPgto, 'T', 'L', 0, '', false);
+                //COLOCA PRODUTO DESCRIÇÃO
+                $xBoxDescricao = $wBoxEsq + $x;
+                $texto = "R$ " . number_format($this->vTroco, 2, ",", ".");
+                $this->pTextBox(
+                    $xBoxDescricao,
+                    $yBoxProd,
+                    $wBoxDir,
+                    $hLinha,
+                    $texto,
+                    $aFontPgto,
+                    'C',
+                    'R',
+                    0,
+                    '',
+                    false
+                );
+            }
         }
     }
     
@@ -856,7 +887,7 @@ class Danfce extends Common
         $y += 6;
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
-        $w = ($maxW*1);
+        $w = ($maxW*1)+4;
         $hLinha = $this->hLinha;
         $hBoxLinha = $this->hBoxLinha;
         $aFontTit = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'B');
@@ -887,7 +918,7 @@ class Danfce extends Common
         $this->pdf->image($pic, $xQr, $yQr, $wQr, $hQr, 'PNG');
         $dt = new DateTime($dhRecbto);
         $yQr = ($yQr+$hQr+$margemInterna);
-        $this->pTextBox($x, $yQr, $w, $hBoxLinha, "Protocolo de Autorização: " . $nProt . "\n"
+        $this->pTextBox($x, $yQr, $w-4, $hBoxLinha, "Protocolo de Autorização: " . $nProt . "\n"
             . $dt->format('d/m/Y H:i:s'), $aFontTex, 'C', 'C', 0, '', false);
     }
    

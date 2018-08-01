@@ -169,6 +169,7 @@ class Fpdf
         //Set default PDF version number
         $this->pdfVersion='1.3';
     }
+    
     public function setMargins($left, $top, $right = null)
     {
         //Set left, top and right margins
@@ -179,6 +180,7 @@ class Fpdf
         }
         $this->rMargin=$right;
     }
+    
     public function setLeftMargin($margin)
     {
         //Set left margin
@@ -187,16 +189,19 @@ class Fpdf
             $this->x = $margin;
         }
     }
+    
     public function setTopMargin($margin)
     {
         //Set top margin
         $this->tMargin = $margin;
     }
+    
     public function setRightMargin($margin)
     {
         //Set right margin
         $this->rMargin = $margin;
     }
+    
     public function setAutoPageBreak($auto, $margin = 0)
     {
         //Set auto page break mode and triggering margin
@@ -204,6 +209,7 @@ class Fpdf
         $this->bMargin = $margin;
         $this->pageBreakTrigger = $this->h-$margin;
     }
+    
     public function setDisplayMode($zoom, $layout = 'continuous')
     {
         //Set display mode in viewer
@@ -218,6 +224,7 @@ class Fpdf
             $this->error('Incorrect layout display mode: '.$layout);
         }
     }
+    
     public function setCompression($compress)
     {
         //Set page compression
@@ -227,6 +234,7 @@ class Fpdf
             $this->compress = false;
         }
     }
+    
     public function setTitle($title, $isUTF8 = false)
     {
         //Title of document
@@ -235,6 +243,7 @@ class Fpdf
         }
         $this->title = $title;
     }
+    
     public function setSubject($subject, $isUTF8 = false)
     {
         //Subject of document
@@ -243,6 +252,7 @@ class Fpdf
         }
         $this->subject = $subject;
     }
+    
     public function setAuthor($author, $isUTF8 = false)
     {
         //Author of document
@@ -251,6 +261,7 @@ class Fpdf
         }
         $this->author=$author;
     }
+    
     public function setKeywords($keywords, $isUTF8 = false)
     {
         //Keywords of document
@@ -259,6 +270,7 @@ class Fpdf
         }
         $this->keywords = $keywords;
     }
+    
     public function setCreator($creator, $isUTF8 = false)
     {
         //Creator of document
@@ -267,19 +279,23 @@ class Fpdf
         }
         $this->creator = $creator;
     }
+    
     public function aliasNbPages($alias = '{nb}')
     {
         //Define an alias for total number of pages
         $this->aliasNbPages=$alias;
     }
+    
     public function error($msg)
     {
-        throw Exception($msg);
+        throw new Exception($msg);
     }
+    
     public function open()
     {
         $this->state = 1;
     }
+    
     public function close()
     {
         //Terminate document
@@ -368,19 +384,23 @@ class Fpdf
         $this->textColor = $tc;
         $this->colorFlag = $cf;
     }
+    
     public function header()
     {
         //To be implemented in your own inherited class
     }
+    
     public function footer()
     {
         //To be implemented in your own inherited class
     }
+    
     public function pageNo()
     {
         //Get current page number
         return $this->page;
     }
+    
     public function setDrawColor($r, $g = null, $b = null)
     {
         //Set color for all stroking operations
@@ -393,6 +413,7 @@ class Fpdf
             $this->out($this->drawColor);
         }
     }
+    
     public function setFillColor($r, $g = null, $b = null)
     {
         //Set color for all filling operations
@@ -406,6 +427,7 @@ class Fpdf
             $this->out($this->fillColor);
         }
     }
+    
     public function settextColor($r, $g = null, $b = null)
     {
         //Set color for text
@@ -416,6 +438,7 @@ class Fpdf
         }
         $this->colorFlag = ($this->fillColor != $this->textColor);
     }
+    
     public function getStringWidth($s)
     {
         //Get width of a string in the current font
@@ -428,6 +451,7 @@ class Fpdf
         }
         return $w*$this->fontSize/1000;
     }
+    
     public function setLineWidth($width)
     {
         //Set line width
@@ -436,6 +460,7 @@ class Fpdf
             $this->out(sprintf('%.2F w', $width*$this->k));
         }
     }
+    
     public function line($x1, $y1, $x2, $y2)
     {
         //Draw a line
@@ -449,6 +474,7 @@ class Fpdf
             )
         );
     }
+    
     public function rect($x, $y, $w, $h, $style = '')
     {
         //Draw a rectangle
@@ -470,6 +496,7 @@ class Fpdf
             )
         );
     }
+    
     public function addFont($family, $style = '', $file = '')
     {
         //Add a TrueType or Type1 font
@@ -528,6 +555,7 @@ class Fpdf
             }
         }
     }
+    
     public function setFont($family, $style = '', $size = 0)
     {
         //Select a font; size given in points
