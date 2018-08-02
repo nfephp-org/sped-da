@@ -1863,7 +1863,7 @@ class Danfe extends Common
 
         if ($this->exibirIcmsInterestadual) {
             $x = $this->pImpostoDanfeHelper($x, $y, $w, $h, "V. ICMS UF REMET.", "vICMSUFRemet");
-            $x = $this->pImpostoDanfeHelper($x, $y, $w, $h, "V. FCP UF REMET.", "vFCPUFDest");
+            $x = $this->pImpostoDanfeHelper($x, $y, $w, $h, "V. FCP UF DEST.", "vFCPUFDest");
         }
 
         if ($this->exibirPIS) {
