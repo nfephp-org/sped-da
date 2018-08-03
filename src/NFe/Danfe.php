@@ -43,6 +43,12 @@ class Danfe extends Common
      * @var integer
      */
     public $qCanhoto = 1;
+	/**
+	 * Parâmetro para exibir ou ocultar o código de barras da chave de acesso no canhoto
+	 *
+	 * @var boolean
+	 */
+	public $codBarraCanhoto = false;
 
     //###########################################################
     // INÍCIO ATRIBUTOS DE PARÂMETROS DE EXIBIÇÃO
@@ -2783,6 +2789,7 @@ class Danfe extends Common
      */
     protected function pCanhoto($x, $y)
     {
+	    $chave_acesso = str_replace('NFe', '', $this->infNFe->getAttribute("Id"));
         $oldX = $x;
         $oldY = $y;
         //#################################################################################
@@ -2815,13 +2822,24 @@ class Danfe extends Common
         //identificação do sistema emissor
         //linha separadora do canhoto
         if ($this->orientacao == 'P') {
-            $w = round($this->wPrint * 0.81, 0);
+	        if($this->codBarraCanhoto) {
+		        $w = round($this->wPrint * 0.58, 0);
+	        }
+	        else {
+		        $w = round($this->wPrint * 0.81, 0);
+	        }
         } else {
             //linha separadora do canhoto - 238
             //posicao altura
-            $y = $this->wPrint-85;
-            //altura
-            $w = $this->wPrint-85-24;
+	        if($this->codBarraCanhoto) {
+		        $y = $this->wPrint-85;
+		        //altura
+		        $w = $this->wPrint-85-24-78;
+	        } else {
+		        $y = $this->wPrint-85;
+		        //altura
+		        $w = $this->wPrint-85-24;
+	        }
         }
         $h = 10;
         //desenha caixa
@@ -2858,16 +2876,28 @@ class Danfe extends Common
         $texto .= "DESTINATÁRIO: ";
         $texto .= $destinatario;
         if ($this->orientacao == 'P') {
-            $this->pTextBox($x, $y, $w-1, $h, $texto, $aFont, 'C', 'L', 0, '', false);
-            $x1 = $x + $w;
-            $w1 = $this->wPrint - $w;
-            $texto = "NF-e";
-            $aFont = array('font'=>$this->fontePadrao, 'size'=>14, 'style'=>'B');
-            $this->pTextBox($x1, $y, $w1, 18, $texto, $aFont, 'T', 'C', 0, '');
-            $texto = "Nº. " . $this->pFormat($numNF, "###.###.###") . " \n";
-            $texto .= "Série $serie";
-            $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B');
-            $this->pTextBox($x1, $y, $w1, 18, $texto, $aFont, 'C', 'C', 1, '');
+	        if($this->codBarraCanhoto) {
+		        $this->pTextBox($x, $y, $w-1, $h, $texto, $aFont, 'C', 'L', 0, '', false);
+		        $x1 = $x + $w;
+		        $w1 = $this->wPrint - $w;
+		        $texto = "NF-e Nº. " . $this->pFormat($numNF, "###.###.###") . " Série $serie";
+		        $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'');
+		        $this->pTextBox($x1, $y, $w1, 18, $texto, $aFont, 'T', 'C', 1, '');
+		        //coluna codigo de barras
+		        $this->pdf->SetFillColor(0, 0, 0);
+		        $this->pdf->Code128(125.5, 11, $chave_acesso, 75, 10);
+	        } else {
+		        $this->pTextBox($x, $y, $w-1, $h, $texto, $aFont, 'C', 'L', 0, '', false);
+		        $x1 = $x + $w;
+		        $w1 = $this->wPrint - $w;
+		        $texto = "NF-e";
+		        $aFont = array('font'=>$this->fontePadrao, 'size'=>14, 'style'=>'B');
+		        $this->pTextBox($x1, $y, $w1, 18, $texto, $aFont, 'T', 'C', 0, '');
+		        $texto = "Nº. " . $this->pFormat($numNF, "###.###.###") . " \n";
+		        $texto .= "Série $serie";
+		        $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B');
+		        $this->pTextBox($x1, $y, $w1, 18, $texto, $aFont, 'C', 'C', 1, '');
+	        }
             //DATA DE RECEBIMENTO
             $texto = "DATA DE RECEBIMENTO";
             $y += $h;
@@ -2898,6 +2928,13 @@ class Danfe extends Common
             $texto .= "Série $serie";
             $aFont = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'B');
             $this->pTextBox($x1, $y, $w1, 18, $texto, $aFont, 'C', 'C', 1, '');
+	        //CODIGO DE BARRAS CANHOTO
+	        if($this->codBarraCanhoto) {
+		        $this->pTextBox90($x-3, 102, $w-21, $h+5, "", $aFont, 'C', 'L', 1, '', false);
+		        $this->pdf->SetFillColor(0, 0, 0);
+		        $this->pdf->rotate(90);
+		        $this->pdf->Code128($x-98, 7, $chave_acesso, 75, 10);
+	        }
             //DATA DO RECEBIMENTO
             $texto = "DATA DO RECEBIMENTO";
             $y = $this->wPrint-85;
