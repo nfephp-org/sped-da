@@ -1,7 +1,16 @@
 <?php
 
 namespace NFePHP\DA\NFe;
-
+/**
+ * Classe para a impressão em PDF do Documento Auxiliar de NFe Consumidor
+ *
+ * @category  Library
+ * @package   nfephp-org/sped-da
+ * @copyright 2009-2016 NFePHP
+ * @license   http://www.gnu.org/licenses/lesser.html LGPL v3
+ * @link      http://github.com/nfephp-org/sped-da for the canonical source repository
+ * @author    Roberto Spadim <roberto at spadim dot com dot br>
+ */
 use InvalidArgumentException;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
