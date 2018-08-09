@@ -733,8 +733,24 @@ class Danfe extends Common
         $y = $this->pCabecalhoDANFE($x, $y, $pag, $totPag);
         //coloca os dados do destinatário
         $y = $this->pDestinatarioDANFE($x, $y+1);
-        //coloca os dados das faturas
-        $y = $this->pFaturaDANFE($x, $y+1);
+        
+        
+        //Verifica as formas de pagamento da nota fiscal
+        $formaPag = array();
+        if (isset($this->detPag) && $this->detPag->length > 0 ) {
+          foreach ($this->detPag as $k => $d) {
+             $fPag = !empty($this->detPag->item($k)->getElementsByTagName('tPag')->item(0)->nodeValue) ? $this->detPag->item($k)->getElementsByTagName('tPag')->item(0)->nodeValue : '0';
+             $formaPag[$fPag] = $fPag;
+          }
+        }
+        //Caso só tenha pagamento em boleto exibe as faturas
+        if ( count($formaPag)=='1' && isset($formaPag[15]) ) {
+           $y = $this->pFaturaDANFE($x, $y+1);
+        }
+        else {
+            //caso tenha mais de uma forma de pagamento ou seja diferente de boleto exibe a forma de pagamento e o valor
+            $y = $this->pagamentoDANFE($x, $y+1);
+        }
         //coloca os dados dos impostos e totais da NFe
         $y = $this->pImpostoDANFE($x, $y+1);
         //coloca os dados do trasnporte
@@ -1785,6 +1801,92 @@ class Danfe extends Common
         }
     } //fim da função faturaDANFE
 
+    /**
+     * pagamentoDANFE
+     * Monta o campo de pagamentos da DANFE (retrato e paisagem) (foi baseada na faturaDANFE)
+     *
+     * @name   pagamentoDANFE
+     * @param  number $x Posição horizontal canto esquerdo
+     * @param  number $y Posição vertical canto superior
+     * @return number Posição vertical final
+     */
+    protected function pagamentoDANFE($x, $y)
+    {
+        $linha = 1;
+        $h = 8+3;
+        $oldx = $x;
+        //verificar se existem cobranças definidas
+        if (isset($this->detPag) && $this->detPag->length > 0 ) {
+            //#####################################################################
+            //FATURA / DUPLICATA
+            $texto = "PAGAMENTO";
+            if ($this->orientacao == 'P') {
+                $w = $this->wPrint;
+            } else {
+                $w = 271;
+            }
+            $h = 8;
+            $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
+            $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+            $y += 3;
+            $dups = "";
+            $dupcont = 0;
+            if ($this->orientacao == 'P') {
+                $w = round($this->wPrint/7.018, 0)-1;
+            } else {
+                $w = 28;
+            }
+            if ($this->orientacao == 'P') {
+                $maxDupCont = 6;
+            } else {
+                $maxDupCont = 8;
+            }
+            $increm = 1;
+            $formaPagamento = array('01'=>'Dinheiro','02'=>'Cheque','03'=>'Cartão de Crédito','04'=>'Cartão de Débito','05'=>'Crédito Loja','10'=>'Vale Alimentação','11'=>'Vale Refeição','12'=>'Vale Presente','13'=>'Vale Combustível','14'=>'Duplicata Mercantil','15'=>'Boleto','90'=>'Sem pagamento','99'=>'Outros');
+            $bandeira = array('01'=>'Visa','02'=>'Mastercard','03'=>'American','04'=>'Sorocred','05'=>'Diners','06'=>'Elo','07'=>'Hipercard','08'=>'Aura','09'=>'Cabal','99'=>'Outros');
+            foreach ($this->detPag as $k => $d) {
+                $fPag = !empty($this->detPag->item($k)->getElementsByTagName('tPag')->item(0)->nodeValue) ? $this->detPag->item($k)->getElementsByTagName('tPag')->item(0)->nodeValue : '0';
+                $vPag = ! empty($this->detPag->item($k)->getElementsByTagName('vPag')->item(0)->nodeValue) ? 'R$ ' . number_format($this->detPag->item($k)->getElementsByTagName('vPag')->item(0)->nodeValue,2,",",".") : '';
+                $h = 6;
+                $texto = '';
+                if ( isset($formaPagamento[$fPag]) ) {
+                    $aFont = array('font'=>$this->fontePadrao, 'size'=>6, 'style'=>'');
+                    $this->pTextBox($x, $y, $w, $h, 'Forma', $aFont, 'T', 'L', 1, '');
+                    $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
+                    $this->pTextBox($x, $y, $w, $h, $formaPagamento[$fPag], $aFont, 'T', 'R', 0, '');
+                } else {
+                    $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'');
+                    $this->pTextBox($x, $y, $w, $h, "Forma ".$fPag." não encontrado", $aFont, 'T', 'L', 1, '');
+                }
+                $aFont = array('font'=>$this->fontePadrao, 'size'=>6, 'style'=>'');
+                $this->pTextBox($x, $y, $w, $h, 'Valor', $aFont, 'B', 'L', 0, '');
+                $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
+                $this->pTextBox($x, $y, $w, $h, $vPag, $aFont, 'B', 'R', 0, '');
+                $x += $w+$increm;
+                $dupcont += 1;
+
+                if ($dupcont>$maxDupCont) {
+                    $y += 9;
+                    $x = $oldx;
+                    $dupcont = 0;
+                    $linha += 1;
+                }
+                if ($linha == 5) {
+                    $linha = 4;
+                    break;
+                }
+            }
+            if ($dupcont == 0) {
+                $y -= 9;
+                $linha--;
+            }
+            return ($y+$h);
+        } else {
+            $linha = 0;
+            return ($y-2);
+        }
+    } //fim da função pagamentoDANFE
+    
     /**
      * impostoDanfeHelper
      * Auxilia a montagem dos campos de impostos e totais da DANFE
