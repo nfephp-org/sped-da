@@ -737,17 +737,17 @@ class Danfe extends Common
         
         //Verifica as formas de pagamento da nota fiscal
         $formaPag = array();
-        if (isset($this->detPag) && $this->detPag->length > 0 ) {
-          foreach ($this->detPag as $k => $d) {
-             $fPag = !empty($this->detPag->item($k)->getElementsByTagName('tPag')->item(0)->nodeValue) ? $this->detPag->item($k)->getElementsByTagName('tPag')->item(0)->nodeValue : '0';
-             $formaPag[$fPag] = $fPag;
-          }
+        if (isset($this->detPag) && $this->detPag->length > 0 ){
+            foreach ($this->detPag as $k => $d) {
+                $fPag = !empty($this->detPag->item($k)->getElementsByTagName('tPag')->item(0)->nodeValue) ? $this->detPag->item($k)->getElementsByTagName('tPag')->item(0)->nodeValue : '0';
+                $formaPag[$fPag] = $fPag;
+            }
         }
         //Caso só tenha pagamento em boleto exibe as faturas
-        if ( count($formaPag)=='1' && isset($formaPag[15]) ) {
+        if ( count($formaPag)=='1' && isset($formaPag[15]) ){
            $y = $this->pFaturaDANFE($x, $y+1);
         }
-        else {
+        else{
             //caso tenha mais de uma forma de pagamento ou seja diferente de boleto exibe a forma de pagamento e o valor
             $y = $this->pagamentoDANFE($x, $y+1);
         }
@@ -759,7 +759,7 @@ class Danfe extends Common
         $nInicial = 0;
         $y = $this->pItensDANFE($x, $y+1, $nInicial, $hDispo1, $pag, $totPag, $hCabecItens);
         //coloca os dados do ISSQN
-        if ($linhaISSQN == 1) {
+        if ($linhaISSQN == 1){
             $y = $this->pIssqnDANFE($x, $y+4);
         } else {
             $y += 4;
@@ -767,13 +767,13 @@ class Danfe extends Common
         //coloca os dados adicionais da NFe
         $y = $this->pDadosAdicionaisDANFE($x, $y, $hdadosadic);
         //coloca o rodapé da página
-        if ($this->orientacao == 'P') {
+        if ($this->orientacao == 'P'){
             $this->pRodape($xInic, $y-1);
         } else {
             $this->pRodape($xInic, $this->hPrint + 1);
         }
         //loop para páginas seguintes
-        for ($n = 2; $n <= $totPag; $n++) {
+        for ($n = 2; $n <= $totPag; $n++){
             // fixa as margens
             $this->pdf->setMargins($margEsq, $margSup);
             //adiciona nova página
@@ -1257,17 +1257,17 @@ class Danfe extends Common
         // NOTA : DANFE sem protocolo deve existir somente no caso de contingência !!!
         // Além disso, existem várias NFes em contingência que eu recebo com protocolo de autorização.
         // Na minha opinião, deveríamos mostra-lo, mas o  manual  da NFe v4.01 diz outra coisa...
-        if (($this->tpEmis == 2 || $this->tpEmis == 5) && !$this->pNotaDPEC()) {
+        if (($this->tpEmis == 2 || $this->tpEmis == 5) && !$this->pNotaDPEC()){
             $aFont = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'B');
             $texto = $this->pFormat($chaveContingencia, "#### #### #### #### #### #### #### #### ####");
             $cStat = '';
-        } else {
+        } else{
             $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B');
-            if ($this->pNotaDPEC()) {
+            if ($this->pNotaDPEC()){
                 $texto = $this->numero_registro_dpec;
                 $cStat = '';
             } else {
-                if (isset($this->nfeProc)) {
+                if (isset($this->nfeProc)){
                     $texto = ! empty($this->nfeProc->getElementsByTagName("nProt")->item(0)->nodeValue) ?
                             $this->nfeProc->getElementsByTagName("nProt")->item(0)->nodeValue : '';
                     $tsHora = $this->pConvertTime($this->nfeProc->getElementsByTagName("dhRecbto")->item(0)->nodeValue);
