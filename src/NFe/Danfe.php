@@ -1819,7 +1819,7 @@ class Danfe extends Common
         //verificar se existem cobranças definidas
         if (isset($this->detPag) && $this->detPag->length > 0) {
             //#####################################################################
-            //FATURA / DUPLICATA
+            //Tipo de pagamento
             $texto = "PAGAMENTO";
             if ($this->orientacao == 'P') {
                 $w = $this->wPrint;
