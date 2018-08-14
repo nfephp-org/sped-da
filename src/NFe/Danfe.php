@@ -739,15 +739,16 @@ class Danfe extends Common
         $formaPag = array();
         if (isset($this->detPag) && $this->detPag->length > 0) {
             foreach ($this->detPag as $k => $d) {
-                $fPag = !empty($this->detPag->item($k)->getElementsByTagName('tPag')->item(0)->nodeValue) ? 
+                $fPag = !empty($this->detPag->item($k)->getElementsByTagName('tPag')->item(0)->nodeValue) ?
                     $this->detPag->item($k)->getElementsByTagName('tPag')->item(0)->nodeValue : '0';
                 $formaPag[$fPag] = $fPag;
             }
         }
-        //Caso só tenha pagamento em boleto exibe as faturas
-        if (count($formaPag)=='1' && isset($formaPag[15])) {
+        //Caso só tenha pagamento em boleto exibe as faturas ou invés das formas
+        //caso tenha boleto e sem pagamento também exibir faturas pois deve ser devolução de materiais do destinatário e não tem cobrança
+        if ((count($formaPag)=='1' && isset($formaPag[15]) || count($formaPag)=='2' && isset($formaPag[15]) && isset($formaPag[90])) {
             $y = $this->pFaturaDANFE($x, $y+1);
-        }
+        } 
         else {
             //caso tenha mais de uma forma de pagamento ou seja diferente de boleto exibe a forma de pagamento e o valor
             $y = $this->pagamentoDANFE($x, $y+1);
@@ -1264,11 +1265,11 @@ class Danfe extends Common
             $cStat = '';
         } else {
             $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B');
-            if ($this->pNotaDPEC()){
+            if ($this->pNotaDPEC()) {
                 $texto = $this->numero_registro_dpec;
                 $cStat = '';
             } else {
-                if (isset($this->nfeProc)){
+                if (isset($this->nfeProc)) {
                     $texto = ! empty($this->nfeProc->getElementsByTagName("nProt")->item(0)->nodeValue) ?
                             $this->nfeProc->getElementsByTagName("nProt")->item(0)->nodeValue : '';
                     $tsHora = $this->pConvertTime($this->nfeProc->getElementsByTagName("dhRecbto")->item(0)->nodeValue);
@@ -1844,17 +1845,23 @@ class Danfe extends Common
             }
             $increm = 1;
             $formaPagamento = array('01'=>'Dinheiro','02'=>'Cheque','03'=>'Cartão de Crédito','04'=>'Cartão de Débito',
-                                    '05'=>'Crédito Loja','10'=>'Vale Alimentação','11'=>'Vale Refeição','12'=>'Vale Presente','13'=>'Vale Combustível','14'=>'Duplicata Mercantil','15'=>'Boleto','90'=>'Sem pagamento','99'=>'Outros');
+                                    '05'=>'Crédito Loja','10'=>'Vale Alimentação','11'=>'Vale Refeição',
+                                    '12'=>'Vale Presente','13'=>'Vale Combustível','14'=>'Duplicata Mercantil',
+                                    '15'=>'Boleto','90'=>'Sem pagamento','99'=>'Outros');
             $bandeira = array('01'=>'Visa','02'=>'Mastercard','03'=>'American','04'=>'Sorocred','05'=>'Diners',
                               '06'=>'Elo','07'=>'Hipercard','08'=>'Aura','09'=>'Cabal','99'=>'Outros');
             foreach ($this->detPag as $k => $d) {
-                $fPag = !empty($this->detPag->item($k)->getElementsByTagName('tPag')->item(0)->nodeValue) 
+                $fPag = !empty($this->detPag->item($k)->getElementsByTagName('tPag')->item(0)->nodeValue)
                     ? $this->detPag->item($k)->getElementsByTagName('tPag')->item(0)->nodeValue : '0';
-                $vPag = ! empty($this->detPag->item($k)->getElementsByTagName('vPag')->item(0)->nodeValue) 
+                $vPag = ! empty($this->detPag->item($k)->getElementsByTagName('vPag')->item(0)->nodeValue)
                     ? 'R$ ' . number_format($this->detPag->item($k)->getElementsByTagName('vPag')->item(0)->nodeValue, 2, ",", ".") : '';
                 $h = 6;
                 $texto = '';
                 if ( isset($formaPagamento[$fPag])) {
+                    /*Exibir Item sem pagamento ou outros?*/
+                    if ( $fPag=='90' || $fPag=='99' ) {
+                        continue;
+                    }
                     $aFont = array('font'=>$this->fontePadrao, 'size'=>6, 'style'=>'');
                     $this->pTextBox($x, $y, $w, $h, 'Forma', $aFont, 'T', 'L', 1, '');
                     $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
