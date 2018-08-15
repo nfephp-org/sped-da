@@ -745,8 +745,10 @@ class Danfe extends Common
             }
         }
         //Caso só tenha pagamento em boleto exibe as faturas ou invés das formas
-        //caso tenha boleto e sem pagamento também exibir faturas pois deve ser devolução de materiais do destinatário e não tem cobrança
-        if ((count($formaPag)=='1' && isset($formaPag[15]) || count($formaPag)=='2' && isset($formaPag[15]) && isset($formaPag[90])) {
+        //caso tenha boleto e sem pagamento também exibir faturas pois deve ser devolução de
+        //materiais do destinatário e não tem cobrança
+        if ((count($formaPag)=='1' && isset($formaPag[15]) || count($formaPag)=='2' 
+             && isset($formaPag[15]) && isset($formaPag[90])) {
             $y = $this->pFaturaDANFE($x, $y+1);
         } 
         else {
@@ -1844,10 +1846,10 @@ class Danfe extends Common
                 $maxDupCont = 8;
             }
             $increm = 1;
-            $formaPagamento = array('01'=>'Dinheiro','02'=>'Cheque','03'=>'Cartão de Crédito','04'=>'Cartão de Débito',
-                                    '05'=>'Crédito Loja','10'=>'Vale Alimentação','11'=>'Vale Refeição',
-                                    '12'=>'Vale Presente','13'=>'Vale Combustível','14'=>'Duplicata Mercantil',
-                                    '15'=>'Boleto','90'=>'Sem pagamento','99'=>'Outros');
+            $formaPagamento = array('01'=>'Dinheiro','02'=>'Cheque','03'=>'Cartão de Crédito',
+                                    '04'=>'Cartão de Débito','05'=>'Crédito Loja','10'=>'Vale Alimentação',
+                                    '11'=>'Vale Refeição','12'=>'Vale Presente','13'=>'Vale Combustível',
+                                    '14'=>'Duplicata Mercantil','15'=>'Boleto','90'=>'Sem pagamento','99'=>'Outros');
             $bandeira = array('01'=>'Visa','02'=>'Mastercard','03'=>'American','04'=>'Sorocred','05'=>'Diners',
                               '06'=>'Elo','07'=>'Hipercard','08'=>'Aura','09'=>'Cabal','99'=>'Outros');
             foreach ($this->detPag as $k => $d) {
@@ -1859,7 +1861,7 @@ class Danfe extends Common
                 $texto = '';
                 if ( isset($formaPagamento[$fPag])) {
                     /*Exibir Item sem pagamento ou outros?*/
-                    if ( $fPag=='90' || $fPag=='99' ) {
+                    if ($fPag=='90' || $fPag=='99') {
                         continue;
                     }
                     $aFont = array('font'=>$this->fontePadrao, 'size'=>6, 'style'=>'');
