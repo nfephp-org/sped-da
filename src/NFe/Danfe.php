@@ -747,11 +747,10 @@ class Danfe extends Common
         //Caso só tenha pagamento em boleto exibe as faturas ou invés das formas
         //caso tenha boleto e sem pagamento também exibir faturas pois deve ser devolução de
         //materiais do destinatário e não tem cobrança
-        if ((count($formaPag)=='1' && isset($formaPag[15]) || count($formaPag)=='2' 
+        if ((count($formaPag)=='1' && isset($formaPag[15]) || count($formaPag)=='2'
              && isset($formaPag[15]) && isset($formaPag[90])) {
             $y = $this->pFaturaDANFE($x, $y+1);
-        } 
-        else {
+        } else {
             //caso tenha mais de uma forma de pagamento ou seja diferente de boleto exibe a forma de pagamento e o valor
             $y = $this->pagamentoDANFE($x, $y+1);
         }
@@ -1856,10 +1855,11 @@ class Danfe extends Common
                 $fPag = !empty($this->detPag->item($k)->getElementsByTagName('tPag')->item(0)->nodeValue)
                     ? $this->detPag->item($k)->getElementsByTagName('tPag')->item(0)->nodeValue : '0';
                 $vPag = ! empty($this->detPag->item($k)->getElementsByTagName('vPag')->item(0)->nodeValue)
-                    ? 'R$ ' . number_format($this->detPag->item($k)->getElementsByTagName('vPag')->item(0)->nodeValue, 2, ",", ".") : '';
+                    ? 'R$ ' . number_format(
+                    $this->detPag->item($k)->getElementsByTagName('vPag')->item(0)->nodeValue, 2, ",", ".") : '';
                 $h = 6;
                 $texto = '';
-                if ( isset($formaPagamento[$fPag])) {
+                if (isset($formaPagamento[$fPag])) {
                     /*Exibir Item sem pagamento ou outros?*/
                     if ($fPag=='90' || $fPag=='99') {
                         continue;
