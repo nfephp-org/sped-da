@@ -135,7 +135,7 @@ class Daevento extends Common
         $this->rinfEvento = $this->retEvento->getElementsByTagName("infEvento")->item(0);
         $this->tpEvento = $this->infEvento->getElementsByTagName("tpEvento")->item(0)->nodeValue;
         if (!in_array($this->tpEvento, ['110110','110111'])) {
-            $this->errMsg = 'Evento não implementado ' . $tpEvento . ' !!';
+            $this->errMsg = 'Evento não implementado ' . $this->tpEvento . ' !!';
             $this->errStatus = true;
             return false;
         }
@@ -173,7 +173,7 @@ class Daevento extends Common
      * @param  boolean $classe_pdf
      * @return number
      */
-    public function monta($orientacao = '', $papel = 'A4', $logoAlign = 'C', $classe_pdf = false)
+    public function monta($orientacao = '', $papel = 'A4', $logoAlign = 'C', $situacao_externa = '', $classe_pdf = false)
     {
         return $this->montaDaEventoNFe($orientacao, $papel, $logoAlign, $situacao_externa, $classe_pdf);
     }
@@ -186,12 +186,15 @@ class Daevento extends Common
      * A definição de margens e posições iniciais para a impressão são estabelecidas no
      * pelo conteúdo da funçao e podem ser modificados.
      *
-     * @param  string $orientacao (Opcional) Estabelece a orientação da impressão (ex. P-retrato),
+     * @param  string $orientacao       (Opcional) Estabelece a orientação da impressão (ex. P-retrato),
      *  se nada for fornecido será usado o padrão da NFe
-     * @param  string $papel      (Opcional) Estabelece o tamanho do papel (ex. A4)
+     * @param  string $papel            (Opcional) Estabelece o tamanho do papel (ex. A4)
+     * @param  string $logoAlign        (Opcional) Alinhamento do logo
+     * @param  int    $situacao_externa (Opcional) Situação externa do evento
+     * @param  bool   $classe_pdf       (Opcional) Classe PDF a ser utilizada ou false para utilizar o padrão
      * @return string O ID do evento extraido do arquivo XML
      */
-    public function montaDaEventoNFe($orientacao = '', $papel = 'A4', $logoAlign = 'C', $classe_pdf = false)
+    public function montaDaEventoNFe($orientacao = '', $papel = 'A4', $logoAlign = 'C', $situacao_externa = '', $classe_pdf = false)
     {
         if ($orientacao == '') {
             $orientacao = 'P';
@@ -269,9 +272,10 @@ class Daevento extends Common
      * @param  number $x
      * @param  number $y
      * @param  number $pag
+     * @param  int    $situacao_externa
      * @return number
      */
-    private function pHeader($x, $y, $pag)
+    private function pHeader($x, $y, $pag, $situacao_externa)
     {
         $oldX = $x;
         $oldY = $y;
