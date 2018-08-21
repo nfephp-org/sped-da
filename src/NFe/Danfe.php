@@ -1856,9 +1856,9 @@ class Danfe extends Common
                     ? $this->detPag->item($k)->getElementsByTagName('tPag')->item(0)->nodeValue : '0';
                 $vPag = ! empty($this->detPag->item($k)->getElementsByTagName('vPag')->item(0)->nodeValue)
                     ? 'R$ ' . number_format(
-                        $this->detPag->item($k)->getElementsByTagName('vPag')->item(0)->nodeValue, 
-                        2, 
-                        ",", 
+                        $this->detPag->item($k)->getElementsByTagName('vPag')->item(0)->nodeValue,
+                        2,
+                        ",",
                         "."
                     ) : '';
                 $h = 6;
