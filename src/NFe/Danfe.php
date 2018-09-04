@@ -1996,24 +1996,24 @@ class Danfe extends Common
         $tipoFrete = ! empty($this->transp->getElementsByTagName("modFrete")->item(0)->nodeValue) ?
                 $this->transp->getElementsByTagName("modFrete")->item(0)->nodeValue : '0';
         switch ($tipoFrete) {
-        case 0:
-            $texto = "0-Por conta do Rem";
-            break;
-        case 1:
-            $texto = "1-Por conta do Dest";
-            break;
-        case 2:
-            $texto = "2-Por conta de Terceiros";
-            break;
-        case 3:
-            $texto = "3-Próprio por conta do Rem";
-            break;
-        case 4:
-            $texto = "4-Próprio por conta do Dest";
-            break;
-        case 9:
-            $texto = "9-Sem Transporte";
-            break;
+            case 0:
+                $texto = "0-Por conta do Rem";
+                break;
+            case 1:
+                $texto = "1-Por conta do Dest";
+                break;
+            case 2:
+                $texto = "2-Por conta de Terceiros";
+                break;
+            case 3:
+                $texto = "3-Próprio por conta do Rem";
+                break;
+            case 4:
+                $texto = "4-Próprio por conta do Dest";
+                break;
+            case 9:
+                $texto = "9-Sem Transporte";
+                break;
         }
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B');
         $this->pTextBox($x, $y, $w2, $h, $texto, $aFont, 'C', 'C', 1, '');
@@ -2947,24 +2947,24 @@ class Danfe extends Common
         $dhCont = $this->pSimpleGetValue($this->ide, 'dhCont', ' Entrada em contingência : ');
         $texto = '';
         switch ($this->tpEmis) {
-        case 2:
-            $texto = 'CONTINGÊNCIA FS' . $dhCont . $xJust;
-            break;
-        case 3:
-            $texto = 'CONTINGÊNCIA SCAN' . $dhCont . $xJust;
-            break;
-        case 4:
-            $texto = 'CONTINGÊNCIA DPEC' . $dhCont . $xJust;
-            break;
-        case 5:
-            $texto = 'CONTINGÊNCIA FSDA' . $dhCont . $xJust;
-            break;
-        case 6:
-            $texto = 'CONTINGÊNCIA SVC-AN' . $dhCont . $xJust;
-            break;
-        case 7:
-            $texto = 'CONTINGÊNCIA SVC-RS' . $dhCont . $xJust;
-            break;
+            case 2:
+                $texto = 'CONTINGÊNCIA FS' . $dhCont . $xJust;
+                break;
+            case 3:
+                $texto = 'CONTINGÊNCIA SCAN' . $dhCont . $xJust;
+                break;
+            case 4:
+                $texto = 'CONTINGÊNCIA DPEC' . $dhCont . $xJust;
+                break;
+            case 5:
+                $texto = 'CONTINGÊNCIA FSDA' . $dhCont . $xJust;
+                break;
+            case 6:
+                $texto = 'CONTINGÊNCIA SVC-AN' . $dhCont . $xJust;
+                break;
+            case 7:
+                $texto = 'CONTINGÊNCIA SVC-RS' . $dhCont . $xJust;
+                break;
         }
         $y += 2;
         $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'');
