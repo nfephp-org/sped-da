@@ -2570,6 +2570,16 @@ class Danfe extends Common
                 }
                 $this->pTextBox($x, $y, $w14, $h, $texto, $aFont, 'T', 'C', 0, '');
                 $y += $h;
+
+                // Dados do Veiculo Somente para veiculo 0 Km
+                $veicProd = $prod->getElementsByTagName("veicProd")->item(0);
+
+                // Tag somente é gerada para veiculo 0k, e só é permitido um veiculo por NF-e por conta do detran
+                // Verifica se a Tag existe
+                if (!empty($veicProd)) {
+                    $this->pDadosItenVeiculoDANFE($oldX, $y, $h, $prod);
+                }
+
                 $i++;
                 //incrementa o controle dos itens processados.
                 $this->qtdeItensProc++;
@@ -2578,6 +2588,169 @@ class Danfe extends Common
             }
         }
         return $oldY+$hmax;
+    }
+
+    /**
+     * pDadosItenVeiculoDANFE
+     * Coloca os dados do veiculo abaixo do item da NFe. (retrato e paisagem)
+     *
+     * @name   dadosAdicionaisDANFE
+     * @param  float $x Posição horizontal canto esquerdo
+     * @param  float $y Posição vertical canto superior
+     * @param  float $h altura do campo
+     * @param  object $prod Contendo todos os dados do item
+     *
+     */
+
+    protected function pDadosItenVeiculoDANFE($x, $y, $h, $prod)
+    {
+        $oldX = $x;
+        $oldY = $y;
+
+        if ($this->orientacao == 'P') {
+            $w = $this->wPrint;
+        } else {
+            if ($nInicio < 2) { // primeira página
+                $w = $this->wPrint - $this->wCanhoto;
+            } else { // páginas seguintes
+                $w = $this->wPrint;
+            }
+        }
+
+        $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'');
+
+        $w1 = round($w*0.09, 0);
+
+        // Tabela Renavam Combustivel
+        $renavamCombustivel = array(
+            1=>'ALCOOL',
+            2=>'GASOLINA',
+            3=>'DIESEL',
+            4=>'GASOGENIO',
+            5=>'GAS METANO',
+            6=>'ELETRICO/FONTE INTERNA',
+            7=>'ELETRICO/FONTE EXTERNA',
+            8=>'GASOL/GAS NATURAL COMBUSTIVEL',
+            9=>'ALCOOL/GAS NATURAL COMBUSTIVEL',
+            10=>'DIESEL/GAS NATURAL COMBUSTIVEL',
+            11=>'VIDE/CAMPO/OBSERVACAO',
+            12=>'ALCOOL/GAS NATURAL VEICULAR',
+            13=>'GASOLINA/GAS NATURAL VEICULAR',
+            14=>'DIESEL/GAS NATURAL VEICULAR',
+            15=>'GAS NATURAL VEICULAR',
+            16=>'ALCOOL/GASOLINA',
+            17=>'GASOLINA/ALCOOL/GAS NATURAL',
+            18=>'GASOLINA/ELETRICO'
+        );
+
+        $renavamEspecie = array(
+            1=>'PASSAGEIRO',
+            2=>'CARGA',
+            3=>'MISTO',
+            4=>'CORRIDA',
+            5=>'TRACAO',
+            6=>'ESPECIAL',
+            7=>'COLECAO'
+        );
+
+        $renavamTiposVeiculos = array(
+            1=>'BICICLETA',
+            2=>'CICLOMOTOR',
+            3=>'MOTONETA',
+            4=>'MOTOCICLETA',
+            5=>'TRICICLO',
+            6=>'AUTOMOVEL',
+            7=>'MICROONIBUS',
+            8=>'ONIBUS',
+            9=>'BONDE',
+            10=>'REBOQUE',
+            11=>'SEMI-REBOQUE',
+            12=>'CHARRETE',
+            13=>'CAMIONETA',
+            14=>'CAMINHAO',
+            15=>'CARROCA',
+            16=>'CARRO DE MAO',
+            17=>'CAMINHAO TRATOR',
+            18=>'TRATOR DE RODAS',
+            19=>'TRATOR DE ESTEIRAS',
+            20=>'TRATOR MISTO',
+            21=>'QUADRICICLO',
+            22=>'CHASSI/PLATAFORMA',
+            23=>'CAMINHONETE',
+            24=>'SIDE-CAR',
+            25=>'UTILITARIO',
+            26=>'MOTOR-CASA'
+        );
+
+        $renavamTipoPintura = array(
+            'F'=>'FOSCA',
+            'S'=>'SÓLIDA',
+            'P'=>'PEROLIZADA'
+        );
+
+
+
+        $veicProd = $prod->getElementsByTagName("veicProd")->item(0);
+
+        $veiculoChassi = $veicProd->getElementsByTagName("chassi")->item(0)->nodeValue;
+        $veiculoCor = $veicProd->getElementsByTagName("xCor")->item(0)->nodeValue;
+        $veiculoCilindrada = $veicProd->getElementsByTagName("cilin")->item(0)->nodeValue;
+        $veiculoCmkg = $veicProd->getElementsByTagName("CMT")->item(0)->nodeValue;
+        $veiculoTipo = $veicProd->getElementsByTagName("tpVeic")->item(0)->nodeValue;
+
+        $veiculoMotor = $veicProd->getElementsByTagName("nMotor")->item(0)->nodeValue;
+        $veiculoRenavam = $veicProd->getElementsByTagName("cMod")->item(0)->nodeValue;
+        $veiculoHp = $veicProd->getElementsByTagName("pot")->item(0)->nodeValue;
+        $veiculoPlaca = ''; //$veiculo->getElementsByTagName("CMT")->item(0)->nodeValue;
+        $veiculoTipoPintura = $veicProd->getElementsByTagName("tpPint")->item(0)->nodeValue;
+
+        $veiculoMarcaModelo = $prod->getElementsByTagName("xProd")->item(0)->nodeValue;
+        $veiculoEspecie = $veicProd->getElementsByTagName("espVeic")->item(0)->nodeValue;
+        $veiculoCombustivel = $veicProd->getElementsByTagName("tpComb")->item(0)->nodeValue;
+        $veiculoSerial = $veicProd->getElementsByTagName("nSerie")->item(0)->nodeValue;
+        $veiculoFabricacao = $veicProd->getElementsByTagName("anoFab")->item(0)->nodeValue;
+        $veiculoModelo = $veicProd->getElementsByTagName("anoMod")->item(0)->nodeValue;
+
+        $veiculoDistancia = $veicProd->getElementsByTagName("dist")->item(0)->nodeValue;
+
+        $x = $oldX;
+
+        $yVeic = $y + $h;
+        $this->pTextBox($x, $yVeic, $w1+40, $h, 'Chassi: ............: ' . $veiculoChassi, $aFont, 'T', 'L', 0, '');
+        $yVeic += $h;
+        $this->pTextBox($x, $yVeic, $w1+40, $h, 'Cor...................: ' . $veiculoCor, $aFont, 'T', 'L', 0, '');
+        $yVeic += $h;
+        $this->pTextBox($x, $yVeic, $w1+40, $h, 'Cilindrada........: ' . $veiculoCilindrada, $aFont, 'T', 'L', 0, '');
+        $yVeic += $h;
+        $this->pTextBox($x, $yVeic, $w1+40, $h, 'Cmkg...............: ' . $veiculoCmkg, $aFont, 'T', 'L', 0, '');
+        $yVeic += $h;
+        $this->pTextBox($x, $yVeic, $w1+40, $h, 'Tipo.................: ' . $renavamTiposVeiculos[intval($veiculoTipo)], $aFont, 'T', 'L', 0, '');
+
+        $yVeic = $y + $h;
+        $xVeic = $x + 65;
+        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Nº Motor: .........: ' . $veiculoMotor, $aFont, 'T', 'L', 0, '');
+        $yVeic += $h;
+        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Renavam...........: ' . $veiculoRenavam, $aFont, 'T', 'L', 0, '');
+        $yVeic += $h;
+        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'HP.....................: ' . $veiculoHp, $aFont, 'T', 'L', 0, '');
+        $yVeic += $h;
+        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Placa.................: ' . $veiculoPlaca, $aFont, 'T', 'L', 0, '');
+        $yVeic += $h;
+        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Tipo Pintura......: ' . $renavamTipoPintura[$veiculoTipoPintura], $aFont, 'T', 'L', 0, '');
+
+        $yVeic = $y + $h;
+        $xVeic = $xVeic + 55;
+        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Marca / Modelo.....: ' . $veiculoMarcaModelo, $aFont, 'T', 'L', 0, '');
+        $yVeic += $h;
+        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Especie..................: ' . $renavamEspecie[intval($veiculoEspecie)], $aFont, 'T', 'L', 0, '');
+        $yVeic += $h;
+        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Combustivel..........: ' . $renavamCombustivel[intval($veiculoCombustivel)], $aFont, 'T', 'L', 0, '');
+        $yVeic += $h;
+        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Serial.....................: ' . $veiculoSerial, $aFont, 'T', 'L', 0, '');
+        $yVeic += $h;
+        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Ano Fab/Mod........: '. $veiculoFabricacao . '/' . $veiculoModelo, $aFont, 'T', 'L', 0, '');
+        $yVeic += $h;
+        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Distancia Entre Eixos(mm)..: '. $veiculoDistancia, $aFont, 'T', 'L', 0, '');
     }
 
     /**
