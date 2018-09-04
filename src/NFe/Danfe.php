@@ -2778,33 +2778,163 @@ class Danfe extends Common
         $yVeic += $h;
         $this->pTextBox($x, $yVeic, $w1+40, $h, 'Cmkg...............: ' . $veiculoCmkg, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $this->pTextBox($x, $yVeic, $w1+40, $h, 'Tipo.................: ' . $renavamTiposVeiculos[intval($veiculoTipo)], $aFont, 'T', 'L', 0, '');
-
+        $this->pTextBox(
+            $x,
+            $yVeic,
+            $w1+40,
+            $h,
+            'Tipo.................: ' . $renavamTiposVeiculos[intval($veiculoTipo)],
+            $aFont,
+            'T',
+            'L',
+            0,
+            ''
+        );
         $yVeic = $y + $h;
         $xVeic = $x + 65;
-        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Nº Motor: .........: ' . $veiculoMotor, $aFont, 'T', 'L', 0, '');
+        $this->pTextBox(
+            $xVeic,
+            $yVeic,
+            $w1+50,
+            $h,
+            'Nº Motor: .........: ' . $veiculoMotor,
+            $aFont,
+            'T',
+            'L',
+            0,
+            ''
+        );
         $yVeic += $h;
-        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Renavam...........: ' . $veiculoRenavam, $aFont, 'T', 'L', 0, '');
+        $this->pTextBox(
+            $xVeic,
+            $yVeic,
+            $w1+50,
+            $h,
+            'Renavam...........: ' . $veiculoRenavam,
+            $aFont,
+            'T',
+            'L',
+            0,
+            ''
+        );
         $yVeic += $h;
-        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'HP.....................: ' . $veiculoHp, $aFont, 'T', 'L', 0, '');
+        $this->pTextBox(
+            $xVeic,
+            $yVeic,
+            $w1+50,
+            $h,
+            'HP.....................: ' . $veiculoHp,
+            $aFont,
+            'T',
+            'L',
+            0,
+            ''
+        );
         $yVeic += $h;
-        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Placa.................: ' . $veiculoPlaca, $aFont, 'T', 'L', 0, '');
+        $this->pTextBox(
+            $xVeic,
+            $yVeic,
+            $w1+50,
+            $h,
+            'Placa.................: ' . $veiculoPlaca,
+            $aFont,
+            'T',
+            'L',
+            0,
+            ''
+        );
         $yVeic += $h;
-        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Tipo Pintura......: ' . $renavamTipoPintura[$veiculoTipoPintura], $aFont, 'T', 'L', 0, '');
-
+        $this->pTextBox(
+            $xVeic,
+            $yVeic,
+            $w1+50,
+            $h,
+            'Tipo Pintura......: ' . $renavamTipoPintura[$veiculoTipoPintura],
+            $aFont,
+            'T',
+            'L',
+            0,
+            ''
+        );
         $yVeic = $y + $h;
         $xVeic = $xVeic + 55;
-        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Marca / Modelo.....: ' . $veiculoMarcaModelo, $aFont, 'T', 'L', 0, '');
+        $this->pTextBox(
+            $xVeic,
+            $yVeic,
+            $w1+50,
+            $h,
+            'Marca / Modelo.....: ' . $veiculoMarcaModelo,
+            $aFont,
+            'T',
+            'L',
+            0,
+            ''
+        );
         $yVeic += $h;
-        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Especie..................: ' . $renavamEspecie[intval($veiculoEspecie)], $aFont, 'T', 'L', 0, '');
+        $this->pTextBox(
+            $xVeic,
+            $yVeic,
+            $w1+50,
+            $h,
+            'Especie..................: ' . $renavamEspecie[intval($veiculoEspecie)],
+            $aFont,
+            'T',
+            'L',
+            0,
+            ''
+        );
         $yVeic += $h;
-        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Combustivel..........: ' . $renavamCombustivel[intval($veiculoCombustivel)], $aFont, 'T', 'L', 0, '');
+        $this->pTextBox(
+            $xVeic,
+            $yVeic,
+            $w1+50,
+            $h,
+            'Combustivel..........: ' . $renavamCombustivel[intval($veiculoCombustivel)],
+            $aFont,
+            'T',
+            'L',
+            0,
+            ''
+        );
         $yVeic += $h;
-        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Serial.....................: ' . $veiculoSerial, $aFont, 'T', 'L', 0, '');
+        $this->pTextBox(
+            $xVeic,
+            $yVeic,
+            $w1+50,
+            $h,
+            'Serial.....................: ' . $veiculoSerial,
+            $aFont,
+            'T',
+            'L',
+            0,
+            ''
+        );
         $yVeic += $h;
-        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Ano Fab/Mod........: '. $veiculoFabricacao . '/' . $veiculoModelo, $aFont, 'T', 'L', 0, '');
+        $this->pTextBox(
+            $xVeic,
+            $yVeic,
+            $w1+50,
+            $h,
+            'Ano Fab/Mod........: '. $veiculoFabricacao . '/' . $veiculoModelo,
+            $aFont,
+            'T',
+            'L',
+            0,
+            ''
+        );
         $yVeic += $h;
-        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, 'Distancia Entre Eixos(mm)..: '. $veiculoDistancia, $aFont, 'T', 'L', 0, '');
+        $this->pTextBox(
+            $xVeic,
+            $yVeic,
+            $w1+50,
+            $h,
+            'Distancia Entre Eixos(mm)..: '. $veiculoDistancia,
+            $aFont,
+            'T',
+            'L',
+            0,
+            ''
+        );
     }
 
     /**
