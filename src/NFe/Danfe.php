@@ -23,11 +23,13 @@ class Danfe extends Common
     public $logoAlign = 'C';
     /**
      * Posição
+     *
      * @var float
      */
     public $yDados = 0;
     /**
      * Situação
+     *
      * @var integer
      */
     public $situacaoExterna = 0;
@@ -50,33 +52,39 @@ class Danfe extends Common
 
     /**
      * Parâmetro para exibir ou ocultar os valores do PIS/COFINS.
+     *
      * @var boolean
      */
     public $exibirPIS = true;
     /**
      * Parâmetro para exibir ou ocultar os valores do ICMS Interestadual e Valor Total dos Impostos.
+     *
      * @var boolean
      */
     public $exibirIcmsInterestadual = true;
     /**
      * Parâmetro para exibir ou ocultar o texto sobre valor aproximado dos tributos.
+     *
      * @var boolean
      */
     public $exibirValorTributos = true;
     /**
      * Parâmetro para exibir ou ocultar o texto adicional sobre a forma de pagamento
      * e as informações de fatura/duplicata.
+     *
      * @var boolean
      */
     public $exibirTextoFatura = false;
     /**
      * Parâmetro do controle se deve concatenar automaticamente informações complementares
      * na descrição do produto, como por exemplo, informações sobre impostos.
+     *
      * @var boolean
      */
     public $descProdInfoComplemento = true;
     /**
      * Parâmetro do controle se deve gerar quebras de linha com "\n" a partir de ";" na descrição do produto.
+     *
      * @var boolean
      */
     public $descProdQuebraLinha = true;
@@ -87,219 +95,262 @@ class Danfe extends Common
 
     /**
      * objeto fpdf()
+     *
      * @var object
      */
     protected $pdf;
     /**
      * XML NFe
+     *
      * @var string
      */
     protected $xml;
     /**
      * path para logomarca em jpg
+     *
      * @var string
      */
     protected $logomarca = '';
     /**
      * mesagens de erro
+     *
      * @var string
      */
     protected $errMsg = '';
     /**
      * status de erro true um erro ocorreu false sem erros
+     *
      * @var boolean
      */
     protected $errStatus = false;
     /**
      * orientação da DANFE
      * P-Retrato ou L-Paisagem
+     *
      * @var string
      */
     protected $orientacao = 'P';
     /**
      * formato do papel
+     *
      * @var string
      */
     protected $papel = 'A4';
     /**
      * destino do arquivo pdf
      * I-borwser, S-retorna o arquivo, D-força download, F-salva em arquivo local
+     *
      * @var string
      */
     protected $destino = 'I';
     /**
      * diretorio para salvar o pdf com a opção de destino = F
+     *
      * @var string
      */
     protected $pdfDir = '';
     /**
      * Nome da Fonte para gerar o DANFE
+     *
      * @var string
      */
     protected $fontePadrao = 'Times';
     /**
      * versão
+     *
      * @var string
      */
     protected $version = '2.2.8';
     /**
      * Texto
+     *
      * @var string
      */
     protected $textoAdic = '';
     /**
      * Largura
+     *
      * @var float
      */
     protected $wAdic = 0;
     /**
      * largura imprimivel, em milímetros
+     *
      * @var float
      */
     protected $wPrint;
     /**
      * Comprimento (altura) imprimivel, em milímetros
+     *
      * @var float
      */
     protected $hPrint;
     /**
      * largura do canhoto (25mm) apenas para a formatação paisagem
+     *
      * @var float
      */
     protected $wCanhoto = 25;
     /**
      * Formato chave
+     *
      * @var string
      */
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     /**
      * quantidade de itens já processados na montagem do DANFE
+     *
      * @var integer
      */
     protected $qtdeItensProc;
 
     /**
      * Document
+     *
      * @var DOMDocument
      */
     protected $dom;
     /**
      * Node
+     *
      * @var DOMNode
      */
     protected $infNFe;
     /**
      * Node
+     *
      * @var DOMNode
      */
     protected $ide;
     /**
      * Node
+     *
      * @var DOMNode
      */
     protected $entrega;
     /**
      * Node
+     *
      * @var DOMNode
      */
     protected $retirada;
     /**
      * Node
+     *
      * @var DOMNode
      */
     protected $emit;
     /**
      * Node
+     *
      * @var DOMNode
      */
     protected $dest;
     /**
      * Node
+     *
      * @var DOMNode
      */
     protected $enderEmit;
     /**
      * Node
+     *
      * @var DOMNode
      */
     protected $enderDest;
     /**
      * Node
+     *
      * @var DOMNode
      */
     protected $det;
     /**
      * Node
+     *
      * @var DOMNode
      */
     protected $cobr;
     /**
      * Node
+     *
      * @var DOMNode
      */
     protected $dup;
     /**
      * Node
+     *
      * @var DOMNode
      */
     protected $ICMSTot;
     /**
      * Node
+     *
      * @var DOMNode
      */
     protected $ISSQNtot;
     /**
      * Node
+     *
      * @var DOMNode
      */
     protected $transp;
     /**
      * Node
+     *
      * @var DOMNode
      */
     protected $transporta;
     /**
      * Node
+     *
      * @var DOMNode
      */
     protected $veicTransp;
     /**
      * Node reboque
+     *
      * @var DOMNode
      */
     protected $reboque;
     /**
      * Node infAdic
+     *
      * @var DOMNode
      */
     protected $infAdic;
     /**
      * Tipo de emissão
+     *
      * @var integer
      */
     protected $tpEmis;
     /**
      * Node infProt
+     *
      * @var DOMNode
      */
     protected $infProt;
     /**
      * 1-Retrato/ 2-Paisagem
+     *
      * @var integer
      */
     protected $tpImp;
     /**
      * Node compra
+     *
      * @var DOMNode
      */
     protected $compra;
     /**
      * ativa ou desativa o modo de debug
+     *
      * @var integer
      */
     protected $debugMode=2;
     /**
      * Creditos para integrador
+     *
      * @var string
      */
     protected $creditos = '';
@@ -390,6 +441,7 @@ class Danfe extends Common
 
     /**
      * Add the credits to the integrator in the footer message
+     *
      * @param string $message
      */
     public function creditsIntegratorFooter($message = '')
@@ -455,7 +507,7 @@ class Danfe extends Common
      * pelo conteúdo da funçao e podem ser modificados.
      *
      * @param  string $orientacao (Opcional) Estabelece a orientação da impressão
-     *  (ex. P-retrato), se nada for fornecido será usado o padrão da NFe
+     *                            (ex. P-retrato), se nada for fornecido será usado o padrão da NFe
      * @param  string $papel      (Opcional) Estabelece o tamanho do papel (ex. A4)
      * @return string O ID da NFe numero de 44 digitos extraido do arquivo XML
      */
@@ -945,6 +997,7 @@ class Danfe extends Common
 
     /**
      * Dados brutos do PDF
+     *
      * @return string
      */
     public function render()
@@ -985,7 +1038,7 @@ class Danfe extends Common
     }
 
     /**
-     *cabecalhoDANFE
+     * cabecalhoDANFE
      * Monta o cabelhalho da DANFE (retrato e paisagem)
      *
      * @param  number $x      Posição horizontal inicial, canto esquerdo
@@ -1624,12 +1677,12 @@ class Danfe extends Common
     } //fim da função destinatarioDANFE
 
      /**
-     * pGetTextoFatura
-     * Gera a String do Texto da Fatura
+      * pGetTextoFatura
+      * Gera a String do Texto da Fatura
       *
-     * @name   getTextoFatura
-     * @return uma String com o texto ou "";
-     */
+      * @name   getTextoFatura
+      * @return uma String com o texto ou "";
+      */
     protected function pGetTextoFatura()
     {
         if (isset($this->cobr)) {
@@ -1661,12 +1714,12 @@ class Danfe extends Common
     } //fim getTextoFatura
 
      /**
-     * pSizeExtraTextoFatura
-     * Calcula o espaço ocupado pelo texto da fatura. Este espaço só é utilizado quando não houver duplicata.
+      * pSizeExtraTextoFatura
+      * Calcula o espaço ocupado pelo texto da fatura. Este espaço só é utilizado quando não houver duplicata.
       *
-     * @name   pSizeExtraTextoFatura
-     * @return integer
-     */
+      * @name   pSizeExtraTextoFatura
+      * @return integer
+      */
     protected function pSizeExtraTextoFatura()
     {
         $textoFatura = $this->pGetTextoFatura();
@@ -1943,24 +1996,24 @@ class Danfe extends Common
         $tipoFrete = ! empty($this->transp->getElementsByTagName("modFrete")->item(0)->nodeValue) ?
                 $this->transp->getElementsByTagName("modFrete")->item(0)->nodeValue : '0';
         switch ($tipoFrete) {
-            case 0:
-                $texto = "0-Por conta do Rem";
-                break;
-            case 1:
-                $texto = "1-Por conta do Dest";
-                break;
-            case 2:
-                $texto = "2-Por conta de Terceiros";
-                break;
-            case 3:
-                $texto = "3-Próprio por conta do Rem";
-                break;
-            case 4:
-                $texto = "4-Próprio por conta do Dest";
-                break;
-            case 9:
-                $texto = "9-Sem Transporte";
-                break;
+        case 0:
+            $texto = "0-Por conta do Rem";
+            break;
+        case 1:
+            $texto = "1-Por conta do Dest";
+            break;
+        case 2:
+            $texto = "2-Por conta de Terceiros";
+            break;
+        case 3:
+            $texto = "3-Próprio por conta do Rem";
+            break;
+        case 4:
+            $texto = "4-Próprio por conta do Dest";
+            break;
+        case 9:
+            $texto = "9-Sem Transporte";
+            break;
         }
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B');
         $this->pTextBox($x, $y, $w2, $h, $texto, $aFont, 'C', 'C', 1, '');
@@ -2594,12 +2647,13 @@ class Danfe extends Common
      * pDadosItenVeiculoDANFE
      * Coloca os dados do veiculo abaixo do item da NFe. (retrato e paisagem)
      *
-     * @name   dadosAdicionaisDANFE
-     * @param  float $x Posição horizontal canto esquerdo
-     * @param  float $y Posição vertical canto superior
-     * @param  float $h altura do campo
-     * @param  object $prod Contendo todos os dados do item
-     *
+     * @name  dadosAdicionaisDANFE
+     * @param float  $x    Posição horizontal
+     *                     canto esquerdo
+     * @param float  $y    Posição vertical
+     *                     canto superior
+     * @param float  $h    altura do campo
+     * @param object $prod Contendo todos os dados do item
      */
 
     protected function pDadosItenVeiculoDANFE($x, $y, $h, $prod)
@@ -2834,7 +2888,7 @@ class Danfe extends Common
     }
 
     /**
-     *dadosAdicionaisDANFE
+     * dadosAdicionaisDANFE
      * Coloca o grupo de dados adicionais da NFe. (retrato e paisagem)
      *
      * @name   dadosAdicionaisDANFE
@@ -2893,24 +2947,24 @@ class Danfe extends Common
         $dhCont = $this->pSimpleGetValue($this->ide, 'dhCont', ' Entrada em contingência : ');
         $texto = '';
         switch ($this->tpEmis) {
-            case 2:
-                $texto = 'CONTINGÊNCIA FS' . $dhCont . $xJust;
-                break;
-            case 3:
-                $texto = 'CONTINGÊNCIA SCAN' . $dhCont . $xJust;
-                break;
-            case 4:
-                $texto = 'CONTINGÊNCIA DPEC' . $dhCont . $xJust;
-                break;
-            case 5:
-                $texto = 'CONTINGÊNCIA FSDA' . $dhCont . $xJust;
-                break;
-            case 6:
-                $texto = 'CONTINGÊNCIA SVC-AN' . $dhCont . $xJust;
-                break;
-            case 7:
-                $texto = 'CONTINGÊNCIA SVC-RS' . $dhCont . $xJust;
-                break;
+        case 2:
+            $texto = 'CONTINGÊNCIA FS' . $dhCont . $xJust;
+            break;
+        case 3:
+            $texto = 'CONTINGÊNCIA SCAN' . $dhCont . $xJust;
+            break;
+        case 4:
+            $texto = 'CONTINGÊNCIA DPEC' . $dhCont . $xJust;
+            break;
+        case 5:
+            $texto = 'CONTINGÊNCIA FSDA' . $dhCont . $xJust;
+            break;
+        case 6:
+            $texto = 'CONTINGÊNCIA SVC-AN' . $dhCont . $xJust;
+            break;
+        case 7:
+            $texto = 'CONTINGÊNCIA SVC-RS' . $dhCont . $xJust;
+            break;
         }
         $y += 2;
         $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'');
