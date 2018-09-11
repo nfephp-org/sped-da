@@ -806,7 +806,7 @@ class Danfe extends Common
                 $this->pRodape($xInic, $this->hPrint + 4);
             }
             //se estiver na última página e ainda restar itens para inserir, adiciona mais uma página
-            if ($n == $totPag && $this->qtdeItensProc < $qtdeItens) {
+            if ($n == $totPag && $this->qtdeItensProc < $qtdeItens) { 
                 $totPag++;
             }
         }
