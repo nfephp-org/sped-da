@@ -756,9 +756,15 @@ class Danfe extends Common
                 $y = $y;
             } 
             else {
-                //caso tenha mais de uma forma de pagamento ou seja diferente de boleto exibe a
-                //forma de pagamento e o valor
-                $y = $this->pagamentoDANFE($x, $y+1);
+                //Se somente tiver a forma de pagamento sem pagamento ou outros não imprimir nada
+                if (count($formaPag)=='1' && (isset($formaPag[90]) || isset($formaPag[99]))) {
+                    $y = $y;
+                } 
+                else {
+                    //caso tenha mais de uma forma de pagamento ou seja diferente de boleto exibe a
+                    //forma de pagamento e o valor
+                    $y = $this->pagamentoDANFE($x, $y+1);
+                }
             }
         }
         //coloca os dados dos impostos e totais da NFe
