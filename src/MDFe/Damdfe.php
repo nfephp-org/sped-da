@@ -196,12 +196,15 @@ class Damdfe extends Common
             $this->dhRecbto = $this->mdfeProc->getElementsByTagName("dhRecbto")->item(0)->nodeValue;
         }
         $this->modal = $this->dom->getElementsByTagName("modal")->item(0)->nodeValue;
-        $this->nac = $this->dom->getElementsByTagName("nac")->item(0)->nodeValue;
-        $this->matr = $this->dom->getElementsByTagName("matr")->item(0)->nodeValue;
-        $this->nVoo = $this->dom->getElementsByTagName("nVoo")->item(0)->nodeValue;
-        $this->cAerEmb = $this->dom->getElementsByTagName("cAerEmb")->item(0)->nodeValue;
-        $this->cAerDes = $this->dom->getElementsByTagName("cAerDes")->item(0)->nodeValue;
-        $this->dVoo = $this->dom->getElementsByTagName("dVoo")->item(0)->nodeValue;
+        
+        if ($this->modal == '2') {
+            $this->nac = $this->dom->getElementsByTagName("nac")->item(0)->nodeValue;
+            $this->matr = $this->dom->getElementsByTagName("matr")->item(0)->nodeValue;
+            $this->nVoo = $this->dom->getElementsByTagName("nVoo")->item(0)->nodeValue;
+            $this->cAerEmb = $this->dom->getElementsByTagName("cAerEmb")->item(0)->nodeValue;
+            $this->cAerDes = $this->dom->getElementsByTagName("cAerDes")->item(0)->nodeValue;
+            $this->dVoo = $this->dom->getElementsByTagName("dVoo")->item(0)->nodeValue;
+        }
     }//fim construct
     /**
      *buildMDFe
@@ -712,7 +715,7 @@ class Damdfe extends Common
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'');
         $this->pTextBox($x1, $y+4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
 
-        $altura = 0;
+        $altura = $y;
         if ($this->modal == '1') {
             $x1 = $x;
             $y += 12;
