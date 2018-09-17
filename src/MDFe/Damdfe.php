@@ -680,8 +680,7 @@ class Damdfe extends Common
         if ($this->modal == '1') {
             $this->pTextBox($x1, $y, $x2, 23);
             $texto = 'Modal Rodoviário de Carga';
-        } else
-        if ($this->modal == '2') {
+        } elseif ($this->modal == '2') {
             $this->pTextBox($x1, $y, $x2, 18);
             $texto = 'Modal Aéreo de Carga';
         }
@@ -857,8 +856,7 @@ class Damdfe extends Common
                 $aFont = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'');
                 $this->pTextBox($x1 + 1, $y, $x2 - 1, 8, $texto, $aFont, 'T', 'L', 0, '', false);
             }
-        } else
-        if ($this->modal == '2') {
+        } elseif ($this->modal == '2') {
             $x1 = $x;
             $y += 12;
             $x2 = round($maxW / 2, 0);
