@@ -744,11 +744,8 @@ class Danfe extends Common
                 $formaPag[$fPag] = $fPag;
             }
         }
-        //Caso só tenha pagamento em boleto exibe as faturas ou invés das formas
-        //caso tenha boleto e sem pagamento também exibir faturas pois deve ser devolução de
-        //materiais do destinatário e não tem cobrança
-        if ((count($formaPag)=='1' && isset($formaPag[15]) || count($formaPag)=='2'
-             && isset($formaPag[15]) && isset($formaPag[90]))) {
+        //caso tenha boleto imprimir fatura
+        if (($this->dup->length > 0) {
             $y = $this->pFaturaDANFE($x, $y+1);
         } else {
             //Se somente tiver a forma de pagamento sem pagamento ou outros não imprimir nada
