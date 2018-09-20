@@ -744,25 +744,17 @@ class Danfe extends Common
                 $formaPag[$fPag] = $fPag;
             }
         }
-        //Caso só tenha pagamento em boleto exibe as faturas ou invés das formas
-        //caso tenha boleto e sem pagamento também exibir faturas pois deve ser devolução de
-        //materiais do destinatário e não tem cobrança
-        if ((count($formaPag)=='1' && isset($formaPag[15]) || count($formaPag)=='2'
-             && isset($formaPag[15]) && isset($formaPag[90]))) {
+        //caso tenha boleto imprimir fatura
+        if (($this->dup->length > 0) {
             $y = $this->pFaturaDANFE($x, $y+1);
         } else {
             //Se somente tiver a forma de pagamento sem pagamento ou outros não imprimir nada
             if (count($formaPag)=='1' && (isset($formaPag[90]) || isset($formaPag[99]))) {
                 $y = $y;
             } else {
-                //Se somente tiver a forma de pagamento sem pagamento ou outros não imprimir nada
-                if (count($formaPag)=='1' && (isset($formaPag[90]) || isset($formaPag[99]))) {
-                    $y = $y;
-                } else {
-                    //caso tenha mais de uma forma de pagamento ou seja diferente de boleto exibe a
-                    //forma de pagamento e o valor
-                    $y = $this->pagamentoDANFE($x, $y+1);
-                }
+                //caso tenha mais de uma forma de pagamento ou seja diferente de boleto exibe a
+                //forma de pagamento e o valor
+                $y = $this->pagamentoDANFE($x, $y+1);
             }
         }
         //coloca os dados dos impostos e totais da NFe
