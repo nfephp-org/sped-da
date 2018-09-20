@@ -86,6 +86,7 @@ class Danfce extends Common
         '35' => 'SP',
         '17' => 'TO'
     ];
+    
     /*
      * Fonte: http://nfce.encat.org/consumidor/consulte-sua-nota/
      * URL referente a pagina de consulta da NFCe pela chave de acesso
@@ -219,6 +220,53 @@ class Danfce extends Common
         if ($this->pSimpleGetValue($this->ide, "mod") != '65') {
             throw new InvalidArgumentException("O xml do DANFE deve ser uma NFC-e modelo 65");
         }
+    }
+
+    /*
+     * Marcelo Tadeu - 30/08/2018
+     * DriveTrue Delivery - https://www.drivetrue.com.br
+     * 
+     * Obtem Total dos tribudos de acordo com os dados do XML
+     * Referente à lei da transparencia
+     *
+    */
+    public function getTotalTributos(){
+        try{
+            return trim($this->pSimpleGetValue($this->ICMSTot, "vTotTrib")) == "" ? 0 : $this->pSimpleGetValue($this->ICMSTot, "vTotTrib");
+        }catch(Exception $e){
+            return '0.00';
+        }
+    }
+
+    /*
+     * Marcelo Tadeu - 30/08/2018
+     * DriveTrue Delivery - https://www.drivetrue.com.br
+     * 
+     * Obtem URL raiz de consulta da sefaz de acordo com os dados do XML
+     * Útil para exibição em softwares de impressão próprios (direto na impressora)
+     *
+    */
+    public function getSefazUrl(){
+        $cUF    = $this->pSimpleGetValue($this->ide, 'cUF');
+        $tpAmb  = $this->pSimpleGetValue($this->ide, 'tpAmb');
+
+        try{
+            return $this->urlConsulta[$tpAmb][$this->UFSigla[$cUF]];
+        }catch(Exception $e){
+            return '';
+        }
+    }
+
+    /*
+     * Marcelo Tadeu - 30/08/2018
+     * DriveTrue Delivery - https://www.drivetrue.com.br
+     * 
+     * Obtem URL do QRCode montado e validado de acordo com os dados do XML
+     * Útil para montagem própria do QRCode de consulta da Danfce
+     *
+    */
+    public function getQRCodeUrl(){
+        return $this->qrCode;
     }
     
     public function getPapel()
