@@ -745,7 +745,7 @@ class Danfe extends Common
             }
         }
         //caso tenha boleto imprimir fatura
-        if (($this->dup->length > 0) {
+        if ($this->dup->length > 0) {
             $y = $this->pFaturaDANFE($x, $y+1);
         } else {
             //Se somente tiver a forma de pagamento sem pagamento ou outros não imprimir nada
