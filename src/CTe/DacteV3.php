@@ -1746,8 +1746,6 @@ class DacteV3 extends Common
         $x = $oldX;
         $this->pdf->Line($x, $y, $w + 1, $y);
 
-        // MEU CODIGO
-
         $cUnidX[0] = $this->pSimpleGetValue($this->infQ->item(0), "cUnid");
         $cUnidX[1] = $this->pSimpleGetValue($this->infQ->item(1), "cUnid");
         $cUnidX[2] = $this->pSimpleGetValue($this->infQ->item(2), "cUnid");
@@ -1800,8 +1798,6 @@ class DacteV3 extends Common
                 $this->pdf->Line($x+41.3, $y, $x+41.3, $y + 9);
             }
         }
-
-        // FIM MEU CODIGO
 
         $texto = 'CUBAGEM(M3)';
         $aFont = $this->formatPadrao;
