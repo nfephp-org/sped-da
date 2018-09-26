@@ -1761,7 +1761,7 @@ class DacteV3 extends Common
                 $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => 'B');
                 $this->pTextBox($x, $y + 2, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
 
-                $texto = number_format($qCarga, 3, ",", ".");
+                $texto = !empty($qCarga) ? number_format($qCarga, 3, ",", ".") : '';
                 $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => 'B');
                 $this->pTextBox($x, $y + 4.5, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
                 $x = $w * 0.12;
@@ -1775,7 +1775,7 @@ class DacteV3 extends Common
                 $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => 'B');
                 $this->pTextBox($x + 13.5, $y + 2, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
 
-                $texto = number_format($qCarga, 3, ",", ".");
+                $texto = !empty($qCarga) ? number_format($qCarga, 3, ",", ".") : '';
                 $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => 'B');
                 $this->pTextBox($x + 13.5, $y + 4.5, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
 
@@ -1790,7 +1790,7 @@ class DacteV3 extends Common
                 $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => 'B');
                 $this->pTextBox($x+25, $y+2, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
 
-                $texto = number_format($qCarga, 3, ",", ".");
+                $texto = !empty($qCarga) ? number_format($qCarga, 3, ",", ".") : '';
                 $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => 'B');
                 $this->pTextBox($x+25, $y + 4.5, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
 
