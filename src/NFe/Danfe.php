@@ -3201,7 +3201,7 @@ class Danfe extends Common
             $x--;
             $x = $this->pTextBox90($x, $y, $w-1, $h, $texto, $aFontSmall, 'C', 'L', 0, '', false);
             //NUMERO DA NOTA FISCAL LOGO NFE
-            $w1 = 16;
+            $w1 = 18;
             $x1 = $oldX;
             $y = $oldY;
             $texto = "NF-e";
