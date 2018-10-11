@@ -1157,6 +1157,9 @@ class Danfce extends Common
                 break;
             case '99':
                 $tBandNome = 'OUTROS';
+                break;
+            default:
+                $tBandNome = '';
         }
         return $tBandNome;
     }
