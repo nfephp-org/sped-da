@@ -9,8 +9,10 @@ use NFePHP\DA\Legacy\FilesFolders;
 $xml = 'xml/mod55-nfe.xml';
 $docxml = FilesFolders::readFile($xml);
 
+$logo = 'data://text/plain;base64,'. base64_encode(file_get_contents('images/logo.jpg'));
+
 try {
-    $danfe = new Danfe($docxml, 'P', 'A4', 'images/logo.jpg', 'I', '');
+    $danfe = new Danfe($docxml, 'P', 'A4', $logo, 'I', '');
     $id = $danfe->montaDANFE();
     $pdf = $danfe->render();
     //o pdf porde ser exibido como view no browser
