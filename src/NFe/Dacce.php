@@ -155,7 +155,7 @@ class Dacce extends Common
      * @param string $papel
      * @param string $logoAlign
      */
-    public function monta($orientacao = '', $papel = 'A4', $logoAlign = 'C')
+    public function monta($orientacao = 'P', $papel = 'A4', $logoAlign = 'C')
     {
         $this->orientacao = $orientacao;
         $this->papel = $papel;
@@ -163,6 +163,15 @@ class Dacce extends Common
         $this->pBuildDACCE();
     }
 
+    /**
+     * Dados brutos do PDF
+     * @return string
+     */
+    public function render()
+    {
+        return $this->printDACCE('', 'S');
+    }
+    
     /**
      * pBuildDACCE
      */
@@ -257,8 +266,13 @@ class Dacce extends Common
         $this->pTextBox($x, $y, $w, $h);
         $texto = 'IDENTIFICAÇÃO DO EMITENTE';
         $this->pTextBox($x, $y, $w, 5, $texto, $aFont, 'T', 'C', 0, '');
-        if (is_file($this->logomarca)) {
+        if (!empty($this->logomarca)) {
             $logoInfo = getimagesize($this->logomarca);
+            $type = strtolower(explode('/', $logoInfo['mime'])[1]);
+            if ($type == 'png') {
+                $this->logomarca = $this->imagePNGtoJPG($this->logomarca);
+                $type == 'jpg';
+            }
             // largura da imagem em mm
             $logoWmm = ($logoInfo[0] / 72) * 25.4;
             // altura da imagem em mm
@@ -291,7 +305,8 @@ class Dacce extends Common
                 $y1 = round($h / 3 + $y, 0);
                 $tw = round(2 * $w / 3, 0);
             }
-            $this->pdf->Image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH);
+            $type = (substr($this->logomarca, 0, 7) === 'data://') ? 'jpg' : null;
+            $this->pdf->Image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, $type);
         } else {
             $x1 = $x;
             $y1 = round($h / 3 + $y, 0);
@@ -525,5 +540,16 @@ class Dacce extends Common
             $this->pBuildDACCE();
         }
         return $this->pdf->Output($nome, $destino);
+    }
+    
+    private function imagePNGtoJPG($original)
+    {
+        $image = imagecreatefrompng($original);
+        ob_start();
+        imagejpeg($image, null, 100);
+        imagedestroy($image);
+        $stringdata = ob_get_contents(); // read from buffer
+        ob_end_clean();
+        return 'data://text/plain;base64,'.base64_encode($stringdata);
     }
 }

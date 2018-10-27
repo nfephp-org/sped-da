@@ -684,7 +684,7 @@ class Danfe extends Common
             ($linhaISSQN * $hissqn) + $hdadosadic + $hfooter + $hCabecItens +
             $this->pSizeExtraTextoFatura());
         if ($this->orientacao == 'P') {
-            $hDispo1 -= 23 * $this->qCanhoto;//para canhoto
+            $hDispo1 -= 24 * $this->qCanhoto;//para canhoto
             $w = $this->wPrint;
         } else {
             $hcanhoto = $this->hPrint;//para canhoto
