@@ -1466,7 +1466,11 @@ class Danfe extends Common
         }
         $w = $maxW;
         $h = 7;
-        $texto = 'DESTINATÁRIO';
+        if ($this->ide->getElementsByTagName("tpNF")->item(0)->nodeValue==='0') {
+            $texto = 'REMETENTE';
+        } else {
+            $texto = 'DESTINATÁRIO';
+        }
         $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         //NOME / RAZÃO SOCIAL
