@@ -242,6 +242,11 @@ class Danfe extends Common
      * Node
      * @var DOMNode
      */
+    protected $detPag;
+    /**
+     * Node
+     * @var DOMNode
+     */
     protected $ICMSTot;
     /**
      * Node
@@ -370,6 +375,7 @@ class Danfe extends Common
             $this->det        = $this->dom->getElementsByTagName("det");
             $this->cobr       = $this->dom->getElementsByTagName("cobr")->item(0);
             $this->dup        = $this->dom->getElementsByTagName('dup');
+            $this->detPag     = $this->dom->getElementsByTagName('detPag');
             $this->ICMSTot    = $this->dom->getElementsByTagName("ICMSTot")->item(0);
             $this->ISSQNtot   = $this->dom->getElementsByTagName("ISSQNtot")->item(0);
             $this->transp     = $this->dom->getElementsByTagName("transp")->item(0);
