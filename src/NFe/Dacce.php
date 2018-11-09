@@ -16,12 +16,14 @@ namespace NFePHP\DA\NFe;
  */
 
 use Exception;
-use NFePHP\Common\Dom\Dom;
+use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
 
 class Dacce extends Common
 {
+    public $chNFe;
+    
     protected $logoAlign = 'C';
     protected $yDados = 0;
     protected $debugMode = 0;
@@ -42,7 +44,6 @@ class Dacce extends Common
     protected $wCanhoto;
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     protected $id;
-    protected $chNFe;
     protected $tpAmb;
     protected $cOrgao;
     protected $xCorrecao;
@@ -54,6 +55,7 @@ class Dacce extends Common
     protected $CPFDest = '';
     protected $dhRegEvento;
     protected $nProt;
+    
     private $dom;
     private $procEventoNFe;
     private $evento;
@@ -62,9 +64,8 @@ class Dacce extends Common
     private $retInfEvento;
 
     /**
-     * __construct
-     *
-     * @param string $docXML      Arquivo XML (diretório ou string)
+     * Construtor recebe parametro pra impressao
+     * @param string $docXML      conteudo do Arquivo XML
      * @param string $sOrientacao (Opcional) Orientação da impressão P-retrato L-Paisagem
      * @param string $sPapel      Tamanho do papel (Ex. A4)
      * @param string $sPathLogo   Caminho para o arquivo do logo
@@ -115,9 +116,6 @@ class Dacce extends Common
         }
         // se for passado o xml
         if (!empty($this->xml)) {
-            if (is_file($this->xml)) {
-                $this->xml = file_get_contents($this->xml);
-            }
             $this->dom = new Dom();
             $this->dom->loadXML($this->xml);
             $this->procEventoNFe = $this->dom->getElementsByTagName("procEventoNFe")->item(0);
@@ -152,13 +150,12 @@ class Dacce extends Common
     }
 
     /**
-     * monta
-     *
+     * Monta o pdf
      * @param string $orientacao
      * @param string $papel
      * @param string $logoAlign
      */
-    public function monta($orientacao = '', $papel = 'A4', $logoAlign = 'C')
+    public function monta($orientacao = 'P', $papel = 'A4', $logoAlign = 'C')
     {
         $this->orientacao = $orientacao;
         $this->papel = $papel;
@@ -166,6 +163,15 @@ class Dacce extends Common
         $this->pBuildDACCE();
     }
 
+    /**
+     * Dados brutos do PDF
+     * @return string
+     */
+    public function render()
+    {
+        return $this->printDACCE('', 'S');
+    }
+    
     /**
      * pBuildDACCE
      */
@@ -227,8 +233,7 @@ class Dacce extends Common
     }
 
     /**
-     * pHeader
-     *
+     * Monta o cabeçalho
      * @param  number $x
      * @param  number $y
      * @param  number $pag
@@ -261,8 +266,13 @@ class Dacce extends Common
         $this->pTextBox($x, $y, $w, $h);
         $texto = 'IDENTIFICAÇÃO DO EMITENTE';
         $this->pTextBox($x, $y, $w, 5, $texto, $aFont, 'T', 'C', 0, '');
-        if (is_file($this->logomarca)) {
+        if (!empty($this->logomarca)) {
             $logoInfo = getimagesize($this->logomarca);
+            $type = strtolower(explode('/', $logoInfo['mime'])[1]);
+            if ($type == 'png') {
+                $this->logomarca = $this->imagePNGtoJPG($this->logomarca);
+                $type == 'jpg';
+            }
             // largura da imagem em mm
             $logoWmm = ($logoInfo[0] / 72) * 25.4;
             // altura da imagem em mm
@@ -295,7 +305,8 @@ class Dacce extends Common
                 $y1 = round($h / 3 + $y, 0);
                 $tw = round(2 * $w / 3, 0);
             }
-            $this->pdf->Image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH);
+            $type = (substr($this->logomarca, 0, 7) === 'data://') ? 'jpg' : null;
+            $this->pdf->Image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, $type);
         } else {
             $x1 = $x;
             $y1 = round($h / 3 + $y, 0);
@@ -371,6 +382,7 @@ class Dacce extends Common
         // ############################################
         $x = $oldX;
         $y = $y1;
+        $texto = '';
         if ($this->CNPJDest != '') {
             $texto = 'CNPJ do Destinatário: ' . $this->pFormat($this->CNPJDest, "##.###.###/####-##");
         }
@@ -417,8 +429,7 @@ class Dacce extends Common
     }
 
     /**
-     * pBody
-     *
+     * Monta o corpo da pagina
      * @param number $x
      * @param number $y
      */
@@ -470,8 +481,7 @@ class Dacce extends Common
     }
 
     /**
-     * pFooter
-     *
+     * Monta o rodapé
      * @param number $x
      * @param number $y
      */
@@ -506,8 +516,7 @@ class Dacce extends Common
     }
 
     /**
-     * printDocument
-     *
+     * Gera a saida
      * @param  string $nome
      * @param  string $destino
      * @param  string $printer
@@ -519,8 +528,7 @@ class Dacce extends Common
     }
 
     /**
-     * printDACCE
-     *
+     * Gera a saida
      * @param  string $nome
      * @param  string $destino
      * @param  string $printer
@@ -532,5 +540,16 @@ class Dacce extends Common
             $this->pBuildDACCE();
         }
         return $this->pdf->Output($nome, $destino);
+    }
+    
+    private function imagePNGtoJPG($original)
+    {
+        $image = imagecreatefrompng($original);
+        ob_start();
+        imagejpeg($image, null, 100);
+        imagedestroy($image);
+        $stringdata = ob_get_contents(); // read from buffer
+        ob_end_clean();
+        return 'data://text/plain;base64,'.base64_encode($stringdata);
     }
 }

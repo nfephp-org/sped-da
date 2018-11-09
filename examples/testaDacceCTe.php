@@ -8,7 +8,7 @@ ini_set('display_errors', 1);
 require_once '../bootstrap.php';
 
 use NFePHP\DA\CTe\Dacce;
-use NFePHP\Common\Files\FilesFolders;
+use NFePHP\DA\Legacy\FilesFolders;
 
 $xml = 'proccce.xml';
 

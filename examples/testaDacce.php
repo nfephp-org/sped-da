@@ -1,31 +1,38 @@
 <?php
-/**
- * ATENÇÃO : Esse exemplo usa classe PROVISÓRIA que será removida assim que 
- * a nova classe DACCE estiver refatorada e a pasta EXTRAS será removida.
- */
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
-require_once '../../bootstrap.php';
+require_once '../bootstrap.php';
 
-use NFePHP\Extras\Dacce;
-use NFePHP\Common\Files\FilesFolders;
+use NFePHP\DA\NFe\Dacce;
+use NFePHP\DA\Legacy\FilesFolders;
 
-$xml = '../xml/proccce.xml';
+$xml = '/var/www/sped/sped-da/examples/xml/110110-53181011028793000173550010000066701204276800-1-procEventoNfe.xml';
+
+$logo = 'data://text/plain;base64,'. base64_encode(file_get_contents('images/logo.jpg'));
 
 $aEnd = array(
-    'razao' => 'QQ Comercio e Ind. Ltda',
-    'logradouro' => 'Rua vinte e um de março',
-    'numero' => '200',
+    'razao' => 'DF TRANSPORTES E LOGISTICA EIRELI',
+    'logradouro' => 'ADE Conjunto 28',
+    'numero' => '01',
     'complemento' => 'sobreloja',
-    'bairro' => 'Nova Onda',
-    'CEP' => '99999-999',
-    'municipio' => 'Onda',
-    'UF' => 'MG',
-    'telefone' => '33333-3333',
-    'email' => 'qq@gmail.com' 
+    'bairro' => 'Area de Desenvolvimento Economico Aguas Claras',
+    'CEP' => '71991360',
+    'municipio' => 'Brasilia',
+    'UF' => 'DF',
+    'telefone' => '6130220802',
+    'email' => '' 
 );
 
-$docxml = FilesFolders::readFile($xml);
-$dacce = new Dacce($docxml, 'P', 'A4', '../../images/logo.jpg', 'I', $aEnd);
-$id = $dacce->chNFe . '-CCE';
-$teste = $dacce->printDACCE($id.'.pdf', 'I');
+try {
+    $docxml = FilesFolders::readFile($xml);
+    $dacce = new Dacce($docxml, 'P', 'A4', $logo, 'I', $aEnd);
+    $id = $dacce->chNFe . '-CCE';
+    $pdf = $dacce->render();
+    header('Content-Type: application/pdf');
+    echo $pdf;
+    
+} catch (InvalidArgumentException $e) {
+    echo $e->getMessage();
+} catch (RuntimeException $e) {
+    echo $e->getMessage();
+}
