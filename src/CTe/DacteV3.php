@@ -203,6 +203,7 @@ class DacteV3 extends Common
             $this->ICMSSN = $this->dom->getElementsByTagName("ICMSSN")->item(0);
             $this->ICMSOutraUF = $this->dom->getElementsByTagName("ICMSOutraUF")->item(0);
             $this->imp = $this->dom->getElementsByTagName("imp")->item(0);
+
             if (!empty($this->pSimpleGetValue($this->imp, "vTotTrib"))) {
                 $textoAdic = number_format($this->pSimpleGetValue($this->imp, "vTotTrib"), 2, ",", ".");
                 $this->textoAdic = "o valor aproximado de tributos incidentes sobre o preço deste serviço é de R$"
@@ -1745,22 +1746,28 @@ class DacteV3 extends Common
         $y += 8;
         $x = $oldX;
         $this->pdf->Line($x, $y, $w + 1, $y);
+
+        $qCargaKg = 0;
+        $qCargaM3 = 0;
+        $qCargaVl = 0;
+        foreach ($this->infQ as $infQ) {
+            if ($this->pSimpleGetValue($infQ, "cUnid") == '01') {
+                $qCargaKg += (float) $this->pSimpleGetValue($this->infQ->item(0), "qCarga");
+            } elseif ($this->pSimpleGetValue($infQ, "cUnid") == '00') {
+                $qCargaM3 += (float) $this->pSimpleGetValue($this->infQ->item(0), "qCarga");
+            } elseif ($this->pSimpleGetValue($infQ, "cUnid") == '03') {
+                $qCargaVl += (float) $this->pSimpleGetValue($this->infQ->item(0), "qCarga");
+            }
+        }
         //Identifica código da unidade
         //01 = KG (QUILOS)
-        if ($this->pSimpleGetValue($this->infQ->item(0), "cUnid") == '01') {
-            $qCarga = $this->pSimpleGetValue($this->infQ->item(0), "qCarga");
-        } elseif ($this->pSimpleGetValue($this->infQ->item(1), "cUnid") == '01') {
-            $qCarga = $this->pSimpleGetValue($this->infQ->item(1), "qCarga");
-        } elseif ($this->pSimpleGetValue($this->infQ->item(2), "cUnid") == '01') {
-            $qCarga = $this->pSimpleGetValue($this->infQ->item(2), "qCarga");
-        }
         $texto = 'PESO BRUTO (KG)';
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 5,
             'style' => '');
         $this->pTextBox($x+8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = number_format($qCarga, 3, ",", ".");
+        $texto = !empty($qCargaKg) ? number_format($qCargaKg, 3, ",", ".") : '';
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
@@ -1768,13 +1775,14 @@ class DacteV3 extends Common
         $this->pTextBox($x+2, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x = $w * 0.12;
         $this->pdf->Line($x+13.5, $y, $x+13.5, $y + 9);
+
         $texto = 'PESO BASE CÁLCULO (KG)';
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 5,
             'style' => '');
         $this->pTextBox($x+20, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = number_format($qCarga, 3, ",", ".");
+        $texto = !empty($qCargaKg) ? number_format($qCargaKg, 3, ",", ".") : '';
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
@@ -1782,13 +1790,14 @@ class DacteV3 extends Common
         $this->pTextBox($x+17, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x = $w * 0.24;
         $this->pdf->Line($x+25, $y, $x+25, $y + 9);
+
         $texto = 'PESO AFERIDO (KG)';
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 5,
             'style' => '');
         $this->pTextBox($x+35, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = number_format($qCarga, 3, ",", ".");
+        $texto = !empty($qCargaKg) ? number_format($qCargaKg, 3, ",", ".") : '';
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
@@ -1796,9 +1805,11 @@ class DacteV3 extends Common
         $this->pTextBox($x+28, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x = $w * 0.36;
         $this->pdf->Line($x+41.3, $y, $x+41.3, $y + 9);
+
         $texto = 'CUBAGEM(M3)';
         $aFont = $this->formatPadrao;
         $this->pTextBox($x+60, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+
         $qCarga = '';
         foreach ($this->infQ as $infQ) {
             if ($this->pSimpleGetValue($infQ, "cUnid") == '00') {
@@ -1810,9 +1821,9 @@ class DacteV3 extends Common
             'font' => $this->fontePadrao,
             'size' => 7,
             'style' => 'B');
-        $this->pTextBox($x+50, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $this->pTextBox($x+60, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x = $w * 0.45;
-        //$this->pdf->Line($x+37, $y, $x+37, $y + 9);
+
         $texto = 'QTDE(VOL)';
         $aFont = $this->formatPadrao;
         $this->pTextBox($x+85, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');

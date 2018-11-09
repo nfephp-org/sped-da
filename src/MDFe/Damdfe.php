@@ -154,6 +154,7 @@ class Damdfe extends Common
         $this->UFFim = $this->dom->getElementsByTagName("UFFim")->item(0)->nodeValue;
         $this->nMDF = $this->dom->getElementsByTagName("nMDF")->item(0)->nodeValue;
         $this->tpEmis = $this->dom->getElementsByTagName("tpEmis")->item(0)->nodeValue;
+        $this->infAdic = $this->dom->getElementsByTagName("infAdic")->item(0);
         $this->tot = $this->dom->getElementsByTagName("tot")->item(0);
         $this->qNFe = "";
         if ($this->dom->getElementsByTagName("qNFe")->item(0) != "") {
@@ -851,8 +852,10 @@ class Damdfe extends Common
         $maxW = $this->wPrint;
         $x2 = $maxW;
         $this->pTextBox($x, $y, $x2, 30);
-        $texto = 'Observação
-        '.$this->infCpl;
+        $texto = 'Observação ';
+        if (isset($this->infAdic)) {
+            $texto .= $this->infCpl;
+        }
         $aFont = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'');
         $this->pTextBox($x, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
         $y = $this->hPrint -4;
@@ -904,4 +907,5 @@ class Damdfe extends Common
     {
         return $this->pdf->getPdf();
     }
+
 }
