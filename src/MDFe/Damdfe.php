@@ -692,9 +692,9 @@ class Damdfe extends Common
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'');
         $this->pTextBox($x1, $y+4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
         $x1 += $x2;
-        $this->pTextBox($x1, $y, $x2, 12);        
+        $this->pTextBox($x1, $y, $x2, 12);
 		if ($this->cUnid == 01) {
-            $texto = 'Peso Total (Kg)';    
+            $texto = 'Peso Total (Kg)';
         }else{
             $texto = 'Peso Total (Ton)';
         }
