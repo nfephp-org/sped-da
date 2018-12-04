@@ -80,6 +80,11 @@ class Danfe extends Common
      * @var boolean
      */
     public $descProdQuebraLinha = true;
+    /**
+     * Parâmetro do controle que determina a largura da box FATURA/DUPLICATA.
+     * @var integer|null
+     */
+    public $duplicataFaturamentoBoxWidth = null;
 
     //###########################################################
     //PROPRIEDADES DA CLASSE
@@ -1751,6 +1756,9 @@ class Danfe extends Common
                 $w = round($this->wPrint/7.018, 0)-1;
             } else {
                 $w = 28;
+            }
+            if (!empty($this->duplicataFaturamentoBoxWidth)) {
+                $w = $this->duplicataFaturamentoBoxWidth;
             }
             $increm = 1;
             foreach ($this->dup as $k => $d) {
