@@ -169,7 +169,7 @@ class DacteOSV3 extends Common
             $this->ferrov = $this->dom->getElementsByTagName("ferrov")->item(0);
             // adicionar outros modais
             $this->infCteComp = $this->dom->getElementsByTagName("infCteComp")->item(0);
-            $this->chaveCTeRef = $this->pSimpleGetValue($this->infCteComp, "chave");
+            $this->chaveCTeRef = $this->pSimpleGetValue($this->infCteComp, "chCTe");
             $this->vPrest = $this->dom->getElementsByTagName("vPrest")->item(0);
             $this->Comp = $this->dom->getElementsByTagName("Comp");
             $this->infNF = $this->dom->getElementsByTagName("infNF");
