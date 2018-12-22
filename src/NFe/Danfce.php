@@ -377,13 +377,13 @@ class Danfce extends Common
         $y = $this->pConsumidorDANFE($x, $y, $hcliente);
         //COLOCA Contingência
         if ($this->tpEmis == 9) {
-            $y = $xInic + $hcabecalho + $hcabecalhoSecundario + $hprodutos + $hTotal + $hpagamentos + $hmsgfiscal 
-                + $hcliente + 1;
+            $y = $xInic + $hcabecalho + $hcabecalhoSecundario + $hprodutos + $hTotal + $hpagamentos + $hmsgfiscal
+                 + $hcliente + 1;
             $y = $this->pContingencia($x, $y, $hcontingencia);
         }
         //COLOCA QRCODE
-        $y = $xInic + $hcabecalho + $hcabecalhoSecundario + $hprodutos + $hTotal + $hpagamentos + $hmsgfiscal 
-            + $hcliente + 1 + $hcontingencia;
+        $y = $xInic + $hcabecalho + $hcabecalhoSecundario + $hprodutos + $hTotal + $hpagamentos + $hmsgfiscal
+             + $hcliente + 1 + $hcontingencia;
         $jj = $y + $hQRCode;
         $y = $this->pQRDANFE($x, $y, $hQRCode);
 
@@ -469,15 +469,15 @@ class Danfce extends Common
         $maxW = $this->wPrint;
         $w = ($maxW * 1);
         $hBox1 = 7;
-        $texto = $this->tpEmis == 9 ? 
-            "EMITIDA EM CONTINGÊNCIA" : 
-            "DANFE NFC-e\nDocumento Auxiliar da Nota Fiscal de Consumidor Eletrônica";
+        $texto = $this->tpEmis == 9 ?
+        "EMITIDA EM CONTINGÊNCIA" :
+        "DANFE NFC-e\nDocumento Auxiliar da Nota Fiscal de Consumidor Eletrônica";
         $this->pTextBox($x, $y, $w, $hBox1, $texto, $this->aFontTit, 'C', 'C', 0, '', false);
         $hBox2 = 4;
         $yBox2 = $y + $hBox1;
-        $texto = $this->tpEmis == 9 ? 
-            "\nPendente de autorização" : 
-            "\nNFC-e não permite aproveitamento de crédito de ICMS";
+        $texto = $this->tpEmis == 9 ?
+        "\nPendente de autorização" :
+        "\nNFC-e não permite aproveitamento de crédito de ICMS";
         $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => '');
         $this->pTextBox($x, $yBox2, $w, $hBox2, $texto, $aFont, 'C', 'C', 0, '', false);
     }
