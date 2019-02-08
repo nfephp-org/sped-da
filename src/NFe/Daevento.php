@@ -169,13 +169,12 @@ class Daevento extends Common
      * @param  string  $orientacao
      * @param  string  $papel
      * @param  string  $logoAlign
-     * @param  int     $situacao_externa
      * @param  boolean $classe_pdf
      * @return number
      */
     public function monta($orientacao = '', $papel = 'A4', $logoAlign = 'C', $classe_pdf = false)
     {
-        return $this->montaDaEventoNFe($orientacao, $papel, $logoAlign, $situacao_externa, $classe_pdf);
+        return $this->montaDaEventoNFe($orientacao, $papel, $logoAlign, $classe_pdf);
     }
 
     /**
@@ -250,7 +249,7 @@ class Daevento extends Common
         $x = $xInic;
         $y = $yInic;
         // coloca o cabeçalho
-        $y = $this->pHeader($x, $y, $pag, $situacao_externa);
+        $y = $this->pHeader($x, $y, $pag);
         // coloca os dados da CCe
         $y = $this->pBody($x, $y + 15);
         // coloca os dados da CCe
