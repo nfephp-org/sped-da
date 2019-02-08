@@ -188,7 +188,7 @@ class DacteOSV3 extends Common
             $textoAdic = number_format($vTrib, 2, ",", ".");
 
             $this->textoAdic = "o valor aproximado de tributos incidentes sobre o preço deste serviço é de R$"
-                    .$textoAdic;
+                .$textoAdic;
             $this->toma = $this->dom->getElementsByTagName("toma")->item(0);
             $this->enderToma = $this->pSimpleGetValue($this->toma, "enderToma");
             //modal aquaviário
@@ -408,11 +408,7 @@ class DacteOSV3 extends Common
                     break;
             }
             if ($this->modal == '1') {
-                if ($this->lota == 1) {
-                    $y += 37;
-                } else {
-                    $y += 8.9;
-                }
+                $y += 8.9;
             } elseif ($this->modal == '3') {
                 $y += 24.15;
             } else {
@@ -1485,7 +1481,7 @@ class DacteOSV3 extends Common
         if ($this->modal == '1') {
             // 0 - Não; 1 - Sim Será lotação quando houver um único conhecimento de transporte por veículo,
             // ou combinação veicular, e por viagem
-            $h = $this->lota == 1 ? 35 : 53;
+            $h = 35;
         } elseif ($this->modal == '3') {
             $h = 37.6;
         } else {
@@ -1506,11 +1502,7 @@ class DacteOSV3 extends Common
 
         $x += $w * 0.14;
         if ($this->modal == '1') {
-            if ($this->lota == 1) {
-                $this->pdf->Line($x, $y, $x, $y + 31.5); // TESTE
-            } else {
-                $this->pdf->Line($x, $y, $x, $y + 49.5); // TESTE
-            }
+            $this->pdf->Line($x, $y, $x, $y + 49.5); // TESTE
         } elseif ($this->modal == '3') {
             $this->pdf->Line($x, $y, $x, $y + 34.1);
         } else {
@@ -1788,7 +1780,7 @@ class DacteOSV3 extends Common
         $texto = !empty($this->pSimpleGetValue($this->veic->item(0), "CPF")) ?
             $this->pSimpleGetValue($this->veic->item(0), "CPF") :
             (!empty($this->pSimpleGetValue($this->veic->item(0), "CNPJ")) ?
-            $this->pSimpleGetValue($this->veic->item(0), "CNPJ") : '');
+                $this->pSimpleGetValue($this->veic->item(0), "CNPJ") : '');
         $aFont = $this->formatNegrito;
         $this->pTextBox($x, $y, $w * $wCol02, $h, $texto, $aFont, 'T', 'L', 0, '');
 
@@ -2499,7 +2491,7 @@ class DacteOSV3 extends Common
     {
         try {
             $fone = !empty($field->getElementsByTagName("fone")->item(0)->nodeValue) ?
-            $field->getElementsByTagName("fone")->item(0)->nodeValue : '';
+                $field->getElementsByTagName("fone")->item(0)->nodeValue : '';
             $foneLen = strlen($fone);
             if ($foneLen > 0) {
                 $fone2 = substr($fone, 0, $foneLen - 4);
