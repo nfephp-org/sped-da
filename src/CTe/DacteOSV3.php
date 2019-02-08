@@ -363,7 +363,7 @@ class DacteOSV3 extends Common
             $x = $xInic;
             //$r = $this->zDocOrig($x, $y);
             $r = $this->zInfPrestacaoServico($x, $y);
-            $y += 53;
+            $y += 35.1;
             $x = $xInic;
             $r = $this->zCompValorServ($x, $y);
             $y += 25;
@@ -1502,7 +1502,7 @@ class DacteOSV3 extends Common
 
         $x += $w * 0.14;
         if ($this->modal == '1') {
-            $this->pdf->Line($x, $y, $x, $y + 49.5); // TESTE
+            $this->pdf->Line($x, $y, $x, $y + 31.5); // TESTE
         } elseif ($this->modal == '3') {
             $this->pdf->Line($x, $y, $x, $y + 34.1);
         } else {
