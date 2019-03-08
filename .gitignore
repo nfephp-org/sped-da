@@ -6,3 +6,16 @@ nbproject
 build
 composer.lock
 config.json
+src/NFe/Danfe2.php
+src/NFe/Bloco
+src/NFe/Bloco/Canhoto.php
+src/NFe/Bloco/Cabecalho.php
+src/NFe/Bloco/Destino.php
+src/NFe/Bloco/Faturas.php
+src/NFe/Bloco/Impostos.php
+src/NFe/Bloco/Transportador.php
+src/NFe/Bloco/Itens.php
+src/NFe/Bloco/Informacoes.php
+src/NFe/Bloco/Rodape.php
+
+
