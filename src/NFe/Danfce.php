@@ -792,12 +792,14 @@ class Danfce extends Common
         $nNF = $this->pSimpleGetValue($this->ide, 'nNF');
         $serieNF = str_pad($this->pSimpleGetValue($this->ide, "serie"), 3, "0", STR_PAD_LEFT);
         $dhEmi = $this->pSimpleGetValue($this->ide, "dhEmi");
+        $dhEmilocal = new \DateTime($dhEmi);
+        $dhEmiLocalFormat = $dhEmilocal->format('d/m/Y H:i:s');
         $urlChave = $this->urlConsulta[$tpAmb][$this->UFSigla[$cUF]];
         $texto = "ÁREA DE MENSAGEM FISCAL";
         $this->pTextBox($x, $y, $w, $hLinha, $texto, $aFontTit, 'C', 'C', 0, '', false);
         $yTex1 = $y + ($hLinha*1);
         $hTex1 = $hLinha*2;
-        $texto = "Número " . $nNF . " Série " . $serieNF . " " .$dhEmi . " - Via Consumidor";
+        $texto = "Número " . $nNF . " Série " . $serieNF . " " .$dhEmiLocalFormat . " - Via Consumidor";
         $this->pTextBox($x, $yTex1, $w, $hTex1, $texto, $aFontTex, 'C', 'C', 0, '', false);
         $yTex2 = $y + ($hLinha*3);
         $hTex2 = $hLinha*2;
