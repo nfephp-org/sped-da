@@ -58,6 +58,7 @@ class DacteOSV3 extends Common
     protected $seg;
     protected $modal;
     protected $rodo;
+    protected $lota;
     protected $moto;
     protected $veic;
     protected $ferrov;
