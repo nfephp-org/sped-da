@@ -270,7 +270,7 @@ class Danfce extends Common
                     $linha = trim($linha);
                     $numlinhasdados += $tempPDF->WordWrap($linha, 76 - 0.2);
                 }
-                $hdadosadic = round(($numlinhasdados + 1) * $tempPDF->fontSize, 0);
+                $hdadosadic = round(($numlinhasdados + 1) * $tempPDF->getFontSize(), 0);
                 if ($hdadosadic < 5) {
                     $hdadosadic = 5;
                 }
@@ -316,7 +316,6 @@ class Danfce extends Common
         $this->pdf->setMargins($margEsq, $margSup); // fixa as margens
         $this->pdf->setDrawColor(0, 0, 0);
         $this->pdf->setFillColor(255, 255, 255);
-        $this->pdf->open(); // inicia o documento
         $this->pdf->addPage($this->orientacao, $this->papel); // adiciona a primeira página
         $this->pdf->setLineWidth(0.1); // define a largura da linha
         $this->pdf->setTextColor(0, 0, 0);

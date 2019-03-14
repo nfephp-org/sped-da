@@ -378,8 +378,6 @@ class Dacte extends Common
         $this->pdf->SetMargins($margEsq, $margSup, $margDir);
         $this->pdf->SetDrawColor(0, 0, 0);
         $this->pdf->SetFillColor(255, 255, 255);
-        // inicia o documento
-        $this->pdf->Open();
         // adiciona a primeira página
         $this->pdf->AddPage($this->orientacao, $this->papel);
         $this->pdf->SetLineWidth(0.1);

@@ -521,8 +521,6 @@ class Danfe extends Common
         $this->pdf->setMargins($margEsq, $margSup);
         $this->pdf->setDrawColor(0, 0, 0);
         $this->pdf->setFillColor(255, 255, 255);
-        // inicia o documento
-        $this->pdf->open();
         // adiciona a primeira página
         $this->pdf->addPage($this->orientacao, $this->papel);
         $this->pdf->setLineWidth(0.1);
@@ -665,7 +663,7 @@ class Danfe extends Common
         foreach ($alinhas as $linha) {
             $numlinhasdados += $this->pGetNumLines($linha, $this->wAdic, $fontProduto);
         }
-        $hdadosadic = round(($numlinhasdados+3) * $this->pdf->fontSize, 0);
+        $hdadosadic = round(($numlinhasdados+3) * $this->pdf->getFontSize(), 0);
         if ($hdadosadic < 10) {
             $hdadosadic = 10;
         }
@@ -702,7 +700,7 @@ class Danfe extends Common
         while ($i < $this->det->length) {
             $texto = $this->pDescricaoProduto($this->det->item($i));
             $numlinhas = $this->pGetNumLines($texto, $w2, $fontProduto);
-            $hUsado += round(($numlinhas * $this->pdf->fontSize) + ($numlinhas * 0.5), 2);
+            $hUsado += round(($numlinhas * $this->pdf->getFontSize()) + ($numlinhas * 0.5), 2);
             if ($hUsado > $hDispo) {
                 $totPag++;
                 $hDispo = $hDispo2;
@@ -2571,7 +2569,7 @@ class Danfe extends Common
                 $IPI  = $imposto->getElementsByTagName("IPI")->item(0);
                 $textoProduto = $this->pDescricaoProduto($thisItem);
                 $linhaDescr = $this->pGetNumLines($textoProduto, $w2, $aFont);
-                $h = round(($linhaDescr * $this->pdf->fontSize)+ ($linhaDescr * 0.5), 2);
+                $h = round(($linhaDescr * $this->pdf->getFontSize()) + ($linhaDescr * 0.5), 2);
                 $hUsado += $h;
                 if ($pag != $totpag) {
                     if ($hUsado >= $hmax && $i < $totItens) {

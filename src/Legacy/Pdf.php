@@ -2,9 +2,9 @@
 
 namespace NFePHP\DA\Legacy;
 
-use NFePHP\DA\Legacy\FPDF\Fpdf as Fpdf;
+//use NFePHP\DA\Legacy\FPDF\Fpdf as Fpdf;
 
-class Pdf extends Fpdf
+class Pdf extends \FPDF
 {
     private $t128;                                             // tabela de codigos 128
     private $abcSet="";                                        // conjunto de caracteres legiveis em 128
@@ -332,7 +332,31 @@ class Pdf extends Fpdf
         }
         $this->out($op);
     }
-    
+
+    protected function out($s)
+    {
+        //Add a line to the document
+        if ($this->state == 2) {
+            $this->pages[$this->page].=$s."\n";
+        } else {
+            $this->buffer .= $s."\n";
+        }
+    }
+
+    public function getPdf()
+    {
+        if ($this->state < 3) {
+            $this->close();
+        }
+        return $this->buffer;
+    }
+
+
+    public function getFontSize()
+    {
+        return $this->FontSize;
+    }
+
     /**
      * Desenha o arco para arredondar o canto do retangulo
      * @param   number $x1

@@ -129,7 +129,7 @@ class Damdfe extends Common
             $this->errStatus = true;
         }
 
-//        $docxml = file_get_contents($xmlfile);
+        $this->xml = file_get_contents($xmlfile);
         $this->dom = new Dom();
         $this->dom->loadXML($this->xml);
         $this->mdfeProc = $this->dom->getElementsByTagName("mdfeProc")->item(0);
@@ -238,8 +238,6 @@ class Damdfe extends Common
         $this->pdf->SetMargins($margEsq, $margSup, $margDir);
         $this->pdf->SetDrawColor(0, 0, 0);
         $this->pdf->SetFillColor(255, 255, 255);
-        // inicia o documento
-        $this->pdf->Open();
         // adiciona a primeira página
         $this->pdf->AddPage($this->orientacao, $this->papel);
         $this->pdf->SetLineWidth(0.1);

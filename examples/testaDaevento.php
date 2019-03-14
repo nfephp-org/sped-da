@@ -10,7 +10,7 @@ require_once '../bootstrap.php';
 use NFePHP\DA\NFe\Daevento;
 use NFePHP\DA\Legacy\FilesFolders;
 
-$xml = 'xml/proccce.xml';
+$xml = __DIR__ . DIRECTORY_SEPARATOR . 'xml/proccce.xml';
 
 $aEnd = array(
     'razao' => 'QQ Comercio e Ind. Ltda',
@@ -27,9 +27,9 @@ $aEnd = array(
 
 try {
     $docxml = FilesFolders::readFile($xml);
-    $daevento = new Daevento($docxml, 'P', 'A4', 'images/logo.jpg', 'I', '', '', $aEnd);
+    $daevento = new Daevento($docxml, 'P', 'A4', 'images/logo.jpg', 'I', '', '', $aEnd, 1);
     $id = $daevento->chNFe . '';
-    $teste = $daevento->printDocument($id.'.pdf', 'I');
+    $teste = $daevento->printDocument($id.'.pdf', 'F');
 } catch (InvalidArgumentException $e) {
     echo $e->getMessage();
 } catch (RuntimeException $e) {

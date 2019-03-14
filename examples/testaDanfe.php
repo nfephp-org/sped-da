@@ -6,13 +6,13 @@ require_once '../bootstrap.php';
 use NFePHP\DA\NFe\Danfe;
 use NFePHP\DA\Legacy\FilesFolders;
 
-$xml = 'xml/mod55-nfe.xml';
+$xml = __DIR__ . DIRECTORY_SEPARATOR . 'xml/mod55-nfe.xml';
 $docxml = FilesFolders::readFile($xml);
 
 $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents('images/logo.jpg'));
 
 try {
-    $danfe = new Danfe($docxml, 'P', 'A4', $logo, 'I', '');
+    $danfe = new Danfe($docxml, 'P', 'A4', $logo, 'I', '', '', 1);
     $id = $danfe->montaDANFE();
     $pdf = $danfe->render();
     //o pdf porde ser exibido como view no browser

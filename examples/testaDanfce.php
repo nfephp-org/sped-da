@@ -8,9 +8,8 @@ use NFePHP\DA\NFe\Danfce;
 $docxml = file_get_contents(realpath(__DIR__."/xml/NFCeProd1.xml"));
 $pathLogo = realpath(__DIR__.'/images/logo.jpg');//use somente imagens JPEG
 
-$danfce = new Danfce($docxml, $pathLogo, 0);
+$danfce = new Danfce($docxml, $pathLogo, 1);
 $id = $danfce->monta();
 $pdf = $danfce->render();
-
 header('Content-Type: application/pdf');
 echo $pdf;

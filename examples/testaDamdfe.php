@@ -8,8 +8,8 @@ use NFePHP\DA\MDFe\Damdfe;
 $xmlfile = __DIR__ . DIRECTORY_SEPARATOR . 'xml/mdfe.xml';
 
 try {
-    $damdfe = new Damdfe($xmlfile, 'P', 'A4', 'images/logo.jpg');
-    $id = $damdfe->printMDFe('', 'I');
+    $damdfe = new Damdfe($xmlfile, 'P', 'A4', 'images/logo.jpg', '', '', '', 1);
+    $id = $damdfe->printMDFe('damdfe.pdf', 'F');
 } catch (Exception $e) {
     echo "Ocorreu um erro durante o processamento :" . $e->getMessage();
 }    

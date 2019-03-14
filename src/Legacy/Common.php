@@ -275,8 +275,6 @@ class Common
             $text = trim($text);
             //converter o charset para o fpdf
             $text = utf8_decode($text);
-            //decodifica os caracteres html no xml
-            $text = html_entity_decode($text);
         } else {
             $text = (string) $text;
         }
@@ -287,7 +285,7 @@ class Common
         //estabelecer o fonte
         $this->pdf->SetFont($aFont['font'], $aFont['style'], $aFont['size']);
         //calcular o incremento
-        $incY = $this->pdf->fontSize; //tamanho da fonte na unidade definida
+        $incY = $this->pdf->getFontSize(); //tamanho da fonte na unidade definida
         if (!$force) {
             //verificar se o texto cabe no espaço
             $n = $this->pdf->WordWrap($text, $w);
@@ -411,8 +409,6 @@ class Common
             $text = trim($text);
             //converter o charset para o fpdf
             $text = utf8_decode($text);
-            //decodifica os caracteres html no xml
-            $text = html_entity_decode($text);
         } else {
             $text = (string) $text;
         }

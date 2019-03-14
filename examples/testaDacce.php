@@ -6,7 +6,7 @@ require_once '../bootstrap.php';
 use NFePHP\DA\NFe\Dacce;
 use NFePHP\DA\Legacy\FilesFolders;
 
-$xml = '/var/www/sped/sped-da/examples/xml/110110-53181011028793000173550010000066701204276800-1-procEventoNfe.xml';
+$xml = __DIR__ . DIRECTORY_SEPARATOR . 'xml/110110-53181011028793000173550010000066701204276800-1-procEventoNfe.xml';
 
 $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents('images/logo.jpg'));
 
@@ -25,7 +25,7 @@ $aEnd = array(
 
 try {
     $docxml = FilesFolders::readFile($xml);
-    $dacce = new Dacce($docxml, 'P', 'A4', $logo, 'I', $aEnd);
+    $dacce = new Dacce($docxml, 'P', 'A4', $logo, 'I', $aEnd, '', '', 1);
     $id = $dacce->chNFe . '-CCE';
     $pdf = $dacce->render();
     header('Content-Type: application/pdf');

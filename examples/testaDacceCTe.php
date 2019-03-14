@@ -10,7 +10,7 @@ require_once '../bootstrap.php';
 use NFePHP\DA\CTe\Dacce;
 use NFePHP\DA\Legacy\FilesFolders;
 
-$xml = 'proccce.xml';
+$xml = __DIR__ . DIRECTORY_SEPARATOR . 'xml/proccce.xml';
 
 $aEnd = array(
     'razao' => 'QQ Comercio e Ind. Ltda',
@@ -26,8 +26,7 @@ $aEnd = array(
 );
 
 try {
-    $docxml = FilesFolders::readFile($xml);
-    $dacce = new Dacce($docxml, 'L', 'A4', '', 'I', $aEnd);
+    $dacce = new Dacce($xml, 'L', 'A4', '', 'I', $aEnd);
     $id = $dacce->monta();
     $dacce->printDACCE("dacce.pdf", "I");
 } catch (Exception $e) {
