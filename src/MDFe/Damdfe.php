@@ -129,7 +129,12 @@ class Damdfe extends Common
             $this->errStatus = true;
         }
 
-        $this->xml = file_get_contents($xmlfile);
+        if (is_file($xmlfile)) {
+            $this->xml = file_get_contents($xmlfile);
+        } else {
+            $this->xml = $xmlfile;
+        }
+
         $this->dom = new Dom();
         $this->dom->loadXML($this->xml);
         $this->mdfeProc = $this->dom->getElementsByTagName("mdfeProc")->item(0);
