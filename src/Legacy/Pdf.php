@@ -2,8 +2,6 @@
 
 namespace NFePHP\DA\Legacy;
 
-//use NFePHP\DA\Legacy\FPDF\Fpdf as Fpdf;
-
 class Pdf extends \FPDF
 {
     private $t128;                                             // tabela de codigos 128
