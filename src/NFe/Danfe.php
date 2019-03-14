@@ -2855,7 +2855,7 @@ class Danfe extends Common
         $texto = 'Placa.................: ' . $veiculoPlaca;
         $this->pTextBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Tipo Pintura......: ' . $renavamTipoPintura[$veiculoTipoPintura];
+        $texto = 'Tipo Pintura......: ' . $renavamTipoPintura[$veiculoTipoPintura] ?? $veiculoTipoPintura;
         $this->pTextBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic = $y + $h;
         $xVeic = $xVeic + 55;
