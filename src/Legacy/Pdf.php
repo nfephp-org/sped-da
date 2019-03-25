@@ -192,8 +192,7 @@ class Pdf extends Fpdf
                 if (fmod($made, 2)==1) {
                     $made--;
                 }
-                for ($i=0; $i < $made;
-                $i += 2) {
+                for ($i=0; $i < $made; $i += 2) {
                     $crypt .= chr(strval(substr($code, $i, 2)));
                 }
                     $jeu = "C";

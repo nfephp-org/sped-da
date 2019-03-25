@@ -14,14 +14,19 @@ class Common
      * @param  number itemNum numero do item a ser retornado
      * @return string
      */
-    protected function pSimpleGetValue($theObj, $keyName, $extraTextBefore = '', $extraTextAfter = '', $itemNum = 0)
+    protected function getTagValue($theObj, $keyName, $extraTextBefore = '', $extraTextAfter = '', $itemNum = 0)
     {
         if (empty($theObj)) {
             return '';
         }
         $vct = $theObj->getElementsByTagName($keyName)->item($itemNum);
         if (isset($vct)) {
-            return $extraTextBefore . trim($vct->nodeValue) . $extraTextAfter;
+            $value = trim($vct->nodeValue);
+            if (strpos($value, '&') !== false) {
+                //existe um & na string, então deve ser uma entidade
+                $value = html_entity_decode($value);
+            }
+            return $extraTextBefore . $value . $extraTextAfter;
         }
         return '';
     }
