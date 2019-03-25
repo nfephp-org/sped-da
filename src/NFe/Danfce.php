@@ -210,13 +210,13 @@ class Danfce extends Common
                 $this->pag = $this->dom->getElementsByTagName("detPag");
                 
                 $tagPag = $this->dom->getElementsByTagName("pag")->item(0);
-                $this->vTroco = $this->pSimpleGetValue($tagPag, "vTroco");
+                $this->vTroco = $this->getTagValue($tagPag, "vTroco");
             } else {
                 $this->pag = $this->dom->getElementsByTagName("pag");
             }
         }
         $this->qrCode = $this->dom->getElementsByTagName('qrCode')->item(0)->nodeValue;
-        if ($this->pSimpleGetValue($this->ide, "mod") != '65') {
+        if ($this->getTagValue($this->ide, "mod") != '65') {
             throw new InvalidArgumentException("O xml do DANFE deve ser uma NFC-e modelo 65");
         }
     }
@@ -391,12 +391,12 @@ class Danfce extends Common
     
     protected function pCabecalhoDANFE($x = 0, $y = 0, $h = 0, $pag = '1', $totPag = '1')
     {
-        $emitRazao  = $this->pSimpleGetValue($this->emit, "xNome");
-        $emitCnpj   = $this->pSimpleGetValue($this->emit, "CNPJ");
+        $emitRazao  = $this->getTagValue($this->emit, "xNome");
+        $emitCnpj   = $this->getTagValue($this->emit, "CNPJ");
         $emitCnpj   = $this->pFormat($emitCnpj, "##.###.###/####-##");
-        $emitIE     = $this->pSimpleGetValue($this->emit, "IE");
-        $emitIM     = $this->pSimpleGetValue($this->emit, "IM");
-        $emitFone = $this->pSimpleGetValue($this->enderEmit, "fone");
+        $emitIE     = $this->getTagValue($this->emit, "IE");
+        $emitIM     = $this->getTagValue($this->emit, "IM");
+        $emitFone = $this->getTagValue($this->enderEmit, "fone");
         $foneLen = strlen($emitFone);
         if ($foneLen>0) {
             $ddd = substr($emitFone, 0, 2);
@@ -409,13 +409,13 @@ class Danfce extends Common
         } else {
             $emitFone = '';
         }
-        $emitLgr = $this->pSimpleGetValue($this->enderEmit, "xLgr");
-        $emitNro = $this->pSimpleGetValue($this->enderEmit, "nro");
-        $emitCpl = $this->pSimpleGetValue($this->enderEmit, "xCpl", "");
-        $emitBairro = $this->pSimpleGetValue($this->enderEmit, "xBairro");
-        $emitCEP = $this->pFormat($this->pSimpleGetValue($this->enderEmit, "CEP"), "#####-###");
-        $emitMun = $this->pSimpleGetValue($this->enderEmit, "xMun");
-        $emitUF = $this->pSimpleGetValue($this->enderEmit, "UF");
+        $emitLgr = $this->getTagValue($this->enderEmit, "xLgr");
+        $emitNro = $this->getTagValue($this->enderEmit, "nro");
+        $emitCpl = $this->getTagValue($this->enderEmit, "xCpl", "");
+        $emitBairro = $this->getTagValue($this->enderEmit, "xBairro");
+        $emitCEP = $this->pFormat($this->getTagValue($this->enderEmit, "CEP"), "#####-###");
+        $emitMun = $this->getTagValue($this->enderEmit, "xMun");
+        $emitUF = $this->getTagValue($this->enderEmit, "UF");
         // CONFIGURAÇÃO DE POSIÇÃO
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
@@ -514,12 +514,12 @@ class Danfce extends Common
                 $thisItem   = $detI;
                 $prod       = $thisItem->getElementsByTagName("prod")->item(0);
                 $nitem      = $thisItem->getAttribute("nItem");
-                $cProd      = $this->pSimpleGetValue($prod, "cProd");
-                $xProd      = $this->pSimpleGetValue($prod, "xProd");
-                $qCom       = number_format($this->pSimpleGetValue($prod, "qCom"), 2, ",", ".");
-                $uCom       = $this->pSimpleGetValue($prod, "uCom");
-                $vUnCom     = number_format($this->pSimpleGetValue($prod, "vUnCom"), 2, ",", ".");
-                $vProd      = number_format($this->pSimpleGetValue($prod, "vProd"), 2, ",", ".");
+                $cProd      = $this->getTagValue($prod, "cProd");
+                $xProd      = $this->getTagValue($prod, "xProd");
+                $qCom       = number_format($this->getTagValue($prod, "qCom"), 2, ",", ".");
+                $uCom       = $this->getTagValue($prod, "uCom");
+                $vUnCom     = number_format($this->getTagValue($prod, "vUnCom"), 2, ",", ".");
+                $vProd      = number_format($this->getTagValue($prod, "vProd"), 2, ",", ".");
                 //COLOCA PRODUTO
                 $yBoxProd = $y + $hLinha + ($cont*$hMaxLinha);
                 //COLOCA PRODUTO CÓDIGO
@@ -626,11 +626,11 @@ class Danfce extends Common
         $wColDir = ($maxW*0.3);
         $xValor = $x + $wColEsq;
         $qtdItens = $this->det->length;
-        $vProd = $this->pSimpleGetValue($this->ICMSTot, "vProd");
-        $vNF = $this->pSimpleGetValue($this->ICMSTot, "vNF");
-        $vDesc  = $this->pSimpleGetValue($this->ICMSTot, "vDesc");
-        $vFrete = $this->pSimpleGetValue($this->ICMSTot, "vFrete");
-        $vTotTrib = $this->pSimpleGetValue($this->ICMSTot, "vTotTrib");
+        $vProd = $this->getTagValue($this->ICMSTot, "vProd");
+        $vNF = $this->getTagValue($this->ICMSTot, "vNF");
+        $vDesc  = $this->getTagValue($this->ICMSTot, "vDesc");
+        $vFrete = $this->getTagValue($this->ICMSTot, "vFrete");
+        $vTotTrib = $this->getTagValue($this->ICMSTot, "vTotTrib");
         $texto = "Qtd. Total de Itens";
         $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
         $this->pTextBox($x, $y, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
@@ -696,18 +696,18 @@ class Danfce extends Common
         $cont = 0;
         if ($qtdPgto > 0) {
             foreach ($this->pag as $pagI) {
-                $tPag = $this->pSimpleGetValue($pagI, "tPag");
+                $tPag = $this->getTagValue($pagI, "tPag");
                 $tPagNome = $this->tipoPag($tPag);
                 $tPnome = $tPagNome;
-                $vPag = number_format($this->pSimpleGetValue($pagI, "vPag"), 2, ",", ".");
+                $vPag = number_format($this->getTagValue($pagI, "vPag"), 2, ",", ".");
                 $card = $pagI->getElementsByTagName("card")->item(0);
                 $cardCNPJ = '';
                 $tBand = '';
                 $tBandNome = '';
                 if (isset($card)) {
-                    $cardCNPJ = $this->pSimpleGetValue($card, "CNPJ");
-                    $tBand    = $this->pSimpleGetValue($card, "tBand");
-                    $cAut = $this->pSimpleGetValue($card, "cAut");
+                    $cardCNPJ = $this->getTagValue($card, "CNPJ");
+                    $tBand    = $this->getTagValue($card, "tBand");
+                    $cAut = $this->getTagValue($card, "cAut");
                     $tBandNome = self::getCardName($tBand);
                 }
                 //COLOCA PRODUTO
@@ -768,9 +768,9 @@ class Danfce extends Common
         $hLinha = $this->hLinha;
         $aFontTit = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'B');
         $aFontTex = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'');
-        $digVal = $this->pSimpleGetValue($this->nfe, "DigestValue");
+        $digVal = $this->getTagValue($this->nfe, "DigestValue");
         $chNFe = str_replace('NFe', '', $this->infNFe->getAttribute("Id"));
-        $tpAmb = $this->pSimpleGetValue($this->ide, 'tpAmb');
+        $tpAmb = $this->getTagValue($this->ide, 'tpAmb');
         
         if ($this->pNotaCancelada()) {
             //101 Cancelamento
@@ -788,10 +788,10 @@ class Danfce extends Common
             $this->pdf->SetTextColor(0, 0, 0);
         }
         
-        $cUF = $this->pSimpleGetValue($this->ide, 'cUF');
-        $nNF = $this->pSimpleGetValue($this->ide, 'nNF');
-        $serieNF = str_pad($this->pSimpleGetValue($this->ide, "serie"), 3, "0", STR_PAD_LEFT);
-        $dhEmi = $this->pSimpleGetValue($this->ide, "dhEmi");
+        $cUF = $this->getTagValue($this->ide, 'cUF');
+        $nNF = $this->getTagValue($this->ide, 'nNF');
+        $serieNF = str_pad($this->getTagValue($this->ide, "serie"), 3, "0", STR_PAD_LEFT);
+        $dhEmi = $this->getTagValue($this->ide, "dhEmi");
         $dhEmilocal = new \DateTime($dhEmi);
         $dhEmiLocalFormat = $dhEmilocal->format('d/m/Y H:i:s');
         $urlChave = $this->urlConsulta[$tpAmb][$this->UFSigla[$cUF]];
@@ -836,17 +836,17 @@ class Danfce extends Common
                     : '';
             $cDest = $consCPF.$consCNPJ.$considEstrangeiro; //documentos do consumidor
             $enderDest = $this->dest->getElementsByTagName("enderDest")->item(0);
-            $consNome = $this->pSimpleGetValue($this->dest, "xNome");
-            $consLgr = $this->pSimpleGetValue($enderDest, "xLgr");
-            $consNro = $this->pSimpleGetValue($enderDest, "nro");
-            $consCpl = $this->pSimpleGetValue($enderDest, "xCpl", " - ");
-            $consBairro = $this->pSimpleGetValue($enderDest, "xBairro");
-            $consCEP = $this->pFormat($this->pSimpleGetValue($enderDest, "CEP"));
-            $consMun = $this->pSimpleGetValue($enderDest, "xMun");
-            $consUF = $this->pSimpleGetValue($enderDest, "UF");
-            $considEstrangeiro = $this->pSimpleGetValue($this->dest, "idEstrangeiro");
-            $consCPF = $this->pSimpleGetValue($this->dest, "CPF");
-            $consCNPJ = $this->pSimpleGetValue($this->dest, "CNPJ");
+            $consNome = $this->getTagValue($this->dest, "xNome");
+            $consLgr = $this->getTagValue($enderDest, "xLgr");
+            $consNro = $this->getTagValue($enderDest, "nro");
+            $consCpl = $this->getTagValue($enderDest, "xCpl", " - ");
+            $consBairro = $this->getTagValue($enderDest, "xBairro");
+            $consCEP = $this->pFormat($this->getTagValue($enderDest, "CEP"));
+            $consMun = $this->getTagValue($enderDest, "xMun");
+            $consUF = $this->getTagValue($enderDest, "UF");
+            $considEstrangeiro = $this->getTagValue($this->dest, "idEstrangeiro");
+            $consCPF = $this->getTagValue($this->dest, "CPF");
+            $consCNPJ = $this->getTagValue($this->dest, "CNPJ");
             $consDoc = "";
             if (!empty($consCNPJ)) {
                 $consDoc = "CNPJ: $consCNPJ";
@@ -897,8 +897,8 @@ class Danfce extends Common
         $dhRecbto = '';
         $nProt = '';
         if (isset($this->nfeProc)) {
-            $nProt = $this->pSimpleGetValue($this->nfeProc, "nProt");
-            $dhRecbto  = $this->pSimpleGetValue($this->nfeProc, "dhRecbto");
+            $nProt = $this->getTagValue($this->nfeProc, "nProt");
+            $dhRecbto  = $this->getTagValue($this->nfeProc, "dhRecbto");
         }
         $barcode = new Barcode();
         $bobj = $barcode->getBarcodeObj(
@@ -1230,7 +1230,7 @@ class Danfce extends Common
         if (!isset($this->nfeProc)) {
             return false;
         }
-        $cStat = $this->pSimpleGetValue($this->nfeProc, "cStat");
+        $cStat = $this->getTagValue($this->nfeProc, "cStat");
         return $cStat == '101' ||
                 $cStat == '151' ||
                 $cStat == '135' ||
@@ -1244,7 +1244,7 @@ class Danfce extends Common
         }
         //NÃO ERA NECESSÁRIO ESSA FUNÇÃO POIS SÓ SE USA
         //1 VEZ NO ARQUIVO INTEIRO
-        $cStat = $this->pSimpleGetValue($this->nfeProc, "cStat");
+        $cStat = $this->getTagValue($this->nfeProc, "cStat");
         return $cStat == '110' ||
                $cStat == '301' ||
                $cStat == '302';

@@ -8,10 +8,12 @@ ini_set('display_errors', 1);
 require_once '../bootstrap.php';
 
 use NFePHP\DA\CTe\Dacce;
-use NFePHP\DA\Legacy\FilesFolders;
 
-$xml = 'proccce.xml';
-
+$xml = __DIR__ . '/xml/proccce.xml';
+$docxml = file_get_contents($xml);
+header('Content-type: text/xml; charset=UTF-8');
+echo $docxml;
+die;
 $aEnd = array(
     'razao' => 'QQ Comercio e Ind. Ltda',
     'logradouro' => 'Rua vinte e um de março',
@@ -26,7 +28,7 @@ $aEnd = array(
 );
 
 try {
-    $docxml = FilesFolders::readFile($xml);
+    $docxml = file_get_contents($xml);
     $dacce = new Dacce($docxml, 'L', 'A4', '', 'I', $aEnd);
     $id = $dacce->monta();
     $dacce->printDACCE("dacce.pdf", "I");
