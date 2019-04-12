@@ -2392,6 +2392,8 @@ class Danfe extends Common
                 ' FCI:'.$itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue : '';
         $tmp_ad=$infAdProd . ($this->descProdInfoComplemento ? $loteTxt . $impostos . $nFCI : '');
         $texto = $prod->getElementsByTagName("xProd")->item(0)->nodeValue . (strlen($tmp_ad)!=0?"\n    ".$tmp_ad:'');
+        //decodifica os caracteres html no xml
+        $texto = html_entity_decode($texto);
         if ($this->descProdQuebraLinha) {
             $texto = str_replace(";", "\n", $texto);
         }
