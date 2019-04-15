@@ -20,5 +20,3 @@ Todas as atualizações a partir de 30/05/206 devem observar os principios [Mant
 
 ### Security
 - Nothing
-
-### TESTE
