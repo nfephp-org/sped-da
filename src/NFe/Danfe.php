@@ -297,7 +297,7 @@ class Danfe extends Common
      * ativa ou desativa o modo de debug
      * @var integer
      */
-    protected $debugMode=2;
+    protected $debugMode = 2;
     /**
      * Creditos para integrador
      * @var string
@@ -378,11 +378,11 @@ class Danfe extends Common
             $this->reboque    = $this->dom->getElementsByTagName("reboque")->item(0);
             $this->infAdic    = $this->dom->getElementsByTagName("infAdic")->item(0);
             $this->compra     = $this->dom->getElementsByTagName("compra")->item(0);
-            $this->tpEmis     = $this->ide->getElementsByTagName("tpEmis")->item(0)->nodeValue;
-            $this->tpImp      = $this->ide->getElementsByTagName("tpImp")->item(0)->nodeValue;
+            $this->tpEmis     = $this->getTagValue($this->ide, "tpEmis");
+            $this->tpImp      = $this->getTagValue($this->ide, "tpImp");
             $this->infProt    = $this->dom->getElementsByTagName("infProt")->item(0);
             //valida se o XML é uma NF-e modelo 55, pois não pode ser 65 (NFC-e)
-            if ($this->pSimpleGetValue($this->ide, "mod") != '55') {
+            if ($this->getTagValue($this->ide, "mod") != '55') {
                 throw new InvalidArgumentException("O xml do DANFE deve ser uma NF-e modelo 55");
             }
         }
@@ -547,7 +547,7 @@ class Danfe extends Common
         }
         //verifica se será impressa a linha dos serviços ISSQN
         $linhaISSQN = 0;
-        if ((isset($this->ISSQNtot)) && ($this->pSimpleGetValue($this->ISSQNtot, 'vServ') > 0)) {
+        if ((isset($this->ISSQNtot)) && ($this->getTagValue($this->ISSQNtot, 'vServ') > 0)) {
             $linhaISSQN = 1;
         }
         //calcular a altura necessária para os dados adicionais
@@ -559,25 +559,13 @@ class Danfe extends Common
         $fontProduto = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'');
         $this->textoAdic = '';
         if (isset($this->retirada)) {
-            $txRetCNPJ = ! empty($this->retirada->getElementsByTagName("CNPJ")->item(0)->nodeValue) ?
-                $this->retirada->getElementsByTagName("CNPJ")->item(0)->nodeValue :
-                '';
-            $txRetxLgr = ! empty($this->retirada->getElementsByTagName("xLgr")->item(0)->nodeValue) ?
-                $this->retirada->getElementsByTagName("xLgr")->item(0)->nodeValue :
-                '';
-            $txRetnro = ! empty($this->retirada->getElementsByTagName("nro")->item(0)->nodeValue) ?
-                $this->retirada->getElementsByTagName("nro")->item(0)->nodeValue :
-                's/n';
-            $txRetxCpl = $this->pSimpleGetValue($this->retirada, "xCpl", " - ");
-            $txRetxBairro = ! empty($this->retirada->getElementsByTagName("xBairro")->item(0)->nodeValue) ?
-                $this->retirada->getElementsByTagName("xBairro")->item(0)->nodeValue :
-                '';
-            $txRetxMun = ! empty($this->retirada->getElementsByTagName("xMun")->item(0)->nodeValue) ?
-                $this->retirada->getElementsByTagName("xMun")->item(0)->nodeValue :
-                '';
-            $txRetUF = ! empty($this->retirada->getElementsByTagName("UF")->item(0)->nodeValue) ?
-                $this->retirada->getElementsByTagName("UF")->item(0)->nodeValue :
-                '';
+            $txRetCNPJ = $this->getTagValue($this->retirada, "CNPJ");
+            $txRetxLgr = $this->getTagValue($this->retirada, "xLgr");
+            $txRetnro = $this->getTagValue($this->retirada, "nro");
+            $txRetxCpl = $this->getTagValue($this->retirada, "xCpl", " - ");
+            $txRetxBairro = $this->getTagValue($this->retirada, "xBairro");
+            $txRetxMun = $this->getTagValue($this->retirada, "xMun");
+            $txRetUF = $this->getTagValue($this->retirada, "UF");
             $this->textoAdic .= "LOCAL DE RETIRADA : ".
                     $txRetCNPJ.
                     '-' .
@@ -596,19 +584,13 @@ class Danfe extends Common
         }
         //dados do local de entrega da mercadoria
         if (isset($this->entrega)) {
-            $txRetCNPJ = ! empty($this->entrega->getElementsByTagName("CNPJ")->item(0)->nodeValue) ?
-                $this->entrega->getElementsByTagName("CNPJ")->item(0)->nodeValue : '';
-            $txRetxLgr = ! empty($this->entrega->getElementsByTagName("xLgr")->item(0)->nodeValue) ?
-                $this->entrega->getElementsByTagName("xLgr")->item(0)->nodeValue : '';
-            $txRetnro = ! empty($this->entrega->getElementsByTagName("nro")->item(0)->nodeValue) ?
-                $this->entrega->getElementsByTagName("nro")->item(0)->nodeValue : 's/n';
-            $txRetxCpl = $this->pSimpleGetValue($this->entrega, "xCpl", " - ");
-            $txRetxBairro = ! empty($this->entrega->getElementsByTagName("xBairro")->item(0)->nodeValue) ?
-                $this->entrega->getElementsByTagName("xBairro")->item(0)->nodeValue : '';
-            $txRetxMun = ! empty($this->entrega->getElementsByTagName("xMun")->item(0)->nodeValue) ?
-                $this->entrega->getElementsByTagName("xMun")->item(0)->nodeValue : '';
-            $txRetUF = ! empty($this->entrega->getElementsByTagName("UF")->item(0)->nodeValue) ?
-                $this->entrega->getElementsByTagName("UF")->item(0)->nodeValue : '';
+            $txRetCNPJ = $this->getTagValue($this->entrega, "CNPJ");
+            $txRetxLgr = $this->getTagValue($this->entrega, "xLgr");
+            $txRetnro = $this->getTagValue($this->entrega, "nro");
+            $txRetxCpl = $this->getTagValue($this->entrega, "xCpl", " - ");
+            $txRetxBairro = $this->getTagValue($this->entrega, "xBairro");
+            $txRetxMun = $this->getTagValue($this->entrega, "xMun");
+            $txRetUF = $this->getTagValue($this->entrega, "UF");
             if ($this->textoAdic != '') {
                 $this->textoAdic .= ". \r\n";
             }
@@ -622,17 +604,17 @@ class Danfe extends Common
             if ($this->textoAdic != '') {
                 $this->textoAdic .= ". \r\n";
             }
-            $this->textoAdic .= ! empty($this->infAdic->getElementsByTagName("infCpl")->item(0)->nodeValue) ?
+            $this->textoAdic .= ! empty($this->getTagValue($this->infAdic, "infCpl")) ?
                 'Inf. Contribuinte: ' .
-                trim($this->pAnfavea($this->infAdic->getElementsByTagName("infCpl")->item(0)->nodeValue)) : '';
+                $this->pAnfavea($this->getTagValue($this->infAdic, "infCpl")) : '';
             $infPedido = $this->pGeraInformacoesDaTagCompra();
             if ($infPedido != "") {
                 $this->textoAdic .= $infPedido;
             }
-            $this->textoAdic .= $this->pSimpleGetValue($this->dest, "email", ' Email do Destinatário: ');
-            $this->textoAdic .= ! empty($this->infAdic->getElementsByTagName("infAdFisco")->item(0)->nodeValue) ?
+            $this->textoAdic .= $this->getTagValue($this->dest, "email", ' Email do Destinatário: ');
+            $this->textoAdic .= ! empty($this->getTagValue($this->infAdic, "infAdFisco")) ?
                 "\r\n Inf. fisco: " .
-                trim($this->infAdic->getElementsByTagName("infAdFisco")->item(0)->nodeValue) : '';
+                $this->getTagValue($this->infAdic, "infAdFisco") : '';
             $obsCont = $this->infAdic->getElementsByTagName("obsCont");
             if (isset($obsCont)) {
                 foreach ($obsCont as $obs) {
@@ -653,7 +635,7 @@ class Danfe extends Common
             $flagVTT = $flagVTT && strpos(strtolower(trim($this->textoAdic)), 'aprox');
             $flagVTT = $flagVTT && (strpos(strtolower(trim($this->textoAdic)), 'trib') ||
                     strpos(strtolower(trim($this->textoAdic)), 'imp'));
-            $vTotTrib = $this->pSimpleGetValue($this->ICMSTot, 'vTotTrib');
+            $vTotTrib = $this->getTagValue($this->ICMSTot, 'vTotTrib');
             if ($vTotTrib != '' && !$flagVTT) {
                 $this->textoAdic .= "\n Valor Aproximado dos Tributos : R$ " . number_format($vTotTrib, 2, ",", ".");
             }
@@ -979,7 +961,7 @@ class Danfe extends Common
         if (!isset($this->nfeProc)) {
             return false;
         }
-        $cStat = $this->pSimpleGetValue($this->nfeProc, "cStat");
+        $cStat = $this->getTagValue($this->nfeProc, "cStat");
         return $cStat == '101' ||
                 $cStat == '151' ||
                 $cStat == '135' ||
@@ -999,7 +981,7 @@ class Danfe extends Common
         }
         //NÃO ERA NECESSÁRIO ESSA FUNÇÃO POIS SÓ SE USA
         //1 VEZ NO ARQUIVO INTEIRO
-        $cStat = $this->pSimpleGetValue($this->nfeProc, "cStat");
+        $cStat = $this->getTagValue($this->nfeProc, "cStat");
         return $cStat == '110' ||
                $cStat == '301' ||
                $cStat == '302' ||
@@ -1115,14 +1097,14 @@ class Danfe extends Common
             $fone = ! empty($this->enderEmit->getElementsByTagName("fone")->item(0)->nodeValue)
                  ? $this->enderEmit->getElementsByTagName("fone")->item(0)->nodeValue
                  : '';
-            $lgr = $this->pSimpleGetValue($this->enderEmit, "xLgr");
-            $nro = $this->pSimpleGetValue($this->enderEmit, "nro");
-            $cpl = $this->pSimpleGetValue($this->enderEmit, "xCpl", " - ");
-            $bairro = $this->pSimpleGetValue($this->enderEmit, "xBairro");
-            $CEP = $this->pSimpleGetValue($this->enderEmit, "CEP");
+            $lgr = $this->getTagValue($this->enderEmit, "xLgr");
+            $nro = $this->getTagValue($this->enderEmit, "nro");
+            $cpl = $this->getTagValue($this->enderEmit, "xCpl", " - ");
+            $bairro = $this->getTagValue($this->enderEmit, "xBairro");
+            $CEP = $this->getTagValue($this->enderEmit, "CEP");
             $CEP = $this->pFormat($CEP, "#####-###");
-            $mun = $this->pSimpleGetValue($this->enderEmit, "xMun");
-            $UF = $this->pSimpleGetValue($this->enderEmit, "UF");
+            $mun = $this->getTagValue($this->enderEmit, "xMun");
+            $UF = $this->getTagValue($this->enderEmit, "UF");
             $texto = $lgr . ", " . $nro . $cpl . "\n" . $bairro . " - "
                     . $CEP . "\n" . $mun . " - " . $UF . " "
                     . "Fone/Fax: " . $fone;
@@ -1297,7 +1279,7 @@ class Danfe extends Common
         $texto = 'INSCRIÇÃO ESTADUAL';
         $aFont = array('font'=>$this->fontePadrao, 'size'=>6, 'style'=>'');
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
-        $texto = $this->pSimpleGetValue($this->emit, "IE");
+        $texto = $this->getTagValue($this->emit, "IE");
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B');
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'B', 'C', 0, '');
         //INSCRIÇÃO ESTADUAL DO SUBST. TRIBUT.
@@ -1537,7 +1519,7 @@ class Danfe extends Common
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         $texto = $this->dest->getElementsByTagName("xLgr")->item(0)->nodeValue;
         $texto .= ', ' . $this->dest->getElementsByTagName("nro")->item(0)->nodeValue;
-        $texto .= $this->pSimpleGetValue($this->dest, "xCpl", " - ");
+        $texto .= $this->getTagValue($this->dest, "xCpl", " - ");
 
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B');
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'B', 'L', 0, '', true);
@@ -1657,23 +1639,23 @@ class Danfe extends Common
         if (isset($this->cobr)) {
             $fat = $this->cobr->getElementsByTagName("fat")->item(0);
             if (isset($fat)) {
-                if (!empty($this->pSimpleGetValue($this->ide, "indPag"))) {
+                if (!empty($this->getTagValue($this->ide, "indPag"))) {
                     $textoIndPag = "";
-                    $indPag = $this->pSimpleGetValue($this->ide, "indPag");
+                    $indPag = $this->getTagValue($this->ide, "indPag");
                     if ($indPag === "0") {
                         $textoIndPag = "Pagamento à Vista - ";
                     } elseif ($indPag === "1") {
                         $textoIndPag = "Pagamento à Prazo - ";
                     }
-                    $nFat = $this->pSimpleGetValue($fat, "nFat", "Fatura: ");
-                    $vOrig = $this->pSimpleGetValue($fat, "vOrig", " Valor Original: ");
-                    $vDesc = $this->pSimpleGetValue($fat, "vDesc", " Desconto: ");
-                    $vLiq = $this->pSimpleGetValue($fat, "vLiq", " Valor Líquido: ");
+                    $nFat = $this->getTagValue($fat, "nFat", "Fatura: ");
+                    $vOrig = $this->getTagValue($fat, "vOrig", " Valor Original: ");
+                    $vDesc = $this->getTagValue($fat, "vDesc", " Desconto: ");
+                    $vLiq = $this->getTagValue($fat, "vLiq", " Valor Líquido: ");
                     $texto = $textoIndPag . $nFat . $vOrig . $vDesc . $vLiq;
                     return $texto;
                 } else {
                     $pag = $this->dom->getElementsByTagName("pag");
-                    if ($tPag = $this->pSimpleGetValue($pag->item(0), "tPag")) {
+                    if ($tPag = $this->getTagValue($pag->item(0), "tPag")) {
                         return $this->tipoPag($tPag);
                     }
                 }
@@ -2394,11 +2376,11 @@ class Danfe extends Common
         if (isset($rastro)) {
             $i = 0;
             while ($i < $rastro->length) {
-                $loteTxt .= $this->pSimpleGetValue($rastro->item($i), 'nLote', ' Lote: ');
-                $loteTxt .= $this->pSimpleGetValue($rastro->item($i), 'qLote', ' Quant: ');
+                $loteTxt .= $this->getTagValue($rastro->item($i), 'nLote', ' Lote: ');
+                $loteTxt .= $this->getTagValue($rastro->item($i), 'qLote', ' Quant: ');
                 $loteTxt .= $this->pSimpleGetDate($rastro->item($i), 'dFab', ' Fab: ');
                 $loteTxt .= $this->pSimpleGetDate($rastro->item($i), 'dVal', ' Val: ');
-                $loteTxt .= $this->pSimpleGetValue($rastro->item($i), 'vPMC', ' PMC: ');
+                $loteTxt .= $this->getTagValue($rastro->item($i), 'vPMC', ' PMC: ');
                 $i++;
             }
             if ($loteTxt != '') {
@@ -2410,6 +2392,8 @@ class Danfe extends Common
                 ' FCI:'.$itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue : '';
         $tmp_ad=$infAdProd . ($this->descProdInfoComplemento ? $loteTxt . $impostos . $nFCI : '');
         $texto = $prod->getElementsByTagName("xProd")->item(0)->nodeValue . (strlen($tmp_ad)!=0?"\n    ".$tmp_ad:'');
+        //decodifica os caracteres html no xml
+        $texto = html_entity_decode($texto);
         if ($this->descProdQuebraLinha) {
             $texto = str_replace(";", "\n", $texto);
         }
@@ -2480,7 +2464,7 @@ class Danfe extends Common
         $x += $w3;
         $w4 = round($w*0.05, 0);
         $texto = 'O/CSOSN';//Regime do Simples CRT = 1 ou CRT = 2
-        if ($this->pSimpleGetValue($this->emit, 'CRT') == '3') {
+        if ($this->getTagValue($this->emit, 'CRT') == '3') {
              $texto = 'O/CST';//Regime Normal
         }
         $aFont = array('font'=>$this->fontePadrao, 'size'=>6, 'style'=>'');
@@ -2604,9 +2588,9 @@ class Danfe extends Common
                 $x += $w3;
                 //CST
                 if (isset($ICMS)) {
-                    $origem =  $this->pSimpleGetValue($ICMS, "orig");
-                    $cst =  $this->pSimpleGetValue($ICMS, "CST");
-                    $csosn =  $this->pSimpleGetValue($ICMS, "CSOSN");
+                    $origem =  $this->getTagValue($ICMS, "orig");
+                    $cst =  $this->getTagValue($ICMS, "CST");
+                    $csosn =  $this->getTagValue($ICMS, "CSOSN");
                     $texto = $origem.$cst.$csosn;
                     $this->pTextBox($x, $y, $w4, $h, $texto, $aFont, 'T', 'C', 0, '');
                 }
@@ -3029,8 +3013,8 @@ class Danfe extends Common
         //     Segurança para Impressão de Documento Auxiliar de Documento Fiscal Eletrônico (FS-DA);
         // 6 - Contingência SVC-AN
         // 7 - Contingência SVC-RS
-        $xJust = $this->pSimpleGetValue($this->ide, 'xJust', 'Justificativa: ');
-        $dhCont = $this->pSimpleGetValue($this->ide, 'dhCont', ' Entrada em contingência : ');
+        $xJust = $this->getTagValue($this->ide, 'xJust', 'Justificativa: ');
+        $dhCont = $this->getTagValue($this->ide, 'dhCont', ' Entrada em contingência : ');
         $texto = '';
         switch ($this->tpEmis) {
             case 2:
@@ -3108,7 +3092,7 @@ class Danfe extends Common
             $emitente .= $this->dest->getElementsByTagName("xNome")->item(0)->nodeValue . " - ";
             $emitente .= $this->enderDest->getElementsByTagName("xLgr")->item(0)->nodeValue . ", ";
             $emitente .= $this->enderDest->getElementsByTagName("nro")->item(0)->nodeValue . " - ";
-            $emitente .= $this->pSimpleGetValue($this->enderDest, "xCpl", " - ", " ");
+            $emitente .= $this->getTagValue($this->enderDest, "xCpl", " - ", " ");
             $emitente .= $this->enderDest->getElementsByTagName("xBairro")->item(0)->nodeValue . " ";
             $emitente .= $this->enderDest->getElementsByTagName("xMun")->item(0)->nodeValue . "-";
             $emitente .= $this->enderDest->getElementsByTagName("UF")->item(0)->nodeValue . "";
@@ -3120,7 +3104,7 @@ class Danfe extends Common
             $destinatario .= $this->dest->getElementsByTagName("xNome")->item(0)->nodeValue . " - ";
             $destinatario .= $this->enderDest->getElementsByTagName("xLgr")->item(0)->nodeValue . ", ";
             $destinatario .= $this->enderDest->getElementsByTagName("nro")->item(0)->nodeValue . " ";
-            $destinatario .= $this->pSimpleGetValue($this->enderDest, "xCpl", " - ", " ");
+            $destinatario .= $this->getTagValue($this->enderDest, "xCpl", " - ", " ");
             $destinatario .= $this->enderDest->getElementsByTagName("xBairro")->item(0)->nodeValue . " ";
             $destinatario .= $this->enderDest->getElementsByTagName("xMun")->item(0)->nodeValue . "-";
             $destinatario .= $this->enderDest->getElementsByTagName("UF")->item(0)->nodeValue . " ";
@@ -3201,7 +3185,7 @@ class Danfe extends Common
             $x--;
             $x = $this->pTextBox90($x, $y, $w-1, $h, $texto, $aFontSmall, 'C', 'L', 0, '', false);
             //NUMERO DA NOTA FISCAL LOGO NFE
-            $w1 = 16;
+            $w1 = 18;
             $x1 = $oldX;
             $y = $oldY;
             $texto = "NF-e";
@@ -3312,6 +3296,9 @@ class Danfe extends Common
         $nfRefs = $this->ide->getElementsByTagName('NFref');
         if (0 === $nfRefs->length) {
             return $saida;
+        }
+        if ($nfRefs->length > 2) {
+            return 'Existem mais de 2 NF/NFe/ECF/NFP/CTe referenciadas, não serão exibidas na DANFE.';
         }
         foreach ($nfRefs as $nfRef) {
             if (empty($nfRef)) {

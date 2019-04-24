@@ -5,12 +5,17 @@ require_once '../bootstrap.php';
 
 use NFePHP\DA\NFe\Danfce;
 
-$docxml = file_get_contents(realpath(__DIR__."/xml/NFCeProd1.xml"));
-$pathLogo = realpath(__DIR__.'/images/logo.jpg');//use somente imagens JPEG
+try {
+    $docxml = file_get_contents(__DIR__."/xml/NFCeProd1.xml");
+    $pathLogo = __DIR__ . '/images/logo.jpg';
 
-$danfce = new Danfce($docxml, $pathLogo, 0);
-$id = $danfce->monta();
-$pdf = $danfce->render();
+    $danfce = new Danfce($docxml, $pathLogo, 0);
+    $id = $danfce->monta();
+    $pdf = $danfce->render();
 
-header('Content-Type: application/pdf');
-echo $pdf;
+    header('Content-Type: application/pdf');
+    echo $pdf;
+    
+} catch (\Exception $e) {
+    echo $e->message;
+}
