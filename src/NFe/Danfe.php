@@ -242,6 +242,11 @@ class Danfe extends Common
      * Node
      * @var DOMNode
      */
+    protected $detPag;
+    /**
+     * Node
+     * @var DOMNode
+     */
     protected $ICMSTot;
     /**
      * Node
@@ -370,6 +375,7 @@ class Danfe extends Common
             $this->det        = $this->dom->getElementsByTagName("det");
             $this->cobr       = $this->dom->getElementsByTagName("cobr")->item(0);
             $this->dup        = $this->dom->getElementsByTagName('dup');
+            $this->detPag     = $this->dom->getElementsByTagName('detPag');
             $this->ICMSTot    = $this->dom->getElementsByTagName("ICMSTot")->item(0);
             $this->ISSQNtot   = $this->dom->getElementsByTagName("ISSQNtot")->item(0);
             $this->transp     = $this->dom->getElementsByTagName("transp")->item(0);
@@ -1728,6 +1734,9 @@ class Danfe extends Common
             } else {
                 $w = 28;
             }
+            $dups = count($this->dup);
+            $hBox = ($h * ceil($dups / 7)) + ((ceil($dups / 7) - 1) * 2);
+            $this->pTextBox($x, $y, 206, $hBox, '', $aFont, 'C', 'L', 1, '');
             $increm = 1;
             foreach ($this->dup as $k => $d) {
                 $nDup = ! empty($this->dup->item($k)->getElementsByTagName('nDup')->item(0)->nodeValue) ?
@@ -1745,12 +1754,12 @@ class Danfe extends Common
                 $texto = '';
                 if ($nDup!='0' && $nDup!='') {
                     $aFont = array('font'=>$this->fontePadrao, 'size'=>6, 'style'=>'');
-                    $this->pTextBox($x, $y, $w, $h, 'Num.', $aFont, 'T', 'L', 1, '');
+                    $this->pTextBox($x, $y, $w, $h, 'Num.', $aFont, 'T', 'L', 0, '');
                     $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B');
                     $this->pTextBox($x, $y, $w, $h, $nDup, $aFont, 'T', 'R', 0, '');
                 } else {
                     $aFont = array('font'=>$this->fontePadrao, 'size'=>6, 'style'=>'');
-                    $this->pTextBox($x, $y, $w, $h, ($dupcont+1)."", $aFont, 'T', 'L', 1, '');
+                    $this->pTextBox($x, $y, $w, $h, ($dupcont+1)."", $aFont, 'T', 'L', 0, '');
                 }
                 $aFont = array('font'=>$this->fontePadrao, 'size'=>6, 'style'=>'');
                 $this->pTextBox($x, $y, $w, $h, 'Venc.', $aFont, 'C', 'L', 0, '');
