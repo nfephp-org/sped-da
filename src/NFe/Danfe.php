@@ -733,7 +733,7 @@ class Danfe extends Common
         //coloca os dados do local de entrega
         if (isset($this->entrega)) {
             $y = $this->pLocalEntregaDANFE($x, $y+1);
-        }        
+        }
         
         //Verifica as formas de pagamento da nota fiscal
         $formaPag = array();
