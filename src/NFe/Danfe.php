@@ -1659,7 +1659,6 @@ class Danfe extends Common
         //####################################################################################
         //LOCAL DE ENTREGA
         $oldX = $x;
-        $oldY = $y;
         if ($this->orientacao == 'P') {
             $maxW = $this->wPrint;
         } else {
@@ -1753,7 +1752,6 @@ class Danfe extends Common
         //CEP
         $x += $w;
         $w = $maxW-($w1+$w2);
-        $w2 = $w;
         $texto = 'CEP';
         $aFont = array('font'=>$this->fontePadrao, 'size'=>6, 'style'=>'');
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
@@ -1812,7 +1810,6 @@ class Danfe extends Common
         //####################################################################################
         //LOCAL DE RETIRADA
         $oldX = $x;
-        $oldY = $y;
         if ($this->orientacao == 'P') {
             $maxW = $this->wPrint;
         } else {
@@ -1906,7 +1903,6 @@ class Danfe extends Common
         //CEP
         $x += $w;
         $w = $maxW-($w1+$w2);
-        $w2 = $w;
         $texto = 'CEP';
         $aFont = array('font'=>$this->fontePadrao, 'size'=>6, 'style'=>'');
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
