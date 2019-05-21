@@ -1,11 +1,15 @@
 {
-    "name": "nfephp-org/sped-da",
+    "name": "m-galdino/sped-doc-aux",
     "type": "library",
     "description": "sped-da contêm as classes para criação dos documentos auxiliares referidos no projeto Sped.",
     "keywords": ["nfe", "sped", "nfephp", "Danfe", "Dacte", "CCe" ],
-    "homepage": "https://github.com/nfephp-org/sped-da",
+    "homepage": "https://github.com/m-galdino/sped-doc-aux",
     "license": ["LGPL-3.0-or-later+", "GPL-3.0-or-later", "MIT"],
     "authors": [
+	{
+            "name": "Maurício",
+            "role": "Developer"
+        },
         {
             "name": "Roberto L. Machado",
             "email": "linux.rlm@gmail.com.br",
