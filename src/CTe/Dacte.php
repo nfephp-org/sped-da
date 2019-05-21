@@ -73,7 +73,7 @@ class Dacte extends Common
     protected $ICMS;
     protected $imp;
     protected $toma4;
-    protected $toma03;
+    protected $toma3;
     protected $tpEmis;
     protected $tpImp;
     protected $tpAmb;
@@ -192,10 +192,10 @@ class Dacte extends Common
             $this->textoAdic = "o valor aproximado de tributos incidentes sobre o preço deste serviço é de R$"
                     .$textoAdic;
             $this->toma4 = $this->dom->getElementsByTagName("toma4")->item(0);
-            $this->toma03 = $this->dom->getElementsByTagName("toma03")->item(0);
+            $this->toma3 = $this->dom->getElementsByTagName("toma3")->item(0);
             //modal aquaviário
             $this->aquav = $this->dom->getElementsByTagName("aquav")->item(0);
-            $tomador = $this->getTagValue($this->toma03, "toma");
+            $tomador = $this->getTagValue($this->toma3, "toma");
             //0-Remetente;1-Expedidor;2-Recebedor;3-Destinatário;4-Outros
             switch ($tomador) {
                 case '0':
@@ -1765,19 +1765,19 @@ class Dacte extends Common
             'size' => 5,
             'style' => '');
         $this->pTextBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = $this->getTagValue($this->infQ->item(1), "tpMed") . "\r\n";
-        $texto .= number_format(
-            $this->getTagValue(
-                $this->infQ->item(1),
-                "qCarga"
-            )
-            / $this->zMultiUniPeso(
-                $this->getTagValue($this->infQ->item(1), "cUnid")
-            ),
-            3,
-            ".",
-            ""
-        );
+        $texto  = $this->getTagValue($this->infQ->item(1), "tpMed") . "\r\n";
+        $qCarga = $this->getTagValue($this->infQ->item(1), "qCarga");
+        $texto .= !empty($qCarga) ?
+            number_format(
+                $qCarga
+                / $this->zMultiUniPeso(
+                    $this->getTagValue($this->infQ->item(1), "cUnid")
+                ),
+                3,
+                ".",
+                ""
+            ) :
+            '';
         $texto = $this->getTagValue($this->infQ->item(1), "qCarga") == '' ? '' : $texto;
         $texto .= ' ' . $this->zUnidade($this->getTagValue($this->infQ->item(1), "cUnid"));
         $aFont = array(
