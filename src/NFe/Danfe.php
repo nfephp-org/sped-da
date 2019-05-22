@@ -396,7 +396,7 @@ class Danfe extends Common
     {
         $this->creditos = trim($message);
     }
-    
+
     /**
      * monta
      *
@@ -674,8 +674,8 @@ class Danfe extends Common
         }
         $hDispo2 = $this->hPrint - 10 - ($hcabecalho + $hfooter + $hCabecItens)-4;
         //Contagem da altura ocupada para impressão dos itens
-        $fontProduto = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>''];
-        $i = 1;
+        $fontProduto = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'');
+        $i = 0;
         $numlinhas = 0;
         $hUsado = $hCabecItens;
         $w2 = round($w*0.28, 0);
@@ -684,6 +684,12 @@ class Danfe extends Common
         while ($i < $this->det->length) {
             $texto = $this->descricaoProduto($this->det->item($i));
             $numlinhas = $this->pdf->getNumLines($texto, $w2, $fontProduto);
+
+            $veicProd = $this->det->item($i)->getElementsByTagName("veicProd")->item(0);
+            if (!empty($veicProd)) {
+                $numlinhas += 16;
+            }
+
             $hUsado += round(($numlinhas * $this->pdf->fontSize) + ($numlinhas * 0.5), 2);
             if ($hUsado > $hDispo) {
                 $totPag++;
@@ -715,8 +721,8 @@ class Danfe extends Common
         $y = $this->cabecalhoDANFE($x, $y, $pag, $totPag);
         //coloca os dados do destinatário
         $y = $this->destinatarioDANFE($x, $y+1);
-        
-        
+
+
         //Verifica as formas de pagamento da nota fiscal
         $formaPag = [];
         if (isset($this->detPag) && $this->detPag->length > 0) {
@@ -977,7 +983,7 @@ class Danfe extends Common
         ) {
             return ['status' => false, 'message' => 'NFe CANCELADA'];
         }
-        
+
         if ($cStat == '110' ||
                $cStat == '301' ||
                $cStat == '302' ||
@@ -1153,7 +1159,7 @@ class Danfe extends Common
         $w2 = $w;
         $h = 32;
         $this->pdf->textBox($x, $y, $w, $h);
-  
+
         $texto = "DANFE";
         $aFont = ['font'=>$this->fontePadrao, 'size'=>14, 'style'=>'B'];
         $this->pdf->textBox($x, $y+1, $w, $h, $texto, $aFont, 'T', 'C', 0, '');
@@ -1161,7 +1167,7 @@ class Danfe extends Common
         $texto = 'Documento Auxiliar da Nota Fiscal Eletrônica';
         $h = 20;
         $this->pdf->textBox($x, $y+6, $w, $h, $texto, $aFont, 'T', 'C', 0, '', false);
-        
+
 
         $aFont = ['font'=>$this->fontePadrao, 'size'=>8, 'style'=>''];
         $texto = '0 - ENTRADA';
@@ -1373,7 +1379,7 @@ class Danfe extends Common
             $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $this->pdf->setTextColor(0, 0, 0);
         }
-        
+
         /*
         if ($this->pNotaCancelada()) {
             //101 Cancelamento
@@ -1952,7 +1958,7 @@ class Danfe extends Common
             return ($y-2);
         }
     } //fim da função pagamentoDANFE
-    
+
     /**
      * impostoDanfeHelper
      * Auxilia a montagem dos campos de impostos e totais da DANFE
@@ -2626,7 +2632,14 @@ class Danfe extends Common
                 $IPI  = $imposto->getElementsByTagName("IPI")->item(0);
                 $textoProduto = trim($this->descricaoProduto($thisItem));
 
-                $linhaDescr = $this->pdf->getNumLines($textoProduto, $w2, $aFont);
+                $linhaDescr = $this->pGetNumLines($textoProduto, $w2, $aFont);
+
+                //Dados do Veiculo Somente para veiculo 0 Km
+                $veicProd = $prod->getElementsByTagName("veicProd")->item(0);
+                if (!empty($veicProd)) {
+                    $linhaDescr += 16;
+                }
+
                 $h = round(($linhaDescr * $this->pdf->fontSize)+ ($linhaDescr * 0.5), 2);
                 $hUsado += $h;
 
@@ -2650,10 +2663,13 @@ class Danfe extends Common
                 $this->pdf->textBox($x, $y, $w1, $h, $texto, $aFont, 'T', 'C', 0, '');
                 $x += $w1;
                 //DESCRIÇÃO
-                if ($this->orientacao == 'P') {
-                    $this->pdf->textBox($x, $y, $w2, $h, $textoProduto, $aFont, 'T', 'L', 0, '', false);
-                } else {
-                    $this->pdf->textBox($x, $y, $w2, $h, $textoProduto, $aFont, 'T', 'L', 0, '', false);
+                $yItem = $this->pTextBox($x, $y, $w2, $h, $textoProduto, $aFont, 'T', 'L', 0, '', false);
+
+                // Tag somente é gerada para veiculo 0k, e só é permitido um veiculo por NF-e por conta do detran
+                // Verifica se a Tag existe
+                if (!empty($veicProd)) {
+                    $yItem += $y;
+                    $this->pDadosItenVeiculoDANFE($x, $yItem, $h, $prod, $w2);
                 }
                 $x += $w2;
                 //NCM
@@ -2787,24 +2803,9 @@ class Danfe extends Common
      * @param object $prod Contendo todos os dados do item
      */
 
-    protected function dadosItenVeiculoDANFE($x, $y, &$nInicio, $h, $prod)
+    protected function pDadosItenVeiculoDANFE($x, $y, $h, $prod, $w1)
     {
-        $oldX = $x;
-        $oldY = $y;
-
-        if ($this->orientacao == 'P') {
-            $w = $this->wPrint;
-        } else {
-            if ($nInicio < 2) { // primeira página
-                $w = $this->wPrint - $this->wCanhoto;
-            } else { // páginas seguintes
-                $w = $this->wPrint;
-            }
-        }
-
-        $aFont = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>''];
-
-        $w1 = round($w*0.09, 0);
+        $aFont = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'');
 
         // Tabela Renavam Combustivel
         $renavamCombustivel = [
@@ -2897,9 +2898,7 @@ class Danfe extends Common
 
         $veiculoDistancia = $veicProd->getElementsByTagName("dist")->item(0)->nodeValue;
 
-        $x = $oldX;
-
-        $yVeic = $y + $h;
+        $yVeic = $y;
         $texto = 'Chassi: ............: ' . $veiculoChassi;
         $this->pdf->textBox($x, $yVeic, $w1+40, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
@@ -2962,7 +2961,6 @@ class Danfe extends Common
      */
     protected function issqnDANFE($x, $y)
     {
-        $oldX = $x;
         //#####################################################################
         //CÁLCULO DO ISSQN
         $texto = "CÁLCULO DO ISSQN";
@@ -3439,7 +3437,7 @@ class Danfe extends Common
         }
         return $saida;
     }
-    
+
     private function imagePNGtoJPG($original)
     {
         $image = imagecreatefrompng($original);
