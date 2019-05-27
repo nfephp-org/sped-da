@@ -2845,7 +2845,7 @@ class Danfe extends Common
         $texto = 'Cmkg...............: ' . $veiculoCmkg;
         $this->pTextBox($x, $yVeic, $w1, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Tipo.................: ' . $renavamTiposVeiculos[intval($veiculoTipo)];
+        $texto = 'Tipo.................: ' . ($renavamTiposVeiculos[intval($veiculoTipo)] ?? $veiculoTipo);
         $this->pTextBox($x, $yVeic, $w1, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
         $texto = 'Nº Motor: .........: ' . $veiculoMotor;
@@ -2866,10 +2866,10 @@ class Danfe extends Common
         $texto = 'Marca / Modelo.....: ' . $veiculoMarcaModelo;
         $this->pTextBox($x, $yVeic, $w1, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Especie..................: ' . $renavamEspecie[intval($veiculoEspecie)];
+        $texto = 'Especie..................: ' . ($renavamEspecie[intval($veiculoEspecie)] ?? $veiculoEspecie);
         $this->pTextBox($x, $yVeic, $w1, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Combustivel..........: ' . $renavamCombustivel[intval($veiculoCombustivel)];
+        $texto = 'Combustivel..........: ' . ($renavamCombustivel[intval($veiculoCombustivel)] ?? $veiculoCombustivel);
         $this->pTextBox($x, $yVeic, $w1, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
         $texto = 'Serial.....................: ' . $veiculoSerial;
