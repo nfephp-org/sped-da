@@ -2912,8 +2912,8 @@ class Danfe extends Common
         $texto = 'Cmkg...............: ' . $veiculoCmkg;
         $this->pdf->textBox($x, $yVeic, $w1+40, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Tipo.................: ' . $renavamTiposVeiculos[intval($veiculoTipo)];
-        $this->pdf->textBox($x, $yVeic, $w1+40, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $texto = 'Tipo.................: ' . ($renavamTiposVeiculos[intval($veiculoTipo)] ?? $veiculoTipo);
+        $this->pTextBox($x, $yVeic, $w1+40, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic = $y + $h;
         $xVeic = $x + 65;
         $texto = 'Nº Motor: .........: ' . $veiculoMotor;
@@ -2935,11 +2935,11 @@ class Danfe extends Common
         $texto = 'Marca / Modelo.....: ' . $veiculoMarcaModelo;
         $this->pdf->textBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Especie..................: ' . $renavamEspecie[intval($veiculoEspecie)];
-        $this->pdf->textBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $texto = 'Especie..................: ' . ($renavamEspecie[intval($veiculoEspecie)] ?? $veiculoEspecie);
+        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Combustivel..........: ' . $renavamCombustivel[intval($veiculoCombustivel)];
-        $this->pdf->textBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $texto = 'Combustivel..........: ' . ($renavamCombustivel[intval($veiculoCombustivel)] ?? $veiculoCombustivel);
+        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
         $texto = 'Serial.....................: ' . $veiculoSerial;
         $this->pdf->textBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
