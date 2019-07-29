@@ -90,8 +90,7 @@ class Damdfe extends Common
         $sDirPDF = '',
         $fontePDF = '',
         $mododebug = 2
-    )
-    {
+    ) {
         //define o caminho base da instalação do sistema
         if (!defined('PATH_ROOT')) {
             define('PATH_ROOT', dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR);
@@ -279,9 +278,8 @@ class Damdfe extends Common
      * @param integer $pag
      * @return string
      */
-    private function headerMDFePaisagem($x, $y, $pag)
+    private function headerMDFePaisagem($x, $y)
     {
-        $oldX = $x;
         $oldY = $y;
         $maxW = $this->wPrint;
         //####################################################################################
@@ -374,7 +372,6 @@ class Damdfe extends Common
         $y = $y + 22;
         $this->pTextBox($x, $y, $w, 8);
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'I');
-        $tsHora = $this->pConvertTime($this->dhEvento);
         $texto = 'CHAVE DE ACESSO';
         $this->pTextBox($x, $y, $maxW, 6, $texto, $aFont, 'T', 'L', 0, '');
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
@@ -444,16 +441,13 @@ class Damdfe extends Common
      * @param integer $pag
      * @return string
      */
-    private function headerMDFeRetrato($x, $y, $pag)
+    private function headerMDFeRetrato($x, $y)
     {
-        $oldX = $x;
         $oldY = $y;
         $maxW = $this->wPrint;
         //####################################################################################
         //coluna esquerda identificação do emitente
         $w = $maxW; //round($maxW*0.41, 0);// 80;
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'I');
-        $w1 = $w;
         $h = 27;
         $oldY += $h;
         $this->pTextBox($x, $y, $w, $h);
@@ -463,34 +457,39 @@ class Damdfe extends Common
             $logoWmm = ($logoInfo[0] / 72) * 25.4;
             //altura da imagem em mm
             $logoHmm = ($logoInfo[1] / 72) * 25.4;
-            if ($this->logoAlign == 'L') {
-                $nImgW = round($w / 8, 0);
-                $nImgH = round($logoHmm * ($nImgW / $logoWmm), 0);
-                $xImg = $x + 1;
-                $yImg = round(($h - $nImgH) / 2, 0) + $y;
-                //estabelecer posições do texto
-                $x1 = round($xImg + $nImgW + 1, 0);
-                $y1 = round($y + 2, 0);
-                $tw = round(2 * $w / 3, 0);
+            switch ($this->logoAlign) {
+                case 'L':
+                    $nImgW = round($w / 8, 0);
+                    $nImgH = round($logoHmm * ($nImgW / $logoWmm), 0);
+                    $xImg = $x + 1;
+                    $yImg = round(($h - $nImgH) / 2, 0) + $y;
+                    //estabelecer posições do texto
+                    $x1 = round($xImg + $nImgW + 1, 0);
+                    $y1 = round($y + 2, 0);
+                    $tw = round(2 * $w / 3, 0);
+                break;
+
+                case 'C':
+                    $nImgH = round($h / 3, 0);
+                    $nImgW = round($logoWmm * ($nImgH / $logoHmm), 0);
+                    $xImg = round(($w - $nImgW) / 2 + $x, 0);
+                    $yImg = $y + 3;
+                    $x1 = $x;
+                    $y1 = round($yImg + $nImgH + 1, 0);
+                    $tw = $w;               
+                break;
+
+                case 'R':
+                    $nImgW = round($w / 3, 0);
+                    $nImgH = round($logoHmm * ($nImgW / $logoWmm), 0);
+                    $xImg = round($x + ($w - (1 + $nImgW)), 0);
+                    $yImg = round(($h - $nImgH) / 2, 0) + $y;
+                    $x1 = $x;
+                    $y1 = round($h / 3 + $y, 0);
+                    $tw = round(2 * $w / 3, 0);
+                break;
             }
-            if ($this->logoAlign == 'C') {
-                $nImgH = round($h / 3, 0);
-                $nImgW = round($logoWmm * ($nImgH / $logoHmm), 0);
-                $xImg = round(($w - $nImgW) / 2 + $x, 0);
-                $yImg = $y + 3;
-                $x1 = $x;
-                $y1 = round($yImg + $nImgH + 1, 0);
-                $tw = $w;
-            }
-            if ($this->logoAlign == 'R') {
-                $nImgW = round($w / 3, 0);
-                $nImgH = round($logoHmm * ($nImgW / $logoWmm), 0);
-                $xImg = round($x + ($w - (1 + $nImgW)), 0);
-                $yImg = round(($h - $nImgH) / 2, 0) + $y;
-                $x1 = $x;
-                $y1 = round($h / 3 + $y, 0);
-                $tw = round(2 * $w / 3, 0);
-            }
+
             $this->pdf->Image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, 'jpeg');
         } else {
             $x1 = $x;
@@ -498,8 +497,8 @@ class Damdfe extends Common
             $tw = $w;
         }
 
-        if ($this->qrCodMDFe) {
-            $y = $this->pQRDANFE($x, $y1 - 3, 50);
+        if ($this->qrCodMDFe != null) {
+            $this->pQRDANFE($x, $y1 - 3, 50);
         }
 
         $aFont = array('font' => $this->fontePadrao, 'size' => 11, 'style' => '');
@@ -856,10 +855,8 @@ class Damdfe extends Common
             $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
             $this->pTextBox($x1 + 1, $y, $x2 - 1, 8, $texto, $aFont, 'T', 'L', 0, '', false);
         }
-
         return $altura + 7;
-
-    }//fim bodyMDFe
+    }
 
 
     protected function pQRDANFE($x = 0, $y = 0, $h = 0)
