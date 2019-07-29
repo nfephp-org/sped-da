@@ -472,7 +472,7 @@ class Damdfe extends Common
                     $xImg = round(($w - $nImgW) / 2 + $x, 0);
                     $yImg = $y + 3;
                     $y = round($yImg + $nImgH + 1, 0);
-                    $tw = $w;               
+                    $tw = $w;
                     break;
 
                 case 'R':
@@ -486,7 +486,7 @@ class Damdfe extends Common
             }
 
             $this->pdf->Image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, 'jpeg');
-        } 
+        }
 
         if ($this->qrCodMDFe !== null) {
             $this->pQRDAMDFE($y - 3);
@@ -566,10 +566,10 @@ class Damdfe extends Common
             $this->pdf->SetTextColor(90, 90, 90);
             $texto = "SEM VALOR FISCAL";
             $aFont = array('font' => $this->fontePadrao, 'size' => 48, 'style' => 'B');
-            $this->pTextBox($x, $yy, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+            $this->pTextBox($x + 7, $yy, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $aFont = array('font' => $this->fontePadrao, 'size' => 30, 'style' => 'B');
             $texto = "AMBIENTE DE HOMOLOGAÇÃO";
-            $this->pTextBox($x, $yy + 14, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+            $this->pTextBox($x + 7, $yy + 14, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $this->pdf->SetTextColor(0, 0, 0);
         } else {
             $x = 10;
@@ -854,7 +854,6 @@ class Damdfe extends Common
     {
 
         $margemInterna = $this->margemInterna;
-        $maxW = $this->wPrint;
         $barcode = new Barcode();
         $bobj = $barcode->getBarcodeObj(
             'QRCODE,M',
