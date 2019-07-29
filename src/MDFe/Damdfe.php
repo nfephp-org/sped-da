@@ -464,34 +464,32 @@ class Damdfe extends Common
                     $x = round($xImg + $nImgW + 1, 0);
                     $y = round($y + 2, 0);
                     $tw = round(2 * $w / 3, 0);
-                break;
+                    break;
 
                 case 'C':
                     $nImgH = round($h / 3, 0);
                     $nImgW = round($logoWmm * ($nImgH / $logoHmm), 0);
                     $xImg = round(($w - $nImgW) / 2 + $x, 0);
                     $yImg = $y + 3;
-                    $x = $x;
                     $y = round($yImg + $nImgH + 1, 0);
                     $tw = $w;               
-                break;
+                    break;
 
                 case 'R':
                     $nImgW = round($w / 3, 0);
                     $nImgH = round($logoHmm * ($nImgW / $logoWmm), 0);
                     $xImg = round($x + ($w - (1 + $nImgW)), 0);
                     $yImg = round(($h - $nImgH) / 2, 0) + $y;
-                    $x = $x;
                     $y = round($h / 3 + $y, 0);
                     $tw = round(2 * $w / 3, 0);
-                break;
+                    break;
             }
 
             $this->pdf->Image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, 'jpeg');
         } 
 
         if ($this->qrCodMDFe !== null) {
-            $this->pQRDANFE($x, $y - 3, 50);
+            $this->pQRDAMDFE($y - 3);
         }
 
         $aFont = array('font' => $this->fontePadrao, 'size' => 11, 'style' => '');
@@ -852,17 +850,12 @@ class Damdfe extends Common
     }
 
 
-    protected function pQRDANFE($x = 0, $y = 0, $h = 0)
+    protected function pQRDAMDFE($y = 0)
     {
 
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
         $w = ($maxW * 1) + 4;
-        $dhRecbto = '';
-        if (isset($this->nfeProc)) {
-            $nProt = $this->getTagValue($this->nfeProc, "nProt");
-            $dhRecbto = $this->getTagValue($this->nfeProc, "dhRecbto");
-        }
         $barcode = new Barcode();
         $bobj = $barcode->getBarcodeObj(
             'QRCODE,M',
