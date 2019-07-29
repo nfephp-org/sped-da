@@ -855,7 +855,6 @@ class Damdfe extends Common
 
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
-        $w = ($maxW * 1) + 4;
         $barcode = new Barcode();
         $bobj = $barcode->getBarcodeObj(
             'QRCODE,M',
