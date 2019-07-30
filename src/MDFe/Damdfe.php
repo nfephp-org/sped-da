@@ -446,8 +446,10 @@ class Damdfe extends Common
         //coluna esquerda identificação do emitente
         $w = $maxW; //round($maxW*0.41, 0);// 80;
         $h = 27;
+        $tw = $w;
         $oldY += $h;
         $this->pTextBox($x, $y, $w, $h);
+        $x1 = $x;
         if (is_file($this->logomarca)) {
             $logoInfo = getimagesize($this->logomarca);
             //largura da imagem em mm
@@ -464,6 +466,7 @@ class Damdfe extends Common
                     $x = round($xImg + $nImgW + 1, 0);
                     $y = round($y + 2, 0);
                     $tw = round(2 * $w / 3, 0);
+                    $x1 = $x - 27;
                     break;
 
                 case 'C':
@@ -473,6 +476,7 @@ class Damdfe extends Common
                     $yImg = $y + 3;
                     $y = round($yImg + $nImgH + 1, 0);
                     $tw = $w;
+                    $x1 = $x - 27;
                     break;
 
                 case 'R':
@@ -482,6 +486,10 @@ class Damdfe extends Common
                     $yImg = round(($h - $nImgH) / 2, 0) + $y;
                     $y = round($h / 3 + $y, 0);
                     $tw = round(2 * $w / 3, 0);
+                    $x1 = $x - 27;
+                    break;
+                default:
+                    $x1 = $x;
                     break;
             }
 
@@ -511,10 +519,10 @@ class Damdfe extends Common
 
         //##################################################
         $y = $h + 8;
-        $this->pTextBox($x - 27, $y, $maxW, 6);
+        $this->pTextBox($x1, $y, $maxW, 6);
         $aFont = array('font' => $this->fontePadrao, 'size' => 12, 'style' => 'I');
         $this->pTextBox(
-            $x - 27,
+            $x1,
             $y,
             $maxW,
             8,
@@ -526,26 +534,26 @@ class Damdfe extends Common
             ''
         );
         $y = $y + 8;
-        $this->pTextBox($x - 27, $y, $maxW, 20);
+        $this->pTextBox($x1, $y, $maxW, 20);
         $bH = 16;
         $w = $maxW;
         $this->pdf->SetFillColor(0, 0, 0);
-        $this->pdf->Code128($x - 22, $y + 2, $this->chMDFe, $maxW - 10, $bH);
+        $this->pdf->Code128($x1 + 5, $y + 2, $this->chMDFe, $maxW - 10, $bH);
         $this->pdf->SetFillColor(255, 255, 255);
         $y = $y + 27;
-        $this->pTextBox($x - 27, $y, $maxW, 10);
+        $this->pTextBox($x1, $y, $maxW, 10);
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'I');
         $tsHora = $this->pConvertTime($this->dhEvento);
         $texto = 'CHAVE DE ACESSO';
-        $this->pTextBox($x - 27, $y, $maxW, 6, $texto, $aFont, 'T', 'L', 0, '');
+        $this->pTextBox($x1, $y, $maxW, 6, $texto, $aFont, 'T', 'L', 0, '');
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
         $texto = $this->pFormat($this->chMDFe, $this->formatoChave);
-        $this->pTextBox($x - 27, $y + 4, $maxW, 6, $texto, $aFont, 'T', 'C', 0, '');
+        $this->pTextBox($x1, $y + 4, $maxW, 6, $texto, $aFont, 'T', 'C', 0, '');
         $y = $y + 12;
-        $this->pTextBox($x - 27, $y, $maxW, 10);
+        $this->pTextBox($x1, $y, $maxW, 10);
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'I');
         $texto = 'PROTOCOLO DE AUTORIZACAO DE USO';
-        $this->pTextBox($x - 27, $y, $maxW, 8, $texto, $aFont, 'T', 'L', 0, '');
+        $this->pTextBox($x1, $y, $maxW, 8, $texto, $aFont, 'T', 'L', 0, '');
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
         if (is_object($this->mdfeProc)) {
             $tsHora = $this->pConvertTime($this->dhRecbto);
@@ -553,7 +561,7 @@ class Damdfe extends Common
         } else {
             $texto = 'DAMDFE impresso em contingência - ' . date('d/m/Y   H:i:s');
         }
-        $this->pTextBox($x - 27, $y + 4, $maxW, 8, $texto, $aFont, 'T', 'C', 0, '');
+        $this->pTextBox($x1, $y + 4, $maxW, 8, $texto, $aFont, 'T', 'C', 0, '');
         if ($this->tpAmb != 1) {
             $x = 10;
             if ($this->orientacao == 'P') {
