@@ -17,5 +17,5 @@ src/NFe/Bloco/Transportador.php
 src/NFe/Bloco/Itens.php
 src/NFe/Bloco/Informacoes.php
 src/NFe/Bloco/Rodape.php
-
+tests/fixtures/pdf/*
 
