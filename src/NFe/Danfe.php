@@ -2683,7 +2683,7 @@ class Danfe extends Common
                 // Tag somente é gerada para veiculo 0k, e só é permitido um veiculo por NF-e por conta do detran
                 // Verifica se a Tag existe
                 if (!empty($veicProd)) {
-                    $this->pDadosItenVeiculoDANFE($oldX, $y, $h, $prod);
+                    $this->pDadosItenVeiculoDANFE($oldX, $y, $nInicio, $h, $prod);
                 }
 
 
@@ -2703,16 +2703,16 @@ class Danfe extends Common
      * pDadosItenVeiculoDANFE
      * Coloca os dados do veiculo abaixo do item da NFe. (retrato e paisagem)
      *
-     * @name  dadosAdicionaisDANFE
      * @param float  $x    Posição horizontal
      *                     canto esquerdo
      * @param float  $y    Posição vertical
      *                     canto superior
+     * @param        $nInicio
      * @param float  $h    altura do campo
      * @param object $prod Contendo todos os dados do item
      */
 
-    protected function pDadosItenVeiculoDANFE($x, $y, $h, $prod)
+    protected function pDadosItenVeiculoDANFE($x, $y, &$nInicio, $h, $prod)
     {
         $oldX = $x;
         $oldY = $y;
