@@ -2795,7 +2795,8 @@ class Danfe extends Common
         $renavamTipoPintura = array(
             'F'=>'FOSCA',
             'S'=>'SÓLIDA',
-            'P'=>'PEROLIZADA'
+            'P'=>'PEROLIZADA',
+            'M'=>'METALICA',
         );
 
 
