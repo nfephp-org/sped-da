@@ -331,7 +331,7 @@ class Damdfe extends Common
         $CEP = 'CEP: '.$this->pFormat($CEP, "##.###-###");
         $UF = 'UF: '.$this->UF;
         $mun = 'Municipio: '.$this->xMun;
-        
+
         $texto = $razao . "\n" . $cnpj . ' - ' . $ie . "\n";
         $texto .= $lgr . ' - ' . $nro . "\n";
         $texto .= $bairro . "\n";
@@ -423,7 +423,7 @@ class Damdfe extends Common
         }
         return $y;
     }// fim headerMDFe
-    
+
     /**
      * headerMDFeRetrato
      *

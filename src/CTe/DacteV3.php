@@ -1750,26 +1750,16 @@ class DacteV3 extends Common
         $qCargaM3 = 0;
         $qCargaVl = 0;
         foreach ($this->infQ as $infQ) {
-            if ($this->pSimpleGetValue($infQ, "cUnid") == '01') {
-                $qCargaKg += (float) $this->pSimpleGetValue($this->infQ->item(0), "qCarga");
-            } elseif ($this->pSimpleGetValue($infQ, "cUnid") == '00') {
-                $qCargaM3 += (float) $this->pSimpleGetValue($this->infQ->item(0), "qCarga");
-            } elseif ($this->pSimpleGetValue($infQ, "cUnid") == '03') {
-                $qCargaVl += (float) $this->pSimpleGetValue($this->infQ->item(0), "qCarga");
+            if ($this->getTagValue($infQ, "cUnid") == '01') {
+                $qCargaKg += (float) $this->getTagValue($this->infQ->item(0), "qCarga");
+            } elseif ($this->getTagValue($infQ, "cUnid") == '00') {
+                $qCargaM3 += (float) $this->getTagValue($this->infQ->item(0), "qCarga");
+            } elseif ($this->getTagValue($infQ, "cUnid") == '03') {
+                $qCargaVl += (float) $this->getTagValue($this->infQ->item(0), "qCarga");
             }
         }
         //Identifica código da unidade
         //01 = KG (QUILOS)
-<<<<<<< HEAD
-=======
-        if ($this->getTagValue($this->infQ->item(0), "cUnid") == '01') {
-            $qCarga = $this->getTagValue($this->infQ->item(0), "qCarga");
-        } elseif ($this->getTagValue($this->infQ->item(1), "cUnid") == '01') {
-            $qCarga = $this->getTagValue($this->infQ->item(1), "qCarga");
-        } elseif ($this->getTagValue($this->infQ->item(2), "cUnid") == '01') {
-            $qCarga = $this->getTagValue($this->infQ->item(2), "qCarga");
-        }
->>>>>>> 309231d4e4607bd2e472e46df3383865840d45c7
         $texto = 'PESO BRUTO (KG)';
         $aFont = array(
             'font' => $this->fontePadrao,
