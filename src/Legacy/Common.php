@@ -282,6 +282,8 @@ class Common
             $text = utf8_decode($text);
             //decodifica os caracteres html no xml
             $text = html_entity_decode($text);
+            //converte especiais entidades HTML para caracteres
+            $text = htmlspecialchars_decode($text, ENT_QUOTES);
         } else {
             $text = (string) $text;
         }
@@ -498,7 +500,7 @@ class Common
         $this->pdf->Rotate(0, $x, $y);
         return ($y1 - $y) - $incY;
     }
-      
+
     protected function tipoPag($tPag)
     {
         switch ($tPag) {
