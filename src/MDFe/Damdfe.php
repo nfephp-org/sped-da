@@ -330,7 +330,7 @@ class Damdfe extends Common
         $CEP = 'CEP: '.$this->pFormat($CEP, "##.###-###");
         $UF = 'UF: '.$this->UF;
         $mun = 'Municipio: '.$this->xMun;
-        
+
         $texto = $razao . "\n" . $cnpj . ' - ' . $ie . "\n";
         $texto .= $lgr . ' - ' . $nro . "\n";
         $texto .= $bairro . "\n";
@@ -372,7 +372,7 @@ class Damdfe extends Common
         $aFont = array('font'=>$this->fontePadrao, 'size'=>8, 'style'=>'I');
         $texto = 'PROTOCOLO DE AUTORIZACAO DE USO';
         $this->pTextBox($x, $y, $w, 8, $texto, $aFont, 'T', 'L', 0, '');
-        
+
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'');
         if (is_object($this->mdfeProc)) {
             $tsHora = $this->pConvertTime($this->dhRecbto);
@@ -422,7 +422,7 @@ class Damdfe extends Common
         }
         return $y;
     }// fim headerMDFe
-    
+
     /**
      * headerMDFeRetrato
      *
@@ -586,7 +586,7 @@ class Damdfe extends Common
         }
         return $y+12;
     }// fim headerMDFe
-    
+
     /**
      * bodyMDFe
      *

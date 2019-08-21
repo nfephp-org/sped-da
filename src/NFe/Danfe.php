@@ -396,7 +396,7 @@ class Danfe extends Common
     {
         $this->creditos = trim($message);
     }
-    
+
     /**
      * monta
      *
@@ -715,8 +715,8 @@ class Danfe extends Common
         $y = $this->pCabecalhoDANFE($x, $y, $pag, $totPag);
         //coloca os dados do destinatário
         $y = $this->pDestinatarioDANFE($x, $y+1);
-        
-        
+
+
         //Verifica as formas de pagamento da nota fiscal
         $formaPag = array();
         if (isset($this->detPag) && $this->detPag->length > 0) {
@@ -1889,7 +1889,7 @@ class Danfe extends Common
             return ($y-2);
         }
     } //fim da função pagamentoDANFE
-    
+
     /**
      * impostoDanfeHelper
      * Auxilia a montagem dos campos de impostos e totais da DANFE
@@ -2795,32 +2795,39 @@ class Danfe extends Common
         $renavamTipoPintura = array(
             'F'=>'FOSCA',
             'S'=>'SÓLIDA',
-            'P'=>'PEROLIZADA'
+            'P'=>'PEROLIZADA',
+            'M'=>'METALICA'
         );
-
-
 
         $veicProd = $prod->getElementsByTagName("veicProd")->item(0);
 
+        $versaoXML = $this->infNFe->getAttribute("versao");
+
+        switch ($versaoXML) {
+            case '1.10':
+                $veiculoCilindrada = $veicProd->getElementsByTagName("CM3")->item(0)->nodeValue;
+                $veiculoCmkg = $veicProd->getElementsByTagName("CMKG")->item(0)->nodeValue;
+                break;
+            case '3.10':
+                $veiculoCilindrada = $veicProd->getElementsByTagName("cilin")->item(0)->nodeValue;
+                $veiculoCmkg = $veicProd->getElementsByTagName("CMT")->item(0)->nodeValue;
+                break;
+        }
+
         $veiculoChassi = $veicProd->getElementsByTagName("chassi")->item(0)->nodeValue;
         $veiculoCor = $veicProd->getElementsByTagName("xCor")->item(0)->nodeValue;
-        $veiculoCilindrada = $veicProd->getElementsByTagName("cilin")->item(0)->nodeValue;
-        $veiculoCmkg = $veicProd->getElementsByTagName("CMT")->item(0)->nodeValue;
         $veiculoTipo = $veicProd->getElementsByTagName("tpVeic")->item(0)->nodeValue;
-
         $veiculoMotor = $veicProd->getElementsByTagName("nMotor")->item(0)->nodeValue;
         $veiculoRenavam = $veicProd->getElementsByTagName("cMod")->item(0)->nodeValue;
         $veiculoHp = $veicProd->getElementsByTagName("pot")->item(0)->nodeValue;
         $veiculoPlaca = ''; //$veiculo->getElementsByTagName("CMT")->item(0)->nodeValue;
         $veiculoTipoPintura = $veicProd->getElementsByTagName("tpPint")->item(0)->nodeValue;
-
         $veiculoMarcaModelo = $prod->getElementsByTagName("xProd")->item(0)->nodeValue;
         $veiculoEspecie = $veicProd->getElementsByTagName("espVeic")->item(0)->nodeValue;
         $veiculoCombustivel = $veicProd->getElementsByTagName("tpComb")->item(0)->nodeValue;
         $veiculoSerial = $veicProd->getElementsByTagName("nSerie")->item(0)->nodeValue;
         $veiculoFabricacao = $veicProd->getElementsByTagName("anoFab")->item(0)->nodeValue;
         $veiculoModelo = $veicProd->getElementsByTagName("anoMod")->item(0)->nodeValue;
-
         $veiculoDistancia = $veicProd->getElementsByTagName("dist")->item(0)->nodeValue;
 
         $x = $oldX;
@@ -2838,7 +2845,14 @@ class Danfe extends Common
         $texto = 'Cmkg...............: ' . $veiculoCmkg;
         $this->pTextBox($x, $yVeic, $w1+40, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Tipo.................: ' . $renavamTiposVeiculos[intval($veiculoTipo)];
+
+        if (is_numeric($veiculoTipo)) {
+            $tipo = $renavamTiposVeiculos[intval($veiculoTipo)];
+        } else {
+            $tipo = $veiculoTipo;
+        }
+
+        $texto = 'Tipo.................: ' . $tipo;
         $this->pTextBox($x, $yVeic, $w1+40, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic = $y + $h;
         $xVeic = $x + 65;
@@ -2854,17 +2868,38 @@ class Danfe extends Common
         $texto = 'Placa.................: ' . $veiculoPlaca;
         $this->pTextBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Tipo Pintura......: ' . $renavamTipoPintura[$veiculoTipoPintura];
+
+        if (is_string($veiculoTipoPintura)) {
+            $tipoPintura = $renavamTipoPintura[$veiculoTipoPintura];
+        } else {
+            $tipoPintura = $veiculoTipoPintura;
+        }
+
+        $texto = 'Tipo Pintura......: ' . $tipoPintura;
         $this->pTextBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic = $y + $h;
         $xVeic = $xVeic + 55;
         $texto = 'Marca / Modelo.....: ' . $veiculoMarcaModelo;
         $this->pTextBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Especie..................: ' . $renavamEspecie[intval($veiculoEspecie)];
+
+        if (is_numeric($veiculoEspecie)) {
+            $especie = $renavamEspecie[intval($veiculoEspecie)];
+        } else {
+            $especie = $veiculoEspecie;
+        }
+
+        $texto = 'Especie..................: ' . $especie;
         $this->pTextBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Combustivel..........: ' . $renavamCombustivel[intval($veiculoCombustivel)];
+
+        if (is_numeric($veiculoCombustivel)) {
+            $combustivel = $renavamCombustivel[intval($veiculoCombustivel)];
+        } else {
+            $combustivel = $veiculoCombustivel;
+        }
+
+        $texto = 'Combustivel..........: ' . $combustivel;
         $this->pTextBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
         $texto = 'Serial.....................: ' . $veiculoSerial;
@@ -3365,7 +3400,7 @@ class Danfe extends Common
         }
         return $saida;
     }
-    
+
     private function imagePNGtoJPG($original)
     {
         $image = imagecreatefrompng($original);

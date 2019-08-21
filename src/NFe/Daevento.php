@@ -23,7 +23,7 @@ use NFePHP\DA\Legacy\Common;
 class Daevento extends Common
 {
     public $chNFe;
-    
+
     protected $logoAlign = 'C';
     protected $yDados = 0;
     protected $debugMode = 0;
@@ -57,7 +57,7 @@ class Daevento extends Common
     protected $dhRegEvento;
     protected $nProt;
     protected $tpEvento;
-    
+
     private $dom;
     private $procEventoNFe;
     private $evento;
