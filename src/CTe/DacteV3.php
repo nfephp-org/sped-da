@@ -1751,9 +1751,9 @@ class DacteV3 extends Common
         $qCargaVl = 0;
         foreach ($this->infQ as $infQ) {
             if ($this->getTagValue($infQ, "cUnid") == '01') {
-                $qCargaKg += (float) $this->getTagValue($this->infQ->item(0), "qCarga");
+                $qCargaKg += (float) $this->getTagValue($infQ, "qCarga");
             } elseif ($this->getTagValue($infQ, "cUnid") == '00') {
-                $qCargaM3 += (float) $this->getTagValue($this->infQ->item(0), "qCarga");
+                $qCargaM3 += (float) $this->getTagValue($infQ, "qCarga");
             } elseif ($this->getTagValue($infQ, "cUnid") == '03') {
                 $qCargaVl += (float) $this->getTagValue($this->infQ->item(0), "qCarga");
             }
