@@ -1746,13 +1746,14 @@ class DacteV3 extends Common
         $x = $oldX;
         $this->pdf->Line($x, $y, $w + 1, $y);
         //Identifica código da unidade
-        //01 = KG (QUILOS)
-        if ($this->getTagValue($this->infQ->item(0), "cUnid") == '01') {
-            $qCarga = $this->getTagValue($this->infQ->item(0), "qCarga");
-        } elseif ($this->getTagValue($this->infQ->item(1), "cUnid") == '01') {
-            $qCarga = $this->getTagValue($this->infQ->item(1), "qCarga");
-        } elseif ($this->getTagValue($this->infQ->item(2), "cUnid") == '01') {
-            $qCarga = $this->getTagValue($this->infQ->item(2), "qCarga");
+        //01 = KG (QUILOS) ou 02 = (TONELADAS)
+        foreach ($this->infQ as $infQ) {
+            if ($this->getTagValue($infQ, "cUnid") == '01') {
+                $qCarga = $this->getTagValue($infQ, "qCarga");
+            }elseif($this->getTagValue($infQ, "cUnid") == '02') {
+                $qCarga = $this->getTagValue($infQ, "qCarga");
+                $qCarga = $qCarga * 1000;
+            }
         }
         $texto = 'PESO BRUTO (KG)';
         $aFont = array(
