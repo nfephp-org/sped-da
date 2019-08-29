@@ -675,7 +675,7 @@ class Danfe extends Common
         $hDispo2 = $this->hPrint - 10 - ($hcabecalho + $hfooter + $hCabecItens)-4;
         //Contagem da altura ocupada para impressão dos itens
         $fontProduto = array('font'=>$this->fontePadrao, 'size'=>7, 'style'=>'');
-        $i = 0;
+        $i = 1;
         $numlinhas = 0;
         $hUsado = $hCabecItens;
         $w2 = round($w*0.28, 0);
