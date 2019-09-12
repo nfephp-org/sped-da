@@ -245,30 +245,6 @@ class DacteV3 extends Common
                     $this->enderToma = $this->getTagValue($this->toma4, "enderToma");
                     break;
             }
-            /*$seguro = $this->getTagValue($this->seg, "respSeg");
-            switch ($seguro) {
-                case '0':
-                    $this->respSeg = 'Remetente';
-                    break;
-                case '1':
-                    $this->respSeg = 'Expedidor';
-                    break;
-                case '2':
-                    $this->respSeg = 'Recebedor';
-                    break;
-                case '3':
-                    $this->respSeg = 'Destinatário';
-                    break;
-                case '4':
-                    $this->respSeg = 'Emitente';
-                    break;
-                case '5':
-                    $this->respSeg = 'Tomador';
-                    break;
-                default:
-                    $this->respSeg = '';
-                    break;
-            }*/
             $this->tpEmis = $this->getTagValue($this->ide, "tpEmis");
             $this->tpImp = $this->getTagValue($this->ide, "tpImp");
             $this->tpAmb = $this->getTagValue($this->ide, "tpAmb");
@@ -3643,9 +3619,6 @@ class DacteV3 extends Common
 
     protected function pQRDAMDFE($y = 0)
     {
-		printobj($this->qrCodMDFe);
-		printobj($y);
-		printobj($this->$margemInterna);
         $margemInterna = $this->margemInterna;
         $barcode = new Barcode();
         $bobj = $barcode->getBarcodeObj(
@@ -3660,7 +3633,11 @@ class DacteV3 extends Common
         $wQr = 30;
         $hQr = 30;
         $yQr = ($y + $margemInterna);
-        $xQr = 170;
+        if ($this->orientacao == 'P') {
+			$xQr = 170;
+		} else {
+			$xQr = 245;
+		}
         // prepare a base64 encoded "data url"
         $pic = 'data://text/plain;base64,' . base64_encode($qrcode);
         $this->pdf->image($pic, $xQr, $yQr, $wQr, $hQr, 'PNG');
