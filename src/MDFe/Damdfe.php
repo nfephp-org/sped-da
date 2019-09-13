@@ -203,8 +203,8 @@ class Damdfe extends Common
             '',
             $this->infMDFe->getAttribute("Id")
         );
-		$this->qrCodMDFe = $this->dom->getElementsByTagName('qrCodCTe')->item(0) ?
-			$this->dom->getElementsByTagName('qrCodCTe')->item(0)->nodeValue : null;
+		$this->qrCodMDFe = $this->dom->getElementsByTagName('qrCodMDFe')->item(0) ?
+			$this->dom->getElementsByTagName('qrCodMDFe')->item(0)->nodeValue : null;
 			
 		$this->qrCodMDFe = 'dfe-portal.svrs.rs.gov.br/Mdfe/QrCode?chMDFe=35190974403353000179580000000016711144322622&TPaMB=1';
         if (is_object($this->mdfeProc)) {
