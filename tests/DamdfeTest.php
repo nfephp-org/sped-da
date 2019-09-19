@@ -15,6 +15,7 @@ class DamdfeTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    /*
     public function imprimirDamdfe() {
         $pathBase = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR;
         $pathXml =   $pathBase . 'xml' . DIRECTORY_SEPARATOR . 'mdfe_modelo_nao_valido.xml';
@@ -30,4 +31,5 @@ class DamdfeTest extends \PHPUnit_Framework_TestCase
         $damdfe->printMDFe($pdfName, 'F');
         Assert::assertFileExists($pathPdf . $pdfName);
     }
+    */
 }
