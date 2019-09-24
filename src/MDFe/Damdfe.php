@@ -16,7 +16,6 @@ namespace NFePHP\DA\MDFe;
  */
 
 use Com\Tecnick\Barcode\Barcode;
-use DateTime;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Common;
 use NFePHP\DA\Legacy\Pdf;
@@ -39,15 +38,13 @@ class Damdfe extends Common
     protected $destino = 'I';
     protected $pdfDir = ''; //diretorio para salvar o pdf com a opção de destino = F
     protected $fontePadrao = 'Times'; //Nome da Fonte para gerar o DANFE
-    protected $version = '1.0.0';
+    protected $version = '3.00a';
     protected $wPrint; //largura imprimivel
     protected $hPrint; //comprimento imprimivel
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     protected $margemInterna = 2;
-    protected $hMaxLinha = 9;
-    protected $hBoxLinha = 6;
-    protected $hLinha = 3;
-    //variaveis da carta de correção
+
+    //variaveis da damdfe
     protected $id;
     protected $chMDFe;
     protected $tpAmb;
@@ -63,11 +60,6 @@ class Damdfe extends Common
     protected $qrCodMDFe;
     //objetos
     private $dom;
-    private $procEventoNFe;
-    private $evento;
-    private $infEvento;
-    private $retEvento;
-    private $rinfEvento;
 
     /**
      * __construct
@@ -95,9 +87,9 @@ class Damdfe extends Common
         if (!defined('PATH_ROOT')) {
             define('PATH_ROOT', dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR);
         }
-//ajuste do tempo limite de resposta do processo
+        //ajuste do tempo limite de resposta do processo
         set_time_limit(1800);
-//definição do caminho para o diretorio com as fontes do FDPF
+        //definição do caminho para o diretorio com as fontes do FDPF
         if (!defined('FPDF_FONTPATH')) {
             define('FPDF_FONTPATH', 'font/');
         }
@@ -137,7 +129,6 @@ class Damdfe extends Common
             $this->errStatus = true;
         }
 
-//        $docxml = file_get_contents($xmlfile);
         $this->dom = new Dom();
         $this->dom->loadXML($this->xml);
         $this->mdfeProc = $this->dom->getElementsByTagName("mdfeProc")->item(0);
@@ -257,13 +248,14 @@ class Damdfe extends Common
         $this->pdf->SetLineWidth(0.1);
         $this->pdf->SetTextColor(0, 0, 0);
         //montagem da página
+        $pag = 1;
         $x = $xInic;
         $y = $yInic;
         //coloca o cabeçalho Paisagem
         if ($this->orientacao == 'P') {
-            $y = $this->headerMDFeRetrato($x, $y);
+            $y = $this->headerMDFeRetrato($x, $y, $pag);
         } else {
-            $y = $this->headerMDFePaisagem($x, $y);
+            $y = $this->headerMDFePaisagem($x, $y, $pag);
         }
         //coloca os dados da MDFe
         $y = $this->bodyMDFe($x, $y);
@@ -275,15 +267,18 @@ class Damdfe extends Common
      * headerMDFePaisagem
      * @param float $x
      * @param float $y
+     * @param integer $pag
      * @return string
      */
-    private function headerMDFePaisagem($x, $y)
+    private function headerMDFePaisagem($x, $y, $pag)
     {
+        $oldX = $x;
         $oldY = $y;
         $maxW = $this->wPrint;
         //####################################################################################
         //coluna esquerda identificação do emitente
-        $w = $maxW; //round($maxW*0.41, 0);// 80;
+        //$w = $maxW; //round($maxW*0.41, 0);// 80;
+        $w = round($maxW * 0.70, 0);
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
         $w1 = $w;
         $h = 30;
@@ -296,7 +291,7 @@ class Damdfe extends Common
             //altura da imagem em mm
             $logoHmm = ($logoInfo[1] / 72) * 25.4;
             if ($this->logoAlign == 'L') {
-                $nImgW = round($w / 4.5, 0);
+                $nImgW = round($w / 3, 0);
                 $nImgH = round($logoHmm * ($nImgW / $logoWmm), 0);
                 $xImg = $x + 1;
                 $yImg = round(($h - $nImgH) / 2, 0) + $y;
@@ -340,14 +335,16 @@ class Damdfe extends Common
         $UF = 'UF: ' . $this->UF;
         $mun = 'Municipio: ' . $this->xMun;
 
-        $texto = $razao . "\n" . $cnpj . ' - ' . $ie . "\n";
+        $texto = $cnpj . ' - ' . $ie . "\n";
         $texto .= $lgr . ' - ' . $nro . "\n";
         $texto .= $bairro . "\n";
         $texto .= $UF . ' - ' . $mun . ' - ' . $CEP;
-        $this->pTextBox($x1, $y1 + 5, $tw, 8, $texto, $aFont, 'T', 'L', 0, '');
-        $x = $x + $maxW / 2;
-        $w = $maxW / 2;
-        $this->pTextBox($x, $y, $w, $h);
+        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+        $this->pTextBox($x1, $y1 + 6, $tw, 8, $texto, $aFont, 'T', 'L', 0, '');
+        //##################################################
+        $w = round($maxW * 0.70, 0);
+        $y = $h + 9;
+        $this->pTextBox($x, $y, $w, 6);
         $aFont = array('font' => $this->fontePadrao, 'size' => 12, 'style' => 'I');
         $this->pTextBox(
             $x,
@@ -361,34 +358,7 @@ class Damdfe extends Common
             0,
             ''
         );
-        $this->pTextBox($x, $y, $w, 6);
-        $bH = 13;
-        $bW = round(($w), 0);
-        $this->pdf->SetFillColor(0, 0, 0);
-        $this->pdf->Code128($x + 5, $y + 7.5, $this->chMDFe, $bW - 10, $bH);
-        $this->pdf->SetFillColor(255, 255, 255);
-        $y = $y + 22;
-        $this->pTextBox($x, $y, $w, 8);
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'I');
-        $texto = 'CHAVE DE ACESSO';
-        $this->pTextBox($x, $y, $maxW, 6, $texto, $aFont, 'T', 'L', 0, '');
-        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-        $texto = $this->pFormat($this->chMDFe, $this->formatoChave);
-        $this->pTextBox($x, $y + 3, $w, 6, $texto, $aFont, 'T', 'C', 0, '');
-        $y = $y + 11;
-        $this->pTextBox($x, $y, $w, 12);
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'I');
-        $texto = 'PROTOCOLO DE AUTORIZACAO DE USO';
-        $this->pTextBox($x, $y, $w, 8, $texto, $aFont, 'T', 'L', 0, '');
 
-        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-        if (is_object($this->mdfeProc)) {
-            $tsHora = $this->pConvertTime($this->dhRecbto);
-            $texto = $this->nProt . ' - ' . date('d/m/Y   H:i:s', $tsHora);
-        } else {
-            $texto = 'DAMDFE impresso em contingência - ' . date('d/m/Y   H:i:s');
-        }
-        $this->pTextBox($x, $y + 4, $w, 8, $texto, $aFont, 'T', 'C', 0, '');
         if ($this->tpAmb != 1) {
             $x = 10;
             if ($this->orientacao == 'P') {
@@ -428,7 +398,7 @@ class Damdfe extends Common
             }
             $this->pdf->SetTextColor(0, 0, 0);
         }
-        return $y;
+        return $y + 8;
     }// fim headerMDFe
 
     /**
@@ -436,74 +406,74 @@ class Damdfe extends Common
      *
      * @param float $x
      * @param float $y
+     * @param integer $pag
      * @return string
      */
-    private function headerMDFeRetrato($x, $y)
+    private function headerMDFeRetrato($x, $y, $pag)
     {
+        $oldX = $x;
         $oldY = $y;
         $maxW = $this->wPrint;
         //####################################################################################
         //coluna esquerda identificação do emitente
-        $w = $maxW; //round($maxW*0.41, 0);// 80;
-        $h = 27;
-        $tw = $w;
+        //$w = $maxW; //round($maxW*0.41, 0);// 80;
+        $w = round($maxW * 0.70, 0);
+        $aFont = array('font' => $this->fontePadrao, 'size' => 6, 'style' => 'I');
+        $w1 = $w;
+        $h = 20;
         $oldY += $h;
         $this->pTextBox($x, $y, $w, $h);
-        $x1 = $x;
         if (is_file($this->logomarca)) {
             $logoInfo = getimagesize($this->logomarca);
             //largura da imagem em mm
             $logoWmm = ($logoInfo[0] / 72) * 25.4;
             //altura da imagem em mm
             $logoHmm = ($logoInfo[1] / 72) * 25.4;
-            switch ($this->logoAlign) {
-                case 'L':
-                    $nImgW = round($w / 8, 0);
-                    $nImgH = round($logoHmm * ($nImgW / $logoWmm), 0);
-                    $xImg = $x + 1;
-                    $yImg = round(($h - $nImgH) / 2, 0) + $y;
-                    //estabelecer posições do texto
-                    $x = round($xImg + $nImgW + 1, 0);
-                    $y = round($y + 2, 0);
-                    $tw = round(2 * $w / 3, 0);
-                    $x1 = $x - 27;
-                    break;
-
-                case 'C':
-                    $nImgH = round($h / 3, 0);
-                    $nImgW = round($logoWmm * ($nImgH / $logoHmm), 0);
-                    $xImg = round(($w - $nImgW) / 2 + $x, 0);
-                    $yImg = $y + 3;
-                    $y = round($yImg + $nImgH + 1, 0);
-                    $tw = $w;
-                    $x1 = $x - 27;
-                    break;
-
-                case 'R':
-                    $nImgW = round($w / 3, 0);
-                    $nImgH = round($logoHmm * ($nImgW / $logoWmm), 0);
-                    $xImg = round($x + ($w - (1 + $nImgW)), 0);
-                    $yImg = round(($h - $nImgH) / 2, 0) + $y;
-                    $y = round($h / 3 + $y, 0);
-                    $tw = round(2 * $w / 3, 0);
-                    $x1 = $x - 27;
-                    break;
-                default:
-                    $x1 = $x;
-                    break;
+            if ($this->logoAlign == 'L') {
+                // ajusta a dimensão do logo
+                $nImgW = round($w / 3, 0);
+                $nImgH = round($logoHmm * ($nImgW / $logoWmm), 0);
+                $xImg = $x + 1;
+                $yImg = round(($h - $nImgH) / 2, 0) + $y;
+                //estabelecer posições do texto
+                $x1 = round($xImg + $nImgW + 1, 0);
+                $y1 = round($y + 2, 0);
+                $tw = round(2 * $w / 3, 0);
             }
-
+            if ($this->logoAlign == 'C') {
+                $nImgH = round($h / 3, 0);
+                $nImgW = round($logoWmm * ($nImgH / $logoHmm), 0);
+                $xImg = round(($w - $nImgW) / 2 + $x, 0);
+                $yImg = $y + 3;
+                $x1 = $x;
+                $y1 = round($yImg + $nImgH + 1, 0);
+                $tw = $w;
+            }
+            if ($this->logoAlign == 'R') {
+                $nImgW = round($w / 3, 0);
+                $nImgH = round($logoHmm * ($nImgW / $logoWmm), 0);
+                $xImg = round($x + ($w - (1 + $nImgW)), 0);
+                $yImg = round(($h - $nImgH) / 2, 0) + $y;
+                $x1 = $x;
+                $y1 = round($h / 3 + $y, 0);
+                $tw = round(2 * $w / 3, 0);
+            }
             $this->pdf->Image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, 'jpeg');
+        } else {
+            $x1 = $x + 40;
+            $y1 = $y;
+            $tw = $w;
         }
 
         if ($this->qrCodMDFe !== null) {
             $this->pQRDAMDFE($y - 3);
         }
 
-        $aFont = array('font' => $this->fontePadrao, 'size' => 11, 'style' => '');
-        $razao = $this->xNome;
+        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
+        $texto = $this->xNome;
+        $this->pTextBox($x1, $y1, $tw, 8, $texto, $aFont, 'T', 'L', 0, '');
         $cnpj = 'CNPJ: ' . $this->pFormat($this->CNPJ, "###.###.###/####-##");
-        $ie = 'IE: ' . $this->pFormat($this->IE, '##########');
+        $ie = 'IE: ' . $this->pFormat($this->IE, '###/#######');
         $lgr = 'Logradouro: ' . $this->xLgr;
         $nro = 'Nº: ' . $this->nro;
         $bairro = 'Bairro: ' . $this->xBairro;
@@ -511,20 +481,21 @@ class Damdfe extends Common
         $CEP = 'CEP: ' . $this->pFormat($CEP, "##.###-###");
         $mun = 'Municipio: ' . $this->xMun;
         $UF = 'UF: ' . $this->UF;
-        $texto = $razao . "\n" . $cnpj . ' - ' . $ie . "\n";
+        $texto = $cnpj . ' - ' . $ie . "\n";
         $texto .= $lgr . ' - ' . $nro . "\n";
         $texto .= $bairro . "\n";
         $texto .= $UF . ' - ' . $mun . ' - ' . $CEP;
-        $this->pTextBox($x, $y, $tw, 8, $texto, $aFont, 'T', 'L', 0, '');
-
+        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+        $this->pTextBox($x1, $y1 + 4, $tw, 8, $texto, $aFont, 'T', 'L', 0, '');
         //##################################################
-        $y = $h + 8;
-        $this->pTextBox($x1, $y, $maxW, 6);
+        $w = round($maxW * 0.70, 0);
+        $y = $h + 9;
+        $this->pTextBox($x, $y, $w, 6);
         $aFont = array('font' => $this->fontePadrao, 'size' => 12, 'style' => 'I');
         $this->pTextBox(
-            $x1,
+            $x,
             $y,
-            $maxW,
+            $w,
             8,
             'DAMDFE - Documento Auxiliar de Manifesto Eletronico de Documentos Fiscais',
             $aFont,
@@ -533,35 +504,6 @@ class Damdfe extends Common
             0,
             ''
         );
-        $y = $y + 8;
-        $this->pTextBox($x1, $y, $maxW, 20);
-        $bH = 16;
-        $w = $maxW;
-        $this->pdf->SetFillColor(0, 0, 0);
-        $this->pdf->Code128($x1 + 5, $y + 2, $this->chMDFe, $maxW - 10, $bH);
-        $this->pdf->SetFillColor(255, 255, 255);
-        $y = $y + 27;
-        $this->pTextBox($x1, $y, $maxW, 10);
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'I');
-        $tsHora = $this->pConvertTime($this->dhEvento);
-        $texto = 'CHAVE DE ACESSO';
-        $this->pTextBox($x1, $y, $maxW, 6, $texto, $aFont, 'T', 'L', 0, '');
-        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-        $texto = $this->pFormat($this->chMDFe, $this->formatoChave);
-        $this->pTextBox($x1, $y + 4, $maxW, 6, $texto, $aFont, 'T', 'C', 0, '');
-        $y = $y + 12;
-        $this->pTextBox($x1, $y, $maxW, 10);
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'I');
-        $texto = 'PROTOCOLO DE AUTORIZACAO DE USO';
-        $this->pTextBox($x1, $y, $maxW, 8, $texto, $aFont, 'T', 'L', 0, '');
-        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-        if (is_object($this->mdfeProc)) {
-            $tsHora = $this->pConvertTime($this->dhRecbto);
-            $texto = $this->nProt . ' - ' . date('d/m/Y   H:i:s', $tsHora);
-        } else {
-            $texto = 'DAMDFE impresso em contingência - ' . date('d/m/Y   H:i:s');
-        }
-        $this->pTextBox($x1, $y + 4, $maxW, 8, $texto, $aFont, 'T', 'C', 0, '');
         if ($this->tpAmb != 1) {
             $x = 10;
             if ($this->orientacao == 'P') {
@@ -574,10 +516,10 @@ class Damdfe extends Common
             $this->pdf->SetTextColor(90, 90, 90);
             $texto = "SEM VALOR FISCAL";
             $aFont = array('font' => $this->fontePadrao, 'size' => 48, 'style' => 'B');
-            $this->pTextBox($x + 7, $yy, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+            $this->pTextBox($x, $yy, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $aFont = array('font' => $this->fontePadrao, 'size' => 30, 'style' => 'B');
             $texto = "AMBIENTE DE HOMOLOGAÇÃO";
-            $this->pTextBox($x + 7, $yy + 14, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+            $this->pTextBox($x, $yy + 14, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $this->pdf->SetTextColor(0, 0, 0);
         } else {
             $x = 10;
@@ -601,7 +543,7 @@ class Damdfe extends Common
             }
             $this->pdf->SetTextColor(0, 0, 0);
         }
-        return $y + 17;
+        return $y + 8;
     }// fim headerMDFe
 
     /**
@@ -616,78 +558,94 @@ class Damdfe extends Common
         if ($this->orientacao == 'P') {
             $maxW = $this->wPrint;
         } else {
-            $maxW = $this->wPrint / 2;
+            //$maxW = $this->wPrint / 2;
+            $maxW = $this->wPrint * 0.9;
         }
         $x2 = ($maxW / 6);
         $x1 = $x2;
-        $this->pTextBox($x, $y, $x2 - 7, 12);
+        $this->pTextBox($x, $y, $x2 - 22, 12);
         $texto = 'Modelo';
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pTextBox($x, $y, $x2 - 7, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+        $this->pTextBox($x, $y, $x2 - 22, 8, $texto, $aFont, 'T', 'C', 0, '', false);
         $texto = $this->mod;
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-        $this->pTextBox($x, $y + 4, $x2 - 7, 10, $texto, $aFont, 'T', 'C', 0, '', false);
-        $x1 = $x2;
-        $this->pTextBox($x1, $y, $x2 - 7, 12);
+        $this->pTextBox($x, $y + 4, $x2 - 22, 8, $texto, $aFont, 'T', 'C', 0, '', false);
+
+        if ($this->orientacao == 'P') {
+            $x1 += $x2 - 47.5;
+        } else {
+            $x1 += $x2 - 57.5;
+        }
+        $this->pTextBox($x1, $y, $x2 - 22, 12);
         $texto = 'Série';
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pTextBox($x1, $y, $x2 - 7, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+        $this->pTextBox($x1, $y, $x2 - 22, 8, $texto, $aFont, 'T', 'C', 0, '', false);
         $texto = $this->serie;
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-        $this->pTextBox($x1, $y + 4, $x2 - 7, 10, $texto, $aFont, 'T', 'C', 0, '', false);
-        $x1 += $x2 - 7;
-        $this->pTextBox($x1, $y, $x2 + 5, 12);
+        $this->pTextBox($x1, $y + 4, $x2 - 22, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+
+        $x1 += $x2 - 22;
+        $this->pTextBox($x1, $y, $x2 - 5, 12);
         $texto = 'Número';
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pTextBox($x1, $y, $x2 + 5, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+        $this->pTextBox($x1, $y, $x2 - 5, 8, $texto, $aFont, 'T', 'C', 0, '', false);
         $texto = $this->pFormat(str_pad($this->nMDF, 9, '0', STR_PAD_LEFT), '###.###.###');
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-        $this->pTextBox($x1, $y + 4, $x2 + 5, 10, $texto, $aFont, 'T', 'C', 0, '', false);
-        $x1 += $x2 + 5;
-        $this->pTextBox($x1, $y, $x2 - 7, 12);
+        $this->pTextBox($x1, $y + 4, $x2 - 5, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+        $x1 += $x2 - 5;
+        $this->pTextBox($x1, $y, $x2 - 22, 12);
         $texto = 'FL';
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pTextBox($x1, $y, $x2 - 7, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+        $this->pTextBox($x1, $y, $x2 - 22, 8, $texto, $aFont, 'T', 'C', 0, '', false);
         $texto = '1';
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-        $this->pTextBox($x1, $y + 4, $x2 - 7, 10, $texto, $aFont, 'T', 'C', 0, '', false);
-        $x1 += $x2 - 7;
-        $this->pTextBox($x1, $y, $x2 + 11, 12);
+        $this->pTextBox($x1, $y + 4, $x2 - 22, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+        $x1 += $x2 - 22;
+        if ($this->orientacao == 'P') {
+            $x3 = $x2 + 10.5;
+        } else {
+            $x3 = $x2 + 3;
+        }
+        $this->pTextBox($x1, $y, $x3, 12);
         $texto = 'Data e Hora de Emissão';
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pTextBox($x1, $y, $x2 + 11, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+        $this->pTextBox($x1, $y, $x3, 8, $texto, $aFont, 'T', 'C', 0, '', false);
         $data = explode('T', $this->dhEmi);
         $texto = $this->pYmd2dmy($data[0]) . ' - ' . $data[1];
-        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-        $this->pTextBox($x1, $y + 4, $x2 + 11, 10, $texto, $aFont, 'T', 'C', 0, '', false);
-        $x1 += $x2 + 11;
+        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
+        $this->pTextBox($x1, $y + 4, $x3, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+        $x1 += $x3;
+
         $this->pTextBox($x1, $y, $x2 - 15, 12);
         $texto = 'UF Carreg.';
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pTextBox($x1, $y, $x2 - 15, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+        $this->pTextBox($x1, $y, $x2 - 15, 8, $texto, $aFont, 'T', 'C', 0, '', false);
         $texto = $this->UFIni;
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
         $this->pTextBox($x1, $y + 4, $x2 - 15, 10, $texto, $aFont, 'T', 'C', 0, '', false);
         $maxW = $this->wPrint;
 
         $x1 += $x2 - 15;
-        $this->pTextBox($x1, $y, $x2 - 13, 12);
+        $this->pTextBox($x1, $y, $x2 - 16, 12);
         $texto = 'UF Descar.';
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pTextBox($x1, $y, $x2 - 13, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+        $this->pTextBox($x1, $y, $x2 - 16, 8, $texto, $aFont, 'T', 'C', 0, '', false);
         $texto = $this->UFFim;
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-        $this->pTextBox($x1, $y + 4, $x2 - 13, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+        $this->pTextBox($x1, $y + 4, $x2 - 16, 10, $texto, $aFont, 'T', 'C', 0, '', false);
         $maxW = $this->wPrint;
-
 
         $x1 = $x;
         $x2 = $maxW;
         $y += 14;
-        $this->pTextBox($x1, $y, $x2, 23);
+        $this->pTextBox($x1, $y, $x2, 43);
         $texto = 'Modal Rodoviário de Carga';
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
-        $this->pTextBox($x1, $y + 1, $x2, 8, $texto, $aFont, 'T', 'C', 0, '', false);
+        $aFont = array('font' => $this->fontePadrao, 'size' => 12, 'style' => 'B');
+        $this->pTextBox($x1, $y + 1, $x2 / 2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+        $texto = 'CONTROLE DO FISCO';
+        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+        $this->pTextBox($x1 + ($x2 / 2), $y + 1, $x2 / 2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+
         $x1 = $x;
         $x2 = ($maxW / 6);
         $y += 6;
@@ -711,11 +669,50 @@ class Damdfe extends Common
         $texto = 'Peso Total (Kg)';
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-        $texto = number_format($this->qCarga, 4, ', ', '.');
+        $texto = number_format($this->qCarga, 4, ',', '.');
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
         $this->pTextBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+
+        // codigo de barras da chave
+        $x1 += $x2;
+        //$y = $y + 8;
+        $this->pTextBox($x1, $y, $maxW / 2, 20);
+        $bH = 16;
+        $w = $maxW;
+        $this->pdf->SetFillColor(0, 0, 0);
+        $this->pdf->Code128($x1 + 5, $y + 2, $this->chMDFe, ($maxW / 2) - 10, $bH);
+        $this->pdf->SetFillColor(255, 255, 255);
+
+        // protocolo de autorização
+        $y = $y + 20;
+        $this->pTextBox($x, $y, $maxW / 2, 10);
+        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'I');
+        $texto = 'Protocolo de Autorização';
+        $this->pTextBox($x, $y, $maxW / 2, 8, $texto, $aFont, 'T', 'L', 0, '');
+        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+        if (is_object($this->mdfeProc)) {
+            $tsHora = $this->pConvertTime($this->dhRecbto);
+            $texto = $this->nProt . ' - ' . date('d/m/Y   H:i:s', $tsHora);
+        } else {
+            $texto = 'DAMDFE impresso em contingência - ' . date('d/m/Y   H:i:s');
+        }
+        $this->pTextBox($x, $y + 4, $maxW / 2, 8, $texto, $aFont, 'T', 'C', 0, '');
+
+        // chave de acesso
+        $this->pTextBox($x + $maxW / 2, $y, $maxW / 2, 17);
+        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'I');
+        $tsHora = $this->pConvertTime($this->dhEvento);
+        $texto = 'Chave de Acesso';
+        $this->pTextBox($x + $maxW / 2, $y, $maxW / 2, 6, $texto, $aFont, 'T', 'L', 0, '');
+        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+        $texto = $this->pFormat($this->chMDFe, $this->formatoChave);
+        $this->pTextBox($x + $maxW / 2, $y + 4, $maxW / 2, 6, $texto, $aFont, 'T', 'C', 0, '');
+        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
+        $texto = 'Consulte em https://dfe-portal.sefazvirtual.rs.gov.br/MDFe/consulta';
+        $this->pTextBox($x + $maxW / 2, $y + 10, $maxW / 2, 6, $texto, $aFont, 'T', 'C', 0, '');
+
         $x1 = $x;
-        $y += 12;
+        $y += 20;
         $yold = $y;
         $x2 = round($maxW / 2, 0);
         $texto = 'Veículo';
@@ -830,7 +827,7 @@ class Damdfe extends Common
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
         $y += 5;
-        $x2 = ($maxW / 4);
+        $x2 = ($maxW / 6);
         $this->pTextBox($x1, $y, $x2, 33 + ($tamanho / 2));
         $texto = 'CPF';
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
@@ -844,6 +841,7 @@ class Damdfe extends Common
         }
         $y = $yold;
         $x1 += $x2;
+        $x2 = $x2*2;
         $this->pTextBox($x1, $y, $x2, 33 + ($tamanho / 2));
         $texto = 'Nome';
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
@@ -860,7 +858,6 @@ class Damdfe extends Common
 
     protected function pQRDAMDFE($y = 0)
     {
-
         $margemInterna = $this->margemInterna;
         $barcode = new Barcode();
         $bobj = $barcode->getBarcodeObj(
@@ -872,10 +869,14 @@ class Damdfe extends Common
             array(-2, -2, -2, -2)
         )->setBackgroundColor('white');
         $qrcode = $bobj->getPngData();
-        $wQr = 25;
-        $hQr = 25;
+        $wQr = 35;
+        $hQr = 35;
         $yQr = ($y + $margemInterna);
-        $xQr = 170;
+        if ($this->orientacao == 'P') {
+            $xQr = 160;
+        } else {
+            $xQr = 235;
+        }
         // prepare a base64 encoded "data url"
         $pic = 'data://text/plain;base64,' . base64_encode($qrcode);
         $this->pdf->image($pic, $xQr, $yQr, $wQr, $hQr, 'PNG');
