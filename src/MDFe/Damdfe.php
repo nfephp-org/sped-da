@@ -460,7 +460,7 @@ class Damdfe extends Common
             }
             $this->pdf->Image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, 'jpeg');
         } else {
-            $x1 = $x + 40;
+            $x1 = $x;
             $y1 = $y;
             $tw = $w;
         }
