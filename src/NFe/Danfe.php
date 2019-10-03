@@ -818,44 +818,19 @@ class Danfe extends Common
         if ($cdata == '') {
             return '';
         }
-        //remove qualquer texto antes ou depois da tag CDATA
-        $cdata = str_replace('<![CDATA[', '<CDATA>', $cdata);
-        $cdata = str_replace(']]>', '</CDATA>', $cdata);
+
+        $cdata = str_replace('<![CDATA[', '', $cdata);
+        $cdata = str_replace(']]>', '', $cdata);
         $cdata = preg_replace('/\s\s+/', ' ', $cdata);
         $cdata = str_replace("> <", "><", $cdata);
-        $len = strlen($cdata);
-        $startPos = strpos($cdata, '<');
-        if ($startPos === false) {
-            return $cdata;
-        }
-        for ($x = $len; $x > 0; $x--) {
-            if (substr($cdata, $x, 1) == '>') {
-                $endPos = $x;
-                break;
-            }
-        }
-        if ($startPos > 0) {
-            $parte1 = substr($cdata, 0, $startPos);
-        } else {
-            $parte1 = '';
-        }
-        $parte2 = substr($cdata, $startPos, $endPos - $startPos + 1);
-        if ($endPos < $len) {
-            $parte3 = substr($cdata, $endPos + 1, $len - $endPos - 1);
-        } else {
-            $parte3 = '';
-        }
-        $texto = trim($parte1) . ' ' . trim($parte3);
-        if (strpos($parte2, '<CDATA>') === false) {
-            $cdata = '<CDATA>' . $parte2 . '</CDATA>';
-        } else {
-            $cdata = $parte2;
-        }
-        //Retira a tag <FONTE IBPT> (caso existir) pois não é uma estrutura válida XML
-        $cdata = str_replace('<FONTE IBPT>', '', $cdata);
+
+        $texto = strip_tags($cdata);
+        $xmlClean = '<CDATA>' . $texto . '</CDATA>';
+
         //carrega o xml CDATA em um objeto DOM
         $dom = new Dom();
-        $dom->loadXML($cdata, LIBXML_NOBLANKS | LIBXML_NOEMPTYTAG);
+        $dom->loadXML($xmlClean, LIBXML_NOBLANKS | LIBXML_NOEMPTYTAG);
+
         //$xml = $dom->saveXML();
         //grupo CDATA infADprod
         $id = $dom->getElementsByTagName('id')->item(0);
