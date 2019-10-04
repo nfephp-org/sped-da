@@ -134,7 +134,11 @@ class Damdfe extends Common
         $this->mdfeProc = $this->dom->getElementsByTagName("mdfeProc")->item(0);
         $this->infMDFe = $this->dom->getElementsByTagName("infMDFe")->item(0);
         $this->emit = $this->dom->getElementsByTagName("emit")->item(0);
-        $this->CNPJ = $this->dom->getElementsByTagName("CNPJ")->item(0)->nodeValue;
+        if ($this->dom->getElementsByTagName("CPF")->item(0)) {
+            $this->CPF = $this->dom->getElementsByTagName("CPF")->item(0)->nodeValue;
+        } else {
+            $this->CNPJ = $this->dom->getElementsByTagName("CNPJ")->item(0)->nodeValue;
+        }
         $this->IE = $this->dom->getElementsByTagName("IE")->item(0)->nodeValue;
         $this->xNome = $this->dom->getElementsByTagName("xNome")->item(0)->nodeValue;
         $this->enderEmit = $this->dom->getElementsByTagName("enderEmit")->item(0);
@@ -325,7 +329,11 @@ class Damdfe extends Common
         }
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         $razao = $this->xNome;
-        $cnpj = 'CNPJ: ' . $this->pFormat($this->CNPJ, "###.###.###/####-##");
+        if (isset($this->CPF)) {
+            $cpfcnpj = 'CPF: ' . $this->pFormat($this->CPF, "###.###.###-##");
+        } else {
+            $cpfcnpj = 'CNPJ: ' . $this->pFormat($this->CNPJ, "###.###.###/####-##");
+        }
         $ie = 'IE: ' . $this->pFormat($this->IE, '##/########');
         $lgr = 'Logradouro: ' . $this->xLgr;
         $nro = 'Nº: ' . $this->nro;
@@ -335,7 +343,7 @@ class Damdfe extends Common
         $UF = 'UF: ' . $this->UF;
         $mun = 'Municipio: ' . $this->xMun;
 
-        $texto = $cnpj . ' - ' . $ie . "\n";
+        $texto = $cpfcnpj . ' - ' . $ie . "\n";
         $texto .= $lgr . ' - ' . $nro . "\n";
         $texto .= $bairro . "\n";
         $texto .= $UF . ' - ' . $mun . ' - ' . $CEP;
@@ -472,7 +480,11 @@ class Damdfe extends Common
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
         $texto = $this->xNome;
         $this->pTextBox($x1, $y1, $tw, 8, $texto, $aFont, 'T', 'L', 0, '');
-        $cnpj = 'CNPJ: ' . $this->pFormat($this->CNPJ, "###.###.###/####-##");
+        if (isset($this->CPF)) {
+            $cpfcnpj = 'CPF: ' . $this->pFormat($this->CPF, "###.###.###-##");
+        } else {
+            $cpfcnpj = 'CNPJ: ' . $this->pFormat($this->CNPJ, "###.###.###/####-##");
+        }
         $ie = 'IE: ' . $this->pFormat($this->IE, '###/#######');
         $lgr = 'Logradouro: ' . $this->xLgr;
         $nro = 'Nº: ' . $this->nro;
@@ -481,7 +493,7 @@ class Damdfe extends Common
         $CEP = 'CEP: ' . $this->pFormat($CEP, "##.###-###");
         $mun = 'Municipio: ' . $this->xMun;
         $UF = 'UF: ' . $this->UF;
-        $texto = $cnpj . ' - ' . $ie . "\n";
+        $texto = $cpfcnpj . ' - ' . $ie . "\n";
         $texto .= $lgr . ' - ' . $nro . "\n";
         $texto .= $bairro . "\n";
         $texto .= $UF . ' - ' . $mun . ' - ' . $CEP;
