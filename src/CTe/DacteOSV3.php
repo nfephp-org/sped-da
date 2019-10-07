@@ -15,6 +15,7 @@ namespace NFePHP\DA\CTe;
  * @author    Roberto L. Machado <linux dot rlm at gmail dot com>
  */
 
+ use Com\Tecnick\Barcode\Barcode;
 use Exception;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
@@ -87,6 +88,9 @@ class DacteOSV3 extends Common
     protected $totPag;
     protected $idDocAntEle = [];
     protected $lota;
+
+    protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
+    protected $margemInterna = 0;
 
     /**
      * __construct
@@ -212,6 +216,8 @@ class DacteOSV3 extends Common
             $this->tpAmb = $this->getTagValue($this->ide, "tpAmb");
             $this->tpCTe = $this->getTagValue($this->ide, "tpCTe");
             $this->protCTe = $this->dom->getElementsByTagName("protCTe")->item(0);
+            $this->qrCodMDFe = $this->dom->getElementsByTagName('qrCodCTe')->item(0) ?
+                $this->dom->getElementsByTagName('qrCodCTe')->item(0)->nodeValue : null;
             //01-Rodoviário; //02-Aéreo; //03-Aquaviário; //04-Ferroviário;//05-Dutoviário
             $this->modal = $this->getTagValue($this->ide, "modal");
         }
@@ -668,7 +674,7 @@ class DacteOSV3 extends Common
         $w = round($maxW * 0.335);
         $w1 = $w;
         $h = 11;
-        $this->pTextBox($x, $y, $w + 2, $h + 1);
+        $this->pTextBox($x, $y, $w + 10, $h + 1);
         $texto = "DACTE OS";
         $aFont = array(
             'font' => $this->fontePadrao,
@@ -677,7 +683,7 @@ class DacteOSV3 extends Common
         $this->pTextBox($x, $y + 1, $w, $h, $texto, $aFont, 'T', 'C', 0, '');
         $aFont = array(
             'font' => $this->fontePadrao,
-            'size' => 8,
+            'size' => 9,
             'style' => '');
         $texto = "Documento Auxiliar do Conhecimento\nde Transporte Eletrônico para Outros Serviços";
         $h = 10;
@@ -686,11 +692,11 @@ class DacteOSV3 extends Common
         $w = round($maxW * 0.22, 0);
         $w2 = $w;
         $h = 11;
-        $this->pTextBox($x1, $y, $w + 0.5, $h + 1);
+        $this->pTextBox($x1 + 8, $y, $w - 7.5, $h + 1);
         $texto = "MODAL";
         $aFont = array(
             'font' => $this->fontePadrao,
-            'size' => 8,
+            'size' => 10,
             'style' => '');
         $this->pTextBox($x1, $y + 1, $w, $h, $texto, $aFont, 'T', 'C', 0, '');
         switch ($this->modal) {
@@ -718,8 +724,8 @@ class DacteOSV3 extends Common
         //outra caixa
         $y += 12;
         $h = 9;
-        $w = $w1 + $w2 + 2;
-        $this->pTextBox($x, $y, $w + 0.5, $h + 1);
+        $w = $w1 + 10;
+        $this->pTextBox($x, $y, $w, $h + 1);
         //modelo
         $wa = 12;
         $xa = $x;
@@ -760,36 +766,39 @@ class DacteOSV3 extends Common
         $this->pdf->Line($xa + $wa, $y, $xa + $wa, $y + $h + 1);
         //data  hora de emissão
         $xa += $wa;
-        $wa = 74;
+        $wa = 35;
         $texto = 'DATA E HORA DE EMISSÃO';
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 8,
             'style' => '');
         $this->pTextBox($xa, $y + 1, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
+        $this->pdf->Line($xa + $wa, $y, $xa + $wa, $y + $h + 1);
         $texto = !empty($this->ide->getElementsByTagName("dhEmi")->item(0)->nodeValue) ?
             date('d/m/Y H:i:s', $this->pConvertTime($this->getTagValue($this->ide, "dhEmi"))) : '';
         $aFont = $this->formatNegrito;
         $this->pTextBox($xa, $y + 5, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
+        $this->pdf->Line($xa + $wa, $y, $xa + $wa, $y + $h + 1);
         //outra caixa
         $y += $h + 1;
         $h = 23;
         $h1 = 14;
-        $this->pTextBox($x, $y, $w + 0.5, $h1);
+        //$this->pTextBox($x, $y, $w + 0.5, $h1);
         //CODIGO DE BARRAS
         $chave_acesso = str_replace('CTe', '', $this->infCte->getAttribute("Id"));
-        $bW = 85;
+        $bW = 75;
         $bH = 10;
         //codigo de barras
         $this->pdf->SetFillColor(0, 0, 0);
-        $this->pdf->Code128($x + (($w - $bW) / 2), $y + 2, $chave_acesso, $bW, $bH);
+        $this->pdf->Code128($x + 2, $y + 2, $chave_acesso, $bW, $bH);
+        $this->pdf->Line($xa + $wa, $y, $xa + $wa, $y + $h - 1);
         $this->pTextBox($x, $y + $h1, $w + 0.5, $h1 - 6);
         $texto = 'CHAVE DE ACESSO';
         $aFont = $this->formatPadrao;
-        $this->pTextBox($x, $y + $h1, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $this->pTextBox($x + 1, $y + $h1, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $aFont = $this->formatNegrito;
-        $texto = $this->pFormat($chave_acesso, '##.####.##.###.###/####-##-##-###-###.###.###-###.###.###-#');
-        $this->pTextBox($x, $y + $h1 + 3, $w, $h, $texto, $aFont, 'T', 'C', 0, '');
+        $texto = $this->pFormat($chave_acesso, $this->formatoChave);
+        $this->pTextBox($x + 1, $y + $h1 + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $this->pTextBox($x, $y + $h1 + 8, $w + 0.5, $h1 - 4.5);
         $texto = "Consulta de autenticidade no portal nacional do CT-e, ";
         $texto .= "no site da Sefaz Autorizadora, \r\n ou em http://www.cte.fazenda.gov.br";
@@ -849,6 +858,13 @@ class DacteOSV3 extends Common
         }
         $aFont = $this->formatNegrito;
         $this->pTextBox($x, $y + 12, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
+
+        if ($this->qrCodMDFe !== null) {
+            $this->pQRDACTEOS($y-25);
+            $w = 38;
+            $x += 79;
+            $this->pTextBox($x, $y - 34, $w + 0.5, $h + 41.5);
+        }
         //CFOP
         $x = $oldX;
         $h = 8.5;
@@ -2593,4 +2609,30 @@ class DacteOSV3 extends Common
         }
         return 1; // M3, KG, Unidade, litros, mmbtu
     } //fim da função zMultiUniPeso
+
+    protected function pQRDACTEOS($y = 0)
+    {
+        $margemInterna = $this->margemInterna;
+        $barcode = new Barcode();
+        $bobj = $barcode->getBarcodeObj(
+            'QRCODE,M',
+            $this->qrCodMDFe,
+            -4,
+            -4,
+            'black',
+            array(-1, -1, -1, -1)
+        )->setBackgroundColor('white');
+        $qrcode = $bobj->getPngData();
+        $wQr = 36;
+        $hQr = 36;
+        $yQr = ($y + $margemInterna);
+        if ($this->orientacao == 'P') {
+            $xQr = 170;
+        } else {
+            $xQr = 250;
+        }
+        // prepare a base64 encoded "data url"
+        $pic = 'data://text/plain;base64,' . base64_encode($qrcode);
+        $this->pdf->image($pic, $xQr, $yQr, $wQr, $hQr, 'PNG');
+    }
 }
