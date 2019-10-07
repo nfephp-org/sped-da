@@ -86,6 +86,7 @@ class DacteOSV3 extends Common
     protected $nomeDesenvolvedor;
     protected $totPag;
     protected $idDocAntEle = [];
+    protected $lota;
 
     /**
      * __construct
