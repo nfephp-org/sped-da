@@ -158,6 +158,10 @@ class Damdfe extends Common
         $this->nMDF = $this->dom->getElementsByTagName("nMDF")->item(0)->nodeValue;
         $this->tpEmis = $this->dom->getElementsByTagName("tpEmis")->item(0)->nodeValue;
         $this->tot = $this->dom->getElementsByTagName("tot")->item(0);
+        $this->qMDFe = "";
+        if ($this->dom->getElementsByTagName("qMDFe")->item(0) != "") {
+            $this->qMDFe = $this->dom->getElementsByTagName("qMDFe")->item(0)->nodeValue;
+        }
         $this->qNFe = "";
         if ($this->dom->getElementsByTagName("qNFe")->item(0) != "") {
             $this->qNFe = $this->dom->getElementsByTagName("qNFe")->item(0)->nodeValue;
@@ -177,6 +181,9 @@ class Damdfe extends Common
         $this->qCarga = $this->dom->getElementsByTagName("qCarga")->item(0)->nodeValue;
         $this->infModal = $this->dom->getElementsByTagName("infModal")->item(0);
         $this->rodo = $this->dom->getElementsByTagName("rodo")->item(0);
+        $this->aereo = $this->dom->getElementsByTagName("aereo")->item(0);
+        $this->aquav = $this->dom->getElementsByTagName("aquav")->item(0);
+        $this->ferrov = $this->dom->getElementsByTagName("ferrov")->item(0);
         $this->ciot = "";
         if ($this->dom->getElementsByTagName('CIOT')->item(0) != "") {
             $this->ciot = $this->dom->getElementsByTagName('CIOT')->item(0)->nodeValue;
@@ -633,7 +640,7 @@ class Damdfe extends Common
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         $this->pTextBox($x1, $y, $x2 - 15, 8, $texto, $aFont, 'T', 'C', 0, '', false);
         $texto = $this->UFIni;
-        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
         $this->pTextBox($x1, $y + 4, $x2 - 15, 10, $texto, $aFont, 'T', 'C', 0, '', false);
         $maxW = $this->wPrint;
 
@@ -643,15 +650,33 @@ class Damdfe extends Common
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         $this->pTextBox($x1, $y, $x2 - 16, 8, $texto, $aFont, 'T', 'C', 0, '', false);
         $texto = $this->UFFim;
-        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
         $this->pTextBox($x1, $y + 4, $x2 - 16, 10, $texto, $aFont, 'T', 'C', 0, '', false);
         $maxW = $this->wPrint;
 
+        if ($this->aquav) {
+            $x1 = $x;
+            $x2 = $maxW;
+            $y += 14;
+            $this->pTextBox($x1, $y, $x2, 10);
+            $texto = 'Embarcação';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $texto = $this->aquav->getElementsByTagName('cEmbar')->item(0)->nodeValue;
+            $texto .= ' - ';
+            $texto .= $this->aquav->getElementsByTagName('xEmbar')->item(0)->nodeValue;
+            $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
+            $this->pTextBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+        }
+
         $x1 = $x;
         $x2 = $maxW;
-        $y += 14;
+        $y += 13;
         $this->pTextBox($x1, $y, $x2, 43);
-        $texto = 'Modal Rodoviário de Carga';
+        if ($this->rodo) $texto = 'Modal Rodoviário de Carga';
+        if ($this->aereo) $texto = 'Modal Aéreo de Carga';
+        if ($this->aquav) $texto = 'Modal Aquaviário de Carga';
+        if ($this->ferrov) $texto = 'Modal Ferroviário de Carga';
         $aFont = array('font' => $this->fontePadrao, 'size' => 12, 'style' => 'B');
         $this->pTextBox($x1, $y + 1, $x2 / 2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
         $texto = 'CONTROLE DO FISCO';
@@ -666,7 +691,7 @@ class Damdfe extends Common
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
         $texto = str_pad($this->qCTe, 3, '0', STR_PAD_LEFT);
-        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
         $this->pTextBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
         $x1 += $x2;
         $this->pTextBox($x1, $y, $x2, 12);
@@ -674,16 +699,39 @@ class Damdfe extends Common
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
         $texto = str_pad($this->qNFe, 3, '0', STR_PAD_LEFT);
-        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
         $this->pTextBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
         $x1 += $x2;
         $this->pTextBox($x1, $y, $x2, 12);
-        $texto = 'Peso Total (Kg)';
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-        $texto = number_format($this->qCarga, 4, ',', '.');
-        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-        $this->pTextBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+
+        if ($this->rodo ||
+            $this->aereo ||
+            $this->ferrov) {
+            $texto = 'Peso Total (Kg)';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $texto = number_format($this->qCarga, 4, ',', '.');
+            $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
+            $this->pTextBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+        }
+
+        if ($this->aquav) {
+            $texto = 'Qtd. MDF-e Ref.';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $texto = str_pad($this->qMDFe, 3, '0', STR_PAD_LEFT);
+            $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
+            $this->pTextBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+
+            $ya = $y + 12;
+            $this->pTextBox($x, $ya, $maxW / 2, 12);
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $texto = 'Peso Total (Kg)';
+            $this->pTextBox($x, $ya, $maxW / 2, 8, $texto, $aFont, 'T', 'L', 0, '');
+            $texto = number_format($this->qCarga, 4, ',', '.');
+            $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
+            $this->pTextBox($x, $ya + 4, $x2, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+        }
 
         // codigo de barras da chave
         $x1 += $x2;
@@ -696,9 +744,9 @@ class Damdfe extends Common
         $this->pdf->SetFillColor(255, 255, 255);
 
         // protocolo de autorização
-        $y = $y + 20;
-        $this->pTextBox($x, $y, $maxW / 2, 10);
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'I');
+        $y = $y + 24;
+        $this->pTextBox($x, $y, $maxW / 2, 13);
+        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
         $texto = 'Protocolo de Autorização';
         $this->pTextBox($x, $y, $maxW / 2, 8, $texto, $aFont, 'T', 'L', 0, '');
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
@@ -709,6 +757,8 @@ class Damdfe extends Common
             $texto = 'DAMDFE impresso em contingência - ' . date('d/m/Y   H:i:s');
         }
         $this->pTextBox($x, $y + 4, $maxW / 2, 8, $texto, $aFont, 'T', 'C', 0, '');
+
+        $y -= 4;
 
         // chave de acesso
         $this->pTextBox($x + $maxW / 2, $y, $maxW / 2, 17);
@@ -727,144 +777,267 @@ class Damdfe extends Common
         $y += 20;
         $yold = $y;
         $x2 = round($maxW / 2, 0);
-        $texto = 'Veículo';
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-        $y += 5;
-        $x2 = round($maxW / 4, 0);
-        $tamanho = 22;
-        $this->pTextBox($x1, $y, $x2, $tamanho);
-        $texto = 'Placa';
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-        $texto = $this->veicTracao->getElementsByTagName("placa")->item(0)->nodeValue;
-        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-        $this->pTextBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
-        $altura = $y + 4;
-        /** @var \DOMNodeList $veicReboque */
-        $veicReboque = $this->veicReboque;
-        foreach ($veicReboque as $item) {
-            /** @var \DOMElement $item */
-            $altura += 4;
-            $texto = $item->getElementsByTagName('placa')->item(0)->nodeValue;
-            $this->pTextBox($x1, $altura, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
-        }
-        $x1 += $x2;
-        $this->pTextBox($x1, $y, $x2, $tamanho);
-        $texto = 'RNTRC';
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-        // RNTRC Não informado
-        if ($this->rodo->getElementsByTagName("RNTRC")->length > 0) {
-            $texto = $this->rodo->getElementsByTagName("RNTRC")->item(0)->nodeValue;
-        } else {
-            $texto = "";
-        }
-        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-        $this->pTextBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
-        $altura = $y + 4;
-        /** @var \DOMNodeList $veicReboque */
-        $veicReboque = $this->veicReboque;
-        foreach ($veicReboque as $item) {
-            /** @var \DOMElement $item */
-            $DOMNodeList = $item->getElementsByTagName('RNTRC');
-            if ($DOMNodeList->length > 0) {
+
+        if ($this->rodo) {
+            $texto = 'Veículo';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $y += 5;
+            $x2 = round($maxW / 4, 0);
+            $tamanho = 22;
+            $this->pTextBox($x1, $y, $x2, $tamanho);
+            $texto = 'Placa';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $texto = $this->veicTracao->getElementsByTagName("placa")->item(0)->nodeValue;
+            $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+            $this->pTextBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+            $altura = $y + 4;
+            /** @var \DOMNodeList $veicReboque */
+            $veicReboque = $this->veicReboque;
+            foreach ($veicReboque as $item) {
+                /** @var \DOMElement $item */
                 $altura += 4;
-                $texto = $DOMNodeList->item(0)->nodeValue;
+                $texto = $item->getElementsByTagName('placa')->item(0)->nodeValue;
                 $this->pTextBox($x1, $altura, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
             }
-        }
-        $x1 = $x;
-        $y += 22;
-        $x2 = round($maxW / 2, 0);
-        $valesPedagios = 1;
-        $temVales = false;
-        if ($this->valePed != "" && $this->valePed->length > 0) {
-            $valesPedagios = $this->valePed->length;
-            $temVales = true;
-        }
-        $tamanho = ($valesPedagios * 7.5);
-        if (!$temVales) {
-            $valesPedagios = 0;
-        }
-        $this->pTextBox($x1, $y, $x2, 11 + $tamanho / 2);
-        $texto = 'Vale Pedágio';
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-        $y += 5;
-        $x2 = ($x2 / 3);
-        $this->pTextBox($x1, $y, $x2 - 3, 6 + ($tamanho / 2));
-        $texto = 'Responsável CNPJ';
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pTextBox($x1, $y, $x2 - 4, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-        $altura = $y;
-        for ($i = 0; $i < $valesPedagios; $i++) {
-            $altura += 4;
-            $texto = $this->valePed->item($i)->getElementsByTagName('CNPJForn')->item(0)->nodeValue;
-            $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-            $this->pTextBox($x1 + 1, $altura, $x2 - 5, 10, $texto, $aFont, 'T', 'L', 0, '', false);
-        }
-        $x1 += $x2 - 3;
-        $this->pTextBox($x1, $y, $x2 - 3, 6 + ($tamanho / 2));
-        $texto = 'Fornecedora CNPJ';
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pTextBox($x1, $y, $x2 - 4, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-        $altura = $y;
-        for ($i = 0; $i < $valesPedagios; $i++) {
-            $altura += 4;
-            $texto = $this->valePed->item($i)->getElementsByTagName('CNPJPg')->item(0)->nodeValue;
-            $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-            $this->pTextBox($x1 + 1, $altura, $x2 - 5, 10, $texto, $aFont, 'T', 'L', 0, '', false);
-        }
-        $x1 += $x2 - 3;
-        $this->pTextBox($x1, $y, $x2 + 6, 6 + ($tamanho / 2));
-        $texto = 'Nº Comprovante';
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pTextBox($x1, $y, $x2 + 6, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-        $altura = $y;
-        for ($i = 0; $i < $valesPedagios; $i++) {
-            $altura += 4;
-            $texto = $this->valePed->item($i)->getElementsByTagName('nCompra')->item(0)->nodeValue;
-            $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-            $this->pTextBox($x1 + 1, $altura, $x2 + 5, 10, $texto, $aFont, 'T', 'L', 0, '', false);
-        }
-        if (!$temVales) {
-            $altura += 4;
-        }
-        $this->condutor = $this->veicTracao->getElementsByTagName('condutor');
-        $x1 = round($maxW / 2, 0) + 7;
-        $y = $yold;
-        $x2 = round($maxW / 2, 0);
-        $texto = 'Condutor';
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-        $y += 5;
-        $x2 = ($maxW / 6);
-        $this->pTextBox($x1, $y, $x2, 33 + ($tamanho / 2));
-        $texto = 'CPF';
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-        $yold = $y;
-        for ($i = 0; $i < $this->condutor->length; $i++) {
-            $y += 4;
-            $texto = $this->condutor->item($i)->getElementsByTagName('CPF')->item(0)->nodeValue;
-            $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-            $this->pTextBox($x1 + 1, $y, $x2 - 1, 10, $texto, $aFont, 'T', 'L', 0, '', false);
-        }
-        $y = $yold;
-        $x1 += $x2;
-        $x2 = $x2*2;
-        $this->pTextBox($x1, $y, $x2, 33 + ($tamanho / 2));
-        $texto = 'Nome';
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-        for ($i = 0; $i < $this->condutor->length; $i++) {
-            $y += 4;
-            $texto = $this->condutor->item($i)->getElementsByTagName('xNome')->item(0)->nodeValue;
+            $x1 += $x2;
+            $this->pTextBox($x1, $y, $x2, $tamanho);
+            $texto = 'RNTRC';
             $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-            $this->pTextBox($x1 + 1, $y, $x2 - 1, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            // RNTRC Não informado
+            if ($this->rodo->getElementsByTagName("RNTRC")->length > 0) {
+                $texto = $this->rodo->getElementsByTagName("RNTRC")->item(0)->nodeValue;
+            } else {
+                $texto = "";
+            }
+            $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+            $this->pTextBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+            $altura = $y + 4;
+            /** @var \DOMNodeList $veicReboque */
+            $veicReboque = $this->veicReboque;
+            foreach ($veicReboque as $item) {
+                /** @var \DOMElement $item */
+                $DOMNodeList = $item->getElementsByTagName('RNTRC');
+                if ($DOMNodeList->length > 0) {
+                    $altura += 4;
+                    $texto = $DOMNodeList->item(0)->nodeValue;
+                    $this->pTextBox($x1, $altura, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+                }
+            }
+            $x1 = $x;
+            $y += 22;
+            $x2 = round($maxW / 2, 0);
+            $valesPedagios = 1;
+            $temVales = false;
+            if ($this->valePed != "" && $this->valePed->length > 0) {
+                $valesPedagios = $this->valePed->length;
+                $temVales = true;
+            }
+            $tamanho = ($valesPedagios * 7.5);
+            if (!$temVales) {
+                $valesPedagios = 0;
+            }
+            $this->pTextBox($x1, $y, $x2, 11 + $tamanho / 2);
+            $texto = 'Vale Pedágio';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $y += 5;
+            $x2 = ($x2 / 3);
+            $this->pTextBox($x1, $y, $x2 - 3, 6 + ($tamanho / 2));
+            $texto = 'Responsável CNPJ';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $this->pTextBox($x1, $y, $x2 - 4, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $altura = $y;
+            for ($i = 0; $i < $valesPedagios; $i++) {
+                $altura += 4;
+                $texto = $this->valePed->item($i)->getElementsByTagName('CNPJForn')->item(0)->nodeValue;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+                $this->pTextBox($x1 + 1, $altura, $x2 - 5, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+            }
+            $x1 += $x2 - 3;
+            $this->pTextBox($x1, $y, $x2 - 3, 6 + ($tamanho / 2));
+            $texto = 'Fornecedora CNPJ';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $this->pTextBox($x1, $y, $x2 - 4, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $altura = $y;
+            for ($i = 0; $i < $valesPedagios; $i++) {
+                $altura += 4;
+                $texto = $this->valePed->item($i)->getElementsByTagName('CNPJPg')->item(0)->nodeValue;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+                $this->pTextBox($x1 + 1, $altura, $x2 - 5, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+            }
+            $x1 += $x2 - 3;
+            $this->pTextBox($x1, $y, $x2 + 6, 6 + ($tamanho / 2));
+            $texto = 'Nº Comprovante';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $this->pTextBox($x1, $y, $x2 + 6, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $altura = $y;
+            for ($i = 0; $i < $valesPedagios; $i++) {
+                $altura += 4;
+                $texto = $this->valePed->item($i)->getElementsByTagName('nCompra')->item(0)->nodeValue;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+                $this->pTextBox($x1 + 1, $altura, $x2 + 5, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+            }
+            if (!$temVales) {
+                $altura += 4;
+            }
+            $this->condutor = $this->veicTracao->getElementsByTagName('condutor');
+            $x1 = round($maxW / 2, 0) + 7;
+            $y = $yold;
+            $x2 = round($maxW / 2, 0);
+            $texto = 'Condutor';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $y += 5;
+            $x2 = ($maxW / 6);
+            $this->pTextBox($x1, $y, $x2, 33 + ($tamanho / 2));
+            $texto = 'CPF';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $yold = $y;
+            for ($i = 0; $i < $this->condutor->length; $i++) {
+                $y += 4;
+                $texto = $this->condutor->item($i)->getElementsByTagName('CPF')->item(0)->nodeValue;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+                $this->pTextBox($x1 + 1, $y, $x2 - 1, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+            }
+            $y = $yold;
+            $x1 += $x2;
+            $x2 = $x2 * 2;
+            $this->pTextBox($x1, $y, $x2, 33 + ($tamanho / 2));
+            $texto = 'Nome';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $this->pTextBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            for ($i = 0; $i < $this->condutor->length; $i++) {
+                $y += 4;
+                $texto = $this->condutor->item($i)->getElementsByTagName('xNome')->item(0)->nodeValue;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                $this->pTextBox($x1 + 1, $y, $x2 - 1, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            }
         }
-        return $altura + 7;
+
+        if ($this->aereo) {
+            $altura = $y + 4;
+        }
+
+        if ($this->aquav) {
+            $x1 = $x;
+            $x2 = $maxW;
+
+            $initial = $y;
+            $initialA = $y + 2;
+            $initialB = $y + 2;
+
+            $texto = 'Carregamento';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
+            $this->pTextBox($x, $initial + 2, ($x2 / 2), 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            foreach ($this->aquav->getElementsByTagName('infTermCarreg') as $item) {
+                $initialA += 4.5;
+
+                $texto = $item->getElementsByTagName('cTermCarreg')->item(0)->nodeValue;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                $this->pTextBox($x1 + 1, $initialA, ($x2 / 2) - 1, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+
+                $texto = $item->getElementsByTagName('xTermCarreg')->item(0)->nodeValue;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                $this->pTextBox($x1 + 25, $initialA, ($x2 / 2) - 25, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+
+                if (strlen($texto) > 50) {
+                    $initialA += 2;
+                }
+            }
+            if ($this->aquav->getElementsByTagName('infTermCarreg')->item(0) != null) $this->pTextBox($x1, $initial + 6, ($x2 / 2), $initialA - $y);
+
+            $texto = 'Descarregamento';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
+            $this->pTextBox($x1 + ($x2 / 2), $initial + 2, $x2 / 2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            foreach ($this->aquav->getElementsByTagName('infTermDescarreg') as $item) {
+                $initialB += 4.5;
+
+                $texto = $item->getElementsByTagName('cTermDescarreg')->item(0)->nodeValue;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                $this->pTextBox(($x1 + ($x2 / 2)) + 1, $initialB, ($x2 / 2) - 1, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+
+                $texto = $item->getElementsByTagName('xTermDescarreg')->item(0)->nodeValue;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                $this->pTextBox(($x1 + ($x2 / 2)) + 25, $initialB, ($x2 / 2) - 25, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+
+                if (strlen($texto) > 50) {
+                    $initialB += 2;
+                }
+            }
+            if ($this->aquav->getElementsByTagName('infTermDescarreg')->item(0) != null) $this->pTextBox(($x1 + ($x2 / 2)), $initial + 6, ($x2 / 2), $initialB - $y);
+
+            $altura = $initialA > $initialB ? $initialA : $initialB;
+            $altura += 6;
+
+            $y = $altura + 3;
+
+            $initial = $y;
+            $initialA = $y + 2;
+            $initialB = $y + 2;
+
+            $texto = 'Unidade de Transporte';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
+            $this->pTextBox($x, $initial + 2, ($x2 / 2), 8, $texto, $aFont, 'T', 'L', 0, '', false);
+
+            $texto = 'Unidade de Carga';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
+            $this->pTextBox($x1 + ($x2 / 4), $initial + 2, ($x2 / 2), 8, $texto, $aFont, 'T', 'L', 0, '', false);
+
+            foreach ($this->aquav->getElementsByTagName('infUnidCargaVazia') as $item) {
+                $initialA += 4.5;
+
+                $texto = $item->getElementsByTagName('idUnidCargaVazia')->item(0)->nodeValue;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                $this->pTextBox($x1 + 1, $initialA, ($x2 / 2) - 1, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+
+                $texto = $item->getElementsByTagName('tpUnidCargaVazia')->item(0)->nodeValue;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                $this->pTextBox($x1 + ($x2 / 4), $initialA, ($x2 / 2) - 25, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+
+                if (strlen($texto) > 50) {
+                    $initialA += 2;
+                }
+            }
+            if ($this->aquav->getElementsByTagName('infUnidCargaVazia')->item(0) != null) $this->pTextBox($x1, $initial + 6, ($x2 / 2), $initialA - $y);
+
+            $texto = 'Unidade de Transporte';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
+            $this->pTextBox($x1 + ($x2 / 2), $initial + 2, $x2 / 2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+
+            $texto = 'Unidade de Carga';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
+            $this->pTextBox($x1 + ($x2 / 1.33), $initial + 2, ($x2 / 2), 8, $texto, $aFont, 'T', 'L', 0, '', false);
+
+            foreach ($this->aquav->getElementsByTagName('infUnidTranspVazia') as $item) {
+                $initialB += 4.5;
+
+                $texto = $item->getElementsByTagName('idUnidTranspVazia')->item(0)->nodeValue;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                $this->pTextBox(($x1 + ($x2 / 2)) + 1, $initialB, ($x2 / 2) - 1, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+
+                $texto = $item->getElementsByTagName('tpUnidTranspVazia')->item(0)->nodeValue;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                $this->pTextBox(($x1 + ($x2 / 1.33)), $initialB, ($x2 / 2) - 25, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+
+                if (strlen($texto) > 50) {
+                    $initialB += 2;
+                }
+            }
+            if ($this->aquav->getElementsByTagName('infUnidTranspVazia')->item(0) != null) $this->pTextBox(($x1 + ($x2 / 2)), $initial + 6, ($x2 / 2), $initialB - $y);
+
+            $altura = $initialA > $initialB ? $initialA : $initialB;
+            $altura += 6;
+        }
+
+        if ($this->ferrov) {
+            $altura = $y + 4;
+        }
+
+        return $altura + 10;
     }
 
 
