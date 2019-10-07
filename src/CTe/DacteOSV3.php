@@ -15,7 +15,7 @@ namespace NFePHP\DA\CTe;
  * @author    Roberto L. Machado <linux dot rlm at gmail dot com>
  */
 
- use Com\Tecnick\Barcode\Barcode;
+use Com\Tecnick\Barcode\Barcode;
 use Exception;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
