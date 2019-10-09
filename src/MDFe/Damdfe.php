@@ -673,10 +673,18 @@ class Damdfe extends Common
         $x2 = $maxW;
         $y += 13;
         $this->pTextBox($x1, $y, $x2, 43);
-        if ($this->rodo) $texto = 'Modal Rodoviário de Carga';
-        if ($this->aereo) $texto = 'Modal Aéreo de Carga';
-        if ($this->aquav) $texto = 'Modal Aquaviário de Carga';
-        if ($this->ferrov) $texto = 'Modal Ferroviário de Carga';
+        if ($this->rodo) {
+            $texto = 'Modal Rodoviário de Carga';
+        }
+        if ($this->aereo) {
+            $texto = 'Modal Aéreo de Carga';
+        }
+        if ($this->aquav) {
+            $texto = 'Modal Aquaviário de Carga';
+        }
+        if ($this->ferrov) {
+            $texto = 'Modal Ferroviário de Carga';
+        }
         $aFont = array('font' => $this->fontePadrao, 'size' => 12, 'style' => 'B');
         $this->pTextBox($x1, $y + 1, $x2 / 2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
         $texto = 'CONTROLE DO FISCO';
@@ -948,7 +956,9 @@ class Damdfe extends Common
                     $initialA += 2;
                 }
             }
-            if ($this->aquav->getElementsByTagName('infTermCarreg')->item(0) != null) $this->pTextBox($x1, $initial + 6, ($x2 / 2), $initialA - $y);
+            if ($this->aquav->getElementsByTagName('infTermCarreg')->item(0) != null) {
+                $this->pTextBox($x1, $initial + 6, ($x2 / 2), $initialA - $y);
+            }
 
             $texto = 'Descarregamento';
             $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
@@ -958,17 +968,44 @@ class Damdfe extends Common
 
                 $texto = $item->getElementsByTagName('cTermDescarreg')->item(0)->nodeValue;
                 $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-                $this->pTextBox(($x1 + ($x2 / 2)) + 1, $initialB, ($x2 / 2) - 1, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+                $this->pTextBox(
+                    ($x1 + ($x2 / 2)) + 1,
+                    $initialB,
+                    ($x2 / 2) - 1,
+                    10,
+                    $texto,
+                    $aFont,
+                    'T',
+                    'L',
+                    0,
+                    '',
+                    false
+                );
 
                 $texto = $item->getElementsByTagName('xTermDescarreg')->item(0)->nodeValue;
                 $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-                $this->pTextBox(($x1 + ($x2 / 2)) + 25, $initialB, ($x2 / 2) - 25, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+
+                $this->pTextBox(
+                    ($x1 + ($x2 / 2)) + 25,
+                    $initialB,
+                    ($x2 / 2) - 25,
+                    10,
+                    $texto,
+                    $aFont,
+                    'T',
+                    'L',
+                    0,
+                    '',
+                    false
+                );
 
                 if (strlen($texto) > 50) {
                     $initialB += 2;
                 }
             }
-            if ($this->aquav->getElementsByTagName('infTermDescarreg')->item(0) != null) $this->pTextBox(($x1 + ($x2 / 2)), $initial + 6, ($x2 / 2), $initialB - $y);
+            if ($this->aquav->getElementsByTagName('infTermDescarreg')->item(0) != null) {
+                $this->pTextBox(($x1 + ($x2 / 2)), $initial + 6, ($x2 / 2), $initialB - $y);
+            }
 
             $altura = $initialA > $initialB ? $initialA : $initialB;
             $altura += 6;
@@ -1002,7 +1039,9 @@ class Damdfe extends Common
                     $initialA += 2;
                 }
             }
-            if ($this->aquav->getElementsByTagName('infUnidCargaVazia')->item(0) != null) $this->pTextBox($x1, $initial + 6, ($x2 / 2), $initialA - $y);
+            if ($this->aquav->getElementsByTagName('infUnidCargaVazia')->item(0) != null) {
+                $this->pTextBox($x1, $initial + 6, ($x2 / 2), $initialA - $y);
+            }
 
             $texto = 'Unidade de Transporte';
             $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
@@ -1017,17 +1056,44 @@ class Damdfe extends Common
 
                 $texto = $item->getElementsByTagName('idUnidTranspVazia')->item(0)->nodeValue;
                 $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-                $this->pTextBox(($x1 + ($x2 / 2)) + 1, $initialB, ($x2 / 2) - 1, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+
+                $this->pTextBox(
+                    ($x1 + ($x2 / 2)) + 1,
+                    $initialB,
+                    ($x2 / 2) - 1,
+                    10,
+                    $texto,
+                    $aFont,
+                    'T',
+                    'L',
+                    0,
+                    '',
+                    false
+                );
 
                 $texto = $item->getElementsByTagName('tpUnidTranspVazia')->item(0)->nodeValue;
                 $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-                $this->pTextBox(($x1 + ($x2 / 1.33)), $initialB, ($x2 / 2) - 25, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+                $this->pTextBox(
+                    ($x1 + ($x2 / 1.33)),
+                    $initialB,
+                    ($x2 / 2) - 25,
+                    10,
+                    $texto,
+                    $aFont,
+                    'T',
+                    'L',
+                    0,
+                    '',
+                    false
+                );
 
                 if (strlen($texto) > 50) {
                     $initialB += 2;
                 }
             }
-            if ($this->aquav->getElementsByTagName('infUnidTranspVazia')->item(0) != null) $this->pTextBox(($x1 + ($x2 / 2)), $initial + 6, ($x2 / 2), $initialB - $y);
+            if ($this->aquav->getElementsByTagName('infUnidTranspVazia')->item(0) != null) {
+                $this->pTextBox(($x1 + ($x2 / 2)), $initial + 6, ($x2 / 2), $initialB - $y);
+            }
 
             $altura = $initialA > $initialB ? $initialA : $initialB;
             $altura += 6;
