@@ -217,7 +217,7 @@ class DacteOSV3 extends Common
             $this->tpCTe = $this->getTagValue($this->ide, "tpCTe");
             $this->protCTe = $this->dom->getElementsByTagName("protCTe")->item(0);
             $this->qrCodMDFe = $this->dom->getElementsByTagName('qrCodCTe')->item(0) ?
-                $this->dom->getElementsByTagName('qrCodCTe')->item(0)->nodeValue : null;
+                $this->dom->getElementsByTagName('qrCodCTe')->item(0)->nodeValue : 'SEM INFORMAÇÃO DE QRCODE';
             //01-Rodoviário; //02-Aéreo; //03-Aquaviário; //04-Ferroviário;//05-Dutoviário
             $this->modal = $this->getTagValue($this->ide, "modal");
         }
