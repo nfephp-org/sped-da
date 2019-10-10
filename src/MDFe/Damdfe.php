@@ -201,7 +201,7 @@ class Damdfe extends Common
             $this->infMDFe->getAttribute("Id")
         );
         $this->qrCodMDFe = $this->dom->getElementsByTagName('qrCodMDFe')->item(0) ?
-            $this->dom->getElementsByTagName('qrCodMDFe')->item(0)->nodeValue : null;
+            $this->dom->getElementsByTagName('qrCodMDFe')->item(0)->nodeValue : 'SEM INFORMAÇÃO DE QRCODE';
         if (is_object($this->mdfeProc)) {
             $this->nProt = !empty($this->mdfeProc->getElementsByTagName("nProt")->item(0)->nodeValue) ?
                 $this->mdfeProc->getElementsByTagName("nProt")->item(0)->nodeValue : '';
