@@ -1727,7 +1727,7 @@ class DacteV3 extends Common
         $qCarga = 0;
         for ($i = 0; $i <= $this->infQ->count(); $i++) {
             if ($this->getTagValue($this->infQ->item($i), "cUnid") == '01') {
-                $qCarga = $this->getTagValue($this->infQ->item($i), "qCarga");
+                $qCarga += (int) $this->getTagValue($this->infQ->item($i), "qCarga");
             }
         }
         $texto = 'PESO BRUTO (KG)';
