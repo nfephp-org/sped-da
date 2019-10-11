@@ -27,7 +27,7 @@ $aEnd = array(
 
 try {
     $docxml = FilesFolders::readFile($xml);
-    $daevento = new Daevento($docxml, 'P', 'A4', 'images/logo.jpg', 'I', '', '', $aEnd);
+    $daevento = new Daevento($docxml, 'P', 'A4', 'images/logo.jpg', 'I', '', '', $aEnd, '', '', 1);
     $id = $daevento->chNFe . '';
     $teste = $daevento->printDocument($id.'.pdf', 'I');
 } catch (InvalidArgumentException $e) {
