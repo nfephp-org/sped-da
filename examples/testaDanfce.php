@@ -9,7 +9,7 @@ try {
     $docxml = file_get_contents(__DIR__."/xml/NFCeProd1.xml");
     $pathLogo = __DIR__ . '/images/logo.jpg';
 
-    $danfce = new Danfce($docxml, $pathLogo, 0);
+    $danfce = new Danfce($docxml, $pathLogo, 1);
     $id = $danfce->monta();
     $pdf = $danfce->render();
 
