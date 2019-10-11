@@ -75,14 +75,14 @@ class Fpdf
         $this->page = 0;
         $this->n = 2;
         $this->buffer = '';
-        $this->pages = array();
-        $this->pageSizes = array();
+        $this->pages = [];
+        $this->pageSizes = [];
         $this->state = 0;
-        $this->fonts = array();
-        $this->fontFiles = array();
-        $this->diffs = array();
-        $this->images = array();
-        $this->links = array();
+        $this->fonts = [];
+        $this->fontFiles = [];
+        $this->diffs = [];
+        $this->images = [];
+        $this->links = [];
         $this->inHeader = false;
         $this->inFooter = false;
         $this->lasth = 0;
@@ -125,13 +125,13 @@ class Fpdf
             $this->error('Incorrect unit: '.$unit);
         }
         //Page format
-        $this->pageFormats = array(
-            'a3' => array(841.89,1190.55),
-            'a4' => array(595.28,841.89),
-            'a5' => array(420.94,595.28),
-            'letter' => array(612,792),
-            'legal' => array(612,1008)
-        );
+        $this->pageFormats = [
+            'a3' => [841.89,1190.55],
+            'a4' => [595.28,841.89],
+            'a5' => [420.94,595.28],
+            'letter' => [612,792],
+            'legal' => [612,1008]
+        ];
         if (is_string($format)) {
             $format = $this->getpageformat($format);
         }
@@ -185,7 +185,7 @@ class Fpdf
     {
         //Set left margin
         $this->lMargin = $margin;
-        if ($this->page>0 && $this->x<$margin) {
+        if ($this->page > 0 && $this->x < $margin) {
             $this->x = $margin;
         }
     }
@@ -549,9 +549,9 @@ class Fpdf
         }
         if ($file) {
             if ($type=='TrueType') {
-                $this->fontFiles[$file] = array('length1'=>$originalsize);
+                $this->fontFiles[$file] = ['length1'=>$originalsize];
             } else {
-                $this->fontFiles[$file] = array('length1'=>$size1, 'length2'=>$size2);
+                $this->fontFiles[$file] = ['length1'=>$size1, 'length2'=>$size2];
             }
         }
     }
@@ -638,7 +638,7 @@ class Fpdf
     {
         //Create a new internal link
         $n = count($this->links)+1;
-        $this->links[$n] = array(0, 0);
+        $this->links[$n] = [0, 0];
         return $n;
     }
     
@@ -651,7 +651,7 @@ class Fpdf
         if ($page == -1) {
             $page = $this->page;
         }
-        $this->links[$link] = array($page, $y);
+        $this->links[$link] = [$page, $y];
     }
     
     public function link($x, $y, $w, $h, $link)
@@ -689,7 +689,7 @@ class Fpdf
     {
         //Output a cell
         $k = $this->k;
-        if ($this->y+$h > $this->PageBreakTrigger
+        if ($this->y+$h > $this->pageBreakTrigger
             && !$this->InHeader
             && !$this->InFooter
             && $this->acceptPageBreak()
@@ -1202,7 +1202,7 @@ class Fpdf
             $this->error('Unknown page format: '.$format);
         }
         $a=$this->pageFormats[$format];
-        return array($a[0]/$this->k, $a[1]/$this->k);
+        return [$a[0]/$this->k, $a[1]/$this->k];
     }
     
     
@@ -1258,7 +1258,7 @@ class Fpdf
             || $format[0] != $this->defPageFormat[0]
             || $format[1] != $this->defPageFormat[1]
         ) {
-            $this->PageSizes[$this->page] = array($this->wPt, $this->hPt);
+            $this->PageSizes[$this->page] = [$this->wPt, $this->hPt];
         }
     }
     
@@ -1356,7 +1356,7 @@ class Fpdf
             $data .= fread($f, 8192);
         }
         fclose($f);
-        return array('w'=>$a[0], 'h'=>$a[1], 'cs'=>$colspace, 'bpc'=>$bpc, 'f'=>'DCTDecode', 'data'=>$data);
+        return ['w'=>$a[0], 'h'=>$a[1], 'cs'=>$colspace, 'bpc'=>$bpc, 'f'=>'DCTDecode', 'data'=>$data];
     }
     
     
@@ -1424,13 +1424,13 @@ class Fpdf
                 //Read transparency info
                 $t = $this->readstream($f, $n);
                 if ($ct == 0) {
-                    $trns = array(ord(substr($t, 1, 1)));
+                    $trns = [ord(substr($t, 1, 1))];
                 } elseif ($ct == 2) {
-                    $trns = array(ord(substr($t, 1, 1)), ord(substr($t, 3, 1)), ord(substr($t, 5, 1)));
+                    $trns = [ord(substr($t, 1, 1)), ord(substr($t, 3, 1)), ord(substr($t, 5, 1))];
                 } else {
                     $pos = strpos($t, chr(0));
                     if ($pos !== false) {
-                        $trns = array($pos);
+                        $trns = [$pos];
                     }
                 }
                 $this->readstream($f, 4);
