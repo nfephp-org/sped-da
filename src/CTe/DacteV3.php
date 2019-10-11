@@ -2160,7 +2160,7 @@ class DacteV3 extends Common
                 $ICMSs = '1';
                 break;
         }
-        $dd = $this->ide->getElementsByTagName('dEmi')->item(0)->nodeValue;
+        $dd = $this->ide->getElementsByTagName('dhEmi')->item(0)->nodeValue;
         $rpos = strrpos($dd, '-');
         $dd = substr($dd, $rpos + 1);
         $chave = sprintf($forma, $cUF, $this->tpEmis, $CNPJ, $vCT, $ICMSp, $ICMSs, $dd);
