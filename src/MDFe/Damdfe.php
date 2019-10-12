@@ -1033,7 +1033,19 @@ class Damdfe extends Common
 
                 $texto = $item->getElementsByTagName('tpUnidCargaVazia')->item(0)->nodeValue;
                 $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-                $this->pdf->textBox($x1 + ($x2 / 4), $initialA, ($x2 / 2) - 25, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+                $this->pdf->textBox(
+                    $x1 + ($x2 / 4),
+                    $initialA,
+                    ($x2 / 2) - 25,
+                    10,
+                    $texto,
+                    $aFont,
+                    'T',
+                    'L',
+                    0,
+                    '',
+                    false
+                );
 
                 if (strlen($texto) > 50) {
                     $initialA += 2;
