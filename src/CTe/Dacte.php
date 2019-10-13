@@ -880,7 +880,7 @@ class Dacte extends Common
             'style' => '');
         $this->pdf->textBox($xa, $y + 1, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
         $texto = !empty($this->ide->getElementsByTagName("dhEmi")->item(0)->nodeValue) ?
-            date('d/m/Y H:i:s', $this->pConvertTime($this->getTagValue($this->ide, "dhEmi"))) : '';
+            date('d/m/Y H:i:s', $this->convertTime($this->getTagValue($this->ide, "dhEmi"))) : '';
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($xa, $y + 5, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
         $this->pdf->line($xa + $wa, $y, $xa + $wa, $y + $h + 1);
@@ -965,7 +965,7 @@ class Dacte extends Common
             ) {
                 $texto .= date(
                     'd/m/Y   H:i:s',
-                    $this->pConvertTime($this->getTagValue($this->protCTe, "dhRecbto"))
+                    $this->convertTime($this->getTagValue($this->protCTe, "dhRecbto"))
                 );
             }
             $texto = $this->getTagValue($this->protCTe, "nProt") == '' ? '' : $texto;
@@ -1725,9 +1725,9 @@ class Dacte extends Common
         //Identifica código da unidade
         //01 = KG (QUILOS)
         $qCarga = 0;
-        for ($i = 0; $i <= $this->infQ->count(); $i++) {
-            if ($this->getTagValue($this->infQ->item($i), "cUnid") == '01') {
-                $qCarga += (int) $this->getTagValue($this->infQ->item($i), "qCarga");
+        foreach ($this->infQ as $infQ) {
+            if ($this->getTagValue($infQ, "cUnid") == '01') {
+                $qCarga += (float) $this->getTagValue($infQ, "qCarga");
             }
         }
         $texto = 'PESO BRUTO (KG)';
@@ -1775,10 +1775,10 @@ class Dacte extends Common
         $texto = 'CUBAGEM(M3)';
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x+60, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $qCarga = '';
+        $qCarga = 0;
         foreach ($this->infQ as $infQ) {
             if ($this->getTagValue($infQ, "cUnid") == '00') {
-                $qCarga = $this->getTagValue($infQ, "qCarga");
+                $qCarga += (float) $this->getTagValue($infQ, "qCarga");
             }
         }
         $texto = !empty($qCarga) ? number_format($qCarga, 3, ",", ".") : '';
@@ -1792,10 +1792,10 @@ class Dacte extends Common
         $texto = 'QTDE(VOL)';
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x+85, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $qCarga = '';
+        $qCarga = 0;
         foreach ($this->infQ as $infQ) {
             if ($this->getTagValue($infQ, "cUnid") == '03') {
-                $qCarga = $this->getTagValue($infQ, "qCarga");
+                $qCarga += (float) $this->getTagValue($infQ, "qCarga");
             }
         }
         $texto = !empty($qCarga) ? number_format($qCarga, 3, ",", ".") : '';

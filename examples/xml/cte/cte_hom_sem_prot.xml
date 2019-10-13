@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CTe xmlns="http://www.portalfiscal.inf.br/cte">
+    <infCte Id="CTe41191022545265000108570260000000091993403666" versao="3.00">
+        <ide>
+            <cUF>41</cUF>
+            <cCT>99340366</cCT>
+            <CFOP>7358</CFOP>
+            <natOp>Prestacao de servico de transporte</natOp>
+            <mod>57</mod>
+            <serie>26</serie>
+            <nCT>9</nCT>
+            <dhEmi>2019-10-07T18:02:14-03:00</dhEmi>
+            <tpImp>1</tpImp>
+            <tpEmis>1</tpEmis>
+            <cDV>6</cDV>
+            <tpAmb>2</tpAmb>
+            <tpCTe>0</tpCTe>
+            <procEmi>0</procEmi>
+            <verProc>4.0.0</verProc>
+            <cMunEnv>4108403</cMunEnv>
+            <xMunEnv>Francisco Beltrao</xMunEnv>
+            <UFEnv>PR</UFEnv>
+            <modal>01</modal>
+            <tpServ>0</tpServ>
+            <cMunIni>4108403</cMunIni>
+            <xMunIni>Francisco Beltrao</xMunIni>
+            <UFIni>PR</UFIni>
+            <cMunFim>9999999</cMunFim>
+            <xMunFim>Exterior</xMunFim>
+            <UFFim>EX</UFFim>
+            <retira>0</retira>
+            <indIEToma>2</indIEToma>
+            <toma3>
+                <toma>0</toma>
+            </toma3>
+        </ide>
+        <compl>
+            <xObs>DOCUMENTO EMITIDO POR ME OU EPP OPTANTE PELO SIMPLES NACIONAL NAO GERA DIREITO A CREDITO FISCAL DE
+                ICMS, ISS E IPI
+            </xObs>
+        </compl>
+        <emit>
+            <CNPJ>22545265000108</CNPJ>
+            <IE>9069531021</IE>
+            <xNome>EMPRESA DEMONSTRACAO LTDA</xNome>
+            <xFant>FABRICA DE SOFTWARE MATRIZ</xFant>
+            <enderEmit>
+                <xLgr>AVENIDA JULIO ASSIS CAVALHEIRO</xLgr>
+                <nro>1</nro>
+                <xBairro>CENTRO</xBairro>
+                <cMun>4108403</cMun>
+                <xMun>Francisco Beltrao</xMun>
+                <CEP>85601000</CEP>
+                <UF>PR</UF>
+                <fone>4635230686</fone>
+            </enderEmit>
+        </emit>
+        <rem>
+            <CPF>09356277907</CPF>
+            <IE>ISENTO</IE>
+            <xNome>CT-E EMITIDO EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome>
+            <xFant>1323342345</xFant>
+            <fone>46352421326</fone>
+            <enderReme>
+                <xLgr>RUA GUERINO BORBA</xLgr>
+                <nro>10</nro>
+                <xBairro>SAO MIGUEL</xBairro>
+                <cMun>4108403</cMun>
+                <xMun>Francisco Beltrao</xMun>
+                <CEP>85602300</CEP>
+                <UF>PR</UF>
+                <cPais>1058</cPais>
+                <xPais>BRASIL</xPais>
+            </enderReme>
+        </rem>
+        <dest>
+            <CPF>01234567890</CPF>
+            <IE>ISENTO</IE>
+            <xNome>CT-E EMITIDO EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome>
+            <enderDest>
+                <xLgr>RUA SAO MIGUEL</xLgr>
+                <nro>1</nro>
+                <xBairro>SAO MIGUEL</xBairro>
+                <cMun>9999999</cMun>
+                <xMun>Exterior</xMun>
+                <UF>EX</UF>
+                <cPais>370</cPais>
+                <xPais>ANDORRA</xPais>
+            </enderDest>
+        </dest>
+        <vPrest>
+            <vTPrest>100.00</vTPrest>
+            <vRec>100.00</vRec>
+        </vPrest>
+        <imp>
+            <ICMS>
+                <ICMSSN>
+                    <CST>90</CST>
+                    <indSN>1</indSN>
+                </ICMSSN>
+            </ICMS>
+            <vTotTrib>0.00</vTotTrib>
+        </imp>
+        <infCTeNorm>
+            <infCarga>
+                <vCarga>0.00</vCarga>
+                <proPred>PRODUTO FRETE</proPred>
+                <infQ>
+                    <cUnid>03</cUnid>
+                    <tpMed>PESO BRUTO</tpMed>
+                    <qCarga>10.0000</qCarga>
+                </infQ>
+            </infCarga>
+            <infDoc>
+                <infOutros>
+                    <tpDoc>99</tpDoc>
+                </infOutros>
+            </infDoc>
+            <infModal versaoModal="3.00">
+                <rodo>
+                    <RNTRC>12345678</RNTRC>
+                </rodo>
+            </infModal>
+            <cobr>
+                <dup>
+                    <nDup>9/1</nDup>
+                    <dVenc>2019-10-07</dVenc>
+                    <vDup>100.00</vDup>
+                </dup>
+            </cobr>
+        </infCTeNorm>
+        <infRespTec>
+            <CNPJ>22545265000108</CNPJ>
+            <xContato>ICOMPSOFT SISTEMAS DE INFORMACOES LTDA ME</xContato>
+            <email>contato@icompsoft.com.br</email>
+            <fone>4635230686</fone>
+        </infRespTec>
+    </infCte>
+    <infCTeSupl>
+        <qrCodCTe>
+            <![CDATA[http://www.fazenda.pr.gov.br/cte/qrcode?chCTe=41191022545265000108570260000000091993403666&tpAmb=2]]></qrCodCTe>
+    </infCTeSupl>
+    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+        <SignedInfo>
+            <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+            <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+            <Reference URI="#CTe41191022545265000108570260000000091993403666">
+                <Transforms>
+                    <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                    <Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                </Transforms>
+                <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                <DigestValue>ZyEdB3ukR3ZO7bj0Y1jFPwOCs9o=</DigestValue>
+            </Reference>
+        </SignedInfo>
+        <SignatureValue>
+            UywBl/j1rKCCAC6zT3ADwgD1ZxBmtV/r+oQOuhT9YLkFaFqj+BUFTO9+ew5iTgT8YfZoSBbSyoloPUJZxzaDNeC1dsF3N7IioSgERiSBToZS2Ovng7qZtOcajZ/SbDypoOjzFdnVPnOo56mrQ9IadedD6q9mPnXLqzU3h6QON1N6zmQSMgdh9ew9NSCF7nBPqQPNFcJNb0wuyNeGVAta9xcCA8Ozuj9pNq+BBoMGoNT/rHEEn+z4xlaHmb6fradrla2VIsdld8rPB83vboYJJTVvsp8dm/xKl34jXcRH0AUTcOjG1+4og1LOYRnVegHsAg5HVtNsbB46whDoyX67Tg==
+        </SignatureValue>
+        <KeyInfo>
+            <X509Data>
+                <X509Certificate>
+                    MIIH8jCCBdqgAwIBAgIIe22HCbs9L14wDQYJKoZIhvcNAQELBQAwdDELMAkGA1UEBhMCQlIxEzARBgNVBAoTCklDUC1CcmFzaWwxNjA0BgNVBAsTLVNlY3JldGFyaWEgZGEgUmVjZWl0YSBGZWRlcmFsIGRvIEJyYXNpbCAtIFJGQjEYMBYGA1UEAxMPQUMgVkFMSUQgUkZCIHY1MB4XDTE5MDgwNjE0MDAyN1oXDTIwMDgwNTE0MDAyN1owggEMMQswCQYDVQQGEwJCUjELMAkGA1UECBMCUFIxGjAYBgNVBAcTEUZSQU5DSVNDTyBCRUxUUkFPMRMwEQYDVQQKEwpJQ1AtQnJhc2lsMTYwNAYDVQQLEy1TZWNyZXRhcmlhIGRhIFJlY2VpdGEgRmVkZXJhbCBkbyBCcmFzaWwgLSBSRkIxFjAUBgNVBAsTDVJGQiBlLUNOUEogQTExFzAVBgNVBAsTDkFSIEdMT0JBTENFUlRJMRcwFQYDVQQLEw4xNzA2NTU1OTAwMDEwMDE9MDsGA1UEAxM0SUNPTVBTT0ZUIFNJU1RFTUFTIERFIElORk9STUFDQU8gTFREQToyMjU0NTI2NTAwMDEwODCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALds1Rds9zoZg57Gsfn6RiinJjm9JmCZoCBuZ6bqKYDC8N2WeljVVDsbCu+mDydZ4IyqcSihg1tgdGjV9VUUT6Fp9xIptqr9fL9S/osdSwyWVbRenheigcwbEzXYMsAfDwvphXBjmmRNSmH3kHQqJINoB1x9yKPYsAXeqqjA2DkjtcID5P1fhz58uChEU2uVmOOn3v8usBbY4nCt+wovH10PzfIqBAI0LeFPbXQIfRaar2SnVD6DNDjXuLcx0zZtNbDElWeUwsFj08di2lDdLFeS1yupxc+wBY1LC+MyBfXzxMuespQ/IzOYa72eUjDehzbog8VPcKRG//U1SAjDHpkCAwEAAaOCAuwwggLoMIGcBggrBgEFBQcBAQSBjzCBjDBVBggrBgEFBQcwAoZJaHR0cDovL2ljcC1icmFzaWwudmFsaWRjZXJ0aWZpY2Fkb3JhLmNvbS5ici9hYy12YWxpZHJmYi9hYy12YWxpZHJmYnY1LnA3YjAzBggrBgEFBQcwAYYnaHR0cDovL29jc3B2NS52YWxpZGNlcnRpZmljYWRvcmEuY29tLmJyMAkGA1UdEwQCMAAwHwYDVR0jBBgwFoAUU8ul5HVQmUAsvlsVRcm+yzCqicUwcAYDVR0gBGkwZzBlBgZgTAECASUwWzBZBggrBgEFBQcCARZNaHR0cDovL2ljcC1icmFzaWwudmFsaWRjZXJ0aWZpY2Fkb3JhLmNvbS5ici9hYy12YWxpZHJmYi9kcGMtYWMtdmFsaWRyZmJ2NS5wZGYwgbYGA1UdHwSBrjCBqzBToFGgT4ZNaHR0cDovL2ljcC1icmFzaWwudmFsaWRjZXJ0aWZpY2Fkb3JhLmNvbS5ici9hYy12YWxpZHJmYi9sY3ItYWMtdmFsaWRyZmJ2NS5jcmwwVKBSoFCGTmh0dHA6Ly9pY3AtYnJhc2lsMi52YWxpZGNlcnRpZmljYWRvcmEuY29tLmJyL2FjLXZhbGlkcmZiL2xjci1hYy12YWxpZHJmYnY1LmNybDAOBgNVHQ8BAf8EBAMCBeAwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMIHABgNVHREEgbgwgbWBHWJydW5vLm1ldXJlckBpY29tcHNvZnQuY29tLmJyoDgGBWBMAQMEoC8ELTA1MDkxOTkxMDczNzcxNzE5MDEwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMKAmBgVgTAEDAqAdBBtCUlVOTyBFTElBUyBTSUxWRUlSQSBNRVVSRVKgGQYFYEwBAwOgEAQOMjI1NDUyNjUwMDAxMDigFwYFYEwBAwegDgQMMDAwMDAwMDAwMDAwMA0GCSqGSIb3DQEBCwUAA4ICAQAm48XAHYssOS6mNAFkkVoFJ+JZh2g/ZyAilkyeL4uvX16S/Nzr46k07i6uHr53slSchKTNfGLjezRprxCaZu7tkT8vNfMMdW246nuKzapbIqWVEqZ6EWuzoXfE17RunhEi2z6qTcgq2aAhqpuEdplNGEsDCXmh8/5eElskHl8jyaZGKH246ELWAnGCtNHOmyCSIwNfCjsMah/MeVColHiU/LU7aZaPsW4Dm/Cp45+OaI+b0o57l9gMNB0bblFVWsXTrNhA+Tcx6VVwnQ9vwta6DBjIqRawHrEeQOoVljQjVaKNf5+COktW0JvIhlRp/0HiAT1AwYuP+KNjicdh+ZEJ76NBCmiEgKr8e43+yQ0Pq5KWWPVriuXP84kB700Znae7JIu4RLZWy6/0UlUIAIh7RP8nHxt14tyf2nEdRoCgmndDuydg6BIG2P2skV7Xoi6JtJhlqkM4gmL6XsiNxgG3Oa1Re28ivqjz2TdHi3F29zwvFl0plTXcO+VJtoXK6ctPVkc7UbJnlWwTJDakZeemA0ki8lUNWC/u53j2uu6wMt+fL7PFk2pYjxfoX0R2kPA2KJF90xG0x98E/NOEvdWycSp9dW6eMnBxf4geWczMU+QDdh84w7pqI5IRpBDEjNKHPKUUuVDnJKD8O9xebO0Yh90rrpU/DgSd5aFZTV424Q==
+                </X509Certificate>
+            </X509Data>
+        </KeyInfo>
+    </Signature>
+</CTe>
