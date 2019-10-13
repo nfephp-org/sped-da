@@ -675,12 +675,12 @@ class Danfe extends Common
         $hDispo2 = $this->hPrint - 10 - ($hcabecalho + $hfooter + $hCabecItens)-4;
         //Contagem da altura ocupada para impressão dos itens
         $fontProduto = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>''];
-        $i = 1;
         $numlinhas = 0;
         $hUsado = $hCabecItens;
         $w2 = round($w*0.28, 0);
         $hDispo = $hDispo1;
         $totPag = 1;
+        $i = 0;
         while ($i < $this->det->length) {
             $texto = $this->descricaoProduto($this->det->item($i));
             $numlinhas = $this->pdf->getNumLines($texto, $w2, $fontProduto);
@@ -2441,16 +2441,14 @@ class Danfe extends Common
         }
         $loteTxt ='';
         $rastro = $prod->getElementsByTagName("med");
-        if (!isset($rastro)) {
+        if (!empty($prod->getElementsByTagName("rastro"))) {
             $rastro = $prod->getElementsByTagName("rastro");
-        }
-        if (isset($rastro)) {
             $i = 0;
             while ($i < $rastro->length) {
                 $loteTxt .= $this->getTagValue($rastro->item($i), 'nLote', ' Lote: ');
                 $loteTxt .= $this->getTagValue($rastro->item($i), 'qLote', ' Quant: ');
-                $loteTxt .= $this->simpleGetDate($rastro->item($i), 'dFab', ' Fab: ');
-                $loteTxt .= $this->simpleGetDate($rastro->item($i), 'dVal', ' Val: ');
+                $loteTxt .= $this->getTagDate($rastro->item($i), 'dFab', ' Fab: ');
+                $loteTxt .= $this->getTagDate($rastro->item($i), 'dVal', ' Val: ');
                 $loteTxt .= $this->getTagValue($rastro->item($i), 'vPMC', ' PMC: ');
                 $i++;
             }
@@ -2887,20 +2885,13 @@ class Danfe extends Common
         $veiculoHp = $veicProd->getElementsByTagName("pot")->item(0)->nodeValue;
         $veiculoPlaca = ''; //$veiculo->getElementsByTagName("CMT")->item(0)->nodeValue;
         $veiculoTipoPintura = $veicProd->getElementsByTagName("tpPint")->item(0)->nodeValue;
-
         $veiculoMarcaModelo = $prod->getElementsByTagName("xProd")->item(0)->nodeValue;
         $veiculoEspecie = $veicProd->getElementsByTagName("espVeic")->item(0)->nodeValue;
         $veiculoCombustivel = $veicProd->getElementsByTagName("tpComb")->item(0)->nodeValue;
         $veiculoSerial = $veicProd->getElementsByTagName("nSerie")->item(0)->nodeValue;
         $veiculoFabricacao = $veicProd->getElementsByTagName("anoFab")->item(0)->nodeValue;
         $veiculoModelo = $veicProd->getElementsByTagName("anoMod")->item(0)->nodeValue;
-
         $veiculoDistancia = $veicProd->getElementsByTagName("dist")->item(0)->nodeValue;
-
-        $tpPintValue = $veiculoTipoPintura;
-        if (isset($renavamTipoPintura[$veiculoTipoPintura])) {
-            $tpPintValue = $renavamTipoPintura[$veiculoTipoPintura];
-        }
 
         $x = $oldX;
 
@@ -2917,8 +2908,8 @@ class Danfe extends Common
         $texto = 'Cmkg...............: ' . $veiculoCmkg;
         $this->pdf->textBox($x, $yVeic, $w1+40, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Tipo.................: ' . $renavamTiposVeiculos[intval($veiculoTipo)];
-        $this->pdf->textBox($x, $yVeic, $w1+40, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $texto = 'Tipo.................: ' . ($renavamTiposVeiculos[intval($veiculoTipo)] ?? $veiculoTipo);
+         $this->pdf->textBox($x, $yVeic, $w1+40, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic = $y + $h;
         $xVeic = $x + 65;
         $texto = 'Nº Motor: .........: ' . $veiculoMotor;
@@ -2933,17 +2924,17 @@ class Danfe extends Common
         $texto = 'Placa.................: ' . $veiculoPlaca;
         $this->pdf->textBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Tipo Pintura......: ' . $tpPintValue;
+        $texto = 'Tipo Pintura......: ' . ($renavamEspecie[intval($veiculoTipoPintura)] ?? $veiculoTipoPintura);
         $this->pTextBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic = $y + $h;
         $xVeic = $xVeic + 55;
         $texto = 'Marca / Modelo.....: ' . $veiculoMarcaModelo;
         $this->pdf->textBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Especie..................: ' . $renavamEspecie[intval($veiculoEspecie)];
+        $texto = 'Especie..................: ' . ($renavamEspecie[intval($veiculoEspecie)] ?? $veiculoEspecie);
         $this->pdf->textBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Combustivel..........: ' . $renavamCombustivel[intval($veiculoCombustivel)];
+        $texto = 'Combustivel..........: ' . ($renavamCombustivel[intval($veiculoCombustivel)] ?? $veiculoCombustivel);
         $this->pdf->textBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
         $texto = 'Serial.....................: ' . $veiculoSerial;

@@ -39,7 +39,7 @@ class Common
      * @param  string $extraText prefixo do retorno
      * @return string
      */
-    protected function simpleGetDate($theObj, $keyName, $extraText = '')
+    protected function getTagDate($theObj, $keyName, $extraText = '')
     {
         if (!isset($theObj) || !is_object($theObj)) {
             return '';
