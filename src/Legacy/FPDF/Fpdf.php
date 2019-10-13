@@ -7,6 +7,7 @@ use Exception;
 class Fpdf
 {
     const FPDF_VERSION = '1.6';
+    const FPDF_FONTPATH = '/font/';
     
     public $page;               //current page number
     public $n;                  //current object number
@@ -1208,10 +1209,7 @@ class Fpdf
     
     protected function getFontPath()
     {
-        if (!defined('FPDF_FONTPATH') && is_dir(dirname(__FILE__).'/font')) {
-            define('FPDF_FONTPATH', dirname(__FILE__).'/font/');
-        }
-        return defined('FPDF_FONTPATH') ? FPDF_FONTPATH : '';
+        return __DIR__ . self::FPDF_FONTPATH;
     }
     
     
