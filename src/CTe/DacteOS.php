@@ -91,6 +91,8 @@ class DacteOS extends Common
 
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     protected $margemInterna = 0;
+    
+    private $creditos;
 
     /**
      * __construct
@@ -114,9 +116,7 @@ class DacteOS extends Common
         $sDirPDF = '',
         $fonteDACTE = '',
         $mododebug = 2,
-        $preVisualizar = false,
-        $nomeDesenvolvedor = 'Powered by NFePHP (GNU/GPLv3 GNU/LGPLv3) © www.nfephp.org',
-        $siteDesenvolvedor = 'http://www.nfephp.org'
+        $preVisualizar = false
     ) {
 
         if (is_numeric($mododebug)) {
@@ -139,8 +139,8 @@ class DacteOS extends Common
         $this->destino = $sDestino;
         $this->pdfDir = $sDirPDF;
         $this->preVisualizar = $preVisualizar;
-        $this->siteDesenvolvedor = $siteDesenvolvedor;
-        $this->nomeDesenvolvedor = $nomeDesenvolvedor;
+        //$this->siteDesenvolvedor = $siteDesenvolvedor;
+        //$this->nomeDesenvolvedor = $nomeDesenvolvedor;
         // verifica se foi passa a fonte a ser usada
         if (!empty($fonteDACTE)) {
             $this->fontePadrao = $fonteDACTE;
@@ -162,14 +162,11 @@ class DacteOS extends Common
             $this->ide = $this->dom->getElementsByTagName("ide")->item(0);
             $this->emit = $this->dom->getElementsByTagName("emit")->item(0);
             $this->enderEmit = $this->dom->getElementsByTagName("enderEmit")->item(0);
-
             $this->infPercurso = $this->dom->getElementsByTagName("infPercurso");
             $this->infCarga = $this->dom->getElementsByTagName("infCarga")->item(0);
             $this->infQ = $this->dom->getElementsByTagName("infQ");
             $this->seg = $this->dom->getElementsByTagName("seg")->item(0);
             $this->rodo = $this->dom->getElementsByTagName("rodoOS")->item(0);
-
-
             $this->veic = $this->dom->getElementsByTagName("veic");
             $this->ferrov = $this->dom->getElementsByTagName("ferrov")->item(0);
             // adicionar outros modais
@@ -191,14 +188,12 @@ class DacteOS extends Common
                 $vTrib = 0;
             }
             $textoAdic = number_format($vTrib, 2, ",", ".");
-
             $this->textoAdic = "o valor aproximado de tributos incidentes sobre o preço deste serviço é de R$"
                     .$textoAdic;
             $this->toma = $this->dom->getElementsByTagName("toma")->item(0);
             $this->enderToma = $this->getTagValue($this->toma, "enderToma");
             //modal aquaviário
             $this->aquav = $this->dom->getElementsByTagName("aquav")->item(0);
-
             $seguro = $this->getTagValue($this->seg, "respSeg");
             switch ($seguro) {
                 case '4':
@@ -1120,12 +1115,9 @@ class DacteOS extends Common
             'size' => 6,
             'style' => '');
         $this->pdf->textBox($x-1, $y+2, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = $this->nomeDesenvolvedor . ' - '. $this->siteDesenvolvedor;
-        $aFont = array(
-            'font' => $this->fontePadrao,
-            'size' => 6,
-            'style' => '');
-        $this->pdf->textBox($x-50, $y+2, $w, 4, $texto, $aFont, 'T', 'R', 0, $this->siteDesenvolvedor);
+        
+        $texto = $this->creditos .  "  Powered by NFePHP®";
+        $this->pdf->textBox($x, $y, $w, 0, $texto, $aFont, 'T', 'R', false, '');
     }
 
     /**
@@ -2582,5 +2574,14 @@ class DacteOS extends Common
         // prepare a base64 encoded "data url"
         $pic = 'data://text/plain;base64,' . base64_encode($qrcode);
         $this->pdf->image($pic, $xQr, $yQr, $wQr, $hQr, 'PNG');
+    }
+    
+    /**
+     * Add the credits to the integrator in the footer message
+     * @param string $message
+     */
+    public function creditsIntegratorFooter($message = '')
+    {
+        $this->creditos = trim($message);
     }
 }
