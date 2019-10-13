@@ -5,7 +5,7 @@ require_once '../../bootstrap.php';
 
 use NFePHP\DA\MDFe\Damdfe;
 
-$xml = file_get_contents(__DIR__ . '/mdfe.xml');
+$xml = file_get_contents('../xml/mdfe/mdfe.xml');
 
 try {
     $damdfe = new Damdfe($xml, 'P', 'A4', 'images/logo.jpg');
