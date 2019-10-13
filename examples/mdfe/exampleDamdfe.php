@@ -9,6 +9,7 @@ $xml = file_get_contents('../xml/mdfe/mdfe.xml');
 
 try {
     $damdfe = new Damdfe($xml);
+    $damdfe->creditsIntegratorFooter('Seu Software Ltd');
     $damdfe->monta('../images/logo.jpg');
     $pdf = $damdfe->render();
     header('Content-Type: application/pdf');
