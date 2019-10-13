@@ -1,19 +1,11 @@
 <?php
-
-/**
- * ATENÇÃO : Esse exemplo usa classe PROVISÓRIA que será removida assim que
- * a nova classe DACCE estiver refatorada e a pasta EXTRAS será removida.
- */
 ini_set('display_errors', 1);
-require_once '../bootstrap.php';
+require_once '../../bootstrap.php';
 
 use NFePHP\DA\CTe\Dacce;
 
-$xml = __DIR__ . '/xml/proccce.xml';
-$docxml = file_get_contents($xml);
-//header('Content-type: text/xml; charset=UTF-8');
-//echo $docxml;
-//die;
+$xml = file_get_contents(__DIR__ . '/../xml/proccce.xml');
+
 $aEnd = array(
     'razao' => 'QQ Comercio e Ind. Ltda',
     'logradouro' => 'Rua vinte e um de março',
@@ -29,7 +21,7 @@ $aEnd = array(
 
 try {
     $docxml = file_get_contents($xml);
-    $dacce = new Dacce($docxml, 'L', 'A4', '', 'I', $aEnd);
+    $dacce = new Dacce($xml, 'L', 'A4', '', 'I', $aEnd, '', '', 1);
     $id = $dacce->monta();
     $dacce->printDACCE("dacce.pdf", "I");
 } catch (Exception $e) {

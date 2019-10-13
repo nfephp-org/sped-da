@@ -1003,7 +1003,7 @@ class Danfe extends Common
      *
      */
 
-    protected function pNotaDPEC()
+    protected function notaDPEC()
     {
         return $this->situacao_externa == self::SIT_DPEC && $this->numero_registro_dpec != '';
     }
@@ -1230,7 +1230,7 @@ class Danfe extends Common
         }
         if (($this->tpEmis == 2 || $this->tpEmis == 5) && !$this->pNotaDPEC()) {
             $cabecalhoProtoAutorizacao = "DADOS DA NF-E";
-            $chaveContingencia = $this->pGeraChaveAdicionalDeContingencia();
+            $chaveContingencia = $this->geraChaveAdicionalDeContingencia();
             $this->pdf->setFillColor(0, 0, 0);
             //codigo de barras
             $this->pdf->code128($x+11, $y1+1, $chaveContingencia, $bW*.9, $bH/2);
@@ -3133,7 +3133,7 @@ class Danfe extends Common
         $aFont = ['font'=>$this->fontePadrao, 'size'=>6, 'style'=>'I'];
         $texto = "Impresso em ". date('d/m/Y') . " as " . date('H:i:s');
         $this->pdf->textBox($x, $y, $w, 0, $texto, $aFont, 'T', 'L', false);
-        $texto = $this->creditos .  "  Powered by NFePHP";
+        $texto = $this->creditos .  "  Powered by NFePHP®";
         $this->pdf->textBox($x, $y, $w, 0, $texto, $aFont, 'T', 'R', false, '');
     }
 
@@ -3309,12 +3309,12 @@ class Danfe extends Common
     }
 
     /**
-     * pGeraChaveAdicionalDeContingencia
+     * geraChaveAdicionalDeContingencia
      *
-     * @name   pGeraChaveAdicionalDeContingencia
+     * @name   geraChaveAdicionalDeContingencia
      * @return string chave
      */
-    protected function pGeraChaveAdicionalDeContingencia()
+    protected function geraChaveAdicionalDeContingencia()
     {
         //cUF tpEmis CNPJ vNF ICMSp ICMSs DD  DV
         // Quantidade de caracteres  02   01      14  14    01    01  02 01

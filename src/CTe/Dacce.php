@@ -21,7 +21,6 @@ use NFePHP\DA\Legacy\Common;
 
 class Dacce extends Common
 {
-
     public $chCTe;
     protected $logoAlign = 'C';
     protected $yDados = 0;
@@ -75,7 +74,7 @@ class Dacce extends Common
      * @param number $mododebug   0-Não 1-Sim e 2-nada (2 default)
      */
     public function __construct(
-        $docXML = '',
+        $docXML,
         $sOrientacao = '',
         $sPapel = '',
         $sPathLogo = '',
@@ -87,6 +86,9 @@ class Dacce extends Common
         $nomeDesenvolvedor = 'Dacce ver. 0.1.1 Powered by NFePHP (GNU/GPLv3 GNU/LGPLv3) © www.nfephp.org',
         $siteDesenvolvedor = 'http://www.nfephp.org'
     ) {
+        if (empty($docXML)) {
+            throw new Exception("Um xml de evento deve ser passado");
+        }
         if (is_numeric($mododebug)) {
             $this->debugMode = (int) $mododebug;
         }
@@ -124,6 +126,9 @@ class Dacce extends Common
             }
             $this->dom = new Dom();
             $this->dom->loadXML($this->xml);
+            if (empty($this->dom->getElementsByTagName("eventoCTe")->item(0))) {
+                throw new Exception("Este xml não é um evento do CTe");
+            }
             $this->procEventoCTe = $this->dom->getElementsByTagName("procEventoCTe")->item(0);
             $this->eventoCTe = $this->procEventoCTe->getElementsByTagName("eventoCTe")->item(0);
             $this->retEventoCTe = $this->procEventoCTe->getElementsByTagName("retEventoCTe")->item(0);
@@ -345,7 +350,7 @@ class Dacce extends Common
         $aFont = ['font' => $this->fontePadrao, 'size' => 10, 'style' => ''];
         $this->pdf->textBox($x, $y + 15, $w2, 8, $texto, $aFont, 'T', 'L', 0, '');
         $tsHora = $this->convertTime($this->dhEvento);
-        $texto = 'Criado em : ' . date('d/m/Y   H:i:s', $tsHora);
+        $texto = 'Criado em : ' . date('d/m/Y H:i:s', $tsHora);
         $this->pdf->textBox($x, $y + 20, $w2, 8, $texto, $aFont, 'T', 'L', 0, '');
         $tsHora = $this->convertTime($this->dhRegEvento);
         $texto = 'Prococolo: ' . $this->nProt . '  -  Registrado na SEFAZ em: ' . date('d/m/Y   H:i:s', $tsHora);
