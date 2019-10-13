@@ -594,7 +594,7 @@ class Danfe extends Common
             }
         }
         //coloca o cabeçalho
-        $y = $this->cabecalhoDANFE($x, $y, $pag, $totPag);
+        $y = $this->header($x, $y, $pag, $totPag);
         //coloca os dados do destinatário
         $y = $this->destinatarioDANFE($x, $y+1);
         
@@ -610,7 +610,7 @@ class Danfe extends Common
         }
         //caso tenha boleto imprimir fatura
         if ($this->dup->length > 0) {
-            $y = $this->faturaDANFE($x, $y+1);
+            $y = $this->fatura($x, $y+1);
         } else {
             //Se somente tiver a forma de pagamento sem pagamento ou outros não imprimir nada
             if (count($formaPag)=='1' && (isset($formaPag[90]) || isset($formaPag[99]))) {
@@ -618,26 +618,26 @@ class Danfe extends Common
             } else {
                 //caso tenha mais de uma forma de pagamento ou seja diferente de boleto exibe a
                 //forma de pagamento e o valor
-                $y = $this->pagamentoDANFE($x, $y+1);
+                $y = $this->pagamento($x, $y+1);
             }
         }
         //coloca os dados dos impostos e totais da NFe
-        $y = $this->impostoDANFE($x, $y+1);
+        $y = $this->imposto($x, $y+1);
         //coloca os dados do trasnporte
-        $y = $this->transporteDANFE($x, $y+1);
+        $y = $this->transporte($x, $y+1);
         //itens da DANFE
         $nInicial = 0;
 
-        $y = $this->itensDANFE($x, $y+1, $nInicial, $hDispo1, $pag, $totPag, $hCabecItens);
+        $y = $this->itens($x, $y+1, $nInicial, $hDispo1, $pag, $totPag, $hCabecItens);
 
         //coloca os dados do ISSQN
         if ($linhaISSQN == 1) {
-            $y = $this->issqnDANFE($x, $y+4);
+            $y = $this->issqn($x, $y+4);
         } else {
             $y += 4;
         }
         //coloca os dados adicionais da NFe
-        $y = $this->dadosAdicionaisDANFE($x, $y, $hdadosadic);
+        $y = $this->dadosAdicionais($x, $y, $hdadosadic);
         //coloca o rodapé da página
         if ($this->orientacao == 'P') {
             $this->rodape($xInic, $y-1);
@@ -659,9 +659,9 @@ class Danfe extends Common
             $x = $xInic;
             $y = $yInic;
             //coloca o cabeçalho na página adicional
-            $y = $this->cabecalhoDANFE($x, $y, $n, $totPag);
+            $y = $this->header($x, $y, $n, $totPag);
             //coloca os itens na página adicional
-            $y = $this->itensDANFE($x, $y+1, $nInicial, $hDispo2, $n, $totPag, $hCabecItens);
+            $y = $this->itens($x, $y+1, $nInicial, $hDispo2, $n, $totPag, $hCabecItens);
             //coloca o rodapé da página
             if ($this->orientacao == 'P') {
                 $this->rodape($xInic, $y + 4);
@@ -859,7 +859,7 @@ class Danfe extends Common
 
 
     /**
-     *cabecalhoDANFE
+     *header
      * Monta o cabelhalho da DANFE (retrato e paisagem)
      *
      * @param  number $x      Posição horizontal inicial, canto esquerdo
@@ -868,7 +868,7 @@ class Danfe extends Common
      * @param  number $totPag Total de páginas
      * @return number Posição vertical final
      */
-    protected function cabecalhoDANFE($x = 0, $y = 0, $pag = '1', $totPag = '1')
+    protected function header($x = 0, $y = 0, $pag = '1', $totPag = '1')
     {
         $oldX = $x;
         $oldY = $y;
@@ -1322,7 +1322,7 @@ class Danfe extends Common
          *
          */
         return $oldY;
-    } //fim cabecalhoDANFE
+    } //fim header
 
     /**
      * destinatarioDANFE
@@ -1580,15 +1580,15 @@ class Danfe extends Common
     }
 
     /**
-     * faturaDANFE
+     * fatura
      * Monta o campo de duplicatas da DANFE (retrato e paisagem)
      *
-     * @name   faturaDANFE
+     * @name   fatura
      * @param  number $x Posição horizontal canto esquerdo
      * @param  number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
-    protected function faturaDANFE($x, $y)
+    protected function fatura($x, $y)
     {
         $linha = 1;
         $h = 8+3;
@@ -1611,6 +1611,18 @@ class Danfe extends Common
             $dups = "";
             $dupcont = 0;
             $nFat = $this->dup->length;
+            if ($nFat > 7) {
+                $myH = 6;
+                $myW = $this->wPrint;
+                if ($this->orientacao == 'L') {
+                    $myW -= $this->wCanhoto;
+                }
+                $aFont = ['font' => $this->fontePadrao, 'size' => 9, 'style' => ''];
+                $texto = "Existem mais de 7 duplicatas registradas, portanto não "
+                    . "serão exibidas, confira diretamente pelo XML.";
+                $this->pdf->textBox($x, $y, $myW, $myH, $texto, $aFont, 'C', 'C', 1, '');
+                return ($y + $h - 3);
+            }
             if ($textoFatura !== "" && $this->exibirTextoFatura) {
                 $myH=6;
                 $myW = $this->wPrint;
@@ -1685,18 +1697,18 @@ class Danfe extends Common
             $linha = 0;
             return ($y-2);
         }
-    } //fim da função faturaDANFE
+    }
 
     /**
-     * pagamentoDANFE
-     * Monta o campo de pagamentos da DANFE (retrato e paisagem) (foi baseada na faturaDANFE)
+     * pagamento
+     * Monta o campo de pagamentos da DANFE (retrato e paisagem) (foi baseada na fatura)
      *
-     * @name   pagamentoDANFE
+     * @name   pagamento
      * @param  number $x Posição horizontal canto esquerdo
      * @param  number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
-    protected function pagamentoDANFE($x, $y)
+    protected function pagamento($x, $y)
     {
         $linha = 1;
         $h = 8+3;
@@ -1786,13 +1798,13 @@ class Danfe extends Common
             $linha = 0;
             return ($y-2);
         }
-    } //fim da função pagamentoDANFE
+    } //fim da função pagamento
     
     /**
-     * impostoDanfeHelper
+     * impostoHelper
      * Auxilia a montagem dos campos de impostos e totais da DANFE
      *
-     * @name   impostoDanfeHelper
+     * @name   impostoHelper
      * @param  float $x Posição horizontal canto esquerdo
      * @param  float $y Posição vertical canto superior
      * @param  float $w Largura do campo
@@ -1801,7 +1813,7 @@ class Danfe extends Common
      * @param  float $h Valor do imposto
      * @return float Sugestão do $x do próximo imposto
      */
-    protected function impostoDanfeHelper($x, $y, $w, $h, $titulo, $campoImposto)
+    protected function impostoHelper($x, $y, $w, $h, $titulo, $campoImposto)
     {
         $valorImposto = '0, 00';
         $the_field = $this->ICMSTot->getElementsByTagName($campoImposto)->item(0);
@@ -1822,14 +1834,14 @@ class Danfe extends Common
     }
 
     /**
-     * impostoDANFE
+     * imposto
      * Monta o campo de impostos e totais da DANFE (retrato e paisagem)
      *
      * @param  number $x Posição horizontal canto esquerdo
      * @param  number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
-    protected function impostoDANFE($x, $y)
+    protected function imposto($x, $y)
     {
         $x_inicial = $x;
         //#####################################################################
@@ -1858,57 +1870,57 @@ class Danfe extends Common
         $y += 3;
         $h = 7;
 
-        $x = $this->impostoDanfeHelper($x, $y, $w, $h, "BASE DE CÁLC. DO ICMS", "vBC");
-        $x = $this->impostoDanfeHelper($x, $y, $w, $h, "VALOR DO ICMS", "vICMS");
-        $x = $this->impostoDanfeHelper($x, $y, $w, $h, "BASE DE CÁLC. ICMS S.T.", "vBCST");
-        $x = $this->impostoDanfeHelper($x, $y, $w, $h, "VALOR DO ICMS SUBST.", "vST");
-        $x = $this->impostoDanfeHelper($x, $y, $w, $h, "V. IMP. IMPORTAÇÃO", "vII");
+        $x = $this->impostoHelper($x, $y, $w, $h, "BASE DE CÁLC. DO ICMS", "vBC");
+        $x = $this->impostoHelper($x, $y, $w, $h, "VALOR DO ICMS", "vICMS");
+        $x = $this->impostoHelper($x, $y, $w, $h, "BASE DE CÁLC. ICMS S.T.", "vBCST");
+        $x = $this->impostoHelper($x, $y, $w, $h, "VALOR DO ICMS SUBST.", "vST");
+        $x = $this->impostoHelper($x, $y, $w, $h, "V. IMP. IMPORTAÇÃO", "vII");
 
         if ($this->exibirIcmsInterestadual) {
-            $x = $this->impostoDanfeHelper($x, $y, $w, $h, "V. ICMS UF REMET.", "vICMSUFRemet");
-            $x = $this->impostoDanfeHelper($x, $y, $w, $h, "V. FCP UF DEST.", "vFCPUFDest");
+            $x = $this->impostoHelper($x, $y, $w, $h, "V. ICMS UF REMET.", "vICMSUFRemet");
+            $x = $this->impostoHelper($x, $y, $w, $h, "V. FCP UF DEST.", "vFCPUFDest");
         }
 
         if ($this->exibirPIS) {
-            $x = $this->impostoDanfeHelper($x, $y, $w, $h, "VALOR DO PIS", "vPIS");
+            $x = $this->impostoHelper($x, $y, $w, $h, "VALOR DO PIS", "vPIS");
         }
 
-        $x = $this->impostoDanfeHelper($x, $y, $w, $h, "V. TOTAL PRODUTOS", "vProd");
+        $x = $this->impostoHelper($x, $y, $w, $h, "V. TOTAL PRODUTOS", "vProd");
 
         //
 
         $y += $h;
         $x = $x_inicial;
 
-        $x = $this->impostoDanfeHelper($x, $y, $w, $h, "VALOR DO FRETE", "vFrete");
-        $x = $this->impostoDanfeHelper($x, $y, $w, $h, "VALOR DO SEGURO", "vSeg");
-        $x = $this->impostoDanfeHelper($x, $y, $w, $h, "DESCONTO", "vDesc");
-        $x = $this->impostoDanfeHelper($x, $y, $w, $h, "OUTRAS DESPESAS", "vOutro");
-        $x = $this->impostoDanfeHelper($x, $y, $w, $h, "VALOR TOTAL IPI", "vIPI");
+        $x = $this->impostoHelper($x, $y, $w, $h, "VALOR DO FRETE", "vFrete");
+        $x = $this->impostoHelper($x, $y, $w, $h, "VALOR DO SEGURO", "vSeg");
+        $x = $this->impostoHelper($x, $y, $w, $h, "DESCONTO", "vDesc");
+        $x = $this->impostoHelper($x, $y, $w, $h, "OUTRAS DESPESAS", "vOutro");
+        $x = $this->impostoHelper($x, $y, $w, $h, "VALOR TOTAL IPI", "vIPI");
 
         if ($this->exibirIcmsInterestadual) {
-            $x = $this->impostoDanfeHelper($x, $y, $w, $h, "V. ICMS UF DEST.", "vICMSUFDest");
-            $x = $this->impostoDanfeHelper($x, $y, $w, $h, "V. TOT. TRIB.", "vTotTrib");
+            $x = $this->impostoHelper($x, $y, $w, $h, "V. ICMS UF DEST.", "vICMSUFDest");
+            $x = $this->impostoHelper($x, $y, $w, $h, "V. TOT. TRIB.", "vTotTrib");
         }
 
         if ($this->exibirPIS) {
-            $x = $this->impostoDanfeHelper($x, $y, $w, $h, "VALOR DA COFINS", "vCOFINS");
+            $x = $this->impostoHelper($x, $y, $w, $h, "VALOR DA COFINS", "vCOFINS");
         }
-        $x = $this->impostoDanfeHelper($x, $y, $w, $h, "V. TOTAL DA NOTA", "vNF");
+        $x = $this->impostoHelper($x, $y, $w, $h, "V. TOTAL DA NOTA", "vNF");
 
         return ($y+$h);
-    } //fim impostoDANFE
+    } //fim imposto
 
     /**
-     * transporteDANFE
+     * transporte
      * Monta o campo de transportes da DANFE (retrato e paisagem)
      *
-     * @name   transporteDANFE
+     * @name   transporte
      * @param  float $x Posição horizontal canto esquerdo
      * @param  float $y Posição vertical canto superior
      * @return float Posição vertical final
      */
-    protected function transporteDANFE($x, $y)
+    protected function transporte($x, $y)
     {
         $oldX = $x;
         if ($this->orientacao == 'P') {
@@ -2205,7 +2217,7 @@ class Danfe extends Common
         $aFont = ['font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B'];
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'B', 'R', 0, '');
         return ($y+$h);
-    } //fim transporteDANFE
+    } //fim transporte
 
 
 
@@ -2305,10 +2317,10 @@ class Danfe extends Common
     }
 
     /**
-     * itensDANFE
+     * itens
      * Monta o campo de itens da DANFE (retrato e paisagem)
      *
-     * @name   itensDANFE
+     * @name   itens
      * @param  float $x       Posição horizontal canto esquerdo
      * @param  float $y       Posição vertical canto superior
      * @param  float $nInicio Número do item inicial
@@ -2316,7 +2328,7 @@ class Danfe extends Common
      * @param  float $hmax    Altura máxima do campo de itens em mm
      * @return float Posição vertical final
      */
-    protected function itensDANFE($x, $y, &$nInicio, $hmax, $pag = 0, $totpag = 0, $hCabecItens = 7)
+    protected function itens($x, $y, &$nInicio, $hmax, $pag = 0, $totpag = 0, $hCabecItens = 7)
     {
         $oldX = $x;
         $oldY = $y;
@@ -2783,15 +2795,15 @@ class Danfe extends Common
     }
 
     /**
-     * issqnDANFE
+     * issqn
      * Monta o campo de serviços do DANFE
      *
-     * @name   issqnDANFE (retrato e paisagem)
+     * @name   issqn (retrato e paisagem)
      * @param  float $x Posição horizontal canto esquerdo
      * @param  float $y Posição vertical canto superior
      * @return float Posição vertical final
      */
-    protected function issqnDANFE($x, $y)
+    protected function issqn($x, $y)
     {
         $oldX = $x;
         //#####################################################################
@@ -2863,16 +2875,16 @@ class Danfe extends Common
     }
 
     /**
-     *dadosAdicionaisDANFE
+     *dadosAdicionais
      * Coloca o grupo de dados adicionais da NFe. (retrato e paisagem)
      *
-     * @name   dadosAdicionaisDANFE
+     * @name   dadosAdicionais
      * @param  float $x Posição horizontal canto esquerdo
      * @param  float $y Posição vertical canto superior
      * @param  float $h altura do campo
      * @return float Posição vertical final (eixo Y)
      */
-    protected function dadosAdicionaisDANFE($x, $y, $h)
+    protected function dadosAdicionais($x, $y, $h)
     {
         //##################################################################################
         //DADOS ADICIONAIS
