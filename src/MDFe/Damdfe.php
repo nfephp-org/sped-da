@@ -446,12 +446,12 @@ class Damdfe extends Common
             $logoHmm = ($logoInfo[1] / 72) * 25.4;
             if ($this->logoAlign == 'L') {
                 // ajusta a dimensão do logo
-                $nImgW = round($w / 3, 0);
-                $nImgH = round($logoHmm * ($nImgW / $logoWmm), 0);
+                $nImgW = round((round($maxW * 0.50, 0)) / 3, 0);
+                $nImgH = round(($h - $y) - 2, 0) + $y;
                 $xImg = $x + 1;
                 $yImg = round(($h - $nImgH) / 2, 0) + $y;
                 //estabelecer posições do texto
-                $x1 = round($xImg + $nImgW + 1, 0);
+                $x1 = round($xImg + $nImgW + 4, 0);
                 $y1 = round($y + 2, 0);
                 $tw = round(2 * $w / 3, 0);
             }
