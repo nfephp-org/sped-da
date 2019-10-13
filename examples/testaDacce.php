@@ -4,7 +4,6 @@ ini_set('display_errors', 'On');
 require_once '../bootstrap.php';
 
 use NFePHP\DA\NFe\Dacce;
-use NFePHP\DA\Legacy\FilesFolders;
 
 $xml = '/var/www/sped/sped-da/examples/xml/110110-53181011028793000173550010000066701204276800-1-procEventoNfe.xml';
 
@@ -23,9 +22,11 @@ $aEnd = array(
     'email' => '' 
 );
 
+
 try {
-    $docxml = FilesFolders::readFile($xml);
-    $dacce = new Dacce($docxml, 'P', 'A4', $logo, 'I', $aEnd);
+    $docxml = file_get_contents($xml);
+    $dacce = new Dacce($docxml, 'P', 'A4', $logo, 'I', $aEnd, '', '', 1);
+    
     $id = $dacce->chNFe . '-CCE';
     $pdf = $dacce->render();
     header('Content-Type: application/pdf');
