@@ -44,6 +44,7 @@ class Danfce extends Common
     protected $det;
     protected $infAdic;
     protected $textoAdic;
+    protected $tpEmis;
     protected $pag;
     protected $vTroco;
     protected $dest;
@@ -54,41 +55,7 @@ class Danfce extends Common
     protected $hMaxLinha = 9;
     protected $hBoxLinha = 6;
     protected $hLinha = 3;
-    
-    /*
-     * Retorna a sigla da UF
-     * @var string
-     */
-    protected $UFSigla = [
-        '12' => 'AC',
-        '27' => 'AL',
-        '13' => 'AM',
-        '16' => 'AP',
-        '29' => 'BA',
-        '23' => 'CE',
-        '53' => 'DF',
-        '32' => 'ES',
-        '52' => 'GO',
-        '31' => 'MG',
-        '50' => 'MS',
-        '51' => 'MT',
-        '21' => 'MA',
-        '15' => 'PA',
-        '25' => 'PB',
-        '26' => 'PE',
-        '22' => 'PI',
-        '41' => 'PR',
-        '33' => 'RJ',
-        '11' => 'RO',
-        '24' => 'RN',
-        '14' => 'RR',
-        '43' => 'RS',
-        '42' => 'SC',
-        '28' => 'SE',
-        '35' => 'SP',
-        '17' => 'TO'
-    ];
-    
+  
     /**
      * __contruct
      *
@@ -121,26 +88,27 @@ class Danfce extends Common
         }
         $this->xml = $docXML;
         $this->logomarca = $sPathLogo;
-        if (empty($fonteDANFE)) {
-            $this->fontePadrao = 'Times';
-        } else {
-            $this->fontePadrao = $fonteDANFE;
-        }
+        
+        $this->fontePadrao = empty($fonteDANFE) ? 'Times' : $fonteDANFE;
+        $this->aFontTit = array('font' => $this->fontePadrao, 'size' => 9, 'style' => 'B');
+        $this->aFontTex = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+        
         if (!empty($this->xml)) {
             $this->dom = new Dom();
             $this->dom->loadXML($this->xml);
-            $this->nfeProc    = $this->dom->getElementsByTagName("nfeProc")->item(0);
-            $this->nfe        = $this->dom->getElementsByTagName("NFe")->item(0);
-            $this->infNFe     = $this->dom->getElementsByTagName("infNFe")->item(0);
-            $this->ide        = $this->dom->getElementsByTagName("ide")->item(0);
-            $this->emit       = $this->dom->getElementsByTagName("emit")->item(0);
-            $this->enderEmit  = $this->dom->getElementsByTagName("enderEmit")->item(0);
-            $this->det        = $this->dom->getElementsByTagName("det");
-            $this->dest       = $this->dom->getElementsByTagName("dest")->item(0);
-            $this->imposto    = $this->dom->getElementsByTagName("imposto")->item(0);
-            $this->ICMSTot    = $this->dom->getElementsByTagName("ICMSTot")->item(0);
-            $this->tpImp      = $this->ide->getElementsByTagName("tpImp")->item(0)->nodeValue;
-            $this->infAdic    = $this->dom->getElementsByTagName("infAdic")->item(0);
+            $this->nfeProc = $this->dom->getElementsByTagName("nfeProc")->item(0);
+            $this->nfe = $this->dom->getElementsByTagName("NFe")->item(0);
+            $this->infNFe = $this->dom->getElementsByTagName("infNFe")->item(0);
+            $this->ide = $this->dom->getElementsByTagName("ide")->item(0);
+            $this->emit = $this->dom->getElementsByTagName("emit")->item(0);
+            $this->enderEmit = $this->dom->getElementsByTagName("enderEmit")->item(0);
+            $this->det = $this->dom->getElementsByTagName("det");
+            $this->dest = $this->dom->getElementsByTagName("dest")->item(0);
+            $this->imposto = $this->dom->getElementsByTagName("imposto")->item(0);
+            $this->ICMSTot = $this->dom->getElementsByTagName("ICMSTot")->item(0);
+            $this->tpImp = $this->ide->getElementsByTagName("tpImp")->item(0)->nodeValue;
+            $this->infAdic = $this->dom->getElementsByTagName("infAdic")->item(0);
+            $this->tpEmis = $this->dom->getValue($this->ide, "tpEmis");
             
             //se for o layout 4.0 busca pelas tags de detalhe do pagamento
             //senao, busca pelas tags de pagamento principal
@@ -194,7 +162,7 @@ class Danfce extends Common
         $hMaxLinha = $this->hMaxLinha;
         $hBoxLinha = $this->hBoxLinha;
         $hLinha = $this->hLinha;
-        $tamPapelVert = 160 + 16 + (($qtdItens - 1) * $hMaxLinha) + ($qtdPgto * $hLinha);
+        $tamPapelVert = 160 + 16 + 12 + (($qtdItens - 1) * $hMaxLinha) + ($qtdPgto * $hLinha);
         // verifica se existe informações adicionais
         $this->textoAdic = '';
         if (isset($this->infAdic)) {
@@ -263,24 +231,22 @@ class Danfce extends Common
         $this->pdf->setTextColor(0, 0, 0);
         $this->pdf->textBox(0, 0, $maxW, $maxH); // POR QUE PRECISO DESA LINHA?
         $hcabecalho = 27;//para cabeçalho (dados emitente mais logomarca)  (FIXO)
-        $hcabecalhoSecundario = 10;//para cabeçalho secundário (cabeçalho sefaz) (FIXO)
-        $hprodutos = $hLinha + ($qtdItens*$hMaxLinha) ;//box poduto
+        $hcabecalhoSecundario = 10 + 3;//para cabeçalho secundário (cabeçalho sefaz) (FIXO)
+        $hprodutos = $hLinha + ($qtdItens * $hMaxLinha) ;//box poduto
         $hTotal = 12; //box total (FIXO)
-        $hpagamentos = $hLinha + ($qtdPgto*$hLinha);//para pagamentos
+        $hpagamentos = $hLinha + ($qtdPgto * $hLinha) + 3;//para pagamentos
         if (!empty($this->vTroco)) {
             $hpagamentos += $hLinha;
         }
-        $hmsgfiscal = 21;// para imposto (FIXO)
-        if (!isset($this->dest)) {
-            $hcliente = 6;// para cliente (FIXO)
-        } else {
-            $hcliente = 12;
-        }// para cliente (FIXO)};
-        $hQRCode = 50;// para qrcode (FIXO)
-        $hCabecItens = 4;//cabeçalho dos itens
+                
+        $hmsgfiscal = 21 + 2; // para imposto (FIXO)
+        $hcliente = !isset($this->dest) ? 6 : 12; // para cliente (FIXO)
+        $hcontingencia = $this->tpEmis == 9 ? 6 : 0; // para contingência (FIXO)
+        $hQRCode = 50; // para qrcode (FIXO)
+        $hCabecItens = 4; //cabeçalho dos itens
         
         $hUsado = $hCabecItens;
-        $w2 = round($this->wPrint*0.31, 0);
+        $w2 = round($this->wPrint * 0.31, 0);
         $totPag = 1;
         $pag = 1;
         $x = $xInic;
@@ -290,6 +256,7 @@ class Danfce extends Common
         //COLOCA CABEÇALHO SECUNDÁRIO
         $y = $hcabecalho;
         $y = $this->cabecalhoSecundarioDANFE($x, $y, $hcabecalhoSecundario);
+        $jj = $hcabecalho + $hcabecalhoSecundario;
         //COLOCA PRODUTOS
         $y = $xInic + $hcabecalho + $hcabecalhoSecundario;
         $y = $this->produtosDANFE($x, $y, $hprodutos);

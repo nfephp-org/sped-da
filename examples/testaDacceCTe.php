@@ -11,9 +11,9 @@ use NFePHP\DA\CTe\Dacce;
 
 $xml = __DIR__ . '/xml/proccce.xml';
 $docxml = file_get_contents($xml);
-header('Content-type: text/xml; charset=UTF-8');
-echo $docxml;
-die;
+//header('Content-type: text/xml; charset=UTF-8');
+//echo $docxml;
+//die;
 $aEnd = array(
     'razao' => 'QQ Comercio e Ind. Ltda',
     'logradouro' => 'Rua vinte e um de março',
