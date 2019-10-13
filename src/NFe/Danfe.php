@@ -9,7 +9,6 @@ use NFePHP\DA\Legacy\Common;
 
 class Danfe extends Common
 {
-    const FPDF_FONTPATH = 'font/';
     const SIT_CANCELADA = 1;
     const SIT_DENEGADA = 2;
     const SIT_DPEC = 3;
@@ -20,71 +19,61 @@ class Danfe extends Common
      *
      * @var string
      */
-    public $logoAlign = 'C';
+    protected $logoAlign = 'C';
     /**
      * Posição
      * @var float
      */
-    public $yDados = 0;
+    protected $yDados = 0;
     /**
      * Situação
      * @var integer
      */
-    public $situacaoExterna = 0;
+    protected $situacaoExterna = 0;
     /**
      * Numero DPEC
      *
      * @var string
      */
-    public $numero_registro_dpec = '';
+    protected $numero_registro_dpec = '';
     /**
      * quantidade de canhotos a serem montados, geralmente 1 ou 2
      *
      * @var integer
      */
-    public $qCanhoto = 1;
-
-    //###########################################################
-    // INÍCIO ATRIBUTOS DE PARÂMETROS DE EXIBIÇÃO
-    //###########################################################
-
+    protected $qCanhoto = 1;
     /**
      * Parâmetro para exibir ou ocultar os valores do PIS/COFINS.
      * @var boolean
      */
-    public $exibirPIS = true;
+    protected $exibirPIS = true;
     /**
      * Parâmetro para exibir ou ocultar os valores do ICMS Interestadual e Valor Total dos Impostos.
      * @var boolean
      */
-    public $exibirIcmsInterestadual = true;
+    protected $exibirIcmsInterestadual = true;
     /**
      * Parâmetro para exibir ou ocultar o texto sobre valor aproximado dos tributos.
      * @var boolean
      */
-    public $exibirValorTributos = true;
+    protected $exibirValorTributos = true;
     /**
      * Parâmetro para exibir ou ocultar o texto adicional sobre a forma de pagamento
      * e as informações de fatura/duplicata.
      * @var boolean
      */
-    public $exibirTextoFatura = false;
+    protected $exibirTextoFatura = false;
     /**
      * Parâmetro do controle se deve concatenar automaticamente informações complementares
      * na descrição do produto, como por exemplo, informações sobre impostos.
      * @var boolean
      */
-    public $descProdInfoComplemento = true;
+    protected $descProdInfoComplemento = true;
     /**
      * Parâmetro do controle se deve gerar quebras de linha com "\n" a partir de ";" na descrição do produto.
      * @var boolean
      */
-    public $descProdQuebraLinha = true;
-
-    //###########################################################
-    //PROPRIEDADES DA CLASSE
-    //###########################################################
-
+    protected $descProdQuebraLinha = true;
     /**
      * objeto fpdf()
      * @var object
@@ -122,26 +111,10 @@ class Danfe extends Common
      */
     protected $papel = 'A4';
     /**
-     * destino do arquivo pdf
-     * I-borwser, S-retorna o arquivo, D-força download, F-salva em arquivo local
-     * @var string
-     */
-    protected $destino = 'I';
-    /**
-     * diretorio para salvar o pdf com a opção de destino = F
-     * @var string
-     */
-    protected $pdfDir = '';
-    /**
      * Nome da Fonte para gerar o DANFE
      * @var string
      */
     protected $fontePadrao = 'Times';
-    /**
-     * versão
-     * @var string
-     */
-    protected $version = '2.2.8';
     /**
      * Texto
      * @var string
@@ -177,7 +150,6 @@ class Danfe extends Common
      * @var integer
      */
     protected $qtdeItensProc;
-
     /**
      * Document
      * @var DOMDocument
@@ -297,7 +269,7 @@ class Danfe extends Common
      * ativa ou desativa o modo de debug
      * @var integer
      */
-    protected $debugMode = 2;
+    protected $debugmode = false;
     /**
      * Creditos para integrador
      * @var string
@@ -309,83 +281,35 @@ class Danfe extends Common
      *
      * @name  __construct
      * @param string  $docXML      Conteúdo XML da NF-e (com ou sem a tag nfeProc)
-     * @param string  $sOrientacao (Opcional) Orientação da impressão P-retrato L-Paisagem
-     * @param string  $sPapel      Tamanho do papel (Ex. A4)
-     * @param string  $sPathLogo   Caminho para o arquivo do logo
-     * @param string  $sDestino    Estabelece a direção do envio do documento PDF I-browser D-browser com download S-
-     * @param string  $sDirPDF     Caminho para o diretorio de armazenamento dos arquivos PDF
-     * @param string  $fonteDANFE  Nome da fonte alternativa do DAnfe
-     * @param integer $mododebug   0-Não 1-Sim e 2-nada (2 default)
+     * @param string  $logoimage   Caminho para o arquivo do logo
      */
     public function __construct(
-        $docXML = '',
-        $sOrientacao = '',
-        $sPapel = '',
-        $sPathLogo = '',
-        $sDestino = 'I',
-        $sDirPDF = '',
-        $fonteDANFE = '',
-        $mododebug = 2
+        $xml
     ) {
-        //set_time_limit(1800);
-        if (is_numeric($mododebug)) {
-            $this->debugMode = $mododebug;
+        $this->debugMode();
+        $this->loadDoc($xml);
+    }
+    
+    /**
+     * Ativa ou desativa o modo debug
+     * @param bool $activate
+     * @return bool
+     */
+    public function debugMode($activate = null)
+    {
+        if (isset($activate) && is_bool($activate)) {
+            $this->debugmode = $activate;
         }
-        if ($mododebug == 1) {
+        if ($this->debugmode) {
             //ativar modo debug
             error_reporting(E_ALL);
             ini_set('display_errors', 'On');
-        }
-        if ($mododebug == 0) {
+        } else {
             //desativar modo debug
             error_reporting(0);
             ini_set('display_errors', 'Off');
         }
-        $this->orientacao   = $sOrientacao;
-        $this->papel        = $sPapel;
-        $this->pdf          = '';
-        $this->xml          = $docXML;
-        $this->logomarca    = $sPathLogo;
-        $this->destino      = $sDestino;
-        $this->pdfDir       = $sDirPDF;
-        // verifica se foi passa a fonte a ser usada
-        if (empty($fonteDANFE)) {
-            $this->fontePadrao = 'Times';
-        } else {
-            $this->fontePadrao = $fonteDANFE;
-        }
-        //se for passado o xml
-        if (! empty($this->xml)) {
-            $this->dom = new Dom();
-            $this->dom->loadXML($this->xml);
-            $this->nfeProc    = $this->dom->getElementsByTagName("nfeProc")->item(0);
-            $this->infNFe     = $this->dom->getElementsByTagName("infNFe")->item(0);
-            $this->ide        = $this->dom->getElementsByTagName("ide")->item(0);
-            $this->entrega    = $this->dom->getElementsByTagName("entrega")->item(0);
-            $this->retirada   = $this->dom->getElementsByTagName("retirada")->item(0);
-            $this->emit       = $this->dom->getElementsByTagName("emit")->item(0);
-            $this->dest       = $this->dom->getElementsByTagName("dest")->item(0);
-            $this->enderEmit  = $this->dom->getElementsByTagName("enderEmit")->item(0);
-            $this->enderDest  = $this->dom->getElementsByTagName("enderDest")->item(0);
-            $this->det        = $this->dom->getElementsByTagName("det");
-            $this->cobr       = $this->dom->getElementsByTagName("cobr")->item(0);
-            $this->dup        = $this->dom->getElementsByTagName('dup');
-            $this->ICMSTot    = $this->dom->getElementsByTagName("ICMSTot")->item(0);
-            $this->ISSQNtot   = $this->dom->getElementsByTagName("ISSQNtot")->item(0);
-            $this->transp     = $this->dom->getElementsByTagName("transp")->item(0);
-            $this->transporta = $this->dom->getElementsByTagName("transporta")->item(0);
-            $this->veicTransp = $this->dom->getElementsByTagName("veicTransp")->item(0);
-            $this->reboque    = $this->dom->getElementsByTagName("reboque")->item(0);
-            $this->infAdic    = $this->dom->getElementsByTagName("infAdic")->item(0);
-            $this->compra     = $this->dom->getElementsByTagName("compra")->item(0);
-            $this->tpEmis     = $this->getTagValue($this->ide, "tpEmis");
-            $this->tpImp      = $this->getTagValue($this->ide, "tpImp");
-            $this->infProt    = $this->dom->getElementsByTagName("infProt")->item(0);
-            //valida se o XML é uma NF-e modelo 55, pois não pode ser 65 (NFC-e)
-            if ($this->getTagValue($this->ide, "mod") != '55') {
-                throw new InvalidArgumentException("O xml do DANFE deve ser uma NF-e modelo 55");
-            }
-        }
+        return $this->debugmode;
     }
 
     /**
@@ -398,57 +322,19 @@ class Danfe extends Common
     }
     
     /**
-     * monta
-     *
-     * @name   monta
-     * @param  string $orientacao
-     * @param  string $papel
-     * @param  string $logoAlign
+     * Dados brutos do PDF
      * @return string
      */
-    public function monta(
-        $orientacao = '',
-        $papel = 'A4',
-        $logoAlign = 'C',
-        $situacaoExterna = self::SIT_NONE,
-        $classPdf = false,
-        $dpecNumReg = '',
-        $margSup = 2,
-        $margEsq = 2,
-        $margInf = 2
-    ) {
-        return $this->montaDANFE(
-            $orientacao,
-            $papel,
-            $logoAlign,
-            $situacaoExterna,
-            $classPdf,
-            $dpecNumReg,
-            $margSup,
-            $margEsq,
-            $margInf
-        );
-    }
-
-    /**
-     * printDocument
-     *
-     * @param  string $nome
-     * @param  string $destino
-     * @param  string $printer
-     * @return object pdf
-     */
-    public function printDocument($nome = '', $destino = 'I', $printer = '')
+    public function render()
     {
-        $arq = $this->pdf->output($nome, $destino);
-        if ($destino == 'S') {
-            //aqui pode entrar a rotina de impressão direta
+        if (empty($this->pdf)) {
+            $this->monta();
         }
-        return $arq;
+        return $this->pdf->getPdf();
     }
 
     /**
-     * montaDANFE
+     * monta
      * Monta a DANFE conforme as informações fornecidas para a classe durante sua
      * construção. Constroi DANFEs com até 3 páginas podendo conter até 56 itens.
      * A definição de margens e posições iniciais para a impressão são estabelecidas
@@ -459,17 +345,18 @@ class Danfe extends Common
      * @param  string $papel      (Opcional) Estabelece o tamanho do papel (ex. A4)
      * @return string O ID da NFe numero de 44 digitos extraido do arquivo XML
      */
-    public function montaDANFE(
+    public function monta(
+        $logo = '',
         $orientacao = '',
         $papel = 'A4',
         $logoAlign = 'C',
-        $situacaoExterna = self::SIT_NONE,
-        $classPdf = false,
         $depecNumReg = '',
         $margSup = 2,
         $margEsq = 2,
         $margInf = 2
     ) {
+        $this->pdf = '';
+        $this->logomarca = $logo;
         //se a orientação estiver em branco utilizar o padrão estabelecido na NF
         if ($orientacao == '') {
             if ($this->tpImp == '1') {
@@ -481,14 +368,9 @@ class Danfe extends Common
         $this->orientacao = $orientacao;
         $this->papel = $papel;
         $this->logoAlign = $logoAlign;
-        $this->situacao_externa = $situacaoExterna;
         $this->numero_registro_dpec = $depecNumReg;
         //instancia a classe pdf
-        if ($classPdf) {
-            $this->pdf = $classPdf;
-        } else {
-            $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
-        }
+        $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         //margens do PDF, em milímetros. Obs.: a margem direita é sempre igual à
         //margem esquerda. A margem inferior *não* existe na FPDF, é definida aqui
         //apenas para controle se necessário ser maior do que a margem superior
@@ -511,7 +393,7 @@ class Danfe extends Common
         //total inicial de paginas
         $totPag = 1;
         //largura imprimivel em mm: largura da folha menos as margens esq/direita
-        $this->wPrint = $maxW-($margEsq*2);
+        $this->wPrint = $maxW-($margEsq * 2);
         //comprimento (altura) imprimivel em mm: altura da folha menos as margens
         //superior e inferior
         $this->hPrint = $maxH-$margSup-$margInf;
@@ -791,17 +673,7 @@ class Danfe extends Common
                 $totPag++;
             }
         }
-        //retorna o ID na NFe
-        if ($classPdf!==false) {
-            $aR = [
-                'id'=>str_replace('NFe', '', $this->infNFe->getAttribute("Id")),
-                'classe_PDF'=>$this->pdf
-            ];
-            return $aR;
-        } else {
-            return str_replace('NFe', '', $this->infNFe->getAttribute("Id"));
-        }
-    }//fim da função montaDANFE
+    }
 
     /**
      * anfavea
@@ -951,14 +823,7 @@ class Danfe extends Common
         return $texto;
     }
 
-    /**
-     * Dados brutos do PDF
-     * @return string
-     */
-    public function render()
-    {
-        return $this->pdf->getPdf();
-    }
+
 
     protected function statusNFe()
     {
@@ -973,55 +838,25 @@ class Danfe extends Common
             || $cStat == '151'
             || $cStat == '135'
             || $cStat == '155'
-            || $this->situacao_externa == self::SIT_CANCELADA
         ) {
             return ['status' => false, 'message' => 'NFe CANCELADA'];
         }
         
         if ($cStat == '110' ||
                $cStat == '301' ||
-               $cStat == '302' ||
-               $this->situacao_externa == self::SIT_DENEGADA
+               $cStat == '302'
+               
         ) {
             return ['status' => false, 'message' => 'NFe DENEGADA'];
         }
     }
 
-    /*
-    protected function pNotaCancelada()
-    {
-        if (!isset($this->nfeProc)) {
-            return false;
-        }
-        $cStat = $this->getTagValue($this->nfeProc, "cStat");
-        return $cStat == '101' ||
-                $cStat == '151' ||
-                $cStat == '135' ||
-                $cStat == '155' ||
-                $this->situacao_externa == self::SIT_CANCELADA;
-    }
-     *
-     */
-
     protected function notaDPEC()
     {
-        return $this->situacao_externa == self::SIT_DPEC && $this->numero_registro_dpec != '';
+        return $this->numero_registro_dpec != '';
     }
 
-    /*
-    protected function pNotaDenegada()
-    {
-        if (!isset($this->nfeProc)) {
-            return false;
-        }
-        //NÃO ERA NECESSÁRIO ESSA FUNÇÃO POIS SÓ SE USA
-        //1 VEZ NO ARQUIVO INTEIRO
-        $cStat = $this->getTagValue($this->nfeProc, "cStat");
-        return $cStat == '110' ||
-               $cStat == '301' ||
-               $cStat == '302' ||
-               $this->situacao_externa == self::SIT_DENEGADA;
-    }*/
+
 
     /**
      *cabecalhoDANFE
@@ -1202,12 +1037,12 @@ class Danfe extends Common
         $w3 = $w;
         $h = 32;
         $this->pdf->textBox($x, $y, $w, $h);
-        $this->pdf->SetFillColor(0, 0, 0);
+        $this->pdf->setFillColor(0, 0, 0);
         $chave_acesso = str_replace('NFe', '', $this->infNFe->getAttribute("Id"));
         $bW = 75;
         $bH = 12;
         //codigo de barras
-        $this->pdf->Code128($x+(($w-$bW)/2), $y+2, $chave_acesso, $bW, $bH);
+        $this->pdf->code128($x+(($w-$bW)/2), $y+2, $chave_acesso, $bW, $bH);
         //linhas divisorias
         $this->pdf->line($x, $y+4+$bH, $x+$w, $y+4+$bH);
         $this->pdf->line($x, $y+12+$bH, $x+$w, $y+12+$bH);
@@ -1223,12 +1058,12 @@ class Danfe extends Common
         $y1 = $y+12+$bH;
         $aFont = ['font'=>$this->fontePadrao, 'size'=>8, 'style'=>''];
         $chaveContingencia="";
-        if ($this->pNotaDPEC()) {
+        if ($this->notaDpec()) {
             $cabecalhoProtoAutorizacao = 'NÚMERO DE REGISTRO DPEC';
         } else {
             $cabecalhoProtoAutorizacao = 'PROTOCOLO DE AUTORIZAÇÃO DE USO';
         }
-        if (($this->tpEmis == 2 || $this->tpEmis == 5) && !$this->pNotaDPEC()) {
+        if (($this->tpEmis == 2 || $this->tpEmis == 5) && !$this->notaDpec()) {
             $cabecalhoProtoAutorizacao = "DADOS DA NF-E";
             $chaveContingencia = $this->geraChaveAdicionalDeContingencia();
             $this->pdf->setFillColor(0, 0, 0);
@@ -1277,13 +1112,13 @@ class Danfe extends Common
         // NOTA : DANFE sem protocolo deve existir somente no caso de contingência !!!
         // Além disso, existem várias NFes em contingência que eu recebo com protocolo de autorização.
         // Na minha opinião, deveríamos mostra-lo, mas o  manual  da NFe v4.01 diz outra coisa...
-        if (($this->tpEmis == 2 || $this->tpEmis == 5) && !$this->pNotaDPEC()) {
+        if (($this->tpEmis == 2 || $this->tpEmis == 5) && !$this->notaDpec()) {
             $aFont = ['font'=>$this->fontePadrao, 'size'=>8, 'style'=>'B'];
             $texto = $this->formatField($chaveContingencia, "#### #### #### #### #### #### #### #### ####");
             $cStat = '';
         } else {
             $aFont = ['font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B'];
-            if ($this->pNotaDPEC()) {
+            if ($this->notaDpec()) {
                 $texto = $this->numero_registro_dpec;
                 $cStat = '';
             } else {
@@ -1388,7 +1223,7 @@ class Danfe extends Common
             $this->pdf->SetTextColor(0, 0, 0);
         }*/
 
-        if ($this->pNotaDPEC() || $this->tpEmis == 4) {
+        if ($this->notaDpec() || $this->tpEmis == 4) {
             //DPEC
             $x = 10;
             $y = $this->hPrint-130;
@@ -1458,7 +1293,7 @@ class Danfe extends Common
             $w = $maxW-(2*$x);
             $this->pdf->SetTextColor(90, 90, 90);
             //indicar FALTA DO PROTOCOLO se NFe não for em contingência
-            if (($this->tpEmis == 2 || $this->tpEmis == 5) && !$this->pNotaDPEC()) {
+            if (($this->tpEmis == 2 || $this->tpEmis == 5) && !$this->notaDpec()) {
                 //Contingência
                 $texto = "DANFE Emitido em Contingência";
                 $aFont = ['font'=>$this->fontePadrao, 'size'=>48, 'style'=>'B'];
@@ -1468,14 +1303,14 @@ class Danfe extends Common
                 $this->pdf->textBox($x, $y+12, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             } else {
                 if (!isset($this->nfeProc)) {
-                    if (!$this->pNotaDPEC()) {
+                    if (!$this->notaDpec()) {
                         $texto = "SEM VALOR FISCAL";
                         $aFont = ['font'=>$this->fontePadrao, 'size'=>48, 'style'=>'B'];
                         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
                     }
                     $aFont = ['font'=>$this->fontePadrao, 'size'=>30, 'style'=>'B'];
                     $texto = "FALTA PROTOCOLO DE APROVAÇÃO DA SEFAZ";
-                    if (!$this->pNotaDPEC()) {
+                    if (!$this->notaDpec()) {
                         $this->pdf->textBox($x, $y+12, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
                     } else {
                         $this->pdf->textBox($x, $y+25, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
@@ -3434,6 +3269,44 @@ class Danfe extends Common
             }
         }
         return $saida;
+    }
+    
+    private function loadDoc($xml)
+    {
+        $this->xml = $xml;
+        if (!empty($xml)) {
+            $this->dom = new Dom();
+            $this->dom->loadXML($this->xml);
+            if (empty($this->dom->getElementsByTagName("infNFe")->item(0))) {
+                throw new \Exception('Isso não é um NFe.');
+            }
+            $this->nfeProc = $this->dom->getElementsByTagName("nfeProc")->item(0);
+            $this->infNFe = $this->dom->getElementsByTagName("infNFe")->item(0);
+            $this->ide = $this->dom->getElementsByTagName("ide")->item(0);
+            if ($this->getTagValue($this->ide, "mod") != '55') {
+                throw new \Exception("O xml deve ser NF-e modelo 55.");
+            }
+            $this->entrega = $this->dom->getElementsByTagName("entrega")->item(0);
+            $this->retirada = $this->dom->getElementsByTagName("retirada")->item(0);
+            $this->emit = $this->dom->getElementsByTagName("emit")->item(0);
+            $this->dest = $this->dom->getElementsByTagName("dest")->item(0);
+            $this->enderEmit = $this->dom->getElementsByTagName("enderEmit")->item(0);
+            $this->enderDest = $this->dom->getElementsByTagName("enderDest")->item(0);
+            $this->det = $this->dom->getElementsByTagName("det");
+            $this->cobr = $this->dom->getElementsByTagName("cobr")->item(0);
+            $this->dup = $this->dom->getElementsByTagName('dup');
+            $this->ICMSTot = $this->dom->getElementsByTagName("ICMSTot")->item(0);
+            $this->ISSQNtot = $this->dom->getElementsByTagName("ISSQNtot")->item(0);
+            $this->transp = $this->dom->getElementsByTagName("transp")->item(0);
+            $this->transporta = $this->dom->getElementsByTagName("transporta")->item(0);
+            $this->veicTransp = $this->dom->getElementsByTagName("veicTransp")->item(0);
+            $this->reboque = $this->dom->getElementsByTagName("reboque")->item(0);
+            $this->infAdic = $this->dom->getElementsByTagName("infAdic")->item(0);
+            $this->compra = $this->dom->getElementsByTagName("compra")->item(0);
+            $this->tpEmis = $this->getTagValue($this->ide, "tpEmis");
+            $this->tpImp = $this->getTagValue($this->ide, "tpImp");
+            $this->infProt = $this->dom->getElementsByTagName("infProt")->item(0);
+        }
     }
     
     private function imagePNGtoJPG($original)
