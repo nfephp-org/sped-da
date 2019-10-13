@@ -8,7 +8,7 @@ namespace NFePHP\DA\CTe;
  * @category  Library
  * @package   nfephp-org/sped-da
  * @name      Dacte .php
- * @copyright 2009-2016 NFePHP
+ * @copyright 2009-2019 NFePHP
  * @license   http://www.gnu.org/licenses/lesser.html LGPL v3
  * @link      http://github.com/nfephp-org/sped-da for the canonical source repository
  * @author    Roberto L. Machado <linux dot rlm at gmail dot com>
@@ -2163,7 +2163,7 @@ class Dacte extends Common
         $rpos = strrpos($dd, '-');
         $dd = substr($dd, $rpos + 1);
         $chave = sprintf($forma, $cUF, $this->tpEmis, $CNPJ, $vCT, $ICMSp, $ICMSs, $dd);
-        $chave = $chave . $this->pModulo11($chave);
+        $chave = $chave . $this->modulo11($chave);
         return $chave;
     }
 
@@ -3021,7 +3021,7 @@ class Dacte extends Common
             'size' => 6,
             'style' => '');
         $this->pdf->textBox($x, $y, $w * 0.10, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = $this->pYmd2dmy($this->getTagValue($this->rem, "dEmi"));
+        $texto = $this->ymdTodmy($this->getTagValue($this->rem, "dEmi"));
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 6,
