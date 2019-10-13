@@ -2441,16 +2441,14 @@ class Danfe extends Common
         }
         $loteTxt ='';
         $rastro = $prod->getElementsByTagName("med");
-        if (!isset($rastro)) {
+        if (!empty($prod->getElementsByTagName("rastro"))) {
             $rastro = $prod->getElementsByTagName("rastro");
-        }
-        if (isset($rastro)) {
             $i = 0;
             while ($i < $rastro->length) {
                 $loteTxt .= $this->getTagValue($rastro->item($i), 'nLote', ' Lote: ');
                 $loteTxt .= $this->getTagValue($rastro->item($i), 'qLote', ' Quant: ');
-                $loteTxt .= $this->simpleGetDate($rastro->item($i), 'dFab', ' Fab: ');
-                $loteTxt .= $this->simpleGetDate($rastro->item($i), 'dVal', ' Val: ');
+                $loteTxt .= $this->getTagDate($rastro->item($i), 'dFab', ' Fab: ');
+                $loteTxt .= $this->getTagDate($rastro->item($i), 'dVal', ' Val: ');
                 $loteTxt .= $this->getTagValue($rastro->item($i), 'vPMC', ' PMC: ');
                 $i++;
             }
