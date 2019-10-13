@@ -12,6 +12,10 @@ try {
     $damdfe->creditsIntegratorFooter('Seu Software Ltd');
     $damdfe->monta('../images/logo.jpg');
     $pdf = $damdfe->render();
+    //o pdf porde ser exibido como view no browser
+    //salvo em arquivo
+    //ou setado para download forçado no browser
+    //ou ainda gravado na base de dados
     header('Content-Type: application/pdf');
     echo $pdf;
 } catch (Exception $e) {

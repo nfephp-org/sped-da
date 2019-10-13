@@ -23,9 +23,6 @@ use NFePHP\DA\Legacy\Common;
 
 class Dacte extends Common
 {
-    const NFEPHP_SITUACAO_EXTERNA_CANCELADA = 1;
-    const NFEPHP_SITUACAO_EXTERNA_DENEGADA = 2;
-    const SIT_DPEC = 3;
 
     protected $logoAlign = 'C';
     protected $yDados = 0;
@@ -81,7 +78,7 @@ class Dacte extends Common
     protected $vPrest;
     protected $wAdic = 150;
     protected $textoAdic = '';
-    protected $debugmode = 2;
+    protected $debugmode = false;
     protected $formatPadrao;
     protected $formatNegrito;
     protected $aquav;
@@ -135,8 +132,14 @@ class Dacte extends Common
             $this->dom = new Dom();
             $this->dom->loadXML($this->xml);
             $this->cteProc = $this->dom->getElementsByTagName("cteProc")->item(0);
+            if (empty($this->dom->getElementsByTagName("infCte")->item(0))) {
+                throw new \Exception('Isso não é um CT-e.');
+            }
             $this->infCte = $this->dom->getElementsByTagName("infCte")->item(0);
             $this->ide = $this->dom->getElementsByTagName("ide")->item(0);
+            if ($this->getTagValue($this->ide, "mod") != '57') {
+                throw new \Exception("O xml deve ser CT-e modelo 57.");
+            }
             $this->tpCTe = $this->getTagValue($this->ide, "tpCTe");
             $this->emit = $this->dom->getElementsByTagName("emit")->item(0);
             $this->enderEmit = $this->dom->getElementsByTagName("enderEmit")->item(0);
@@ -222,18 +225,6 @@ class Dacte extends Common
             //01-Rodoviário; //02-Aéreo; //03-Aquaviário; //04-Ferroviário;//05-Dutoviário
             $this->modal = $this->getTagValue($this->ide, "modal");
         }
-    }
-
-    /**
-     * printDocument
-     * @param string $nome
-     * @param string $destino
-     * @param string $printer
-     * @return
-     */
-    public function printDocument($nome = '', $destino = 'I', $printer = '')
-    {
-        return $this->printDACTE($nome, $destino, $printer);
     }
 
     /**

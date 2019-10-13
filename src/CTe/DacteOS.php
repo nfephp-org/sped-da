@@ -23,13 +23,9 @@ use NFePHP\DA\Legacy\Common;
 
 class DacteOS extends Common
 {
-    const NFEPHP_SITUACAO_EXTERNA_CANCELADA = 1;
-    const NFEPHP_SITUACAO_EXTERNA_DENEGADA = 2;
-    const SIT_DPEC = 3;
 
     protected $logoAlign = 'C';
     protected $yDados = 0;
-    protected $situacao_externa = 0;
     protected $numero_registro_dpec = '';
     protected $pdf;
     protected $xml;
@@ -38,10 +34,7 @@ class DacteOS extends Common
     protected $errStatus = false;
     protected $orientacao = 'P';
     protected $papel = 'A4';
-    protected $destino = 'I';
-    protected $pdfDir = '';
     protected $fontePadrao = 'Times';
-    protected $version = '1.3.0';
     protected $wPrint;
     protected $hPrint;
     protected $dom;
@@ -76,7 +69,7 @@ class DacteOS extends Common
     protected $infServico;
     protected $wAdic = 150;
     protected $textoAdic = '';
-    protected $debugMode = 2;
+    protected $debugmode = false;
     protected $formatPadrao;
     protected $formatNegrito;
     protected $aquav;
@@ -88,78 +81,57 @@ class DacteOS extends Common
     protected $totPag;
     protected $idDocAntEle = [];
     protected $lota;
-
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     protected $margemInterna = 0;
-    
     private $creditos;
 
     /**
      * __construct
      *
-     * @param string $docXML Arquivo XML da CTe
-     * @param string $sOrientacao (Opcional) Orientação da impressão P ou L
-     * @param string $sPapel Tamanho do papel (Ex. A4)
-     * @param string $sPathLogo Caminho para o arquivo do logo
-     * @param string $sDestino Estabelece a direção do envio do documento PDF
-     * @param string $sDirPDF Caminho para o diretorio de armaz. dos PDF
-     * @param string $fonteDACTE Nome da fonte a ser utilizada
-     * @param number $mododebug 0-Não 1-Sim e 2-nada (2 default)
-     * @param string $preVisualizar 0-Não 1-Sim
+     * @param string $xml Arquivo XML da CTe
      */
     public function __construct(
-        $docXML = '',
-        $sOrientacao = '',
-        $sPapel = '',
-        $sPathLogo = '',
-        $sDestino = 'I',
-        $sDirPDF = '',
-        $fonteDACTE = '',
-        $mododebug = 2,
-        $preVisualizar = false
+        $xml = ''
     ) {
+        $this->debugMode();
+        $this->loadDoc($xml);
+    }
 
-        if (is_numeric($mododebug)) {
-            $this->debugMode = $mododebug;
+    /**
+     * Ativa ou desativa o modo debug
+     * @param bool $activate
+     * @return bool
+     */
+    private function debugMode($activate = null)
+    {
+        if (isset($activate) && is_bool($activate)) {
+            $this->debugmode = $activate;
         }
-        if ($mododebug == 1) {
-            //ativar modo debug
+        if ($this->debugmode) {
             error_reporting(E_ALL);
             ini_set('display_errors', 'On');
-        } elseif ($mododebug == 0) {
-            //desativar modo debug
+        } else {
             error_reporting(0);
             ini_set('display_errors', 'Off');
         }
-        $this->orientacao = $sOrientacao;
-        $this->papel = $sPapel;
-        $this->pdf = '';
-        $this->xml = $docXML;
-        $this->logomarca = $sPathLogo;
-        $this->destino = $sDestino;
-        $this->pdfDir = $sDirPDF;
-        $this->preVisualizar = $preVisualizar;
-        //$this->siteDesenvolvedor = $siteDesenvolvedor;
-        //$this->nomeDesenvolvedor = $nomeDesenvolvedor;
-        // verifica se foi passa a fonte a ser usada
-        if (!empty($fonteDACTE)) {
-            $this->fontePadrao = $fonteDACTE;
-        }
-        $this->formatPadrao = array(
-            'font' => $this->fontePadrao,
-            'size' => 6,
-            'style' => '');
-        $this->formatNegrito = array(
-            'font' => $this->fontePadrao,
-            'size' => 7,
-            'style' => 'B');
-        //se for passado o xml
-        if (!empty($this->xml)) {
+        return $this->debugmode;
+    }
+
+    private function loadDoc($xml)
+    {
+        $this->xml = $xml;
+        if (!empty($xml)) {
             $this->dom = new Dom();
             $this->dom->loadXML($this->xml);
             $this->cteProc = $this->dom->getElementsByTagName("cteOSProc")->item(0);
+            if (empty($this->dom->getElementsByTagName("infCte")->item(0))) {
+                throw new \Exception('Isso não é um CT-e.');
+            }
             $this->infCte = $this->dom->getElementsByTagName("infCte")->item(0);
             $this->ide = $this->dom->getElementsByTagName("ide")->item(0);
+            if ($this->getTagValue($this->ide, "mod") != '67') {
+                throw new \Exception("O xml deve ser CT-e modelo 67.");
+            }
             $this->emit = $this->dom->getElementsByTagName("emit")->item(0);
             $this->enderEmit = $this->dom->getElementsByTagName("enderEmit")->item(0);
             $this->infPercurso = $this->dom->getElementsByTagName("infPercurso");
@@ -189,7 +161,7 @@ class DacteOS extends Common
             }
             $textoAdic = number_format($vTrib, 2, ",", ".");
             $this->textoAdic = "o valor aproximado de tributos incidentes sobre o preço deste serviço é de R$"
-                    .$textoAdic;
+                .$textoAdic;
             $this->toma = $this->dom->getElementsByTagName("toma")->item(0);
             $this->enderToma = $this->getTagValue($this->toma, "enderToma");
             //modal aquaviário
@@ -219,48 +191,21 @@ class DacteOS extends Common
     }
 
     /**
-     * monta
-     * @param string $orientacao L ou P
-     * @param string $papel A4
-     * @param string $logoAlign C, L ou R
-     * @param Pdf $classPDF
-     * @return string montagem
-     */
-    public function monta(
-        $orientacao = '',
-        $papel = 'A4',
-        $logoAlign = 'C',
-        $classPDF = false
-    ) {
-
-        return $this->montaDACTE($orientacao, $papel, $logoAlign, $classPDF);
-    }
-
-    /**
-     * printDocument
-     * @param string $nome
-     * @param string $destino
-     * @param string $printer
-     * @return
-     */
-    public function printDocument($nome = '', $destino = 'I', $printer = '')
-    {
-        return $this->printDACTE($nome, $destino, $printer);
-    }
-
-    /**
      * Dados brutos do PDF
      * @return string
      */
     public function render()
     {
+        if (empty($this->pdf)) {
+            $this->monta();
+        }
         return $this->pdf->getPdf();
     }
 
 
     protected function cteDPEC()
     {
-        return $this->situacao_externa == self::SIT_DPEC && $this->numero_registro_dpec != '';
+        return $this->numero_registro_dpec != '';
     }
 
 
@@ -277,13 +222,14 @@ class DacteOS extends Common
      * @param  string $papel (Opcional) Estabelece o tamanho do papel (ex. A4)
      * @return string O ID da NFe numero de 44 digitos extraido do arquivo XML
      */
-    public function montaDACTE(
+    public function monta(
+        $logo = '',
         $orientacao = '',
         $papel = 'A4',
-        $logoAlign = 'C',
-        $classPDF = false
+        $logoAlign = 'C'
     ) {
-
+        $this->pdf = '';
+        $this->logomarca = $logo;
         //se a orientação estiver em branco utilizar o padrão estabelecido na NF
         if ($orientacao == '') {
             if ($this->tpImp == '1') {
@@ -295,14 +241,16 @@ class DacteOS extends Common
         $this->orientacao = $orientacao;
         $this->papel = $papel;
         $this->logoAlign = $logoAlign;
-
-        //$this->situacao_externa = $situacao_externa;
         //instancia a classe pdf
-        if ($classPDF !== false) {
-            $this->pdf = $classPDF;
-        } else {
-            $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
-        }
+        $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
+        $this->formatPadrao = array(
+            'font' => $this->fontePadrao,
+            'size' => 6,
+            'style' => '');
+        $this->formatNegrito = array(
+            'font' => $this->fontePadrao,
+            'size' => 7,
+            'style' => 'B');
         if ($this->orientacao == 'P') {
             // margens do PDF
             $margSup = 2;
@@ -378,8 +326,6 @@ class DacteOS extends Common
             $x = $xInic;
             $r = $this->seguro($x, $y);
             $y = $y-12;
-
-
             switch ($this->modal) {
                 case '1':
                     $y += 24.9;
@@ -454,40 +400,7 @@ class DacteOS extends Common
         if ($this->flagDocOrigContinuacao == 1) {
             $this->docOrigContinuacao(1, 71);
         }
-        //retorna o ID na CTe
-        if ($classPDF !== false) {
-            $aR = array('id' => str_replace('CTe', '', $this->infCte->getAttribute("Id")), 'classe_PDF' => $this->pdf);
-            return $aR;
-        } else {
-            return str_replace('CTe', '', $this->infCte->getAttribute("Id"));
-        }
-    } //fim da função montaDACTE
-
-    /**
-     * printDACTE
-     * Esta função envia a DACTE em PDF criada para o dispositivo informado.
-     * O destino da impressão pode ser :
-     * I-browser
-     * D-browser com download
-     * F-salva em um arquivo local com o nome informado
-     * S-retorna o documento como uma string e o nome é ignorado.
-     * Para enviar o pdf diretamente para uma impressora indique o
-     * nome da impressora e o destino deve ser 'S'.
-     *
-     * @param  string $nome Path completo com o nome do arquivo pdf
-     * @param  string $destino Direção do envio do PDF
-     * @param  string $printer Identificação da impressora no sistema
-     * @return string Caso o destino seja S o pdf é retornado como uma string
-     * @todo Rotina de impressão direta do arquivo pdf criado
-     */
-    public function printDACTE($nome = '', $destino = 'I', $printer = '')
-    {
-        $arq = $this->pdf->Output($nome, $destino);
-        if ($destino == 'S') {
-            //aqui pode entrar a rotina de impressão direta
-        }
-        return $arq;
-    } //fim função printDACTE
+    }
 
     /**
      * cabecalho
@@ -531,7 +444,7 @@ class DacteOS extends Common
         //desenha a caixa
         $this->pdf->textBox($x, $y, $w + 2, $h + 1);
         // coloca o logo
-        if (is_file($this->logomarca)) {
+        if (!empty($this->logomarca)) {
             $logoInfo = getimagesize($this->logomarca);
             //largura da imagem em mm
             $logoWmm = ($logoInfo[0] / 72) * 25.4;
@@ -935,7 +848,7 @@ class DacteOS extends Common
         $tpAmb = $this->ide->getElementsByTagName('tpAmb')->item(0)->nodeValue;
         //indicar cancelamento
         $cStat = $this->getTagValue($this->cteProc, "cStat");
-        if ($cStat == '101' || $cStat == '135' || $this->situacao_externa == self::NFEPHP_SITUACAO_EXTERNA_CANCELADA) {
+        if ($cStat == '101' || $cStat == '135') {
             //101 Cancelamento
             $x = 10;
             $y = $this->hPrint - 130;
@@ -953,8 +866,7 @@ class DacteOS extends Common
         $cStat = $this->getTagValue($this->cteProc, "cStat");
         if ($cStat == '110' ||
             $cStat == '301' ||
-            $cStat == '302' ||
-            $this->situacao_externa == self::NFEPHP_SITUACAO_EXTERNA_DENEGADA
+            $cStat == '302'
         ) {
             //110 Denegada
             $x = 10;
@@ -2584,4 +2496,5 @@ class DacteOS extends Common
     {
         $this->creditos = trim($message);
     }
+
 }
