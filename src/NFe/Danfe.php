@@ -406,13 +406,18 @@ class Danfe extends Common
         //##################################################################
         //Verificando quantas linhas serão usadas para impressão das duplicatas
         $linhasDup = 0;
-        if (($this->dup->length > 0) && ($this->dup->length <= 7)) {
+        if (isset($this->dup) && $this->dup->length > 0) {
+            $qtdPag = $this->dup->length;
+        } elseif (isset($this->detPag) && $this->detPag->length > 0) {
+           $qtdPag = $this->detPag->length;
+        }
+        if (($qtdPag > 0) && ($qtdPag <= 7)) {
             $linhasDup = 1;
-        } elseif (($this->dup->length > 7) && ($this->dup->length <= 14)) {
+        } elseif (($qtdPag > 7) && ($qtdPag <= 14)) {
             $linhasDup = 2;
-        } elseif (($this->dup->length > 14) && ($this->dup->length <= 21)) {
+        } elseif (($qtdPag > 14) && ($qtdPag <= 21)) {
             $linhasDup = 3;
-        } elseif ($this->dup->length > 21) {
+        } elseif ($qtdPag > 21) {
             // chinnonsantos 11/05/2016: Limite máximo de impressão de duplicatas na NFe,
             // só vai ser exibito as 21 primeiras duplicatas (parcelas de pagamento),
             // se não oculpa espaço d+, cada linha comporta até 7 duplicatas.
@@ -3303,6 +3308,7 @@ class Danfe extends Common
             $this->transp = $this->dom->getElementsByTagName("transp")->item(0);
             $this->transporta = $this->dom->getElementsByTagName("transporta")->item(0);
             $this->veicTransp = $this->dom->getElementsByTagName("veicTransp")->item(0);
+            $this->detPag = $this->dom->getElementsByTagName("detPag");
             $this->reboque = $this->dom->getElementsByTagName("reboque")->item(0);
             $this->infAdic = $this->dom->getElementsByTagName("infAdic")->item(0);
             $this->compra = $this->dom->getElementsByTagName("compra")->item(0);
