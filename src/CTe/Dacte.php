@@ -109,7 +109,7 @@ class Dacte extends Common
      * @param bool $activate
      * @return bool
      */
-    private function debugMode($activate = null)
+    public function debugMode($activate = null)
     {
         if (isset($activate) && is_bool($activate)) {
             $this->debugmode = $activate;

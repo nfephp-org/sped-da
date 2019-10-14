@@ -8,7 +8,7 @@ namespace NFePHP\DA\NFe;
  *
  * @category  Library
  * @package   nfephp-org/sped-da
- * @copyright 2009-2016 NFePHP
+ * @copyright 2009-2019 NFePHP
  * @license   http://www.gnu.org/licenses/lesser.html LGPL v3
  * @link      http://github.com/nfephp-org/sped-da for the canonical source repository
  * @author    Roberto Spadim <roberto at spadim dot com dot br>
@@ -24,6 +24,8 @@ use DateTime;
 class Danfce extends Common
 {
     protected $papel;
+    protected $paperwidth = 80;
+    protected $creditos;
     protected $xml; // string XML NFe
     protected $logomarca=''; // path para logomarca em jpg
     protected $formatoChave="#### #### #### #### #### #### #### #### #### #### ####";
@@ -130,33 +132,64 @@ class Danfce extends Common
         }
     }
     
-    public function getPapel()
+    /**
+     * Ativa ou desativa o modo debug
+     * @param bool $activate
+     * @return bool
+     */
+    public function debugMode($activate = null)
     {
-        return $this->papel;
+        if (isset($activate) && is_bool($activate)) {
+            $this->debugmode = $activate;
+        }
+        if ($this->debugmode) {
+            //ativar modo debug
+            error_reporting(E_ALL);
+            ini_set('display_errors', 'On');
+        } else {
+            //desativar modo debug
+            error_reporting(0);
+            ini_set('display_errors', 'Off');
+        }
+        return $this->debugmode;
     }
     
-    public function setPapel($aPap)
+    /**
+     * Add the credits to the integrator in the footer message
+     * @param string $message
+     */
+    public function creditsIntegratorFooter($message = '')
     {
-        $this->papel = $aPap;
+        $this->creditos = trim($message);
+    }
+    
+    /**
+     * Dados brutos do PDF
+     * @return string
+     */
+    public function render()
+    {
+        if (empty($this->pdf)) {
+            $this->monta();
+        }
+        return $this->pdf->getPdf();
+    }
+    
+    
+    public function paperWidth($width = 80)
+    {
+        if (is_int($width) && $width > 60) {
+            $this->paperwidth = $width;
+        }
+        return $this->paperwidth;
     }
     
     public function monta(
-        $orientacao = 'P',
-        $papel = '',
-        $logoAlign = 'C',
-        $classPdf = false,
-        $depecNumReg = ''
+        $logo = null,
+        $depecNumReg = '',
+        $logoAlign = 'C'
     ) {
-        $this->montaDANFE($orientacao, $papel, $logoAlign, $classPdf, $depecNumReg);
-    }
-    
-    public function montaDANFE(
-        $orientacao = 'P',
-        $papel = '',
-        $logoAlign = 'C',
-        $classPdf = false,
-        $depecNumReg = ''
-    ) {
+        $this->logomarca = $logo;
         $qtdItens = $this->det->length;
         $qtdPgto = $this->pag->length;
         $hMaxLinha = $this->hMaxLinha;
@@ -174,7 +207,7 @@ class Danfce extends Common
                 $alinhas = explode("\n", $this->textoAdic);
                 $numlinhasdados = 0;
                 $tempPDF = new Pdf(); // cria uma instancia temporaria da class pdf
-                $tempPDF->setFont('Times', '', '8'); // seta a font do PDF
+                $tempPDF->setFont('times', '', '8'); // seta a font do PDF
                 foreach ($alinhas as $linha) {
                     $linha = trim($linha);
                     $numlinhasdados += $tempPDF->wordWrap($linha, 76 - 0.2);
@@ -187,21 +220,13 @@ class Danfce extends Common
                 $tamPapelVert += $hdadosadic;
             }
         }
-        //se a orientação estiver em branco utilizar o padrão estabelecido na NF
-        if ($orientacao == '') {
-            $orientacao = 'P';
-        }
-        $this->orientacao = $orientacao;
-        $this->papel = [80, $tamPapelVert];
+        $this->orientacao = 'P';
+        $this->papel = [$this->paperwidth, $tamPapelVert];
         $this->logoAlign = $logoAlign;
         //$this->situacao_externa = $situacaoExterna;
         $this->numero_registro_dpec = $depecNumReg;
-        //instancia a classe pdf
-        if ($classPdf) {
-            $this->pdf = $classPdf;
-        } else {
-            $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
-        }
+        $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
+        
         //margens do PDF, em milímetros. Obs.: a margem direita é sempre igual à
         //margem esquerda. A margem inferior *não* existe na FPDF, é definida aqui
         //apenas para controle se necessário ser maior do que a margem superior
@@ -283,17 +308,6 @@ class Danfce extends Common
             + $hTotal + $hpagamentos + $hmsgfiscal + $hcliente + $hQRCode;
             $hInfAdic = 0;
             $y = $this->infAdic($x, $y, $hInfAdic);
-        }
-        
-        //retorna o ID na NFe
-        if ($classPdf!==false) {
-            $aR = [
-             'id'=>str_replace('NFe', '', $this->infNFe->getAttribute("Id")),
-             'classe_PDF'=>$this->pdf
-            ];
-            return $aR;
-        } else {
-            return str_replace('NFe', '', $this->infNFe->getAttribute("Id"));
         }
     }
     
@@ -859,40 +873,6 @@ class Danfce extends Common
                 
         // seta o textbox do texto adicional
         $this->pdf->textBox($x, $y+3, $w-2, $hLinha-3, $this->textoAdic, $aFontTex, 'T', 'L', 0, '', false);
-    }
-    
-    /**
-     * printDANFE
-     * Esta função envia a DANFE em PDF criada para o dispositivo informado.
-     * O destino da impressão pode ser :
-     * I-browser
-     * D-browser com download
-     * F-salva em um arquivo local com o nome informado
-     * S-retorna o documento como uma string e o nome é ignorado.
-     * Para enviar o pdf diretamente para uma impressora indique o
-     * nome da impressora e o destino deve ser 'S'.
-     *
-     * @param  string $nome    Path completo com o nome do arquivo pdf
-     * @param  string $destino Direção do envio do PDF
-     * @param  string $printer Identificação da impressora no sistema
-     * @return string Caso o destino seja S o pdf é retornado como uma string
-     * @todo   Rotina de impressão direta do arquivo pdf criado
-     */
-    public function printDANFE($nome = '', $destino = 'I', $printer = '')
-    {
-        $arq = $this->pdf->Output($nome, $destino);
-        if ($destino == 'S') {
-            //aqui pode entrar a rotina de impressão direta
-        }
-        return $arq;
-    }
-    /**
-     * Dados brutos do PDF
-     * @return string
-     */
-    public function render()
-    {
-        return $this->pdf->getPdf();
     }
     
     /**

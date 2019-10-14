@@ -5,12 +5,14 @@ require_once '../../bootstrap.php';
 
 use NFePHP\DA\MDFe\Damdfe;
 
-$xml = file_get_contents('../xml/mdfe/mdfe.xml');
+$xml = file_get_contents(__DIR__ . '/fixtures/mdfe.xml');
 
 try {
     $damdfe = new Damdfe($xml);
-    $damdfe->creditsIntegratorFooter('Seu Software Ltd');
-    $damdfe->monta('../images/logo.jpg');
+    $damdfe->debugMode(true);
+    $damdfe->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webenf.com.br');
+    //$damdfe->monta('../images/logo.jpg');
+    //$damdfe->render();
     $pdf = $damdfe->render();
     //o pdf porde ser exibido como view no browser
     //salvo em arquivo
