@@ -2763,7 +2763,7 @@ class Danfe extends Common
         $this->pdf->textBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
         $texto = 'Tipo Pintura......: ' . ($renavamEspecie[intval($veiculoTipoPintura)] ?? $veiculoTipoPintura);
-        $this->pTextBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $this->pdf->textBox($xVeic, $yVeic, $w1+50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic = $y + $h;
         $xVeic = $xVeic + 55;
         $texto = 'Marca / Modelo.....: ' . $veiculoMarcaModelo;

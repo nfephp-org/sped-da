@@ -9,7 +9,7 @@ namespace NFePHP\DA\NFe;
  * @category  Library
  * @package   nfephp-org/sped-da
  * @name      Daevento.php
- * @copyright 2009-2016 NFePHP
+ * @copyright 2009-2019 NFePHP
  * @license   http://www.gnu.org/licenses/lgpl.html GNU/LGPL v.3
  * @link      http://github.com/nfephp-org/sped-da for the canonical source repository
  * @author    Roberto L. Machado <linux.rlm at gmail dot com>
@@ -26,7 +26,7 @@ class Daevento extends Common
     
     protected $logoAlign = 'C';
     protected $yDados = 0;
-    protected $debugMode = 0;
+    protected $debugmode = false;
     protected $aEnd = array();
     protected $pdf;
     protected $xml;
@@ -78,56 +78,60 @@ class Daevento extends Common
      * @param array  $aEnd        array com o endereço do emitente
      * @param number $mododebug   0-Não 1-Sim e 2-nada (2 default)
      */
-    public function __construct(
-        $docXML = '',
-        $sOrientacao = '',
-        $sPapel = '',
-        $sPathLogo = '',
-        $sDestino = 'I',
-        $sDirPDF = '',
-        $fontePDF = '',
-        $aEnd = '',
-        $mododebug = 0
-    ) {
-        if (is_numeric($mododebug)) {
-            $this->debugMode = (int) $mododebug;
+    public function __construct($xml, $dadosEmitente)
+    {
+        $this->dadosEmitente = $dadosEmitente;
+        $this->debugMode();
+        $this->loadDoc($xml);
+    }
+    
+    /**
+     * Ativa ou desativa o modo debug
+     * @param bool $activate
+     * @return bool
+     */
+    public function debugMode($activate = null)
+    {
+        if (isset($activate) && is_bool($activate)) {
+            $this->debugmode = $activate;
         }
-        if ($this->debugMode === 1) {
-            // ativar modo debug
+        if ($this->debugmode) {
+            //ativar modo debug
             error_reporting(E_ALL);
             ini_set('display_errors', 'On');
-        } elseif ($this->debugMode === 0) {
-            // desativar modo debug
+        } else {
+            //desativar modo debug
             error_reporting(0);
             ini_set('display_errors', 'Off');
         }
-        if (is_array($aEnd)) {
-            $this->aEnd = $aEnd;
+        return $this->debugmode;
+    }
+    
+    /**
+     * Add the credits to the integrator in the footer message
+     * @param string $message
+     */
+    public function creditsIntegratorFooter($message = '')
+    {
+        $this->creditos = trim($message);
+    }
+    
+    /**
+     * Dados brutos do PDF
+     * @return string
+     */
+    public function render()
+    {
+        if (empty($this->pdf)) {
+            $this->monta();
         }
-        $this->orientacao = $sOrientacao;
-        $this->papel = $sPapel;
-        $this->pdf = '';
-        $this->logomarca = $sPathLogo;
-        $this->destino = $sDestino;
-        $this->pdfDir = $sDirPDF;
-        // verifica se foi passa a fonte a ser usada
-        if (empty($fontePDF)) {
-            $this->fontePadrao = 'Times';
-        } else {
-            $this->fontePadrao = $fontePDF;
-        }
-        // se for passado o xml
-        if (!is_file($docXML)) {
-            if (empty($docXML)) {
-                $this->errMsg = 'Um caminho ou um arquivo XML de evento de NFe deve ser passado.';
-                $this->errStatus = true;
-                return false;
-            }
-        } else {
-            $docXML = file_get_contents($docXML);
-        }
+        return $this->pdf->getPdf();
+    }
+    
+    protected function loadDoc($xml)
+    {
         $this->dom = new Dom();
-        $this->dom->loadXML($docXML);
+        $this->dom->loadXML($xml);
         $this->procEventoNFe = $this->dom->getElementsByTagName("procEventoNFe")->item(0);
         $this->evento = $this->dom->getElementsByTagName("evento")->item(0);
         $this->infEvento = $this->evento->getElementsByTagName("infEvento")->item(0);
@@ -141,7 +145,7 @@ class Daevento extends Common
         }
         $this->id = str_replace('ID', '', $this->infEvento->getAttribute("Id"));
         $this->chNFe = $this->infEvento->getElementsByTagName("chNFe")->item(0)->nodeValue;
-        $this->aEnd['CNPJ'] = $this->infEvento->getElementsByTagName("CNPJ")->item(0)->nodeValue;
+        $this->dadosEmitente['CNPJ'] = $this->infEvento->getElementsByTagName("CNPJ")->item(0)->nodeValue;
         $this->tpAmb = $this->infEvento->getElementsByTagName("tpAmb")->item(0)->nodeValue;
         $this->cOrgao = $this->infEvento->getElementsByTagName("cOrgao")->item(0)->nodeValue;
         $this->xCorrecao = $this->infEvento->getElementsByTagName("xCorrecao")->item(0);
@@ -166,20 +170,6 @@ class Daevento extends Common
     /**
      * monta
      *
-     * @param  string  $orientacao
-     * @param  string  $papel
-     * @param  string  $logoAlign
-     * @param  boolean $classe_pdf
-     * @return number
-     */
-    public function monta($orientacao = '', $papel = 'A4', $logoAlign = 'C', $classe_pdf = false)
-    {
-        return $this->montaDaEventoNFe($orientacao, $papel, $logoAlign, $classe_pdf);
-    }
-
-    /**
-     * montaDAEventoNFe
-     *
      * Esta função monta a DaEventoNFe conforme as informações fornecidas para a classe
      * durante sua construção.
      * A definição de margens e posições iniciais para a impressão são estabelecidas no
@@ -190,19 +180,18 @@ class Daevento extends Common
      * @param  string $papel      (Opcional) Estabelece o tamanho do papel (ex. A4)
      * @return string O ID do evento extraido do arquivo XML
      */
-    public function montaDaEventoNFe($orientacao = '', $papel = 'A4', $logoAlign = 'C', $classe_pdf = false)
-    {
-        if ($orientacao == '') {
-            $orientacao = 'P';
-        }
+    public function monta(
+        $logo = null,
+        $orientacao = 'P',
+        $papel = 'A4',
+        $logoAlign = 'C'
+    ) {
+        $this->logomarca = $logo;
+        $this->fontePadrao = 'Times';
         $this->orientacao = $orientacao;
         $this->papel = $papel;
         $this->logoAlign = $logoAlign;
-        if ($classe_pdf !== false) {
-            $this->pdf = $classe_pdf;
-        } else {
-            $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
-        }
+        $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         if ($this->orientacao == 'P') {
             // margens do PDF
             $margSup = 2;
@@ -254,13 +243,6 @@ class Daevento extends Common
         $y = $this->body($x, $y + 15);
         // coloca os dados da CCe
         $y = $this->footer($x, $y + $this->hPrint - 20);
-        // retorna o ID do evento
-        if ($classe_pdf !== false) {
-            $aR = ['id' => $this->id, 'classe_PDF' => $this->pdf];
-            return $aR;
-        } else {
-            return $this->id;
-        }
     }
 
     /**
@@ -335,7 +317,7 @@ class Daevento extends Common
             'size' => 12,
             'style' => 'B'
         );
-        $texto = (isset($this->aEnd['razao']) ? $this->aEnd['razao'] : '');
+        $texto = (isset($this->dadosEmitente['razao']) ? $this->dadosEmitente['razao'] : '');
         $this->pdf->textBox($x1, $y1, $tw, 8, $texto, $aFont, 'T', 'C', 0, '');
         // endereço
         $y1 = $y1 + 6;
@@ -344,16 +326,16 @@ class Daevento extends Common
             'size' => 8,
             'style' => ''
         );
-        $lgr = (isset($this->aEnd['logradouro']) ? $this->aEnd['logradouro'] : '');
-        $nro = (isset($this->aEnd['numero']) ? $this->aEnd['numero'] : '');
-        $cpl = (isset($this->aEnd['complemento']) ? $this->aEnd['complemento'] : '');
-        $bairro = (isset($this->aEnd['bairro']) ? $this->aEnd['bairro'] : '');
-        $CEP = (isset($this->aEnd['CEP']) ? $this->aEnd['CEP'] : '');
+        $lgr = (isset($this->dadosEmitente['logradouro']) ? $this->dadosEmitente['logradouro'] : '');
+        $nro = (isset($this->dadosEmitente['numero']) ? $this->dadosEmitente['numero'] : '');
+        $cpl = (isset($this->dadosEmitente['complemento']) ? $this->dadosEmitente['complemento'] : '');
+        $bairro = (isset($this->dadosEmitente['bairro']) ? $this->dadosEmitente['bairro'] : '');
+        $CEP = (isset($this->dadosEmitente['CEP']) ? $this->dadosEmitente['CEP'] : '');
         $CEP = $this->formatField($CEP, "#####-###");
-        $mun = (isset($this->aEnd['municipio']) ? $this->aEnd['municipio'] : '');
-        $UF = (isset($this->aEnd['UF']) ? $this->aEnd['UF'] : '');
-        $fone = (isset($this->aEnd['telefone']) ? $this->aEnd['telefone'] : '');
-        $email = (isset($this->aEnd['email']) ? $this->aEnd['email'] : '');
+        $mun = (isset($this->dadosEmitente['municipio']) ? $this->dadosEmitente['municipio'] : '');
+        $UF = (isset($this->dadosEmitente['UF']) ? $this->dadosEmitente['UF'] : '');
+        $fone = (isset($this->dadosEmitente['telefone']) ? $this->dadosEmitente['telefone'] : '');
+        $email = (isset($this->dadosEmitente['email']) ? $this->dadosEmitente['email'] : '');
         $foneLen = strlen($fone);
         if ($foneLen > 0) {
             $fone2 = substr($fone, 0, $foneLen - 4);
@@ -552,34 +534,5 @@ class Daevento extends Common
         $texto = "Daevento ver. " . $this->version . "  Powered by NFePHP (GNU/GPLv3 GNU/LGPLv3) © www.nfephp.org";
         $aFont = ['font' => $this->fontePadrao,'size' => 6,'style' => 'I'];
         $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'R', 0, 'http://www.nfephp.org');
-    }
-
-    /**
-     * printDocument
-     *
-     * @param  string $nome
-     * @param  string $destino
-     * @param  string $printer
-     * @return mixed
-     */
-    public function printDocument($nome = '', $destino = 'I', $printer = '')
-    {
-        return $this->printDaEventoNFe($nome, $destino, $printer);
-    }
-
-    /**
-     * printDaEventoNFe
-     *
-     * @param  string $nome
-     * @param  string $destino
-     * @param  string $printer
-     * @return mixed
-     */
-    public function printDaEventoNFe($nome = '', $destino = 'I', $printer = '')
-    {
-        if ($this->pdf == null) {
-            $this->montaDaEventoNFe();
-        }
-        return $this->pdf->Output($nome, $destino);
     }
 }
