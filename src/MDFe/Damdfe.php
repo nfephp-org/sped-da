@@ -1142,8 +1142,7 @@ class Damdfe extends Common
         $orientacao = 'P',
         $papel = 'A4',
         $logoAlign = 'L'
-    )
-    {
+    ) {
         $this->pdf = '';
         $this->logomarca = $logo;
         $this->orientacao = $orientacao;
@@ -1172,5 +1171,4 @@ class Damdfe extends Common
     {
         $this->creditos = trim($message);
     }
-
 }
