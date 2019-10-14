@@ -10,9 +10,9 @@ $xml = file_get_contents('../xml/cteos/cte_hom_com_prot.xml');
 $logo = 'data://text/plain;base64,' . base64_encode(file_get_contents('../images/logo.jpg'));
 
 try {
-    $dacte = new DacteOS($xml, 'P', 'A4', $logo, 'I', '');
+    $dacte = new DacteOS($xml);
     $dacte->creditsIntegratorFooter('Seu Software Ltd');
-    $id = $dacte->monta();
+    $dacte->monta($logo);
     $pdf = $dacte->render();
     //o pdf porde ser exibido como view no browser
     //salvo em arquivo

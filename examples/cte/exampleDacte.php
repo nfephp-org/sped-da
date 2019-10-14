@@ -10,9 +10,10 @@ $xml = file_get_contents('../xml/cte/cte_hom_com_prot.xml');
 $logo = 'data://text/plain;base64,' . base64_encode(file_get_contents('../images/logo.jpg'));
 
 try {
-    $dancte = new Dacte($xml, 'P', 'A4', $logo, 'I', '');
-    $id = $dancte->monta();
-    $pdf = $dancte->render();
+    $dacte = new Dacte($xml);
+    $dacte->creditsIntegratorFooter('Seu Software Ltd');
+    $dacte->monta($logo);
+    $pdf = $dacte->render();
     //o pdf porde ser exibido como view no browser
     //salvo em arquivo
     //ou setado para download forçado no browser 

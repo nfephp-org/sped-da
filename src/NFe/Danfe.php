@@ -9,10 +9,6 @@ use NFePHP\DA\Legacy\Common;
 
 class Danfe extends Common
 {
-    const SIT_CANCELADA = 1;
-    const SIT_DENEGADA = 2;
-    const SIT_DPEC = 3;
-    const SIT_NONE = 0;
 
     /**
      * alinhamento padrão do logo (C-Center)
@@ -25,11 +21,6 @@ class Danfe extends Common
      * @var float
      */
     protected $yDados = 0;
-    /**
-     * Situação
-     * @var integer
-     */
-    protected $situacaoExterna = 0;
     /**
      * Numero DPEC
      *
