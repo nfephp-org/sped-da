@@ -99,8 +99,7 @@ class Dacte extends Common
      */
     public function __construct(
         $xml = ''
-    )
-    {
+    ) {
         $this->debugMode();
         $this->loadDoc($xml);
     }
@@ -262,8 +261,7 @@ class Dacte extends Common
         $orientacao = '',
         $papel = 'A4',
         $logoAlign = 'C'
-    )
-    {
+    ) {
         $this->pdf = '';
         $this->logomarca = $logo;
         //se a orientação estiver em branco utilizar o padrão estabelecido no CTe
@@ -3451,5 +3449,4 @@ class Dacte extends Common
     {
         $this->creditos = trim($message);
     }
-
 }

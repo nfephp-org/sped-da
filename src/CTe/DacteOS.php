@@ -2496,5 +2496,4 @@ class DacteOS extends Common
     {
         $this->creditos = trim($message);
     }
-
 }
