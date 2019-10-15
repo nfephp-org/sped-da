@@ -814,8 +814,6 @@ class Danfe extends Common
         return $texto;
     }
 
-
-
     protected function statusNFe()
     {
         if (!isset($this->nfeProc)) {
@@ -825,20 +823,14 @@ class Danfe extends Common
             return ['status' => false, 'message' => 'NFe EMITIDA EM HOMOLOGAÇÃO'];
         }
         $cStat = $this->getTagValue($this->nfeProc, "cStat");
-        if ($cStat == '101'
-            || $cStat == '151'
-            || $cStat == '135'
-            || $cStat == '155'
-        ) {
+        if (strripos("100|150|", $cStat) !== false){
+            return ['status' => true, 'message' => 'Autorizado o uso da NF-e'];
+        } elseif (strripos("101|151|135|155|", $cStat) !== false){
             return ['status' => false, 'message' => 'NFe CANCELADA'];
-        }
-        
-        if ($cStat == '110' ||
-               $cStat == '301' ||
-               $cStat == '302'
-               
-        ) {
+        } elseif (strripos("110|301|302|", $cStat) !== false){
             return ['status' => false, 'message' => 'NFe DENEGADA'];
+        } else {
+        	return ['status' => false, 'message' => 'NFe NÃO AUTORIZADA - STATUS: ' . $cStat ];
         }
     }
 
