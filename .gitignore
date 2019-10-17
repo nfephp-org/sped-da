@@ -4,6 +4,9 @@ local
 vendor
 nbproject
 build
+src/NFe/Blocks
+src/NFe/DanfeNew.php
+examples/nfe/danfenew.php
 composer.lock
 config.json
 src/NFe/Danfe2.php
