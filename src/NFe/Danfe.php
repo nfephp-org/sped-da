@@ -27,13 +27,7 @@ class Danfe extends Common
      * @var string
      */
     protected $numero_registro_dpec = '';
-    /**
-     * quantidade de canhotos a serem montados, geralmente 1 ou 2
-     *
-     * @var integer
-     */
-    protected $qCanhoto = 1;
-    /**
+     /**
      * Parâmetro para exibir ou ocultar os valores do PIS/COFINS.
      * @var boolean
      */
@@ -126,6 +120,8 @@ class Danfe extends Common
      * @var float
      */
     protected $hPrint;
+    protected $maxH;
+    protected $maxW;
     /**
      * largura do canhoto (25mm) apenas para a formatação paisagem
      * @var float
@@ -370,13 +366,13 @@ class Danfe extends Common
         $yInic = $margSup;
         if ($this->orientacao == 'P') {
             if ($papel == 'A4') {
-                $maxW = 210;
-                $maxH = 297;
+                $this->maxW = 210;
+                $this->maxH = 297;
             }
         } else {
             if ($papel == 'A4') {
-                $maxH = 210;
-                $maxW = 297;
+                $this->maxH = 210;
+                $this->maxW = 297;
                 //se paisagem multiplica a largura do canhoto pela quantidade de canhotos
                 $this->wCanhoto *= $this->qCanhoto;
             }
@@ -384,10 +380,10 @@ class Danfe extends Common
         //total inicial de paginas
         $totPag = 1;
         //largura imprimivel em mm: largura da folha menos as margens esq/direita
-        $this->wPrint = $maxW-($margEsq * 2);
+        $this->wPrint = $this->maxW-($margEsq * 2);
         //comprimento (altura) imprimivel em mm: altura da folha menos as margens
         //superior e inferior
-        $this->hPrint = $maxH-$margSup-$margInf;
+        $this->hPrint = $this->maxH-$margSup-$margInf;
         // estabelece contagem de paginas
         $this->pdf->aliasNbPages();
         // fixa as margens
@@ -631,9 +627,9 @@ class Danfe extends Common
         $y = $this->dadosAdicionais($x, $y, $hdadosadic);
         //coloca o rodapé da página
         if ($this->orientacao == 'P') {
-            $this->rodape($xInic, $y-1);
+            $this->rodape($xInic);
         } else {
-            $this->rodape($xInic, $this->hPrint + 1);
+            $this->rodape($xInic);
         }
 
         //loop para páginas seguintes
@@ -655,9 +651,9 @@ class Danfe extends Common
             $y = $this->itens($x, $y+1, $nInicial, $hDispo2, $n, $totPag, $hCabecItens);
             //coloca o rodapé da página
             if ($this->orientacao == 'P') {
-                $this->rodape($xInic, $y + 4);
+                $this->rodape($xInic);
             } else {
-                $this->rodape($xInic, $this->hPrint + 4);
+                $this->rodape($xInic);
             }
             //se estiver na última página e ainda restar itens para inserir, adiciona mais uma página
             if ($n == $totPag && $this->qtdeItensProc < $qtdeItens) {
@@ -815,7 +811,11 @@ class Danfe extends Common
     }
 
 
-
+    /**
+     * Verifica o status da NFe
+     *
+     * @return array
+     */
     protected function statusNFe()
     {
         if (!isset($this->nfeProc)) {
@@ -840,6 +840,7 @@ class Danfe extends Common
         ) {
             return ['status' => false, 'message' => 'NFe DENEGADA'];
         }
+        return ['status' => true, 'message' => ''];
     }
 
     protected function notaDPEC()
@@ -2955,13 +2956,14 @@ class Danfe extends Common
      * Monta o rodapé no final da DANFE com a data/hora de impressão e informações
      * sobre a API NfePHP
      *
-     * @name   rodape
-     * @param  float $xInic  Posição horizontal canto esquerdo
-     * @param  float $yFinal Posição vertical final para impressão
+     * @param  float $x  Posição horizontal canto esquerdo
+     *
      * @return void
      */
-    protected function rodape($x, $y)
+    protected function rodape($x)
     {
+        
+        $y = $this->maxH - 4;
         if ($this->orientacao == 'P') {
               $w = $this->wPrint;
         } else {
