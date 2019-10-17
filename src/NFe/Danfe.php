@@ -405,7 +405,7 @@ class Danfe extends Common
         if (isset($this->dup) && $this->dup->length > 0) {
             $qtdPag = $this->dup->length;
         } elseif (isset($this->detPag) && $this->detPag->length > 0) {
-           $qtdPag = $this->detPag->length;
+            $qtdPag = $this->detPag->length;
         }
         if (($qtdPag > 0) && ($qtdPag <= 7)) {
             $linhasDup = 1;
