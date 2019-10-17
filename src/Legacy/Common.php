@@ -2,6 +2,8 @@
 
 namespace NFePHP\DA\Legacy;
 
+use Carbon\Carbon;
+
 class Common
 {
 
@@ -98,27 +100,24 @@ class Common
     }
 
     /**
-     * pConvertTime
-     * Converte a informação de data e tempo contida na NFe
-     * @param  string $DH Informação de data e tempo extraida da NFe
-     * @return timestamp UNIX Para uso com a funçao date do php
+     * Converte data da NFe YYYY-mm-ddThh:mm:ss-03:00 para timestamp unix
+     *
+     * @param string $input
+     *
+     * @return integer
      */
-    protected function convertTime($DH = '')
+    public function toTimestamp($input)
     {
-        if ($DH == '') {
+        $regex = '^(2[0-9][0-9][0-9])[-](0?[1-9]'
+            . '|1[0-2])[-](0?[1-9]'
+            . '|[12][0-9]'
+            . '|3[01])T([0-9]|0[0-9]'
+            . '|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]-(00|01|02|03|04):00$';
+        
+        if (!preg_match("/$regex/", $input)) {
             return '';
         }
-        $DH = str_replace('+', '-', $DH);
-        $aDH = explode('T', $DH);
-        $adDH = explode('-', $aDH[0]);
-        if (count($aDH) > 1) {
-            $inter = explode('-', $aDH[1]);
-            $atDH = explode(':', $inter[0]);
-            $timestampDH = mktime($atDH[0], $atDH[1], $atDH[2], $adDH[1], $adDH[2], $adDH[0]);
-        } else {
-            $timestampDH = mktime($month = $adDH[1], $day = $adDH[2], $year = $adDH[0]);
-        }
-        return $timestampDH;
+        return Carbon::createFromFormat("Y-m-d\TH:i:sP", $input)->timestamp;
     }
 
     /**
