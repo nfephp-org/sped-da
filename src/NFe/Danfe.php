@@ -31,6 +31,7 @@ class Danfe extends Common
      * Parâmetro para exibir ou ocultar os valores do PIS/COFINS.
      * @var boolean
      */
+    protected $qCanhoto = 1;
     protected $exibirPIS = true;
     /**
      * Parâmetro para exibir ou ocultar os valores do ICMS Interestadual e Valor Total dos Impostos.
@@ -346,10 +347,10 @@ class Danfe extends Common
         $this->logomarca = $logo;
         //se a orientação estiver em branco utilizar o padrão estabelecido na NF
         if ($orientacao == '') {
-            if ($this->tpImp == '1') {
-                $orientacao = 'P';
-            } else {
+            if ($this->tpImp == '2') {
                 $orientacao = 'L';
+            } else {
+                $orientacao = 'P';
             }
         }
         $this->orientacao = $orientacao;
@@ -363,7 +364,6 @@ class Danfe extends Common
         //apenas para controle se necessário ser maior do que a margem superior
         // posição inicial do conteúdo, a partir do canto superior esquerdo da página
         $xInic = $margEsq;
-        $yInic = $margSup;
         if ($this->orientacao == 'P') {
             if ($papel == 'A4') {
                 $this->maxW = 210;
@@ -371,10 +371,11 @@ class Danfe extends Common
             }
         } else {
             if ($papel == 'A4') {
-                $this->maxH = 210;
                 $this->maxW = 297;
+                $this->maxH = 210;
+                $xInic = $margEsq+10;
                 //se paisagem multiplica a largura do canhoto pela quantidade de canhotos
-                $this->wCanhoto *= $this->qCanhoto;
+                //$this->wCanhoto *= $this->qCanhoto;
             }
         }
         //total inicial de paginas
@@ -402,6 +403,7 @@ class Danfe extends Common
         //##################################################################
         //Verificando quantas linhas serão usadas para impressão das duplicatas
         $linhasDup = 0;
+        $qtdPag = 0;
         if (isset($this->dup) && $this->dup->length > 0) {
             $qtdPag = $this->dup->length;
         } elseif (isset($this->detPag) && $this->detPag->length > 0) {
@@ -572,19 +574,19 @@ class Danfe extends Common
         $qtdeItens = $i; //controle da quantidade de itens no DANFE
         //montagem da primeira página
         $pag = 1;
-        $x = $xInic;
-        $y = $yInic;
+        
+        $x = $margEsq;
+        $y = $margSup;
         //coloca o(s) canhoto(s) da NFe
         if ($this->orientacao == 'P') {
-            for ($i = 1; $i <= $this->qCanhoto; $i++) {
-                $y = $this->canhoto($x, $y);
-            }
+            $y = $this->canhoto($margEsq, $margSup);
         } else {
-            for ($i = 1; $i <= $this->qCanhoto; $i++) {
-                $this->canhoto($x, $y);
-                $x = 25 * $i;
-            }
+            $this->canhoto($margEsq, $margSup);
+            $x = 25;
         }
+        //$x = $xInic;
+        //$y = $yInic;
+        
         //coloca o cabeçalho
         $y = $this->header($x, $y, $pag, $totPag);
         //coloca os dados do destinatário
@@ -648,17 +650,17 @@ class Danfe extends Common
             //seta a cor do texto para petro
             $this->pdf->setTextColor(0, 0, 0);
             // posição inicial do relatorio
-            $x = $xInic;
-            $y = $yInic;
+            $x = $margEsq;
+            $y = $margSup;
             //coloca o cabeçalho na página adicional
             $y = $this->header($x, $y, $n, $totPag);
             //coloca os itens na página adicional
             $y = $this->itens($x, $y+1, $nInicial, $hDispo2, $n, $totPag, $hCabecItens);
             //coloca o rodapé da página
             if ($this->orientacao == 'P') {
-                $this->rodape($xInic);
+                $this->rodape($margEsq);
             } else {
-                $this->rodape($xInic);
+                $this->rodape($margEsq);
             }
             //se estiver na última página e ainda restar itens para inserir, adiciona mais uma página
             if ($n == $totPag && $this->qtdeItensProc < $qtdeItens) {
@@ -814,7 +816,6 @@ class Danfe extends Common
         }
         return $texto;
     }
-
 
     /**
      * Verifica o status da NFe
@@ -1122,7 +1123,7 @@ class Danfe extends Common
                 if (isset($this->nfeProc)) {
                     $texto = ! empty($this->nfeProc->getElementsByTagName("nProt")->item(0)->nodeValue) ?
                             $this->nfeProc->getElementsByTagName("nProt")->item(0)->nodeValue : '';
-                    $tsHora = $this->convertTime($this->nfeProc->getElementsByTagName("dhRecbto")->item(0)->nodeValue);
+                    $tsHora = $this->toTimestamp($this->nfeProc->getElementsByTagName("dhRecbto")->item(0)->nodeValue);
                     if ($texto != '') {
                         $texto .= "  -  " . date('d/m/Y H:i:s', $tsHora);
                     }
@@ -1511,7 +1512,7 @@ class Danfe extends Common
         if ($hSaiEnt == '') {
             $dhSaiEnt = ! empty($this->ide->getElementsByTagName("dhSaiEnt")->item(0)->nodeValue) ?
                     $this->ide->getElementsByTagName("dhSaiEnt")->item(0)->nodeValue : '';
-            $tsDhSaiEnt = $this->convertTime($dhSaiEnt);
+            $tsDhSaiEnt = $this->toTimestamp($dhSaiEnt);
             if ($tsDhSaiEnt != '') {
                 $hSaiEnt = date('H:i:s', $tsDhSaiEnt);
             }
@@ -2976,9 +2977,10 @@ class Danfe extends Common
               $x = $this->wCanhoto;
         }
         $aFont = ['font'=>$this->fontePadrao, 'size'=>6, 'style'=>'I'];
-        $texto = "Impresso em ". date('d/m/Y') . " as " . date('H:i:s');
+        $texto = "Impresso em ". date('d/m/Y') . " as " . date('H:i:s')
+            . '  ' . $this->creditos;
         $this->pdf->textBox($x, $y, $w, 0, $texto, $aFont, 'T', 'L', false);
-        $texto = $this->creditos .  "  Powered by NFePHP®";
+        $texto = "Powered by NFePHP®";
         $this->pdf->textBox($x, $y, $w, 0, $texto, $aFont, 'T', 'R', false, '');
     }
 
@@ -3123,7 +3125,7 @@ class Danfe extends Common
             $texto = "IDENTIFICAÇÃO E ASSINATURA DO RECEBEDOR";
             $aFont = ['font'=>$this->fontePadrao, 'size'=>5.7, 'style'=>''];
             $x = $this->pdf->textBox90($x, $y, $w3, 8, $texto, $aFont, 'T', 'L', 1, '');
-            $this->pdf->DashedVLine(23, $oldY, 0.1, $this->wPrint-20, 67);
+            $this->pdf->dashedVLine(22, $oldY, 0.1, $this->wPrint, 69);
             return $x;
         }
     }

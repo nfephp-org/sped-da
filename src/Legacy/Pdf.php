@@ -798,8 +798,8 @@ class Pdf extends Fpdf
     * Desenha uma linha vertical tracejada com o FPDF
     * @param   number $x      Posição horizontal inicial, em mm
     * @param   number $y      Posição vertical inicial, em mm
-    * @param   number $w      Comprimento da linha, em mm
-    * @param   number $yfinal Espessura da linha, em mm
+    * @param   number $w      Espessura da linha, em mm
+    * @param   number $yfinal posição final
     * @param   number $n      Numero de traços na seção da linha com o comprimento $w
     * @return  none
     */
@@ -995,7 +995,7 @@ class Pdf extends Fpdf
      * @param  number  $vOffSet incremento forçado na na posição Y
      * @return number $height Qual a altura necessária para desenhar esta textBox
      */
-    protected function textBox90(
+    public function textBox90(
         $x,
         $y,
         $w,
