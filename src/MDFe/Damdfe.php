@@ -726,7 +726,7 @@ class Damdfe extends Common
         $this->pdf->textBox($x, $y, $maxW / 2, 8, $texto, $aFont, 'T', 'L', 0, '');
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
         if (is_object($this->mdfeProc)) {
-            $tsHora = $this->convertTime($this->dhRecbto);
+            $tsHora = $this->toTimestamp($this->dhRecbto);
             $texto = $this->nProt . ' - ' . date('d/m/Y   H:i:s', $tsHora);
         } else {
             $texto = 'DAMDFE impresso em contingência - ' . date('d/m/Y   H:i:s');
@@ -738,7 +738,7 @@ class Damdfe extends Common
         // chave de acesso
         $this->pdf->textBox($x + $maxW / 2, $y, $maxW / 2, 17);
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'I');
-        $tsHora = $this->convertTime($this->dhEvento);
+        $tsHora = $this->toTimestamp($this->dhEvento);
         $texto = 'Chave de Acesso';
         $this->pdf->textBox($x + $maxW / 2, $y, $maxW / 2, 6, $texto, $aFont, 'T', 'L', 0, '');
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
