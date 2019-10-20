@@ -2600,39 +2600,39 @@ class Danfe extends Common
                 $x += $w9;
                 if (isset($ICMS)) {
                     $texto = ! empty($ICMS->getElementsByTagName("vBC")->item(0)->nodeValue)
-                        ? number_format(
-                            $ICMS->getElementsByTagName("vBC")->item(0)->nodeValue,
-                            2,
-                            ",",
-                            "."
-                        )
-                        : '0, 00';
+                    ? number_format(
+                        $ICMS->getElementsByTagName("vBC")->item(0)->nodeValue,
+                        2,
+                        ",",
+                        "."
+                    )
+                    : '0, 00';
                     $this->pdf->textBox($x, $y, $w10, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
                 }
                 //Valor do ICMS
                 $x += $w10;
                 if (isset($ICMS)) {
                     $texto = ! empty($ICMS->getElementsByTagName("vICMS")->item(0)->nodeValue)
-                        ? number_format(
-                            $ICMS->getElementsByTagName("vICMS")->item(0)->nodeValue,
-                            2,
-                            ",",
-                            "."
-                        )
-                        : '0, 00';
+                    ? number_format(
+                        $ICMS->getElementsByTagName("vICMS")->item(0)->nodeValue,
+                        2,
+                        ",",
+                        "."
+                    )
+                    : '0, 00';
                     $this->pdf->textBox($x, $y, $w11, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
                 }
                 //Valor do IPI
                 $x += $w11;
                 if (isset($IPI)) {
                     $texto = ! empty($IPI->getElementsByTagName("vIPI")->item(0)->nodeValue)
-                        ? number_format(
-                            $IPI->getElementsByTagName("vIPI")->item(0)->nodeValue,
-                            2,
-                            ",",
-                            "."
-                        )
-                        :'';
+                    ? number_format(
+                        $IPI->getElementsByTagName("vIPI")->item(0)->nodeValue,
+                        2,
+                        ",",
+                        "."
+                    )
+                    :'';
                 } else {
                     $texto = '';
                 }
@@ -2641,26 +2641,26 @@ class Danfe extends Common
                 $x += $w12;
                 if (isset($ICMS)) {
                     $texto = ! empty($ICMS->getElementsByTagName("pICMS")->item(0)->nodeValue)
-                        ? number_format(
-                            $ICMS->getElementsByTagName("pICMS")->item(0)->nodeValue,
-                            2,
-                            ",",
-                            "."
-                        )
-                        : '0, 00';
+                    ? number_format(
+                        $ICMS->getElementsByTagName("pICMS")->item(0)->nodeValue,
+                        2,
+                        ",",
+                        "."
+                    )
+                    : '0, 00';
                     $this->pdf->textBox($x, $y, $w13, $h, $texto, $aFont, 'T', 'C', 0, '');
                 }
                 //%IPI
                 $x += $w13;
                 if (isset($IPI)) {
                     $texto = ! empty($IPI->getElementsByTagName("pIPI")->item(0)->nodeValue)
-                        ? number_format(
-                            $IPI->getElementsByTagName("pIPI")->item(0)->nodeValue,
-                            2,
-                            ",",
-                            "."
-                        )
-                        : '';
+                    ? number_format(
+                        $IPI->getElementsByTagName("pIPI")->item(0)->nodeValue,
+                        2,
+                        ",",
+                        "."
+                    )
+                    : '';
                 } else {
                     $texto = '';
                 }
