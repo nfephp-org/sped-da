@@ -46,6 +46,30 @@ class DaCommon extends Common
         }
         return $this->debugmode;
     }
+    
+    /**
+     * Define parametros de impressão
+     * @param string $orientacao
+     * @param string $papel
+     * @param int $margSup
+     * @param int $margEsq
+     */
+    public function printParameters(
+        $orientacao = 'P',
+        $papel = 'A4',
+        $margSup = null,
+        $margEsq = null
+    ) {
+        if ($orientação === 'P' || $orientacao === 'L') {
+            $this->force = $orientacao;
+        }
+        $p = strtoupper($papel);
+        if ($p == 'A4' || $p == 'LEGAL') {
+            $this->papel = $papel;
+        }
+        $this->margsup = $margSup ?? 2;
+        $this->margesq = $margEsq ?? 2;
+    }
 
     /**
      * Renderiza o pdf e retorna como raw
@@ -85,21 +109,6 @@ class DaCommon extends Common
     }
 
     /**
-     * Seta as margens superior e esquerda
-     * a margem direita é igual a esquerda e
-     * a inferior é igual a superior
-     * @param int $margSup
-     * @param int $margEsq
-     *
-     * @return void
-     */
-    public function margins(int $margSup = null, int $margEsq = null)
-    {
-        $this->margsup = $margSup ?? 2;
-        $this->margesq = $margEsq ?? 2;
-    }
-
-    /**
      * Seta o tamanho da fonte
      *
      * @param int $size
@@ -108,7 +117,6 @@ class DaCommon extends Common
      */
     protected function setFontSize(int $size = 8)
     {
-
         $this->aFont['size'] = $size;
     }
 
