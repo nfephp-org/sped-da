@@ -32,6 +32,10 @@ class Danfe extends Common
      * @var boolean
      */
     protected $qCanhoto = 1;
+    /**
+     * Define a exbição dos valores de PIS e Cofins
+     * @var bool
+     */
     protected $exibirPIS = true;
     /**
      * Parâmetro para exibir ou ocultar os valores do ICMS Interestadual e Valor Total dos Impostos.
@@ -62,7 +66,7 @@ class Danfe extends Common
     protected $descProdQuebraLinha = true;
     /**
      * objeto fpdf()
-     * @var object
+     * @var \NFePHP\DA\Legacy\Pdf
      */
     protected $pdf;
     /**
@@ -102,7 +106,7 @@ class Danfe extends Common
      */
     protected $fontePadrao = 'Times';
     /**
-     * Texto
+     * Texto adicional da DANFE
      * @var string
      */
     protected $textoAdic = '';
@@ -121,7 +125,15 @@ class Danfe extends Common
      * @var float
      */
     protected $hPrint;
+    /**
+     * Altura maxima
+     * @var float
+     */
     protected $maxH;
+    /**
+     * Largura maxima
+     * @var float
+     */
     protected $maxW;
     /**
      * largura do canhoto (25mm) apenas para a formatação paisagem
@@ -139,98 +151,98 @@ class Danfe extends Common
      */
     protected $qtdeItensProc;
     /**
-     * Document
-     * @var DOMDocument
+     * Dom Document
+     * @var \NFePHP\DA\Legacy\Dom
      */
     protected $dom;
     /**
      * Node
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $infNFe;
     /**
      * Node
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $ide;
     /**
      * Node
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $entrega;
     /**
      * Node
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $retirada;
     /**
      * Node
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $emit;
     /**
      * Node
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $dest;
     /**
      * Node
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $enderEmit;
     /**
      * Node
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $enderDest;
     /**
      * Node
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $det;
     /**
      * Node
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $cobr;
     /**
      * Node
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $dup;
     /**
      * Node
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $ICMSTot;
     /**
      * Node
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $ISSQNtot;
     /**
      * Node
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $transp;
     /**
      * Node
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $transporta;
     /**
      * Node
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $veicTransp;
     /**
      * Node reboque
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $reboque;
     /**
      * Node infAdic
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $infAdic;
     /**
@@ -240,7 +252,7 @@ class Danfe extends Common
     protected $tpEmis;
     /**
      * Node infProt
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $infProt;
     /**
@@ -250,7 +262,7 @@ class Danfe extends Common
     protected $tpImp;
     /**
      * Node compra
-     * @var DOMNode
+     * @var \DOMNode
      */
     protected $compra;
     /**
@@ -268,12 +280,10 @@ class Danfe extends Common
      * __construct
      *
      * @name  __construct
-     * @param string  $docXML      Conteúdo XML da NF-e (com ou sem a tag nfeProc)
-     * @param string  $logoimage   Caminho para o arquivo do logo
+     * @param string  $xml Conteúdo XML da NF-e (com ou sem a tag nfeProc)
      */
-    public function __construct(
-        $xml
-    ) {
+    public function __construct($xml)
+    {
         $this->debugMode();
         $this->loadDoc($xml);
     }
@@ -396,7 +406,7 @@ class Danfe extends Common
         // adiciona a primeira página
         $this->pdf->addPage($this->orientacao, $this->papel);
         $this->pdf->setLineWidth(0.1);
-        $this->pdf->setTextColor(0, 0, 0);
+        $this->pdf->settextcolor(0, 0, 0);
 
         //##################################################################
         // CALCULO DO NUMERO DE PAGINAS A SEREM IMPRESSAS
@@ -648,7 +658,7 @@ class Danfe extends Common
             //ajusta espessura das linhas
             $this->pdf->setLineWidth(0.1);
             //seta a cor do texto para petro
-            $this->pdf->setTextColor(0, 0, 0);
+            $this->pdf->settextcolor(0, 0, 0);
             // posição inicial do relatorio
             $x = $margEsq;
             $y = $margSup;
@@ -1170,11 +1180,12 @@ class Danfe extends Common
                 "###.###.###/####-##"
             );
         } else {
-            $texto = ! empty($this->emit->getElementsByTagName("CPF")->item(0)->nodeValue) ?
-                $this->formatField(
+            $texto = ! empty($this->emit->getElementsByTagName("CPF")->item(0)->nodeValue)
+                ? $this->formatField(
                     $this->emit->getElementsByTagName("CPF")->item(0)->nodeValue,
                     "###.###.###-##"
-                ) : '';
+                )
+                : '';
         }
         $aFont = ['font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B'];
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'B', 'C', 0, '');
@@ -1189,7 +1200,7 @@ class Danfe extends Common
             $y = $this->hPrint-130;
             $h = 25;
             $w = $maxW-(2*$x);
-            $this->pdf->setTextColor(90, 90, 90);
+            $this->pdf->settextcolor(90, 90, 90);
             $texto = $resp['message'];
             $aFont = ['font'=>$this->fontePadrao, 'size'=>48, 'style'=>'B'];
             $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
@@ -1204,7 +1215,7 @@ class Danfe extends Common
             $texto = "SEM VALOR FISCAL\n".$xMotivo;
             $aFont = ['font'=>$this->fontePadrao, 'size'=>48, 'style'=>'B'];
             $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            $this->pdf->setTextColor(0, 0, 0);
+            $this->pdf->settextcolor(0, 0, 0);
         }
         
         /*
