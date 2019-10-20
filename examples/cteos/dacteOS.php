@@ -5,7 +5,7 @@ require_once '../../bootstrap.php';
 
 use NFePHP\DA\CTe\DacteOS;
 
-$xml = file_get_contents('../xml/cteos/cte_hom_com_prot.xml');
+$xml = file_get_contents(__DIR__ . '/fixtures/cte_hom_com_prot.xml');
 
 $logo = 'data://text/plain;base64,' . base64_encode(file_get_contents('../images/logo.jpg'));
 
