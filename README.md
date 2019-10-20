@@ -10,7 +10,7 @@ Classes para geração dos documentos auxiliares usados pelos padrões Sped
 > Serão retiradas das classes todas os recursos considerados como não "pertencentes" ao escopo das mesmas e não serão mais aceitas inclusões de métodos referentes a particuliaridades de qualuqer sistema.
 > Estas classes devem ser e permanecer o tão genéricas quanto possivel.
  
-# CLASSES EM FASE DE REFATORAÇÃO (cuidado au usar pois estarão em constante alteração até 20/10/2019)
+# CLASSES EM FASE DE REFATORAÇÃO (cuidado ao usar pois estarão em constante alteração até 31/10/2019)
 
 [![Build Status][ico-travis]][link-travis]
 [![Coverage Status][ico-scrutinizer]][link-scrutinizer]
