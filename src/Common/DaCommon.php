@@ -1,18 +1,18 @@
 <?php
 
-
 namespace NFePHP\DA\Common;
 
 use NFePHP\DA\Legacy\Common;
 
 class DaCommon extends Common
 {
+
     protected $debugmode;
     protected $orientacao = 'P';
+    protected $force;
     protected $papel = 'A4';
     protected $margsup = 2;
     protected $margesq = 2;
-    protected $wCanhoto = 2;
     protected $wPrint;
     protected $hPrint;
     protected $xIni;
@@ -22,7 +22,7 @@ class DaCommon extends Common
     protected $fontePadrao = 'times';
     protected $aFont = ['font' => 'times', 'size' => 8, 'style' => ''];
     protected $creditos;
-    
+
     /**
      * Ativa ou desativa o modo debug
      *
@@ -46,8 +46,8 @@ class DaCommon extends Common
         }
         return $this->debugmode;
     }
-    
-        /**
+
+    /**
      * Renderiza o pdf e retorna como raw
      *
      * @return string
@@ -60,10 +60,9 @@ class DaCommon extends Common
         if (!$this->debugmode) {
             return $this->pdf->getPdf();
         }
-        echo "Modo Debug Ativado";
+        throw new \Exception("Modo Debug Ativado");
     }
 
-    
     /**
      * Add the credits to the integrator in the footer message
      *
@@ -75,7 +74,7 @@ class DaCommon extends Common
     {
         $this->creditos = trim($message);
     }
-    
+
     /**
      *
      * @param string $font
@@ -84,7 +83,7 @@ class DaCommon extends Common
     {
         $this->aFont['font'] = $font;
     }
-    
+
     /**
      * Seta as margens superior e esquerda
      * a margem direita é igual a esquerda e
@@ -99,7 +98,7 @@ class DaCommon extends Common
         $this->margsup = $margSup ?? 2;
         $this->margesq = $margEsq ?? 2;
     }
-    
+
     /**
      * Seta o tamanho da fonte
      *
@@ -109,10 +108,10 @@ class DaCommon extends Common
      */
     protected function setFontSize(int $size = 8)
     {
-        
+
         $this->aFont['size'] = $size;
     }
-    
+
     /**
      *
      * @param string $style
@@ -121,7 +120,7 @@ class DaCommon extends Common
     {
         $this->aFont['style'] = $style;
     }
-    
+
     /**
      * Seta a orientação
      *
@@ -130,31 +129,27 @@ class DaCommon extends Common
      *
      * @return void
      */
-    protected function setOrientationAndSize(
-        $force = null,
-        $tpImp = null
-    ) {
-        if (!empty($force) && ($force === 'P' || $force === 'L')) {
+    protected function setOrientationAndSize($force = null, $tpImp = null)
+    {
+        $this->orientacao = 'P';
+        if (!empty($force)) {
             $this->orientacao = $force;
         } elseif (!empty($tpImp)) {
-            if ($tpImp == '1') {
-                $this->orientacao = 'P';
-            } else {
+            if ($tpImp == '2') {
                 $this->orientacao = 'L';
-            }
-        } else {
-            $this->orientacao = 'P';
-        }
-        if ($this->orientacao == 'P') {
-            if (strtoupper($this->papel) == 'A4') {
-                $this->maxW = 210;
-                $this->maxH = 297;
             } else {
-                $this->papel = 'legal';
-                $this->maxW = 216;
-                $this->maxH = 355;
+                $this->orientacao = 'P';
             }
+        }
+        if (strtoupper($this->papel) == 'A4') {
+            $this->maxW = 210;
+            $this->maxH = 297;
         } else {
+            $this->papel = 'legal';
+            $this->maxW = 216;
+            $this->maxH = 355;
+        }
+        if ($this->orientacao == 'L') {
             if (strtoupper($this->papel) == 'A4') {
                 $this->maxH = 210;
                 $this->maxW = 297;
@@ -164,7 +159,18 @@ class DaCommon extends Common
                 $this->maxW = 355;
             }
         }
-        $this->wPrint = $this->maxW - ($this->margesq * 2);
-        $this->hPrint = $this->maxH - $this->margsup - 2;
+        $this->wPrint = $this->maxW - $this->margesq * 2;
+        $this->hPrint = $this->maxH - $this->margsup - 5;
+    }
+    
+    protected function imagePNGtoJPG($original)
+    {
+        $image = imagecreatefrompng($original);
+        ob_start();
+        imagejpeg($image, null, 100);
+        imagedestroy($image);
+        $stringdata = ob_get_contents(); // read from buffer
+        ob_end_clean();
+        return 'data://text/plain;base64,'.base64_encode($stringdata);
     }
 }
