@@ -801,7 +801,7 @@ class Dacte extends Common
             'style' => '');
         $this->pdf->textBox($xa, $y + 1, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
         $texto = !empty($this->ide->getElementsByTagName("dhEmi")->item(0)->nodeValue) ?
-            date('d/m/Y H:i:s', $this->convertTime($this->getTagValue($this->ide, "dhEmi"))) : '';
+            date('d/m/Y H:i:s', $this->toTimestamp($this->getTagValue($this->ide, "dhEmi"))) : '';
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($xa, $y + 5, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
         $this->pdf->line($xa + $wa, $y, $xa + $wa, $y + $h + 1);
@@ -886,7 +886,7 @@ class Dacte extends Common
             ) {
                 $texto .= date(
                     'd/m/Y   H:i:s',
-                    $this->convertTime($this->getTagValue($this->protCTe, "dhRecbto"))
+                    $this->toTimestamp($this->getTagValue($this->protCTe, "dhRecbto"))
                 );
             }
             $texto = $this->getTagValue($this->protCTe, "nProt") == '' ? '' : $texto;

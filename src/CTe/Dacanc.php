@@ -358,10 +358,10 @@ class Dacanc extends Common
         $this->pdf->textBox($x, $y+2, $w2, 8, 'Representação Gráfica de ProtCancCTe', $aFont, 'T', 'C', 0, '');
         $aFont = array('font'=>$this->fontePadrao,'size'=>12,'style'=>'I');
         $this->pdf->textBox($x, $y+7, $w2, 8, '(Protocolo Cancelamento de CTe)', $aFont, 'T', 'C', 0, '');
-        $tsHora = $this->convertTime($this->dhEvento);
+        $tsHora = $this->toTimestamp($this->dhEvento);
         $texto = 'Criado em : '. date('d/m/Y   H:i:s', $tsHora);
         $this->pdf->textBox($x, $y+20, $w2, 8, $texto, $aFont, 'T', 'L', 0, '');
-        $tsHora = $this->convertTime($this->dhRegEvento);
+        $tsHora = $this->toTimestamp($this->dhRegEvento);
         $texto = 'Prococolo: '.$this->nProt.'  -  Registrado na SEFAZ em: '.date('d/m/Y   H:i:s', $tsHora);
         $this->pdf->textBox($x, $y+25, $w2, 8, $texto, $aFont, 'T', 'L', 0, '');
         //####################################################
