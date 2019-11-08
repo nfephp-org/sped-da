@@ -289,7 +289,7 @@ class Daevento extends Common
         $this->pTextBox($x, $y, $w, $h);
         $texto = 'IDENTIFICAÇÃO DO EMITENTE';
         $this->pTextBox($x, $y, $w, 5, $texto, $aFont, 'T', 'C', 0, '');
-        if (is_file($this->logomarca)) {
+        if (!empty(($this->logomarca))) {
             $logoInfo = getimagesize($this->logomarca);
             // largura da imagem em mm
             $logoWmm = ($logoInfo[0] / 72) * 25.4;
