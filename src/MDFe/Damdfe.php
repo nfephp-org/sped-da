@@ -810,6 +810,21 @@ class Damdfe extends Common
             $this->pdf->textBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
             $altura = $y + 4;
             /**
+ * @var \DOMNodeList $veicTracao 
+*/
+            $veicTracao = $this->veicTracao->getElementsByTagName('prop');
+            foreach ($veicTracao as $item) {
+                /**
+ * @var \DOMElement $item 
+*/
+                $DOMNodeList = $item->getElementsByTagName('RNTRC');
+                if ($DOMNodeList->length > 0) {
+                    $altura += 4;
+                    $texto = $DOMNodeList->item(0)->nodeValue;
+                    $this->pTextBox($x1, $altura, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+                }
+            }
+            /**
 * 
              *
  * @var \DOMNodeList $veicReboque 
