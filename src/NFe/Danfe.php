@@ -560,6 +560,7 @@ class Danfe extends Common
         $hCabecItens = 4;//cabeçalho dos itens
         //alturas disponiveis para os dados
         $hDispo1 = $this->hPrint - 10 - ($hcabecalho +
+            //$hdestinatario + ($linhasDup * $hduplicatas) + $himposto + $htransporte +
             $hdestinatario + $hlocalentrega + $hlocalretirada +
             ($linhasDup * $hduplicatas) + $himposto + $htransporte +
             ($linhaISSQN * $hissqn) + $hdadosadic + $hfooter + $hCabecItens +
@@ -617,11 +618,11 @@ class Danfe extends Common
         
         //coloca os dados do local de retirada
         if (isset($this->retirada)) {
-            $y = $this->pLocalRetiradaDANFE($x, $y+1);
+            $y = $this->localRetiradaDANFE($x, $y+1);
         }
         //coloca os dados do local de entrega
         if (isset($this->entrega)) {
-            $y = $this->pLocalEntregaDANFE($x, $y+1);
+            $y = $this->localEntregaDANFE($x, $y+1);
         }
         
         //Verifica as formas de pagamento da nota fiscal
@@ -1589,7 +1590,7 @@ class Danfe extends Common
      * @param  number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
-    protected function pLocalEntregaDANFE($x = 0, $y = 0)
+    protected function localEntregaDANFE($x = 0, $y = 0)
     {
         //####################################################################################
         //LOCAL DE ENTREGA
@@ -1630,13 +1631,13 @@ class Danfe extends Common
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         //Pegando valor do CPF/CNPJ
         if (! empty($this->entrega->getElementsByTagName("CNPJ")->item(0)->nodeValue)) {
-            $texto = $this->pFormat(
+            $texto = $this->formatField(
                 $this->entrega->getElementsByTagName("CNPJ")->item(0)->nodeValue,
                 "###.###.###/####-##"
             );
         } else {
             $texto = ! empty($this->entrega->getElementsByTagName("CPF")->item(0)->nodeValue) ?
-                    $this->pFormat(
+                    $this->formatField(
                         $this->entrega->getElementsByTagName("CPF")->item(0)->nodeValue,
                         "###.###.###-##"
                     ) : '';
@@ -1691,7 +1692,7 @@ class Danfe extends Common
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         $texto = ! empty($this->entrega->getElementsByTagName("CEP")->item(0)->nodeValue) ?
                 $this->entrega->getElementsByTagName("CEP")->item(0)->nodeValue : '';
-        $texto = $this->pFormat($texto, "#####-###");
+        $texto = $this->formatField($texto, "#####-###");
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B');
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'B', 'C', 0, '');
         //MUNICÍPIO
@@ -1739,7 +1740,7 @@ class Danfe extends Common
      * @param  number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
-    protected function pLocalRetiradaDANFE($x = 0, $y = 0)
+    protected function localRetiradaDANFE($x = 0, $y = 0)
     {
         //####################################################################################
         //LOCAL DE RETIRADA
@@ -1780,13 +1781,13 @@ class Danfe extends Common
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         //Pegando valor do CPF/CNPJ
         if (! empty($this->retirada->getElementsByTagName("CNPJ")->item(0)->nodeValue)) {
-            $texto = $this->pFormat(
+            $texto = $this->formatField(
                 $this->retirada->getElementsByTagName("CNPJ")->item(0)->nodeValue,
                 "###.###.###/####-##"
             );
         } else {
             $texto = ! empty($this->retirada->getElementsByTagName("CPF")->item(0)->nodeValue) ?
-                    $this->pFormat(
+                    $this->formatField(
                         $this->retirada->getElementsByTagName("CPF")->item(0)->nodeValue,
                         "###.###.###-##"
                     ) : '';
@@ -1841,7 +1842,7 @@ class Danfe extends Common
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         $texto = ! empty($this->retirada->getElementsByTagName("CEP")->item(0)->nodeValue) ?
                 $this->retirada->getElementsByTagName("CEP")->item(0)->nodeValue : '';
-        $texto = $this->pFormat($texto, "#####-###");
+        $texto = $this->formatField($texto, "#####-###");
         $aFont = array('font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B');
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'B', 'C', 0, '');
         //MUNICÍPIO
