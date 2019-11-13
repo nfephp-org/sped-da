@@ -67,7 +67,8 @@ class Damdfe extends Common
 
     /**
      * Ativa ou desativa o modo debug
-     * @param bool $activate
+     *
+     * @param  bool $activate
      * @return bool
      */
     public function debugMode($activate = null)
@@ -145,6 +146,7 @@ class Damdfe extends Common
                 $this->qCT = $this->dom->getElementsByTagName("qCT")->item(0)->nodeValue;
             }
             $this->qCarga = $this->dom->getElementsByTagName("qCarga")->item(0)->nodeValue;
+            $this->cUnid = $this->dom->getElementsByTagName("cUnid")->item(0)->nodeValue;
             $this->infModal = $this->dom->getElementsByTagName("infModal")->item(0);
             $this->rodo = $this->dom->getElementsByTagName("rodo")->item(0);
             $this->aereo = $this->dom->getElementsByTagName("aereo")->item(0);
@@ -177,8 +179,7 @@ class Damdfe extends Common
     }
 
     /**
-     *buildMDFe
-     *
+     * buildMDFe
      */
     public function buildMDFe()
     {
@@ -242,9 +243,10 @@ class Damdfe extends Common
 
     /**
      * headerMDFePaisagem
-     * @param float $x
-     * @param float $y
-     * @param integer $pag
+     *
+     * @param  float   $x
+     * @param  float   $y
+     * @param  integer $pag
      * @return string
      */
     private function headerMDFePaisagem($x, $y, $pag)
@@ -386,9 +388,9 @@ class Damdfe extends Common
     /**
      * headerMDFeRetrato
      *
-     * @param float $x
-     * @param float $y
-     * @param integer $pag
+     * @param  float   $x
+     * @param  float   $y
+     * @param  integer $pag
      * @return string
      */
     private function headerMDFeRetrato($x, $y, $pag)
@@ -535,8 +537,8 @@ class Damdfe extends Common
     /**
      * bodyMDFe
      *
-     * @param float $x
-     * @param float $y
+     * @param  float $x
+     * @param  float $y
      * @return void
      */
     private function bodyMDFe($x, $y)
@@ -679,10 +681,15 @@ class Damdfe extends Common
         $x1 += $x2;
         $this->pdf->textBox($x1, $y, $x2, 12);
 
-        if ($this->rodo ||
-            $this->aereo ||
-            $this->ferrov) {
-            $texto = 'Peso Total (Kg)';
+        if ($this->rodo 
+            || $this->aereo 
+            || $this->ferrov
+        ) {            
+            if ($this->cUnid == 01) {
+                $texto = 'Peso Total (Kg)';
+            } else {
+                $texto = 'Peso Total (Ton)';
+            }
             $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
             $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
             $texto = number_format($this->qCarga, 4, ',', '.');
@@ -701,7 +708,11 @@ class Damdfe extends Common
             $ya = $y + 12;
             $this->pdf->textBox($x, $ya, $maxW / 2, 12);
             $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-            $texto = 'Peso Total (Kg)';
+            if ($this->cUnid == 01) {
+                $texto = 'Peso Total (Kg)';
+            } else {
+                $texto = 'Peso Total (Ton)';
+            }            
             $this->pdf->textBox($x, $ya, $maxW / 2, 8, $texto, $aFont, 'T', 'L', 0, '');
             $texto = number_format($this->qCarga, 4, ',', '.');
             $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
@@ -768,10 +779,18 @@ class Damdfe extends Common
             $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
             $this->pdf->textBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
             $altura = $y + 4;
-            /** @var \DOMNodeList $veicReboque */
+            /**
+* 
+             *
+ * @var \DOMNodeList $veicReboque 
+*/
             $veicReboque = $this->veicReboque;
             foreach ($veicReboque as $item) {
-                /** @var \DOMElement $item */
+                /**
+* 
+                 *
+ * @var \DOMElement $item 
+*/
                 $altura += 4;
                 $texto = $item->getElementsByTagName('placa')->item(0)->nodeValue;
                 $this->pdf->textBox($x1, $altura, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
@@ -790,10 +809,18 @@ class Damdfe extends Common
             $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
             $this->pdf->textBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
             $altura = $y + 4;
-            /** @var \DOMNodeList $veicReboque */
+            /**
+* 
+             *
+ * @var \DOMNodeList $veicReboque 
+*/
             $veicReboque = $this->veicReboque;
             foreach ($veicReboque as $item) {
-                /** @var \DOMElement $item */
+                /**
+* 
+                 *
+ * @var \DOMElement $item 
+*/
                 $DOMNodeList = $item->getElementsByTagName('RNTRC');
                 if ($DOMNodeList->length > 0) {
                     $altura += 4;
@@ -1153,6 +1180,7 @@ class Damdfe extends Common
 
     /**
      * Dados brutos do PDF
+     *
      * @return string
      */
     public function render()
@@ -1165,6 +1193,7 @@ class Damdfe extends Common
     
     /**
      * Add the credits to the integrator in the footer message
+     *
      * @param string $message
      */
     public function creditsIntegratorFooter($message = '')
