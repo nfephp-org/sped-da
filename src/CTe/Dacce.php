@@ -123,6 +123,7 @@ class Dacce extends Common
 
     protected function loadDoc($xml)
     {
+        $this->xml = $xml;
         $this->dom = new Dom();
         $this->dom->loadXML($this->xml);
         if (empty($this->dom->getElementsByTagName("eventoCTe")->item(0))) {
@@ -257,7 +258,7 @@ class Dacce extends Common
         $this->pdf->textBox($x, $y, $w, $h);
         $texto = 'IDENTIFICAÇÃO DO EMITENTE';
         $this->pdf->textBox($x, $y, $w, 5, $texto, $aFont, 'T', 'C', 0, '');
-        if (is_file($this->logomarca)) {
+        if (!empty($this->logomarca)) {
             $logoInfo = getimagesize($this->logomarca);
             // largura da imagem em mm
             $logoWmm = ($logoInfo[0] / 72) * 25.4;
@@ -290,7 +291,7 @@ class Dacce extends Common
                 $y1 = round($h / 3 + $y, 0);
                 $tw = round(2 * $w / 3, 0);
             }
-            $this->pdf->Image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH);
+            $this->pdf->Image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, 'jpeg');
         } else {
             $x1 = $x;
             $y1 = round($h / 3 + $y, 0);
