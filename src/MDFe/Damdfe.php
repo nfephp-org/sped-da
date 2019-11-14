@@ -681,10 +681,10 @@ class Damdfe extends Common
         $x1 += $x2;
         $this->pdf->textBox($x1, $y, $x2, 12);
 
-        if ($this->rodo 
-            || $this->aereo 
+        if ($this->rodo
+            || $this->aereo
             || $this->ferrov
-        ) {            
+        ) {
             if ($this->cUnid == 01) {
                 $texto = 'Peso Total (Kg)';
             } else {
@@ -712,7 +712,7 @@ class Damdfe extends Common
                 $texto = 'Peso Total (Kg)';
             } else {
                 $texto = 'Peso Total (Ton)';
-            }            
+            }
             $this->pdf->textBox($x, $ya, $maxW / 2, 8, $texto, $aFont, 'T', 'L', 0, '');
             $texto = number_format($this->qCarga, 4, ',', '.');
             $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
@@ -780,16 +780,16 @@ class Damdfe extends Common
             $this->pdf->textBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
             $altura = $y + 4;
             /**
-* 
+*
              *
- * @var \DOMNodeList $veicReboque 
+ * @var \DOMNodeList $veicReboque
 */
             $veicReboque = $this->veicReboque;
             foreach ($veicReboque as $item) {
                 /**
-* 
+*
                  *
- * @var \DOMElement $item 
+ * @var \DOMElement $item
 */
                 $altura += 4;
                 $texto = $item->getElementsByTagName('placa')->item(0)->nodeValue;
@@ -810,12 +810,12 @@ class Damdfe extends Common
             $this->pdf->textBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
             $altura = $y + 4;
             /**
- * @var \DOMNodeList $veicTracao 
+ * @var \DOMNodeList $veicTracao
 */
             $veicTracao = $this->veicTracao->getElementsByTagName('prop');
             foreach ($veicTracao as $item) {
                 /**
- * @var \DOMElement $item 
+ * @var \DOMElement $item
 */
                 $DOMNodeList = $item->getElementsByTagName('RNTRC');
                 if ($DOMNodeList->length > 0) {
@@ -825,16 +825,16 @@ class Damdfe extends Common
                 }
             }
             /**
-* 
+*
              *
- * @var \DOMNodeList $veicReboque 
+ * @var \DOMNodeList $veicReboque
 */
             $veicReboque = $this->veicReboque;
             foreach ($veicReboque as $item) {
                 /**
-* 
+*
                  *
- * @var \DOMElement $item 
+ * @var \DOMElement $item
 */
                 $DOMNodeList = $item->getElementsByTagName('RNTRC');
                 if ($DOMNodeList->length > 0) {
