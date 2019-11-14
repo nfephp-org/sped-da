@@ -935,6 +935,9 @@ class Danfce extends Common
         $aFontTex = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         // seta o textbox do titulo
         $texto = "INFORMAÇÃO ADICIONAL";
+		if ($this->nfeProc->getElementsByTagName("xMsg")) {
+            $texto = $texto . ' ' . $this->nfeProc->getElementsByTagName("xMsg")->item(0)->nodeValue;
+        }
         $heigthText = $this->pTextBox($x, $y, $w, $hLinha, $texto, $aFontTit, 'C', 'C', 0, '', false);
                 
         // seta o textbox do texto adicional
