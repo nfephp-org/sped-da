@@ -343,10 +343,11 @@ class Danfce extends Common
         $maxW = $this->wPrint;
         $h = $h-($margemInterna);
         //COLOCA LOGOMARCA
-        if (is_file($this->logomarca)) {
+        if (!empty($this->logomarca)) {
             $xImg = $margemInterna;
             $yImg = $margemInterna + 1;
-            $this->pdf->image($this->logomarca, $xImg, $yImg, 30, 22.5);
+            $type = (substr($this->logomarca, 0, 7) === 'data://') ? 'jpg' : null;
+            $this->pdf->image($this->logomarca, $xImg, $yImg, 30, 22.5, $type);
             $xRs = ($maxW*0.4) + $margemInterna;
             $wRs = ($maxW*0.6);
             $alignEmit = 'L';
