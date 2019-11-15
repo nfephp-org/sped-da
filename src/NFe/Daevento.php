@@ -271,7 +271,7 @@ class Daevento extends Common
         $this->pdf->textBox($x, $y, $w, $h);
         $texto = 'IDENTIFICAÇÃO DO EMITENTE';
         $this->pdf->textBox($x, $y, $w, 5, $texto, $aFont, 'T', 'C', 0, '');
-        if (is_file($this->logomarca)) {
+        if (!empty($this->logomarca)) {
             $logoInfo = getimagesize($this->logomarca);
             // largura da imagem em mm
             $logoWmm = ($logoInfo[0] / 72) * 25.4;
@@ -305,7 +305,8 @@ class Daevento extends Common
                 $y1 = round($h / 3 + $y, 0);
                 $tw = round(2 * $w / 3, 0);
             }
-            $this->pdf->image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, 'jpeg');
+            $type = (substr($this->logomarca, 0, 7) === 'data://') ? 'jpg' : null;
+            $this->pdf->image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, $type);
         } else {
             $x1 = $x;
             $y1 = round($h / 3 + $y, 0);
