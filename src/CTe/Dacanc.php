@@ -9,7 +9,7 @@ namespace NFePHP\DA\CTe;
  * @category  Library
  * @package   nfephp-org/sped-da
  * @name      Dacanc.php
- * @copyright 2009-2016 NFePHP
+ * @copyright 2009-2019 NFePHP
  * @license   http://www.gnu.org/licenses/lgpl.html GNU/LGPL v.3
  * @link      http://github.com/nfephp-org/sped-da for the canonical source repository
  * @author    Roberto L. Machado <linux.rlm at gmail dot com>
@@ -265,9 +265,9 @@ class Dacanc extends Common
         $w1 = $w;
         $h=32;
         $oldY += $h;
-        $this->textBox($x, $y, $w, $h);
+        $this->pdf->textBox($x, $y, $w, $h);
         $texto = 'IDENTIFICAÇÃO DO EMITENTE';
-        $this->textBox($x, $y, $w, 5, $texto, $aFont, 'T', 'C', 0, '');
+        $this->pdf->textBox($x, $y, $w, 5, $texto, $aFont, 'T', 'C', 0, '');
         if (is_file($this->logomarca)) {
             $logoInfo = getimagesize($this->logomarca);
             //largura da imagem em mm
@@ -311,7 +311,7 @@ class Dacanc extends Common
         //Nome emitente
         $aFont = array('font'=>$this->fontePadrao,'size'=>12,'style'=>'B');
         $texto = (isset($this->aEnd['razao'])?$this->aEnd['razao']:'');
-        $this->textBox($x1, $y1, $tw, 8, $texto, $aFont, 'T', 'C', 0, '');
+        $this->pdf->textBox($x1, $y1, $tw, 8, $texto, $aFont, 'T', 'C', 0, '');
         //endereço
         $y1 = $y1+6;
         $aFont = array('font'=>$this->fontePadrao,'size'=>8,'style'=>'');
@@ -348,32 +348,32 @@ class Dacanc extends Common
         $texto .= ($texto!='' && $tmp_txt!=''?"\n":'').$tmp_txt;
         $tmp_txt=$email;
         $texto .= ($texto!='' && $tmp_txt!=''?"\n":'').$tmp_txt;
-        $this->textBox($x1, $y1-2, $tw, 8, $texto, $aFont, 'T', 'C', 0, '');
+        $this->pdf->textBox($x1, $y1-2, $tw, 8, $texto, $aFont, 'T', 'C', 0, '');
         //##################################################
         $w2 = round($maxW - $w, 0);
         $x += $w;
-        $this->textBox($x, $y, $w2, $h);
+        $this->pdf->textBox($x, $y, $w2, $h);
         $y1 = $y + $h;
         $aFont = array('font'=>$this->fontePadrao,'size'=>16,'style'=>'B');
-        $this->textBox($x, $y+2, $w2, 8, 'Representação Gráfica de ProtCancCTe', $aFont, 'T', 'C', 0, '');
+        $this->pdf->textBox($x, $y+2, $w2, 8, 'Representação Gráfica de ProtCancCTe', $aFont, 'T', 'C', 0, '');
         $aFont = array('font'=>$this->fontePadrao,'size'=>12,'style'=>'I');
-        $this->textBox($x, $y+7, $w2, 8, '(Protocolo Cancelamento de CTe)', $aFont, 'T', 'C', 0, '');
-        $tsHora = $this->convertTime($this->dhEvento);
+        $this->pdf->textBox($x, $y+7, $w2, 8, '(Protocolo Cancelamento de CTe)', $aFont, 'T', 'C', 0, '');
+        $tsHora = $this->toTimestamp($this->dhEvento);
         $texto = 'Criado em : '. date('d/m/Y   H:i:s', $tsHora);
-        $this->textBox($x, $y+20, $w2, 8, $texto, $aFont, 'T', 'L', 0, '');
-        $tsHora = $this->convertTime($this->dhRegEvento);
+        $this->pdf->textBox($x, $y+20, $w2, 8, $texto, $aFont, 'T', 'L', 0, '');
+        $tsHora = $this->toTimestamp($this->dhRegEvento);
         $texto = 'Prococolo: '.$this->nProt.'  -  Registrado na SEFAZ em: '.date('d/m/Y   H:i:s', $tsHora);
-        $this->textBox($x, $y+25, $w2, 8, $texto, $aFont, 'T', 'L', 0, '');
+        $this->pdf->textBox($x, $y+25, $w2, 8, $texto, $aFont, 'T', 'L', 0, '');
         //####################################################
         $x = $oldX;
-        $this->textBox($x, $y1, $maxW, 33);
+        $this->pdf->textBox($x, $y1, $maxW, 33);
         $sY = $y1+23;
         $texto = 'De acordo com as determinações legais vigentes, vimos por meio desta '
                 . 'comunicar-lhe que o Conhecimento de Transporte Eletrônico, abaixo '
                 . 'referenciada, encontra-se cancelada, solicitamos que sejam aplicadas '
                 . 'essas correções ao executar seus lançamentos fiscais.';
         $aFont = array('font'=>$this->fontePadrao,'size'=>10,'style'=>'');
-        $this->textBox($x+5, $y1, $maxW-5, 20, $texto, $aFont, 'T', 'L', 0, '', false);
+        $this->pdf->textBox($x+5, $y1, $maxW-5, 20, $texto, $aFont, 'T', 'L', 0, '', false);
         //############################################
         $x = $oldX;
         $y = $y1;
@@ -381,7 +381,7 @@ class Dacanc extends Common
         $serie = substr($this->chCTe, 22, 3);
         $numNF = $this->format($numNF, "###.###.###");
         $texto = "Conhecimento: " . $numNF .'  -   Série: '.$serie;
-        $this->textBox($x+2, $y+11, $w2, 8, $texto, $aFont, 'T', 'L', 0, '');
+        $this->pdf->textBox($x+2, $y+11, $w2, 8, $texto, $aFont, 'T', 'L', 0, '');
         $bW = 87;
         $bH = 15;
         $x = 55;
@@ -393,7 +393,7 @@ class Dacanc extends Common
         $y1 = $y+2+$bH;
         $aFont = array('font'=>$this->fontePadrao,'size'=>10,'style'=>'');
         $texto = $this->format($this->chCTe, $this->formatoChave);
-        $this->textBox($x, $y1, $w-2, $h, $texto, $aFont, 'T', 'C', 0, '');
+        $this->pdf->textBox($x, $y1, $w-2, $h, $texto, $aFont, 'T', 'C', 0, '');
         $retVal = $sY;
         //indicar sem valor
         if ($this->tpAmb != 1) {
@@ -408,10 +408,10 @@ class Dacanc extends Common
             $this->pdf->setTextColor(90, 90, 90);
             $texto = "SEM VALOR FISCAL";
             $aFont = array('font'=>$this->fontePadrao,'size'=>48,'style'=>'B');
-            $this->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+            $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $aFont = array('font'=>$this->fontePadrao,'size'=>30,'style'=>'B');
             $texto = "AMBIENTE DE HOMOLOGAÇÃO";
-            $this->textBox($x, $y+14, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+            $this->pdf->textBox($x, $y+14, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $this->pdf->setTextColor(0, 0, 0);
         }
         return $retVal;
@@ -427,12 +427,12 @@ class Dacanc extends Common
         $maxW = $this->wPrint;
         $texto = 'JUSTIFICATIVA DO CANCELAMENTO';
         $aFont = array('font'=>$this->fontePadrao,'size'=>10,'style'=>'B');
-        $this->textBox($x, $y, $maxW, 5, $texto, $aFont, 'T', 'L', 0, '', false);
+        $this->pdf->textBox($x, $y, $maxW, 5, $texto, $aFont, 'T', 'L', 0, '', false);
         $y += 5;
-        $this->textBox($x, $y, $maxW, 210);
+        $this->pdf->textBox($x, $y, $maxW, 210);
         $texto = $this->xJust;
         $aFont = array('font'=>$this->fontePadrao,'size'=>12,'style'=>'B');
-        $this->textBox($x+2, $y+2, $maxW-2, 150, $texto, $aFont, 'T', 'L', 0, '', false);
+        $this->pdf->textBox($x+2, $y+2, $maxW-2, 150, $texto, $aFont, 'T', 'L', 0, '', false);
     }
     
     /**
@@ -450,17 +450,17 @@ class Dacanc extends Common
                 . " em arquivo eletrônico XML e pode ser consultada através dos"
                 . " Portais das SEFAZ.";
         $aFont = array('font'=>$this->fontePadrao,'size'=>10,'style'=>'I');
-        $this->textBox($x, $y, $w, 20, $texto, $aFont, 'T', 'C', 0, '', false);
+        $this->pdf->textBox($x, $y, $w, 20, $texto, $aFont, 'T', 'C', 0, '', false);
         $y = $this->hPrint -4;
         $texto = "Impresso em  ". date('d/m/Y   H:i:s');
         $w = $this->wPrint-4;
         $aFont = array('font'=>$this->fontePadrao,'size'=>6,'style'=>'I');
-        $this->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
+        $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
         $texto = "DaCanccteNFePHP ver. "
             . $this->version
             .  "  Powered by NFePHP (GNU/GPLv3 GNU/LGPLv3) © www.nfephp.org";
         $aFont = array('font'=>$this->fontePadrao,'size'=>6,'style'=>'I');
-        $this->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'R', 0, 'http://www.nfephp.org');
+        $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'R', 0, 'http://www.nfephp.org');
     }
     
     /**
