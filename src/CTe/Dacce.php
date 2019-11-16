@@ -158,15 +158,17 @@ class Dacce extends Common
     /**
      * monta
      *
+     * @param string $logo
      * @param string $orientacao
      * @param string $papel
      * @param string $logoAlign
      */
-    public function monta($orientacao = 'P', $papel = 'A4', $logoAlign = 'C')
+    public function monta($logo = '', $orientacao = 'P', $papel = 'A4', $logoAlign = 'C')
     {
         $this->orientacao = $orientacao;
         $this->papel = $papel;
         $this->logoAlign = $logoAlign;
+        $this->logomarca = $logo;
         $this->buildDACCE();
     }
 
