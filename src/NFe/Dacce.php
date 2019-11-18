@@ -54,11 +54,14 @@ class Dacce extends Common
     protected $creditos;
 
     private $dom;
-    private $procEvento;
+    private $procEventoNFe;
     private $evento;
     private $infEvento;
     private $retEvento;
     private $retInfEvento;
+    private $CNPJDest;
+    private $CPFDest;
+    private $xCorrecao;
 
     /**
      * __construct
@@ -121,6 +124,11 @@ class Dacce extends Common
         return $this->pdf->getPdf();
     }
 
+    /**
+     * @param $xml
+     *
+     * @throws \Exception
+     */
     protected function loadDoc($xml)
     {
         $this->xml = $xml;
@@ -129,28 +137,32 @@ class Dacce extends Common
         if (empty($this->dom->getElementsByTagName("evento")->item(0))) {
             throw new \Exception("Este xml não é um evento do NFe");
         }
-        $this->procEvento = $this->dom->getElementsByTagName("procEventoNFe")->item(0);
-        $this->evento = $this->procEvento->getElementsByTagName("evento")->item(0);
-        $this->retEvento = $this->procEvento->getElementsByTagName("retEvento")->item(0);
+        $this->procEventoNFe = $this->dom->getElementsByTagName("procEventoNFe")->item(0);
+        $this->evento = $this->procEventoNFe->getElementsByTagName("evento")->item(0);
+        $this->retEvento = $this->procEventoNFe->getElementsByTagName("retEvento")->item(0);
         $this->infEvento = $this->evento->getElementsByTagName("infEvento")->item(0);
         $this->retInfEvento = $this->retEvento->getElementsByTagName("infEvento")->item(0);
         $tpEvento = $this->infEvento->getElementsByTagName("tpEvento")->item(0)->nodeValue;
         if ($tpEvento != '110110') {
-            throw new \Exception('Um evento de CC-e deve ser passado.');
+            $this->errMsg = 'Um evento de CC-e deve ser passado.';
+            $this->errStatus = true;
+            throw new \Exception($this->errMsg);
         }
         $this->id = str_replace('ID', '', $this->infEvento->getAttribute("Id"));
         $this->chNFe = $this->infEvento->getElementsByTagName("chNFe")->item(0)->nodeValue;
         $this->tpAmb = $this->infEvento->getElementsByTagName("tpAmb")->item(0)->nodeValue;
         $this->cOrgao = $this->infEvento->getElementsByTagName("cOrgao")->item(0)->nodeValue;
-        $this->infCorrecao = $this->infEvento->getElementsByTagName("infCorrecao");
+        $this->xCorrecao = $this->infEvento->getElementsByTagName("xCorrecao")->item(0)->nodeValue;
         $this->xCondUso = $this->infEvento->getElementsByTagName("xCondUso")->item(0)->nodeValue;
         $this->dhEvento = $this->infEvento->getElementsByTagName("dhEvento")->item(0)->nodeValue;
         $this->cStat = $this->retInfEvento->getElementsByTagName("cStat")->item(0)->nodeValue;
         $this->xMotivo = $this->retInfEvento->getElementsByTagName("xMotivo")->item(0)->nodeValue;
         $this->CNPJDest = !empty($this->retInfEvento->getElementsByTagName("CNPJDest")->item(0)->nodeValue) ?
-            $this->retInfEvento->getElementsByTagName("CNPJDest")->item(0)->nodeValue : '';
+            $this->retInfEvento->getElementsByTagName("CNPJDest")->item(0)->nodeValue
+            : '';
         $this->CPFDest = !empty($this->retInfEvento->getElementsByTagName("CPFDest")->item(0)->nodeValue) ?
-            $this->retInfEvento->getElementsByTagName("CPFDest")->item(0)->nodeValue : '';
+            $this->retInfEvento->getElementsByTagName("CPFDest")->item(0)->nodeValue
+            : '';
         $this->dhRegEvento = $this->retInfEvento->getElementsByTagName("dhRegEvento")->item(0)->nodeValue;
         $this->nProt = $this->retInfEvento->getElementsByTagName("nProt")->item(0)->nodeValue;
     }
@@ -374,7 +386,7 @@ class Dacce extends Common
         $numNF = substr($this->chNFe, 25, 9);
         $serie = substr($this->chNFe, 22, 3);
         $numNF = $this->formatField($numNF, "###.###.###");
-        $texto = "Conhecimento: " . $numNF . '  -   Série: ' . $serie;
+        $texto = "Nota Fiscal: " . $numNF . '  -   Série: ' . $serie;
         $this->pdf->textBox($x + 2, $y + 19, $w2, 8, $texto, $aFont, 'T', 'L', 0, '');
         $bW = 87;
         $bH = 15;
@@ -412,11 +424,6 @@ class Dacce extends Common
      */
     private function body($x, $y)
     {
-        if ($this->orientacao == 'P') {
-            $maxH = 190;
-        } else {
-            $maxH = 95;
-        }
         $maxW = $this->wPrint;
         $texto = 'CORREÇÕES A SEREM CONSIDERADAS';
         $aFont = array(
@@ -426,51 +433,20 @@ class Dacce extends Common
         );
         $this->pdf->textBox($x, $y, $maxW, 5, $texto, $aFont, 'T', 'L', 0, '', false);
         $y += 5;
-        $this->pdf->textBox($x, $y, $maxW, $maxH);
-        $aFont = array(
-            'font'  => $this->fontePadrao,
-            'size'  => 9,
-            'style' => 'B'
-        );
-        $this->pdf->textBox($x, $y, $maxW = ($maxW / 5), 5, "Grupo", $aFont, 'T', 'C', 0, '', false);
-        $this->pdf->textBox($x = $maxW, $y, $maxW, 5, "Campo", $aFont, 'T', 'C', 0, '', false);
-        $this->pdf->textBox($x = ($maxW * 2), $y, $maxW, 5, "Número", $aFont, 'T', 'C', 0, '', false);
-        $this->pdf->textBox($x = ($maxW * 3), $y, ($this->wPrint - $x), 5, "Valor", $aFont, 'T', 'C', 0, '', false);
-        $aFont = array(
-            'font'  => $this->fontePadrao,
-            'size'  => 9,
-            'style' => ''
-        );
-        $i = 0;
-        $numlinhas = 1;
-        while ($i < $this->infCorrecao->length) {
-            $x = 0;
-            $y = $numlinhas == 1 ? ($y + 5) : ($y + (5 * $numlinhas));
-            $maxW = $this->wPrint;
-            $grupo = $this->infCorrecao->item($i)->getElementsByTagName('grupoAlterado')->item(0)->nodeValue;
-            $campo = $this->infCorrecao->item($i)->getElementsByTagName('campoAlterado')->item(0)->nodeValue;
-            $numero = $this->infCorrecao->item($i)->getElementsByTagName('nroItemAlterado')->item(0)->nodeValue;
-            $valor = $this->infCorrecao->item($i)->getElementsByTagName('valorAlterado')->item(0)->nodeValue;
-
-            $i++;
-            $this->pdf->textBox($x, $y, $maxW = ($maxW / 5), 5, $grupo, $aFont, 'T', 'C', 0, '', false);
-            $this->pdf->textBox($x = $maxW, $y, $maxW, 5, $campo, $aFont, 'T', 'C', 0, '', false);
-            $this->pdf->textBox($x = ($maxW * 2), $y, $maxW, 5, $numero, $aFont, 'T', 'C', 0, '', false);
-            $this->pdf->textBox($x = ($maxW * 3), $y, ($this->wPrint - $x), 5, $valor, $aFont, 'T', 'C', 0, '', false);
-            $numlinhas = $this->pdf->getNumLines($valor, ($this->wPrint - $x), $aFont);
-        }
+        $this->pdf->textBox($x, $y, $maxW, 190);
+        $texto = str_replace(";", PHP_EOL, $this->xCorrecao);
         $aFont = array(
             'font'  => $this->fontePadrao,
             'size'  => 12,
             'style' => 'B'
         );
-        $maxW = $this->wPrint;
+        $this->pdf->textBox($x + 2, $y + 2, $maxW - 2, 150, $texto, $aFont, 'T', 'L', 0, '', false);
         if ($this->tpAmb != 1) {
             $x = 10;
             if ($this->orientacao == 'P') {
                 $y = round($this->hPrint * 2 / 3, 0);
             } else {
-                $y = round($this->hPrint * 2 / 3, 0);
+                $y = round($this->hPrint / 2, 0);
             }
             $h = 5;
             $w = $maxW - (2 * $x);
