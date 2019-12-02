@@ -58,7 +58,7 @@ class Danfe extends Common
      * na descrição do produto, como por exemplo, informações sobre impostos.
      * @var boolean
      */
-    protected $descProdInfoComplemento = true;
+    public $descProdInfoComplemento = true;
     /**
      * Parâmetro do controle se deve gerar quebras de linha com "\n" a partir de ";" na descrição do produto.
      * @var boolean
