@@ -178,6 +178,8 @@ class DacteOS extends Common
                     $this->respSeg = '';
                     break;
             }
+            $this->xSeg = $this->getTagValue($this->seg, "xSeg");
+            $this->nApol = $this->getTagValue($this->seg, "nApol");
             $this->tpEmis = $this->getTagValue($this->ide, "tpEmis");
             $this->tpImp = $this->getTagValue($this->ide, "tpImp");
             $this->tpAmb = $this->getTagValue($this->ide, "tpAmb");
@@ -1619,12 +1621,12 @@ class DacteOS extends Common
         $this->pdf->textBox($x, $y, $w * 0.26, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x += $w * 0.26;
 
-        $texto = '';
+        $texto = $this->xSeg;
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x, $y, $w * $wCol02, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x += $w * $wCol02;
 
-        $texto = '';
+        $texto = $this->nApol;
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x, $y, $w * $wCol02, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x += $w * $wCol02;
