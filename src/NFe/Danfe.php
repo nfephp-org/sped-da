@@ -330,7 +330,18 @@ class Danfe extends Common
         }
         return $this->pdf->getPdf();
     }
-
+    protected function pNotaCancelada()
+    {
+        if (!isset($this->nfeProc)) {
+            return false;
+        }
+        $cStat = $this->getTagValue($this->nfeProc, "cStat");
+        return $cStat == '101' ||
+                $cStat == '151' ||
+                $cStat == '135' ||
+                $cStat == '155' ||
+                $this->situacao_externa == self::SIT_CANCELADA;
+    }
     /**
      * monta
      * Monta a DANFE conforme as informações fornecidas para a classe durante sua
@@ -700,6 +711,8 @@ class Danfe extends Common
                 $totPag++;
             }
         }
+        //retorna o ID na NFe
+        return str_replace('NFe', '', $this->infNFe->getAttribute("Id"));
     }
 
     /**
@@ -1254,11 +1267,10 @@ class Danfe extends Common
             $this->pdf->settextcolor(0, 0, 0);
         }
         
-        /*
         if ($this->pNotaCancelada()) {
             //101 Cancelamento
             $x = 10;
-            $y = $this->hPrint-130;
+            $y = $this->hPrint-140;
             $h = 25;
             $w = $maxW-(2*$x);
             $this->pdf->SetTextColor(90, 90, 90);
@@ -1266,7 +1278,7 @@ class Danfe extends Common
             $aFont = ['font'=>$this->fontePadrao, 'size'=>48, 'style'=>'B'];
             $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $this->pdf->SetTextColor(0, 0, 0);
-        }*/
+        }
 
         if ($this->notaDpec() || $this->tpEmis == 4) {
             //DPEC
