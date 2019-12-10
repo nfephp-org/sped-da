@@ -170,12 +170,7 @@ class Daevento extends Common
      * @param string $papel (Opcional) Estabelece o tamanho do papel (ex. A4)
      * @return string O ID do evento extraido do arquivo XML
      */
-    public function monta(
-        $logo = '',
-        $orientacao = '',
-        $papel = 'A4',
-        $logoAlign = 'C'
-    )
+    public function monta($logo = '', $orientacao = '', $papel = 'A4', $logoAlign = 'C')
     {
         if ($orientacao == '') {
             $orientacao = 'P';
@@ -248,11 +243,7 @@ class Daevento extends Common
      * @param integer $pag
      * @return integer
      */
-    private function header(
-        $x,
-        $y,
-        $pag
-    )
+    private function header($x, $y, $pag)
     {
         $oldX = $x;
         $oldY = $y;
