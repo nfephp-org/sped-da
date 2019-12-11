@@ -9,7 +9,7 @@ use NFePHP\DA\Legacy\Common;
 
 class Danfe extends Common
 {
-
+    const SIT_CANCELADA = 1;
     /**
      * alinhamento padrão do logo (C-Center)
      *
