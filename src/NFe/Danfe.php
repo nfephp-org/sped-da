@@ -342,8 +342,16 @@ class Danfe extends Common
      *  (ex. P-retrato), se nada for fornecido será usado o padrão da NFe
      * @param  string $papel      (Opcional) Estabelece o tamanho do papel (ex. A4)
      */
-    public function monta($logo = '', $orientacao = '', $papel = 'A4', $logoAlign = 'C', $depecNumReg = '', $margSup = 2, $margEsq = 2, $margInf = 2)
-    {
+    public function monta(
+        $logo = '',
+        $orientacao = '',
+        $papel = 'A4',
+        $logoAlign = 'C',
+        $depecNumReg = '',
+        $margSup = 2,
+        $margEsq = 2,
+        $margInf = 2
+    ) {
         $this->pdf = '';
         $this->logomarca = $logo;
         //se a orientação estiver em branco utilizar o padrão estabelecido na NF
