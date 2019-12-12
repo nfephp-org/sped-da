@@ -352,7 +352,6 @@ class Danfe extends Common
      * @param  string $orientacao (Opcional) Estabelece a orientação da impressão
      *  (ex. P-retrato), se nada for fornecido será usado o padrão da NFe
      * @param  string $papel      (Opcional) Estabelece o tamanho do papel (ex. A4)
-     * @return string O ID da NFe numero de 44 digitos extraido do arquivo XML
      */
     public function monta(
         $logo = '',
@@ -711,8 +710,6 @@ class Danfe extends Common
                 $totPag++;
             }
         }
-        //retorna o ID na NFe
-        return str_replace('NFe', '', $this->infNFe->getAttribute("Id"));
     }
 
     /**
