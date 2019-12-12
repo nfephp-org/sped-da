@@ -848,7 +848,7 @@ class Danfe extends Common
         }
         if ($cStat == '110' ||
                $cStat == '301' ||
-               $cStat == '302'               
+               $cStat == '302'
         ) {
             return ['status' => false, 'message' => 'NFe DENEGADA'];
         }
