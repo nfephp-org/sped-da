@@ -342,7 +342,7 @@ class Danfe extends Common
      *  (ex. P-retrato), se nada for fornecido será usado o padrão da NFe
      * @param  string $papel      (Opcional) Estabelece o tamanho do papel (ex. A4)
      */
-    public function monta($logo = '', $orientacao = '', $papel = 'A4', $logoAlign = 'C', $depecNumReg = '', $margSup = 2, $margEsq = 2, $margInf = 2) 
+    public function monta($logo = '', $orientacao = '', $papel = 'A4', $logoAlign = 'C', $depecNumReg = '', $margSup = 2, $margEsq = 2, $margInf = 2)
     {
         $this->pdf = '';
         $this->logomarca = $logo;
@@ -1204,8 +1204,6 @@ class Danfe extends Common
         $tpAmb = $this->ide->getElementsByTagName('tpAmb')->item(0)->nodeValue;
         //indicar cancelamento
         $resp = $this->statusNFe();
-        reg_log('aqui...','danfe','TRACE',false);
-        reg_log($resp,'danfe','TRACE',false);
         if (!$resp['status']) {
             $x = 10;
             $y = $this->hPrint-130;
