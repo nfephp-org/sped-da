@@ -175,8 +175,7 @@ class Daevento extends Common
         $orientacao = '',
         $papel = 'A4',
         $logoAlign = 'C'
-    )
-    {
+    ) {
         if ($orientacao == '') {
             $orientacao = 'P';
         }
@@ -252,8 +251,7 @@ class Daevento extends Common
         $x,
         $y,
         $pag
-    )
-    {
+    ) {
         $oldX = $x;
         $oldY = $y;
         $maxW = $this->wPrint;
