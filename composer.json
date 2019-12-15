@@ -20,8 +20,7 @@
     "require": {
         "php" : ">= 7.0",
         "tecnickcom/tc-lib-barcode": "^1.15",
-        "nfephp-org/sped-common": "^5.0",
-        "nesbot/carbon": "^2.25"
+        "nfephp-org/sped-common": "^5.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.4",
