@@ -2,8 +2,6 @@
 
 namespace NFePHP\DA\Legacy;
 
-use Carbon\Carbon;
-
 class Common
 {
 
@@ -117,7 +115,7 @@ class Common
         if (!preg_match("/$regex/", $input)) {
             return '';
         }
-        return Carbon::createFromFormat("Y-m-d\TH:i:sP", $input)->timestamp;
+        return \DateTime::createFromFormat("Y-m-d\TH:i:sP", $input)->getTimestamp();
     }
 
     /**
