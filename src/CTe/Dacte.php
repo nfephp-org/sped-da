@@ -2248,7 +2248,7 @@ class Dacte extends Common
         //$r = $this->cabecalho(1, 1, '1', $this->totPag);
         $contador = 0;
         while ($contador < count($this->arrayNFe)) {
-            if ($contador == 15) {
+            if ($contador == 16) {
                 break;
             }
             $tp = 'NF-e';
