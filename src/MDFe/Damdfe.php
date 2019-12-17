@@ -821,7 +821,7 @@ class Damdfe extends Common
                 if ($DOMNodeList->length > 0) {
                     $altura += 4;
                     $texto = $DOMNodeList->item(0)->nodeValue;
-                    $this->pTextBox($x1, $altura, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+                    $this->pdf->textBox($x1, $altura, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
                 }
             }
             /**
