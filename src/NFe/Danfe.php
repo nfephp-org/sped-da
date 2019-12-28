@@ -275,6 +275,8 @@ class Danfe extends Common
      * @var string
      */
     protected $creditos = '';
+    
+    protected $textadicfontsize;
 
     /**
      * __construct
@@ -535,7 +537,19 @@ class Danfe extends Common
         foreach ($alinhas as $linha) {
             $numlinhasdados += $this->pdf->getNumLines($linha, $this->wAdic, $fontProduto);
         }
-        $hdadosadic = round(($numlinhasdados+3) * $this->pdf->fontSize, 0);
+        $this->textadicfontsize = $this->pdf->fontSize;
+        $hdadosadic = round(($numlinhasdados+3) * $this->textadicfontsize, 0);
+        if ($hdadosadic > 70) {
+            for ($per=1; $per>=0.01; $per=$per-0.01) {
+                $this->textadicfontsize = $this->pdf->fontSize*$per;
+                $hdadosadic = round(($numlinhasdados+3) * $this->textadicfontsize, 0);
+                if ($hdadosadic <= 90) {
+                    $hdadosadic = 70;
+                    break;
+                }
+            }
+        }
+        
         if ($hdadosadic < 10) {
             $hdadosadic = 10;
         }
@@ -3298,7 +3312,7 @@ class Danfe extends Common
         //$this->wAdic com a largura do campo
         //$this->textoAdic com o texto completo do campo
         $y += 1;
-        $aFont = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>''];
+        $aFont = ['font'=>$this->fontePadrao, 'size'=>$this->textadicfontsize*$this->pdf->k, 'style'=>''];
         $this->pdf->textBox($x, $y+2, $w-2, $h-3, $this->textoAdic, $aFont, 'T', 'L', 0, '', false);
         //RESERVADO AO FISCO
         $texto = "RESERVADO AO FISCO";
