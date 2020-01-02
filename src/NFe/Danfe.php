@@ -435,7 +435,7 @@ class Danfe extends Common
         }
         //verifica se será impressa a linha dos serviços ISSQN
         $linhaISSQN = 0;
-        if ((isset($this->ISSQNtot)) && ($this->getTagValue($this->ISSQNtot, 'vServ') > 0)) {
+        if (!empty($this->emit->getElementsByTagName("IM")->item(0)->nodeValue)) {
             $linhaISSQN = 1;
         }
         //calcular a altura necessária para os dados adicionais
