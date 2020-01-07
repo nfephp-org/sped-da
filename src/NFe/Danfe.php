@@ -1228,6 +1228,9 @@ class Danfe extends Common
         //CNPJ
         $x += $w;
         $w = ($maxW-(3 * $w));
+        $texto = 'CNPJ';
+        $aFont = ['font'=>$this->fontePadrao, 'size'=>6, 'style'=>''];
+        $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         //Pegando valor do CPF/CNPJ
         if (! empty($this->emit->getElementsByTagName("CNPJ")->item(0)->nodeValue)) {
             $texto = $this->formatField(
