@@ -3324,7 +3324,7 @@ class Danfe extends Common
         $this->pdf->textBox($x, $y+2, $w-2, $h-3, $this->textoAdic, $aFont, 'T', 'L', 0, '', false);
         //RESERVADO AO FISCO
         $texto = "RESERVADO AO FISCO";
-        if (isset($this->nfeProc) && $this->nfeProc->getElementsByTagName("xMsg")->length) {
+        if (isset($this->nfeProc) && $this->nfeProc->getElementsByTagName("xMsg")) {
             $texto = $texto . ' ' . $this->nfeProc->getElementsByTagName("xMsg")->item(0)->nodeValue;
         }
         $x += $w;
