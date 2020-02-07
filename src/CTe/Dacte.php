@@ -90,6 +90,7 @@ class Dacte extends Common
     protected $qrCodCTe;
     protected $margemInterna = 0;
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
+    protected $infCTeMultimodal = [];
     private $creditos;
 
     /**
@@ -172,6 +173,7 @@ class Dacte extends Common
             $this->infNF = $this->dom->getElementsByTagName("infNF");
             $this->infNFe = $this->dom->getElementsByTagName("infNFe");
             $this->infOutros = $this->dom->getElementsByTagName("infOutros");
+            $this->infCTeMultimodal = $this->dom->getElementsByTagName("infCTeMultimodal");
             $this->compl = $this->dom->getElementsByTagName("compl");
             $this->ICMS = $this->dom->getElementsByTagName("ICMS")->item(0);
             $this->ICMSSN = $this->dom->getElementsByTagName("ICMSSN")->item(0);
@@ -628,6 +630,9 @@ class Dacte extends Common
                 break;
             case '3':
                 $texto = 'Redespacho Intermediário';
+                break;
+            case '4':
+                $texto = 'Serviço Vinculado a Multimodal';
                 break;
             default:
                 $texto = 'ERRO' . $tpServ;
@@ -1646,7 +1651,7 @@ class Dacte extends Common
         //01 = KG (QUILOS)
         $qCarga = 0;
         foreach ($this->infQ as $infQ) {
-            if ($this->getTagValue($infQ, "cUnid") == '01') {
+            if (in_array($this->getTagValue($infQ, "cUnid"), array('01', '02'))) {
                 $qCarga += (float)$this->getTagValue($infQ, "qCarga");
             }
         }
@@ -2248,7 +2253,7 @@ class Dacte extends Common
         //$r = $this->cabecalho(1, 1, '1', $this->totPag);
         $contador = 0;
         while ($contador < count($this->arrayNFe)) {
-            if ($contador == 15) {
+            if ($contador == 16) {
                 break;
             }
             $tp = 'NF-e';
@@ -2288,9 +2293,9 @@ class Dacte extends Common
             $tpDoc = $this->getTagValue($temp, "tpDoc");
             $descOutros = $this->getTagValue($temp, "descOutros");
             $nDoc = $this->getTagValue($temp, "nDoc");
-            $dEmi = $this->pSimpleGetDate($temp, "dEmi", "Emissão: ");
+            $dEmi = "Emissão: " . date('d/m/Y', strtotime($this->getTagValue($temp, "dEmi")));
             $vDocFisc = $this->getTagValue($temp, "vDocFisc", "Valor: ");
-            $dPrev = $this->pSimpleGetDate($temp, "dPrev", "Entrega: ");
+            $dPrev = "Entrega: " . date('d/m/Y', strtotime($this->getTagValue($temp, "dPrev")));
             switch ($tpDoc) {
                 case "00":
                     $tpDoc = "00 - Declaração";
@@ -2320,6 +2325,38 @@ class Dacte extends Common
         foreach ($this->idDocAntEle as $k => $d) {
             $tp = 'CT-e';
             $chaveCTe = $this->idDocAntEle->item($k)->getElementsByTagName('chave')->item(0)->nodeValue;
+            $numCTe = substr($chaveCTe, 25, 9);
+            $serieCTe = substr($chaveCTe, 22, 3);
+            $doc = $serieCTe . '/' . $numCTe;
+            if ($auxX > $w * 0.90) {
+                $yIniDados = $yIniDados + 4;
+                $auxX = $oldX;
+            }
+            $texto = $tp;
+            $aFont = array(
+                'font' => $this->fontePadrao,
+                'size' => 8,
+                'style' => '');
+            $this->pdf->textBox($auxX, $yIniDados, $w * 0.10, $h, $texto, $aFont, 'T', 'L', 0, '');
+            $auxX += $w * 0.09;
+            $texto = $chaveCTe;
+            $aFont = array(
+                'font' => $this->fontePadrao,
+                'size' => 8,
+                'style' => '');
+            $this->pdf->textBox($auxX, $yIniDados, $w * 0.27, $h, $texto, $aFont, 'T', 'L', 0, '');
+            $auxX += $w * 0.28;
+            $texto = $doc;
+            $aFont = array(
+                'font' => $this->fontePadrao,
+                'size' => 8,
+                'style' => '');
+            $this->pdf->textBox($auxX, $yIniDados, $w * 0.30, $h, $texto, $aFont, 'T', 'L', 0, '');
+            $auxX += $w * 0.14;
+        }
+        foreach ($this->infCTeMultimodal as $k => $d) {
+            $tp = 'CT-e';
+            $chaveCTe = $this->infCTeMultimodal->item($k)->getElementsByTagName('chCTeMultimodal')->item(0)->nodeValue;
             $numCTe = substr($chaveCTe, 25, 9);
             $serieCTe = substr($chaveCTe, 22, 3);
             $doc = $serieCTe . '/' . $numCTe;
@@ -2789,16 +2826,16 @@ class Dacte extends Common
         $texto = 'IDENTIFICAÇÃO DOS CONTEINERS';
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x, $y, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
-        if ($this->infNF->item(0) !== null && $this->infNF->item(0)->getElementsByTagName('infUnidCarga') !== null) {
+        if (($this->infNF->item(0) !== null)
+            && ($this->infNF->item(0)->getElementsByTagName('infUnidCarga')->item(0)->nodeValue !== null)) {
             $texto = $this->infNF
                 ->item(0)
                 ->getElementsByTagName('infUnidCarga')
                 ->item(0)
                 ->getElementsByTagName('idUnidCarga')
                 ->item(0)->nodeValue;
-        } elseif ($this->infNFe->item(0) !== null
-            && $this->infNFe->item(0)->getElementsByTagName('infUnidCarga') !== null
-        ) {
+        } elseif (($this->infNFe->item(0) !== null)
+            && ($this->infNFe->item(0)->getElementsByTagName('infUnidCarga')->item(0)->nodeValue !== null)) {
             $texto = $this->infNFe
                 ->item(0)
                 ->getElementsByTagName('infUnidCarga')
@@ -2806,9 +2843,8 @@ class Dacte extends Common
                 ->getElementsByTagName('idUnidCarga')
                 ->item(0)
                 ->nodeValue;
-        } elseif ($this->infOutros->item(0) !== null
-            && $this->infOutros->item(0)->getElementsByTagName('infUnidCarga') !== null
-        ) {
+        } elseif (($this->infOutros->item(0) !== null)
+            && ($this->infOutros->item(0)->getElementsByTagName('infUnidCarga')->item(0)->nodeValue !== null)) {
             $texto = $this->infOutros
                 ->item(0)
                 ->getElementsByTagName('infUnidCarga')

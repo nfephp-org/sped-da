@@ -892,7 +892,7 @@ class DacteOS extends Common
             $this->pdf->setTextColor(0, 0, 0);
         }
         //indicar sem valor
-        if ($tpAmb != 1 && $this->preVisualizar=='0') { // caso não seja uma DA de produção
+        if ($tpAmb != 1) { // caso não seja uma DA de produção
             $x = 10;
             if ($this->orientacao == 'P') {
                 $y = round($this->hPrint / 2, 0);
@@ -1027,7 +1027,7 @@ class DacteOS extends Common
             'size' => 6,
             'style' => '');
         $this->pdf->textBox($x-1, $y+2, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
-        
+
         $texto = $this->creditos .  "  Powered by NFePHP®";
         $this->pdf->textBox($x, $y, $w, 0, $texto, $aFont, 'T', 'R', false, '');
     }
@@ -1526,7 +1526,7 @@ class DacteOS extends Common
             'style' => '');
         $this->pdf->textBox($w * 0.40, $yIniDados, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
     }
-    
+
     /**
      * observacoes
      * Monta o campo com os dados do remetente na DACTE.
@@ -2487,7 +2487,7 @@ class DacteOS extends Common
         $pic = 'data://text/plain;base64,' . base64_encode($qrcode);
         $this->pdf->image($pic, $xQr, $yQr, $wQr, $hQr, 'PNG');
     }
-    
+
     /**
      * Add the credits to the integrator in the footer message
      * @param string $message

@@ -58,7 +58,7 @@ class Danfe extends Common
      * na descrição do produto, como por exemplo, informações sobre impostos.
      * @var boolean
      */
-    protected $descProdInfoComplemento = true;
+    public $descProdInfoComplemento = true;
     /**
      * Parâmetro do controle se deve gerar quebras de linha com "\n" a partir de ";" na descrição do produto.
      * @var boolean
@@ -275,6 +275,8 @@ class Danfe extends Common
      * @var string
      */
     protected $creditos = '';
+    
+    protected $textadicfontsize;
 
     /**
      * __construct
@@ -535,7 +537,19 @@ class Danfe extends Common
         foreach ($alinhas as $linha) {
             $numlinhasdados += $this->pdf->getNumLines($linha, $this->wAdic, $fontProduto);
         }
-        $hdadosadic = round(($numlinhasdados+3) * $this->pdf->fontSize, 0);
+        $this->textadicfontsize = $this->pdf->fontSize;
+        $hdadosadic = round(($numlinhasdados+3) * $this->textadicfontsize, 0);
+        if ($hdadosadic > 70) {
+            for ($per=1; $per>=0.01; $per=$per-0.01) {
+                $this->textadicfontsize = $this->pdf->fontSize*$per;
+                $hdadosadic = round(($numlinhasdados+3) * $this->textadicfontsize, 0);
+                if ($hdadosadic <= 90) {
+                    $hdadosadic = 70;
+                    break;
+                }
+            }
+        }
+        
         if ($hdadosadic < 10) {
             $hdadosadic = 10;
         }
@@ -1183,7 +1197,7 @@ class Danfe extends Common
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'B', 'C', 0, '');
         //####################################################################################
         //INSCRIÇÃO ESTADUAL
-        $w = round($maxW * 0.333, 0);
+        $w = round($maxW * 0.250, 0);
         $y += $h;
         $oldY += $h;
         $x = $oldX;
@@ -1191,6 +1205,14 @@ class Danfe extends Common
         $aFont = ['font'=>$this->fontePadrao, 'size'=>6, 'style'=>''];
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         $texto = $this->getTagValue($this->emit, "IE");
+        $aFont = ['font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B'];
+        $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'B', 'C', 0, '');
+        //INSCRIÇÃO MUNICIPAL
+        $x += $w;
+        $texto = 'INSCRIÇÃO MUNICIPAL';
+        $aFont = ['font'=>$this->fontePadrao, 'size'=>6, 'style'=>''];
+        $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
+        $texto = $this->getTagValue($this->emit, "IM");
         $aFont = ['font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B'];
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'B', 'C', 0, '');
         //INSCRIÇÃO ESTADUAL DO SUBST. TRIBUT.
@@ -1205,8 +1227,8 @@ class Danfe extends Common
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'B', 'C', 0, '');
         //CNPJ
         $x += $w;
-        $w = ($maxW-(2*$w));
-        $texto = 'CNPJ / CPF';
+        $w = ($maxW-(3 * $w));
+        $texto = 'CNPJ';
         $aFont = ['font'=>$this->fontePadrao, 'size'=>6, 'style'=>''];
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         //Pegando valor do CPF/CNPJ
@@ -3298,11 +3320,11 @@ class Danfe extends Common
         //$this->wAdic com a largura do campo
         //$this->textoAdic com o texto completo do campo
         $y += 1;
-        $aFont = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>''];
+        $aFont = ['font'=>$this->fontePadrao, 'size'=>$this->textadicfontsize*$this->pdf->k, 'style'=>''];
         $this->pdf->textBox($x, $y+2, $w-2, $h-3, $this->textoAdic, $aFont, 'T', 'L', 0, '', false);
         //RESERVADO AO FISCO
         $texto = "RESERVADO AO FISCO";
-        if ($this->nfeProc->getElementsByTagName("xMsg")) {
+        if (isset($this->nfeProc) && $this->nfeProc->getElementsByTagName("xMsg")->length) {
             $texto = $texto . ' ' . $this->nfeProc->getElementsByTagName("xMsg")->item(0)->nodeValue;
         }
         $x += $w;

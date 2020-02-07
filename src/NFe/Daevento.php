@@ -23,11 +23,11 @@ use NFePHP\DA\Legacy\Common;
 class Daevento extends Common
 {
     public $chNFe;
-    
+
     protected $logoAlign = 'C';
     protected $yDados = 0;
     protected $debugmode = false;
-    protected $aEnd = array();
+    protected $dadosEmitente = array();
     protected $pdf;
     protected $xml;
     protected $logomarca = '';
@@ -57,26 +57,20 @@ class Daevento extends Common
     protected $dhRegEvento;
     protected $nProt;
     protected $tpEvento;
-    
+
     private $dom;
     private $procEventoNFe;
     private $evento;
     private $infEvento;
     private $retEvento;
     private $rinfEvento;
+    private $creditos;
 
     /**
      * __construct
      *
-     * @param string $docXML      Arquivo XML (diretório ou string)
-     * @param string $sOrientacao (Opcional) Orientação da impressão P-retrato L-Paisagem
-     * @param string $sPapel      Tamanho do papel (Ex. A4)
-     * @param string $sPathLogo   Caminho para o arquivo do logo
-     * @param string $sDestino    Destino do PDF I-browser D-download S-string F-salva
-     * @param string $sDirPDF     Caminho para o diretorio de armazenamento dos arquivos PDF
-     * @param string $fonteDANFE  Nome da fonte alternativa
-     * @param array  $aEnd        array com o endereço do emitente
-     * @param number $mododebug   0-Não 1-Sim e 2-nada (2 default)
+     * @param string $xml Arquivo XML (diretório ou string)
+     * @param array $dadosEmitente Dados do endereço do emitente
      */
     public function __construct($xml, $dadosEmitente)
     {
@@ -84,7 +78,7 @@ class Daevento extends Common
         $this->debugMode();
         $this->loadDoc($xml);
     }
-    
+
     /**
      * Ativa ou desativa o modo debug
      * @param bool $activate
@@ -106,7 +100,7 @@ class Daevento extends Common
         }
         return $this->debugmode;
     }
-    
+
     /**
      * Add the credits to the integrator in the footer message
      * @param string $message
@@ -115,7 +109,7 @@ class Daevento extends Common
     {
         $this->creditos = trim($message);
     }
-    
+
     /**
      * Dados brutos do PDF
      * @return string
@@ -127,7 +121,7 @@ class Daevento extends Common
         }
         return $this->pdf->getPdf();
     }
-    
+
     protected function loadDoc($xml)
     {
         $this->dom = new Dom();
@@ -412,9 +406,9 @@ class Daevento extends Common
                 . 'essas correções ao executar seus lançamentos fiscais.';
         } elseif ($this->tpEvento == '110111') {
             $texto = 'De acordo com as determinações legais vigentes, '
-                    . 'vimos por meio desta comunicar-lhe que a Nota Fiscal, '
-                    . 'abaixo referenciada, está cancelada, solicitamos que sejam '
-                    . 'aplicadas essas correções ao executar seus lançamentos fiscais.';
+                . 'vimos por meio desta comunicar-lhe que a Nota Fiscal, '
+                . 'abaixo referenciada, está cancelada, solicitamos que sejam '
+                . 'aplicadas essas correções ao executar seus lançamentos fiscais.';
         }
         $aFont = ['font' => $this->fontePadrao,'size' => 10,'style' => ''];
         $this->pdf->textBox($x + 5, $y1, $maxW - 5, 20, $texto, $aFont, 'T', 'L', 0, '', false);
@@ -515,15 +509,15 @@ class Daevento extends Common
         $w = $this->wPrint;
         if ($this->tpEvento == '110110') {
             $texto = "Este documento é uma representação gráfica da CC-e "
-                    . "e foi impresso apenas para sua informação e não possui validade "
-                    . "fiscal.\n A CC-e deve ser recebida e mantida em arquivo eletrônico XML "
-                    . "e pode ser consultada através dos Portais das SEFAZ.";
+                . "e foi impresso apenas para sua informação e não possui validade "
+                . "fiscal.\n A CC-e deve ser recebida e mantida em arquivo eletrônico XML "
+                . "e pode ser consultada através dos Portais das SEFAZ.";
         } elseif ($this->tpEvento == '110111') {
             $texto = "Este documento é uma representação gráfica do evento de NFe e "
-                    . "foi impresso apenas para sua informação e não possui validade "
-                    . "fiscal.\n O Evento deve ser recebido e mantido em arquivo "
-                    . "eletrônico XML e pode ser consultada através dos Portais "
-                    . "das SEFAZ.";
+                . "foi impresso apenas para sua informação e não possui validade "
+                . "fiscal.\n O Evento deve ser recebido e mantido em arquivo "
+                . "eletrônico XML e pode ser consultada através dos Portais "
+                . "das SEFAZ.";
         }
         $aFont = ['font' => $this->fontePadrao,'size' => 10,'style' => 'I'];
         $this->pdf->textBox($x, $y, $w, 20, $texto, $aFont, 'T', 'C', 0, '', false);
@@ -532,7 +526,7 @@ class Daevento extends Common
         $w = $this->wPrint - 4;
         $aFont = ['font' => $this->fontePadrao,'size' => 6,'style' => 'I'];
         $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = "Daevento ver. " . $this->version . "  Powered by NFePHP (GNU/GPLv3 GNU/LGPLv3) © www.nfephp.org";
+        $texto = $this->creditos .  "  Powered by NFePHP®";
         $aFont = ['font' => $this->fontePadrao,'size' => 6,'style' => 'I'];
         $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'R', 0, 'http://www.nfephp.org');
     }
