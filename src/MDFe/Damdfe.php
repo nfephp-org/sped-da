@@ -531,6 +531,24 @@ class Damdfe extends Common
             }
             $this->pdf->setTextColor(0, 0, 0);
         }
+        $cStat = $this->dom->getElementsByTagName("cStat");
+        if ($cStat) {
+            if ($cStat->item(0)->nodeValue == '101') {
+                $x = 10;
+                if ($this->orientacao == 'P') {
+                    $yy = round($this->hPrint * 2 / 3, 0);
+                } else {
+                    $yy = round($this->hPrint / 2, 0);
+                }
+                $h = 5;
+                $w = $maxW - (2 * $x);
+                $this->pdf->setTextColor(90, 90, 90);
+                $texto = "MDFe CANCELADO";
+                $aFont = array('font' => $this->fontePadrao, 'size' => 48, 'style' => 'B');
+                $this->pdf->textBox($x, $yy, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+                $this->pdf->setTextColor(0, 0, 0);
+            }
+        }
         return $y + 8;
     }
 
