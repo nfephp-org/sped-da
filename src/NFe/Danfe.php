@@ -279,6 +279,25 @@ class Danfe extends Common
     protected $textadicfontsize;
 
     /**
+     * Número de casas para a quantidade de itens da unidade comercial.
+     * @var integer
+     */
+    protected $qComCasasDec = 4;
+
+    /**
+     * Número de casas decimais para o valor da unidade comercial.
+     * @var integer
+     */
+    protected $vUnComCasasDec = 4;
+
+    /**
+     * Configuração para determinar se irá exibir ou não informações
+     * das unidades de medidas tributáveis.
+     * @var boolean
+     */
+    protected $mostrarUnidadeTributavel = false;
+
+    /**
      * __construct
      *
      * @name  __construct
@@ -310,6 +329,33 @@ class Danfe extends Common
             ini_set('display_errors', 'Off');
         }
         return $this->debugmode;
+    }
+
+    /**
+     * Define se irá mostrar ou não dados as unidades de medidas tributaveis.
+     * @param boolean $mostrarUnidadeTributavel
+     */
+    public function setMostrarUnidadeTributavel($mostrarUnidadeTributavel)
+    {
+        $this->mostrarUnidadeTributavel = $mostrarUnidadeTributavel;
+    }
+
+    /**
+     * Define a quantidade de casas decimais para unidade comercial.
+     * @param integer $vUnComCasasDec
+     */
+    public function setVUnComCasasDec($vUnComCasasDec)
+    {
+        $this->vUnComCasasDec = $vUnComCasasDec;
+    }
+
+    /**
+     * Define a quantidade de casas decimais para unidade comercial.
+     * @param integer $qComCasasDec
+     */
+    public function setQComCasasDec($qComCasasDec)
+    {
+        $this->qComCasasDec = $qComCasasDec;
     }
 
     /**
@@ -2869,10 +2915,18 @@ class Danfe extends Common
                 $IPI  = $imposto->getElementsByTagName("IPI")->item(0);
                 $textoProduto = trim($this->descricaoProduto($thisItem));
 
+                // Posição y dos dados das unidades tributaveis.
+                $yTrib = $this->pdf->fontSize + .5;
+                if (!$this->mostrarUnidadeTributavel) {
+                    $yTrib = 0;
+                }
+
                 $linhaDescr = $this->pdf->getNumLines($textoProduto, $w2, $aFont);
                 $h = round(($linhaDescr * $this->pdf->fontSize)+ ($linhaDescr * 0.5), 2);
+                $h = max($h, $yTrib * 2); // São pelo menos 2 linhas, a do produto + a da unidade tributada
                 $hUsado += $h;
 
+                $yTrib += $y;
                 $diffH = $hmax - $hUsado;
 
                 if ($pag != $totpag) {
@@ -2920,6 +2974,14 @@ class Danfe extends Common
                 $x += $w5;
                 $texto = $prod->getElementsByTagName("uCom")->item(0)->nodeValue;
                 $this->pdf->textBox($x, $y, $w6, $h, $texto, $aFont, 'T', 'C', 0, '');
+                //Unidade de medida tributável
+                if ($this->mostrarUnidadeTributavel) {
+                    $uTrib = $prod->getElementsByTagName("uTrib")->item(0);
+                    if (!empty($uTrib)) {
+                        $texto = $uTrib->nodeValue;
+                        $this->pdf->textBox($x, $yTrib, $w6, $h, $texto, $aFont, 'T', 'C', 0, '');
+                    }
+                }
                 $x += $w6;
                 if ($this->orientacao == 'P') {
                     $alinhamento = 'R';
@@ -2927,12 +2989,30 @@ class Danfe extends Common
                     $alinhamento = 'R';
                 }
                 // QTDADE
-                $texto = number_format($prod->getElementsByTagName("qCom")->item(0)->nodeValue, 4, ",", ".");
+                $qCom = $prod->getElementsByTagName("qCom")->item(0);
+                $texto = number_format($qCom->nodeValue, $this->qComCasasDec, ",", ".");
                 $this->pdf->textBox($x, $y, $w7, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
+                // QTDADE Tributável
+                if ($this->mostrarUnidadeTributavel) {
+                    $qTrib = $prod->getElementsByTagName("qTrib")->item(0);
+                    if (!empty($qTrib)) {
+                        $texto = number_format($qTrib->nodeValue, $this->qComCasasDec, ",", ".");
+                        $this->pdf->textBox($x, $yTrib, $w7, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
+                    }
+                }
                 $x += $w7;
                 // Valor Unitário
-                $texto = number_format($prod->getElementsByTagName("vUnCom")->item(0)->nodeValue, 4, ",", ".");
+                $vUnCom = $prod->getElementsByTagName("vUnCom")->item(0);
+                $texto = number_format($vUnCom->nodeValue, $this->vUnComCasasDec, ",", ".");
                 $this->pdf->textBox($x, $y, $w8, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
+                // Valor Unitário Tributável
+                if ($this->mostrarUnidadeTributavel) {
+                    $vUnTrib = $prod->getElementsByTagName("vUnTrib")->item(0);
+                    if (!empty($vUnTrib)) {
+                        $texto = number_format($vUnTrib->nodeValue, $this->vUnComCasasDec, ",", ".");
+                        $this->pdf->textBox($x, $yTrib, $w8, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
+                    }
+                }
                 $x += $w8;
                 // Valor do Produto
                 $texto = "";
