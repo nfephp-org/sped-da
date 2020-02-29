@@ -5,7 +5,7 @@ require_once '../../bootstrap.php';
 
 use NFePHP\DA\NFe\Danfe;
 
-$xml = file_get_contents(__DIR__ . '/fixtures/mod55-nfe.xml');
+$xml = file_get_contents('C:\xampp\htdocs\cloud-dfe-common\src\31191010383033000111550010000022711000922719-protNFe.xml');
 $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(__DIR__ . '/../images/logo.jpg'));
 
 try {

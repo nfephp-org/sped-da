@@ -244,8 +244,8 @@ class Damdfe extends Common
     /**
      * headerMDFePaisagem
      *
-     * @param  float   $x
-     * @param  float   $y
+     * @param  float $x
+     * @param  float $y
      * @param  integer $pag
      * @return string
      */
@@ -388,8 +388,8 @@ class Damdfe extends Common
     /**
      * headerMDFeRetrato
      *
-     * @param  float   $x
-     * @param  float   $y
+     * @param  float $x
+     * @param  float $y
      * @param  integer $pag
      * @return string
      */
@@ -492,6 +492,7 @@ class Damdfe extends Common
             0,
             ''
         );
+        $cStat = $this->dom->getElementsByTagName("cStat");
         if ($this->tpAmb != 1) {
             $x = 10;
             if ($this->orientacao == 'P') {
@@ -509,6 +510,20 @@ class Damdfe extends Common
             $texto = "AMBIENTE DE HOMOLOGAÇÃO";
             $this->pdf->textBox($x, $yy + 14, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $this->pdf->setTextColor(0, 0, 0);
+        } elseif ($cStat->item(0)->nodeValue == '101') {
+            $x = 10;
+            if ($this->orientacao == 'P') {
+                $yy = round($this->hPrint * 2 / 3, 0);
+            } else {
+                $yy = round($this->hPrint / 2, 0);
+            }
+            $h = 5;
+            $w = $maxW - (2 * $x);
+            $this->pdf->setTextColor(90, 90, 90);
+            $texto = "MDFe CANCELADO";
+            $aFont = array('font' => $this->fontePadrao, 'size' => 48, 'style' => 'B');
+            $this->pdf->textBox($x, $yy, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+            $this->pdf->setTextColor(0, 0, 0);
         } else {
             $x = 10;
             if ($this->orientacao == 'P') {
@@ -520,7 +535,7 @@ class Damdfe extends Common
             $w = $maxW - (2 * $x);
             $this->pdf->setTextColor(90, 90, 90);
             //indicar FALTA DO PROTOCOLO se MDFe não for em contingência
-            if (($this->tpEmis == 2 || $this->tpEmis == 5)) {
+            if (($this->tpEmis == 2 || $this->tpEmis == 5) and empty($this->nProt)) {
                 //Contingência
                 $texto = "DAMDFE Emitido em Contingência";
                 $aFont = array('font' => $this->fontePadrao, 'size' => 48, 'style' => 'B');
@@ -528,26 +543,12 @@ class Damdfe extends Common
                 $aFont = array('font' => $this->fontePadrao, 'size' => 30, 'style' => 'B');
                 $texto = "devido à problemas técnicos";
                 $this->pdf->textBox($x, $yy + 12, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            }
-            $this->pdf->setTextColor(0, 0, 0);
-        }
-        $cStat = $this->dom->getElementsByTagName("cStat");
-        if ($cStat) {
-            if ($cStat->item(0)->nodeValue == '101') {
-                $x = 10;
-                if ($this->orientacao == 'P') {
-                    $yy = round($this->hPrint * 2 / 3, 0);
-                } else {
-                    $yy = round($this->hPrint / 2, 0);
-                }
-                $h = 5;
-                $w = $maxW - (2 * $x);
-                $this->pdf->setTextColor(90, 90, 90);
-                $texto = "MDFe CANCELADO";
+            } elseif (empty($this->nProt)) {
+                $texto = "FALTA PROTOCOLO DE APROVAÇÃO DA SEFAZ";
                 $aFont = array('font' => $this->fontePadrao, 'size' => 48, 'style' => 'B');
                 $this->pdf->textBox($x, $yy, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-                $this->pdf->setTextColor(0, 0, 0);
             }
+            $this->pdf->setTextColor(0, 0, 0);
         }
         return $y + 8;
     }
@@ -756,7 +757,7 @@ class Damdfe extends Common
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
         if (is_object($this->mdfeProc)) {
             $tsHora = $this->toTimestamp($this->dhRecbto);
-            $texto = $this->nProt . ' - ' . date('d/m/Y   H:i:s', $tsHora);
+            $texto = $this->nProt . ' - ' . date('d/m/Y H:i:s', $tsHora);
         } else {
             $texto = 'DAMDFE impresso em contingência - ' . date('d/m/Y   H:i:s');
         }
@@ -798,17 +799,17 @@ class Damdfe extends Common
             $this->pdf->textBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
             $altura = $y + 4;
             /**
-*
              *
- * @var \DOMNodeList $veicReboque
-*/
+             *
+             * @var \DOMNodeList $veicReboque
+             */
             $veicReboque = $this->veicReboque;
             foreach ($veicReboque as $item) {
                 /**
-*
                  *
- * @var \DOMElement $item
-*/
+                 *
+                 * @var \DOMElement $item
+                 */
                 $altura += 4;
                 $texto = $item->getElementsByTagName('placa')->item(0)->nodeValue;
                 $this->pdf->textBox($x1, $altura, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
@@ -828,13 +829,13 @@ class Damdfe extends Common
             $this->pdf->textBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
             $altura = $y + 4;
             /**
- * @var \DOMNodeList $veicTracao
-*/
+             * @var \DOMNodeList $veicTracao
+             */
             $veicTracao = $this->veicTracao->getElementsByTagName('prop');
             foreach ($veicTracao as $item) {
                 /**
- * @var \DOMElement $item
-*/
+                 * @var \DOMElement $item
+                 */
                 $DOMNodeList = $item->getElementsByTagName('RNTRC');
                 if ($DOMNodeList->length > 0) {
                     $altura += 4;
@@ -843,17 +844,17 @@ class Damdfe extends Common
                 }
             }
             /**
-*
              *
- * @var \DOMNodeList $veicReboque
-*/
+             *
+             * @var \DOMNodeList $veicReboque
+             */
             $veicReboque = $this->veicReboque;
             foreach ($veicReboque as $item) {
                 /**
-*
                  *
- * @var \DOMElement $item
-*/
+                 *
+                 * @var \DOMElement $item
+                 */
                 $DOMNodeList = $item->getElementsByTagName('RNTRC');
                 if ($DOMNodeList->length > 0) {
                     $altura += 4;
@@ -1193,7 +1194,7 @@ class Damdfe extends Common
         $w = $this->wPrint - 4;
         $aFont = array('font' => $this->fontePadrao, 'size' => 6, 'style' => 'I');
         $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = $this->creditos .  "  Powered by NFePHP®";
+        $texto = $this->creditos . "  Powered by NFePHP®";
         $this->pdf->textBox($x, $y, $w, 0, $texto, $aFont, 'T', 'R', false, '');
     }
 
@@ -1223,7 +1224,7 @@ class Damdfe extends Common
         }
         return $this->pdf->getPdf();
     }
-    
+
     /**
      * Add the credits to the integrator in the footer message
      *
