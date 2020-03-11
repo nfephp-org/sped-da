@@ -2762,7 +2762,7 @@ class Danfe extends Common
         $this->pdf->line($x+$w1, $y, $x+$w1, $y+$hmax);
         //DESCRIÇÃO DO PRODUTO / SERVIÇO
         $x += $w1;
-        $w2 = round($w*0.28, 0);
+        $w2 = round($w*0.25, 0);
         $texto = 'DESCRIÇÃO DO PRODUTO / SERVIÇO';
         $aFont = ['font'=>$this->fontePadrao, 'size'=>6, 'style'=>''];
         $this->pdf->textBox($x, $y, $w2, $h, $texto, $aFont, 'C', 'C', 0, '', false);
@@ -2800,7 +2800,7 @@ class Danfe extends Common
         $this->pdf->line($x+$w6, $y, $x+$w6, $y+$hmax);
         //QUANT
         $x += $w6;
-        $w7 = round($w*0.07, 0);
+        $w7 = round($w*0.08, 0);
         $texto = 'QUANT';
         $aFont = ['font'=>$this->fontePadrao, 'size'=>6, 'style'=>''];
         $this->pdf->textBox($x, $y, $w7, $h, $texto, $aFont, 'C', 'C', 0, '', false);
@@ -2819,39 +2819,46 @@ class Danfe extends Common
         $aFont = ['font'=>$this->fontePadrao, 'size'=>6, 'style'=>''];
         $this->pdf->textBox($x, $y, $w9, $h, $texto, $aFont, 'C', 'C', 0, '', false);
         $this->pdf->line($x+$w9, $y, $x+$w9, $y+$hmax);
-        //B.CÁLC ICMS
+        //VALOR DESCONTO
         $x += $w9;
-        $w10 = round($w*0.06, 0);
-        $texto = 'B.CÁLC ICMS';
+        $w10 = round($w*0.05, 0);
+        $texto = 'VALOR DESC';
         $aFont = ['font'=>$this->fontePadrao, 'size'=>6, 'style'=>''];
         $this->pdf->textBox($x, $y, $w10, $h, $texto, $aFont, 'C', 'C', 0, '', false);
         $this->pdf->line($x+$w10, $y, $x+$w10, $y+$hmax);
-        //VALOR ICMS
+        //B.CÁLC ICMS
         $x += $w10;
         $w11 = round($w*0.06, 0);
-        $texto = 'VALOR ICMS';
+        $texto = 'B.CÁLC ICMS';
         $aFont = ['font'=>$this->fontePadrao, 'size'=>6, 'style'=>''];
         $this->pdf->textBox($x, $y, $w11, $h, $texto, $aFont, 'C', 'C', 0, '', false);
         $this->pdf->line($x+$w11, $y, $x+$w11, $y+$hmax);
-        //VALOR IPI
+        //VALOR ICMS
         $x += $w11;
-        $w12 = round($w*0.05, 0);
-        $texto = 'VALOR IPI';
+        $w12 = round($w*0.06, 0);
+        $texto = 'VALOR ICMS';
         $aFont = ['font'=>$this->fontePadrao, 'size'=>6, 'style'=>''];
         $this->pdf->textBox($x, $y, $w12, $h, $texto, $aFont, 'C', 'C', 0, '', false);
         $this->pdf->line($x+$w12, $y, $x+$w12, $y+$hmax);
-        //ALÍQ. ICMS
+        //VALOR IPI
         $x += $w12;
-        $w13 = round($w*0.035, 0);
-        $texto = 'ALÍQ. ICMS';
+        $w13 = round($w*0.05, 0);
+        $texto = 'VALOR IPI';
         $aFont = ['font'=>$this->fontePadrao, 'size'=>6, 'style'=>''];
         $this->pdf->textBox($x, $y, $w13, $h, $texto, $aFont, 'C', 'C', 0, '', false);
         $this->pdf->line($x+$w13, $y, $x+$w13, $y+$hmax);
-        //ALÍQ. IPI
+        //ALÍQ. ICMS
         $x += $w13;
-        $w14 = $w-($w1+$w2+$w3+$w4+$w5+$w6+$w7+$w8+$w9+$w10+$w11+$w12+$w13);
-        $texto = 'ALÍQ. IPI';
+        $w14 = round($w*0.04, 0);
+        $texto = 'ALÍQ. ICMS';
+        $aFont = ['font'=>$this->fontePadrao, 'size'=>6, 'style'=>''];
         $this->pdf->textBox($x, $y, $w14, $h, $texto, $aFont, 'C', 'C', 0, '', false);
+        $this->pdf->line($x+$w14, $y, $x+$w14, $y+$hmax);
+        //ALÍQ. IPI
+        $x += $w14;
+        $w15 = $w-($w1+$w2+$w3+$w4+$w5+$w6+$w7+$w8+$w9+$w10+$w11+$w12+$w13+$w14);
+        $texto = 'ALÍQ. IPI';
+        $this->pdf->textBox($x, $y, $w15, $h, $texto, $aFont, 'C', 'C', 0, '', false);
         $this->pdf->line($oldX, $y+$h+1, $oldX + $w, $y+$h+1);
         $y += 5;
         //##################################################################################
@@ -2940,8 +2947,12 @@ class Danfe extends Common
                     $texto = number_format($prod->getElementsByTagName("vProd")->item(0)->nodeValue, 2, ",", ".");
                 }
                 $this->pdf->textBox($x, $y, $w9, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
-                //Valor da Base de calculo
                 $x += $w9;
+                //Valor do Desconto
+                $texto = number_format($prod->getElementsByTagName("vDesc")->item(0)->nodeValue, 2, ",", ".");
+                $this->pdf->textBox($x, $y, $w10, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
+                //Valor da Base de calculo
+                $x += $w10;
                 if (isset($ICMS)) {
                     $texto = ! empty($ICMS->getElementsByTagName("vBC")->item(0)->nodeValue)
                     ? number_format(
@@ -2951,10 +2962,10 @@ class Danfe extends Common
                         "."
                     )
                     : '0, 00';
-                    $this->pdf->textBox($x, $y, $w10, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
+                    $this->pdf->textBox($x, $y, $w11, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
                 }
                 //Valor do ICMS
-                $x += $w10;
+                $x += $w11;
                 if (isset($ICMS)) {
                     $texto = ! empty($ICMS->getElementsByTagName("vICMS")->item(0)->nodeValue)
                     ? number_format(
@@ -2964,10 +2975,10 @@ class Danfe extends Common
                         "."
                     )
                     : '0, 00';
-                    $this->pdf->textBox($x, $y, $w11, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
+                    $this->pdf->textBox($x, $y, $w12, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
                 }
                 //Valor do IPI
-                $x += $w11;
+                $x += $w12;
                 if (isset($IPI)) {
                     $texto = ! empty($IPI->getElementsByTagName("vIPI")->item(0)->nodeValue)
                     ? number_format(
@@ -2980,9 +2991,9 @@ class Danfe extends Common
                 } else {
                     $texto = '';
                 }
-                $this->pdf->textBox($x, $y, $w12, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
+                $this->pdf->textBox($x, $y, $w13, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
                 // %ICMS
-                $x += $w12;
+                $x += $w13;
                 if (isset($ICMS)) {
                     $texto = ! empty($ICMS->getElementsByTagName("pICMS")->item(0)->nodeValue)
                     ? number_format(
@@ -2992,10 +3003,10 @@ class Danfe extends Common
                         "."
                     )
                     : '0, 00';
-                    $this->pdf->textBox($x, $y, $w13, $h, $texto, $aFont, 'T', 'C', 0, '');
+                    $this->pdf->textBox($x, $y, $w14, $h, $texto, $aFont, 'T', 'C', 0, '');
                 }
                 //%IPI
-                $x += $w13;
+                $x += $w14;
                 if (isset($IPI)) {
                     $texto = ! empty($IPI->getElementsByTagName("pIPI")->item(0)->nodeValue)
                     ? number_format(
@@ -3008,7 +3019,7 @@ class Danfe extends Common
                 } else {
                     $texto = '';
                 }
-                $this->pdf->textBox($x, $y, $w14, $h, $texto, $aFont, 'T', 'C', 0, '');
+                $this->pdf->textBox($x, $y, $w15, $h, $texto, $aFont, 'T', 'C', 0, '');
 
 
                 // Dados do Veiculo Somente para veiculo 0 Km
