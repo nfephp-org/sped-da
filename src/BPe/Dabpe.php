@@ -1,6 +1,7 @@
 <?php
 
 namespace NFePHP\DA\BPe;
+
 /**
  * Classe para a impressão em PDF do Documento Auxiliar de NFe Consumidor
  * NOTA: Esta classe não é a indicada para quem faz uso de impressoras térmicas ESCPOS
@@ -21,7 +22,6 @@ use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Legacy\Common;
 use Com\Tecnick\Barcode\Barcode;
 use DateTime;
-
 
 class Dabpe extends Common
 {
@@ -84,8 +84,7 @@ class Dabpe extends Common
         $idToken = '',
         $emitToken = '',
         $urlQR = ''
-    )
-    {
+    ) {
         if (is_numeric($mododebug)) {
             $this->debugMode = $mododebug;
         }
@@ -287,15 +286,13 @@ class Dabpe extends Common
             $this->monta();
         }
         return $this->pdf->getPdf();
-
     }
 
     public function monta(
         $logo = null,
         $depecNumReg = '',
         $logoAlign = 'C'
-    )
-    {
+    ) {
         $this->logomarca = $logo;
         $qtdItens = $this->Comp->length;
         $qtdPgto = $this->pag->length;
@@ -306,7 +303,16 @@ class Dabpe extends Common
         // verifica se existe informações adicionais
         $this->textoAdic = '';
         if (isset($this->infAdic)) {
-            $this->textoAdic .= !empty($this->infAdic->getElementsByTagName('infCpl')->item(0)->nodeValue) ? 'Inf. Contribuinte: ' . trim($this->anfaveaDANFE($this->infAdic->getElementsByTagName('infCpl')->item(0)->nodeValue)) : '';
+            $this->textoAdic .= !empty(
+                $this->infAdic->getElementsByTagName('infCpl')
+                ->item(0)
+                ->nodeValue
+            )
+                ? 'Inf. Contribuinte: '
+                . trim($this->anfaveaDANFE(
+                    $this->infAdic->getElementsByTagName('infCpl')->item(0)->nodeValue
+                ))
+                : '';
             if (!empty($this->textoAdic)) {
                 $this->textoAdic = str_replace(";", "\n", $this->textoAdic);
                 $alinhas = explode("\n", $this->textoAdic);
@@ -406,7 +412,8 @@ class Dabpe extends Common
         $y = $this->cabecalhoSecundarioDABPE($x, $y, $hcabecalhoSecundario);
         $jj = $hcabecalho + $hcabecalhoSecundario;
         //COLOCA PRODUTOS
-        $y = $xInic + $hcabecalho + $hcabecalhoSecundario + 6; // +6 devido a um aumento na BOX2 do cabecalhosecundariodabpe
+        // +6 devido a um aumento na BOX2 do cabecalhosecundariodabpe
+        $y = $xInic + $hcabecalho + $hcabecalhoSecundario + 6;
         $y = $this->produtosDABPE($x, $y, $hprodutos);
         //COLOCA TOTAL
         $y = $yInic + $hcabecalho + $hcabecalhoSecundario + 6 + $hprodutos;
@@ -415,12 +422,29 @@ class Dabpe extends Common
         $y = $xInic + $hcabecalho + $hcabecalhoSecundario + $hprodutos + $hTotal;
         $y = $this->pagamentosDABPE($x, $y, $hpagamentos);
         //COLOCA MENSAGEM FISCAL
-        $y = $xInic + $hcabecalho + $hcabecalhoSecundario + $hprodutos + $hTotal + $hpagamentos;
+        $y = $xInic
+        + $hcabecalho
+        + $hcabecalhoSecundario
+        + $hprodutos
+        + $hTotal
+        + $hpagamentos;
         $y = $this->fiscalDABPE($x, $y, $hmsgfiscal);
         //COLOCA CONSUMIDOR
-        $y = $xInic + $hcabecalho + $hcabecalhoSecundario + $hprodutos + $hTotal + $hpagamentos + $hmsgfiscal;
+        $y = $xInic
+        + $hcabecalho
+        + $hcabecalhoSecundario
+        + $hprodutos
+        + $hTotal
+        + $hpagamentos
+        + $hmsgfiscal;
         //COLOCA QRCODE
-        $y = $xInic + $hcabecalho + $hcabecalhoSecundario + $hprodutos + $hTotal + $hpagamentos + $hmsgfiscal;
+        $y = $xInic
+        + $hcabecalho
+        + $hcabecalhoSecundario
+        + $hprodutos
+        + $hTotal
+        + $hpagamentos
+        + $hmsgfiscal;
         $y = $this->qrCodeDABPE($x, $y, $hQRCode);
 
         //adiciona as informações opcionais
@@ -433,7 +457,7 @@ class Dabpe extends Common
     }
 
     /**
-     * anfavea
+     *
      * Função para transformar o campo cdata do padrão ANFAVEA para
      * texto imprimível
      *
@@ -475,7 +499,8 @@ class Dabpe extends Common
         $texto = $texto . "\n" . $agenciaRazao;
 
         $texto = $texto . "\n" . $agenciaLgr . "," . $agenciaNro . " " . $agenciaCpl . "," . $agenciaBairro
-            . ". CEP:" . $agenciaCEP . ". " . $agenciaMun . "-" . $agenciaUF . "\n____________________________________________________";
+            . ". CEP:" . $agenciaCEP . ". " . $agenciaMun . "-" . $agenciaUF
+            . "\n____________________________________________________";
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         $this->pdf->textBox($xRs, $y, $wRs, $h, $texto, $aFont, 'T', $alignEmit, 0, '', false);
     }
@@ -530,7 +555,22 @@ class Dabpe extends Common
         $y = $y + 3;
         $texto = "CNPJ: " . $emitCnpj;
         $texto = $texto . " IE: " . $emitIE;
-        $texto = $texto . "\n" . $emitLgr . "," . $emitNro . " " . $emitCpl . "," . $emitBairro . ". CEP: " . $emitCEP . " . " . $emitMun . "-" . $emitUF . $emitFone . "\nDocumento Auxiliar do Bilhete de Passagem Eletrônico";
+        $texto = $texto
+        . "\n"
+        . $emitLgr
+        . ","
+        . $emitNro
+        . " "
+        . $emitCpl
+        . ","
+        . $emitBairro
+        . ". CEP: "
+        . $emitCEP
+        . " . "
+        . $emitMun
+        . "-" . $emitUF
+        . $emitFone
+        . "\nDocumento Auxiliar do Bilhete de Passagem Eletrônico";
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         if (empty($this->dhCont)) {
             $texto = $texto . "\n____________________________________________________";
@@ -538,11 +578,23 @@ class Dabpe extends Common
         } else {
             $texto = $texto . "\n____________________________________________________";
             $this->pdf->textBox($xRs, $y, $wRs, $this->hLinha, $texto, $aFont, 'T', $alignEmit, 0, '', false);
-            $texto = "\nEMITIDA EM CONTINGÊNCIA\nPendente de autorização\n____________________________________________________";
+            $texto = "\nEMITIDA EM CONTINGÊNCIA\nPendente de autorização\n"
+            . "____________________________________________________";
             $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
-            $this->pdf->textBox($xRs, $h - $this->hLinha, $wRs, $this->hlinha * 2, $texto, $aFont, 'T', $alignEmit, 0, '', false);
+            $this->pdf->textBox(
+                $xRs,
+                $h - $this->hLinha,
+                $wRs,
+                $this->hlinha * 2,
+                $texto,
+                $aFont,
+                'T',
+                $alignEmit,
+                0,
+                '',
+                false
+            );
         }
-
     }
 
     protected function cabecalhoSecundarioDABPE($x = 0, $y = 0, $h = 0)
@@ -603,8 +655,19 @@ class Dabpe extends Common
                 break;
         }
 
-        $texto = "\n(Poltrona: " . $this->getTagValue($this->infViagem, "poltrona") . " Plataforma: " . $this->getTagValue($this->infViagem, "plataforma") . ")";
-        $texto = $texto . "\nPrefixo: " . $prefixo . "  Linha: " . $linha . "\nTipo: " . $tipo . "\n_____________________________________________________________";
+        $texto = "\n(Poltrona: "
+        . $this->getTagValue($this->infViagem, "poltrona")
+        . " Plataforma: "
+        . $this->getTagValue($this->infViagem, "plataforma")
+        . ")";
+        $texto = $texto
+        . "\nPrefixo: "
+        . $prefixo
+        . "  Linha: "
+        . $linha
+        . "\nTipo: "
+        . $tipo
+        . "\n_____________________________________________________________";
         $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => 'B');
         $this->pdf->textBox($x, $yBox2, $w, $hBox2, $texto, $aFont, 'T', 'C', 0, '', false);
     }
@@ -730,7 +793,6 @@ class Dabpe extends Common
         $texto = $vPgto;
         $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => 'B'];
         $this->pdf->textBox($xValor, $yDesconto, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', 0, '', false);
-
     }
 
     protected function fiscalDABPE($x = 0, $y = 0, $h = 0)
@@ -748,7 +810,18 @@ class Dabpe extends Common
             //101 Cancelamento
             $this->pdf->setTextColor(255, 0, 0);
             $texto = "BPe CANCELADO";
-            $this->pdf->textBox($x, $y - 25, $w, $h, $texto, ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'B'], 'T', 'C', 0, '');
+            $this->pdf->textBox(
+                $x,
+                $y - 25,
+                $w,
+                $h,
+                $texto,
+                ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'B'],
+                'T',
+                'C',
+                0,
+                ''
+            );
             $this->pdf->setTextColor(0, 0, 0);
         }
 
@@ -756,7 +829,18 @@ class Dabpe extends Common
             //'' Não Aprovada
             $this->pdf->setTextColor(255, 0, 0);
             $texto = "SEM VALOR FISCAL";
-            $this->pdf->textBox($x, $y - 25, $w, $h, $texto, ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'B'], 'T', 'C', 0, '');
+            $this->pdf->textBox(
+                $x,
+                $y - 25,
+                $w,
+                $h,
+                $texto,
+                ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'B'],
+                'T',
+                'C',
+                0,
+                ''
+            );
             $this->pdf->setTextColor(0, 0, 0);
         }
 
@@ -798,7 +882,6 @@ class Dabpe extends Common
         }
 
         if (!empty($this->getTagValue($this->infValorBPe, "tpDesconto"))) {
-
             switch ($this->getTagValue($this->infValorBPe, "tpDesconto")) {
                 case "01":
                     $xtpDesconto = "Tarifa promocional";
@@ -845,7 +928,6 @@ class Dabpe extends Common
 
         $y = $y + $hLinha * 2;
         if (empty($this->dhCont)) {
-
             $nProt = $this->getTagValue($this->protBPe, "nProt");
             $dhRecbto = $this->getTagValue($this->protBPe, "dhRecbto");
             $dhRecbto = new \DateTime($dhRecbto);
@@ -854,7 +936,6 @@ class Dabpe extends Common
             $y = $y + $hLinha * 2;
             $texto = "\nData de autorização: " . $dhRecbto->format('d/m/Y H:i:s');
             $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTex, 'T', 'C', 0, '', false);
-
         } else {
             $texto = "EMITIDA EM CONTINGÊNCIA";
             $aFontTex = ['font' => $this->fontePadrao, 'size' => 12, 'style' => 'B'];
@@ -934,9 +1015,21 @@ class Dabpe extends Common
 
         if (isset($this->ICMSSN)) {
             $vTotTrib = $this->getTagValue($this->ICMSSN, "vTotTrib");
-            $this->pdf->textBox($x, $yQr, $w - 4, $hBoxLinha, "Tributos Totais Incidentes(Lei Federal 12.741/2012): R$" . $vTotTrib, $aFontTex, 'C', 'C', 0, '', false);
+            $this->pdf->textBox(
+                $x,
+                $yQr,
+                $w - 4,
+                $hBoxLinha,
+                "Tributos Totais Incidentes(Lei Federal 12.741/2012): R$"
+                    . $vTotTrib,
+                $aFontTex,
+                'C',
+                'C',
+                0,
+                '',
+                false
+            );
         }
-
     }
 
     protected function infAdic($x = 0, $y = 0, $h = 0)
@@ -963,24 +1056,6 @@ class Dabpe extends Common
         }
         return $this->paperwidth;
     }
-
-//    public function inicia($id)
-//    {
-//        $pdo = Conexao::getInstance();
-//        $bpe = $pdo->prepare('SELECT chbpe, CNPJ FROM bpe WHERE id = ? ')
-//            ->execute([
-//                $id,
-//            ]);
-//        $pastaxml = 'homologacao'; // Pegar do Banco de dados, se emissão em homologação ou produção
-//        $filename = "../../../../_backend/XML/{$bpe->CNPJ}/BP-e/{$pastaxml}/assinadas/{$bpe->chBPe}-bpe.xml"; // Ambiente Windows
-//        file_get_contents($filename, $xml);
-//        try {
-//            $this->__construct($xml, '', 1);
-//            $pdf = $this->render();
-//            header('Content-Type: application/pdf');
-//            echo $pdf;
-//        }
-//    }
 
     protected function pagamentosDABPE($x = 0, $y = 0, $h = 0)
     {
