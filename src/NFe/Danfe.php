@@ -2660,9 +2660,9 @@ class Danfe extends Common
             $impostos .= $this->descricaoProdutoHelper($ICMS, "vBCFCPST", " BcFcpSt=%s");
             $impostos .= $this->descricaoProdutoHelper($ICMS, "pFCPST", " pFcpSt=%s%%");
             $impostos .= $this->descricaoProdutoHelper($ICMS, "vFCPST", " vFcpSt=%s");
-            $impostos .= $this->descricaoProdutoHelper($ICMS, "vBCSTRet", " vBcStRet=%s");
+            $impostos .= $this->descricaoProdutoHelper($ICMS, "vBCSTRet", " Retido na compra: BASE ICMS ST=%s");
             $impostos .= $this->descricaoProdutoHelper($ICMS, "pST", " pSt=%s");
-            $impostos .= $this->descricaoProdutoHelper($ICMS, "vICMSSTRet", " vIcmsStRet=%s");
+            $impostos .= $this->descricaoProdutoHelper($ICMS, "vICMSSTRet", " VALOR ICMS ST=%s");
         }
         if (!empty($ICMSUFDest)) {
             $impostos .= $this->descricaoProdutoHelper($ICMSUFDest, "pFCPUFDest", " pFCPUFDest=%s%%");

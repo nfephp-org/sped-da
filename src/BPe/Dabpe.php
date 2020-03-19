@@ -84,8 +84,7 @@ class Dabpe extends Common
         $idToken = '',
         $emitToken = '',
         $urlQR = ''
-    )
-    {
+    ) {
         if (is_numeric($mododebug)) {
             $this->debugMode = $mododebug;
         }
@@ -293,8 +292,7 @@ class Dabpe extends Common
         $logo = null,
         $depecNumReg = '',
         $logoAlign = 'C'
-    )
-    {
+    ) {
         $this->logomarca = $logo;
         $qtdItens = $this->Comp->length;
         $qtdPgto = $this->pag->length;
@@ -306,7 +304,7 @@ class Dabpe extends Common
         $this->textoAdic = '';
         if (isset($this->infAdic)) {
             $this->textoAdic .= !empty(
-            $this->infAdic->getElementsByTagName('infCpl')
+                $this->infAdic->getElementsByTagName('infCpl')
                 ->item(0)
                 ->nodeValue
             )
@@ -446,8 +444,7 @@ class Dabpe extends Common
      * @return string conteúdo do campo CDATA como string
      */
 
-    protected
-    function cabecalhoAgencia($x = 0, $y = 0, $h = 0, $pag = '1', $totPag = '1')
+    protected function cabecalhoAgencia($x = 0, $y = 0, $h = 0, $pag = '1', $totPag = '1')
     {
         $hTotal = 0;
         $agenciaRazao = $this->getTagValue($this->agencia, "xNome");
@@ -471,7 +468,20 @@ class Dabpe extends Common
         $texto = "CNPJ: " . $agenciaCnpj . " " . "$agenciaRazao";
         $hRazao = ceil((strlen($texto) / 41)) * $this->hLinha;
         $hTotal += $hRazao;
-        $endereco = "\n" . $agenciaLgr . ", " . $agenciaNro . " " . $agenciaCpl . ", " . $agenciaBairro . ". CEP:" . $agenciaCEP . ". " . $agenciaMun . "-" . $agenciaUF;
+        $endereco = "\n"
+            . $agenciaLgr
+            . ", "
+            . $agenciaNro
+            . " "
+            . $agenciaCpl
+            . ", "
+            . $agenciaBairro
+            . ". CEP:"
+            . $agenciaCEP
+            . ". "
+            . $agenciaMun
+            . "-"
+            . $agenciaUF;
         $hEndereco = $this->hLinha * ceil(strlen($endereco) / 41);
         $hTotal += $hEndereco;
         //COLOCA RAZÃO SOCIAL
@@ -485,8 +495,7 @@ class Dabpe extends Common
         return $hTotal;
     }
 
-    protected
-    function cabecalhoDABPE($x = 0, $y = 0, $h = 0, $pag = '1', $totPag = '1')
+    protected function cabecalhoDABPE($x = 0, $y = 0, $h = 0, $pag = '1', $totPag = '1')
     {
         $hTotal = 0;
         $emitRazao = $this->getTagValue($this->emit, "xNome");
@@ -583,7 +592,6 @@ class Dabpe extends Common
                 $this->pdf->textBox($x, $y, $maxW, $this->hLinha, $texto, $aFont, 'T', 'C', 0, '', false);
                 $hTotal += $this->hLinha * 2;
             }
-
         } else {
             $texto = $texto . "\n____________________________________________________";
             $this->pdf->textBox($xRs, $y, $wRs, $this->hLinha, $texto, $aFont, 'T', $alignEmit, 0, '', false);
@@ -607,8 +615,7 @@ class Dabpe extends Common
         return $hTotal;
     }
 
-    protected
-    function cabecalhoSecundarioDABPE($x = 0, $y = 0, $h = 0)
+    protected function cabecalhoSecundarioDABPE($x = 0, $y = 0, $h = 0)
     {
         $hTotal = 0;
         $margemInterna = $this->margemInterna;
@@ -689,8 +696,7 @@ class Dabpe extends Common
         return $hTotal;
     }
 
-    protected
-    function produtosDABPE($x = 0, $y = 0, $h = 0)
+    protected function produtosDABPE($x = 0, $y = 0, $h = 0)
     {
         $hTotal = 0;
         $qtdItens = $this->Comp->length;
@@ -771,8 +777,7 @@ class Dabpe extends Common
         return $hTotal;
     }
 
-    protected
-    function totalDABPE($x = 0, $y = 0, $h = 0)
+    protected function totalDABPE($x = 0, $y = 0, $h = 0)
     {
         $hTotal = 0;
         $maxW = $this->wPrint;
@@ -816,8 +821,7 @@ class Dabpe extends Common
         return $hTotal;
     }
 
-    protected
-    function fiscalDABPE($x = 0, $y = 0, $h = 0)
+    protected function fiscalDABPE($x = 0, $y = 0, $h = 0)
     {
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
@@ -966,8 +970,7 @@ class Dabpe extends Common
         }
     }
 
-    protected
-    function checkCancelada()
+    protected function checkCancelada()
     {
         if (!isset($this->infProt)) {
             return false;
@@ -976,8 +979,7 @@ class Dabpe extends Common
         return $cStat == '101';
     }
 
-    protected
-    function checkNaoAutorizada()
+    protected function checkNaoAutorizada()
     {
         if (!isset($this->infProt)) {
             $cStat = $this->getTagValue($this->infProt, "cStat");
@@ -985,8 +987,7 @@ class Dabpe extends Common
         }
     }
 
-    protected
-    function checkSubstituto()
+    protected function checkSubstituto()
     {
         if (!isset($this->infProt)) {
             return false;
@@ -997,8 +998,7 @@ class Dabpe extends Common
         return $cStat == '102';
     }
 
-    protected
-    function qrCodeDABPE($x = 0, $y = 0, $h = 0)
+    protected function qrCodeDABPE($x = 0, $y = 0, $h = 0)
     {
         $y += 30;
         $margemInterna = $this->margemInterna;
@@ -1055,8 +1055,7 @@ class Dabpe extends Common
         }
     }
 
-    protected
-    function infAdic($x = 0, $y = 0, $h = 0)
+    protected function infAdic($x = 0, $y = 0, $h = 0)
     {
         $y += 17;
         $margemInterna = $this->margemInterna;
@@ -1073,8 +1072,7 @@ class Dabpe extends Common
         $this->pdf->textBox($x, $y + 3, $w - 2, $hLinha - 3, $this->textoAdic, $aFontTex, 'T', 'L', 0, '', false);
     }
 
-    public
-    function paperWidth($width = 80)
+    public function paperWidth($width = 80)
     {
         if (is_int($width) && $width > 60) {
             $this->paperwidth = $width;
@@ -1082,8 +1080,7 @@ class Dabpe extends Common
         return $this->paperwidth;
     }
 
-    protected
-    function pagamentosDABPE($x = 0, $y = 0, $h = 0)
+    protected function pagamentosDABPE($x = 0, $y = 0, $h = 0)
     {
         $hTotal = 0;
         $margemInterna = $this->margemInterna;
