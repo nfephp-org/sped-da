@@ -11,7 +11,6 @@ Classes para geração dos documentos auxiliares usados pelos padrões Sped
 > Estas classes devem ser e permanecer tão genéricas e simples quanto possivel.
 > Se você necessita que o DANFE ou qualquer outro documento seja diferente em termos de recursos que esses disponíveis, CRIE o seu próprio gerador de PDF.
  
-# CLASSES EM FASE DE REFATORAÇÃO (cuidado ao usar pois estarão em constante alteração até 31/10/2019)
 
 [![Build Status][ico-travis]][link-travis]
 [![Coverage Status][ico-scrutinizer]][link-scrutinizer]
