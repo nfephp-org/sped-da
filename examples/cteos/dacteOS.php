@@ -7,17 +7,13 @@ use NFePHP\DA\CTe\DacteOS;
 
 $xml = file_get_contents(__DIR__ . '/fixtures/cte_hom_com_prot.xml');
 
-$logo = 'data://text/plain;base64,' . base64_encode(file_get_contents('../images/logo.jpg'));
+$logo = 'data://text/plain;base64,' . base64_encode(file_get_contents(__DIR__ . '/../images/tulipas.png'));
 
 try {
     $dacte = new DacteOS($xml);
+    $dacte->debugMode(true);
     $dacte->creditsIntegratorFooter('Seu Software Ltd');
-    $dacte->monta($logo);
-    $pdf = $dacte->render();
-    //o pdf porde ser exibido como view no browser
-    //salvo em arquivo
-    //ou setado para download forçado no browser 
-    //ou ainda gravado na base de dados
+    $pdf = $dacte->render($logo);
     header('Content-Type: application/pdf');
     echo $pdf;
 } catch (InvalidArgumentException $e) {

@@ -17,11 +17,11 @@ use Exception;
 use InvalidArgumentException;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
-use NFePHP\DA\Legacy\Common;
+use NFePHP\DA\Common\DaCommon;
 use Com\Tecnick\Barcode\Barcode;
 use DateTime;
 
-class Danfce extends Common
+class Danfce extends DaCommon
 {
     protected $papel;
     protected $paperwidth = 80;
@@ -29,7 +29,6 @@ class Danfce extends Common
     protected $xml; // string XML NFe
     protected $logomarca=''; // path para logomarca em jpg
     protected $formatoChave="#### #### #### #### #### #### #### #### #### #### ####";
-    protected $debugMode=0; //ativa ou desativa o modo de debug
     protected $tpImp; //ambiente
     protected $fontePadrao='Times';
     protected $nfeProc;
@@ -62,34 +61,12 @@ class Danfce extends Common
      * __contruct
      *
      * @param string $docXML
-     * @param string $sPathLogo
-     * @param string $mododebug
-     * @param string $idToken
-     * @param string $Token
      */
     public function __construct(
-        $docXML = '',
-        $sPathLogo = '',
-        $mododebug = 0,
-        // habilita os erros do sistema
-        $idToken = '',
-        $emitToken = '',
-        $urlQR = ''
+        $docXML = ''
     ) {
-        if (is_numeric($mododebug)) {
-            $this->debugMode = $mododebug;
-        }
-        if ($this->debugMode) {
-            //ativar modo debug
-            error_reporting(E_ALL);
-            ini_set('display_errors', 'On');
-        } else {
-            //desativar modo debug
-            error_reporting(0);
-            ini_set('display_errors', 'Off');
-        }
+        
         $this->xml = $docXML;
-        $this->logomarca = $sPathLogo;
         
         $this->fontePadrao = empty($fonteDANFE) ? 'Times' : $fonteDANFE;
         $this->aFontTit = array('font' => $this->fontePadrao, 'size' => 9, 'style' => 'B');
@@ -133,28 +110,6 @@ class Danfce extends Common
     }
     
     /**
-     * Ativa ou desativa o modo debug
-     * @param bool $activate
-     * @return bool
-     */
-    public function debugMode($activate = null)
-    {
-        if (isset($activate) && is_bool($activate)) {
-            $this->debugmode = $activate;
-        }
-        if ($this->debugmode) {
-            //ativar modo debug
-            error_reporting(E_ALL);
-            ini_set('display_errors', 'On');
-        } else {
-            //desativar modo debug
-            error_reporting(0);
-            ini_set('display_errors', 'Off');
-        }
-        return $this->debugmode;
-    }
-    
-    /**
      * Add the credits to the integrator in the footer message
      * @param string $message
      */
@@ -167,14 +122,18 @@ class Danfce extends Common
      * Dados brutos do PDF
      * @return string
      */
-    public function render()
-    {
+    public function render(
+        $logo = '',
+        $orientacao = 'P',
+        $papel = 'A4',
+        $logoAlign = 'C',
+        $depecNumReg = ''
+    ) {
         if (empty($this->pdf)) {
-            $this->monta();
+            $this->monta($logo, $depecNumReg, $logoAlign);
         }
         return $this->pdf->getPdf();
     }
-    
     
     public function paperWidth($width = 80)
     {
@@ -185,11 +144,11 @@ class Danfce extends Common
     }
     
     public function monta(
-        $logo = null,
+        $logo = '',
         $depecNumReg = '',
         $logoAlign = 'C'
     ) {
-        $this->logomarca = $logo;
+        $this->logomarca = $this->adjustImage($logo, true);
         $qtdItens = $this->det->length;
         $qtdPgto = $this->pag->length;
         $hMaxLinha = $this->hMaxLinha;
@@ -346,8 +305,13 @@ class Danfce extends Common
         if (!empty($this->logomarca)) {
             $xImg = $margemInterna;
             $yImg = $margemInterna + 1;
-            $type = (substr($this->logomarca, 0, 7) === 'data://') ? 'jpg' : null;
-            $this->pdf->image($this->logomarca, $xImg, $yImg, 30, 22.5, $type);
+            $logoInfo = getimagesize($this->logomarca);
+            $logoWmm = ($logoInfo[0]/72)*25.4;
+            $logoHmm = ($logoInfo[1]/72)*25.4;
+            $nImgW = 30;
+            $nImgH = round($logoHmm * ($nImgW/$logoWmm), 0);
+            $yImg = $margemInterna + $nImgH/2;
+            $this->pdf->image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, 'jpeg');
             $xRs = ($maxW*0.4) + $margemInterna;
             $wRs = ($maxW*0.6);
             $alignEmit = 'L';

@@ -17,17 +17,16 @@ namespace NFePHP\DA\MDFe;
 
 use Com\Tecnick\Barcode\Barcode;
 use NFePHP\DA\Legacy\Dom;
-use NFePHP\DA\Legacy\Common;
 use NFePHP\DA\Legacy\Pdf;
+use NFePHP\DA\Common\DaCommon;
 
-class Damdfe extends Common
+class Damdfe extends DaCommon
 {
     protected $logoAlign = 'L'; //alinhamento do logo
     protected $yDados = 0;
     protected $debugmode = false; //ativa ou desativa o modo de debug
     protected $pdf; // objeto fpdf()
     protected $xml; // string XML NFe
-    protected $logomarca = ''; // path para logomarca em jpg
     protected $errMsg = ''; // mesagens de erro
     protected $errStatus = false;// status de erro TRUE um erro ocorreu false sem erros
     protected $orientacao = 'P'; //orientação da DANFE P-Retrato ou L-Paisagem
@@ -51,7 +50,7 @@ class Damdfe extends Common
     protected $tpEmis;
     protected $qrCodMDFe;
     private $dom;
-    private $creditos;
+    protected $creditos;
 
     /**
      * __construct
@@ -61,29 +60,7 @@ class Damdfe extends Common
     public function __construct(
         $xml = ''
     ) {
-        $this->debugMode();
         $this->loadDoc($xml);
-    }
-
-    /**
-     * Ativa ou desativa o modo debug
-     *
-     * @param  bool $activate
-     * @return bool
-     */
-    public function debugMode($activate = null)
-    {
-        if (isset($activate) && is_bool($activate)) {
-            $this->debugmode = $activate;
-        }
-        if ($this->debugmode) {
-            error_reporting(E_ALL);
-            ini_set('display_errors', 'On');
-        } else {
-            error_reporting(0);
-            ini_set('display_errors', 'Off');
-        }
-        return $this->debugmode;
     }
 
     private function loadDoc($xml)
@@ -407,7 +384,7 @@ class Damdfe extends Common
         $h = 20;
         $oldY += $h;
         $this->pdf->textBox($x, $y, $w, $h);
-        if (is_file($this->logomarca)) {
+        if (!empty($this->logomarca)) {
             $logoInfo = getimagesize($this->logomarca);
             //largura da imagem em mm
             $logoWmm = ($logoInfo[0] / 72) * 25.4;
@@ -1199,30 +1176,11 @@ class Damdfe extends Common
     }
 
     public function monta(
-        $logo = '',
-        $orientacao = 'P',
-        $papel = 'A4',
-        $logoAlign = 'L'
+        $logo = ''
     ) {
         $this->pdf = '';
-        $this->logomarca = $logo;
-        $this->orientacao = $orientacao;
-        $this->papel = $papel;
-        $this->logoAlign = $logoAlign;
+        $this->logomarca = $this->adjustImage($logo);
         $this->buildMDFe();
-    }
-
-    /**
-     * Dados brutos do PDF
-     *
-     * @return string
-     */
-    public function render()
-    {
-        if (empty($this->pdf)) {
-            $this->monta();
-        }
-        return $this->pdf->getPdf();
     }
 
     /**

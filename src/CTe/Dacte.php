@@ -19,9 +19,9 @@ use Com\Tecnick\Barcode\Barcode;
 use Exception;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
-use NFePHP\DA\Legacy\Common;
+use NFePHP\DA\Common\DaCommon;
 
-class Dacte extends Common
+class Dacte extends DaCommon
 {
 
     protected $logoAlign = 'C';
@@ -29,7 +29,6 @@ class Dacte extends Common
     protected $numero_registro_dpec = '';
     protected $pdf;
     protected $xml;
-    protected $logomarca = '';
     protected $errMsg = '';
     protected $errStatus = false;
     protected $orientacao = 'P';
@@ -91,7 +90,7 @@ class Dacte extends Common
     protected $margemInterna = 0;
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     protected $infCTeMultimodal = [];
-    private $creditos;
+    protected $creditos;
 
     /**
      * __construct
@@ -101,29 +100,9 @@ class Dacte extends Common
     public function __construct(
         $xml = ''
     ) {
-        $this->debugMode();
         $this->loadDoc($xml);
     }
 
-    /**
-     * Ativa ou desativa o modo debug
-     * @param bool $activate
-     * @return bool
-     */
-    public function debugMode($activate = null)
-    {
-        if (isset($activate) && is_bool($activate)) {
-            $this->debugmode = $activate;
-        }
-        if ($this->debugmode) {
-            error_reporting(E_ALL);
-            ini_set('display_errors', 'On');
-        } else {
-            error_reporting(0);
-            ini_set('display_errors', 'Off');
-        }
-        return $this->debugmode;
-    }
 
     private function loadDoc($xml)
     {
@@ -228,18 +207,6 @@ class Dacte extends Common
         }
     }
 
-    /**
-     * Dados brutos do PDF
-     * @return string
-     */
-    public function render()
-    {
-        if (empty($this->pdf)) {
-            $this->monta();
-        }
-        return $this->pdf->getPdf();
-    }
-
     protected function cteDPEC()
     {
         return $this->numero_registro_dpec != '';
@@ -265,7 +232,7 @@ class Dacte extends Common
         $logoAlign = 'C'
     ) {
         $this->pdf = '';
-        $this->logomarca = $logo;
+        $this->logomarca = $this->adjustImage($logo);
         //se a orientação estiver em branco utilizar o padrão estabelecido no CTe
         if ($orientacao == '') {
             if ($this->tpImp == '1') {

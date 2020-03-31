@@ -81,7 +81,7 @@ composer require nfephp-org/sped-da
 Ou ainda alterando o composer.json do seu aplicativo inserindo:
 ```json
 "require": {
-    "nfephp-org/sped-da" : "^0.1"
+    "nfephp-org/sped-da" : "^0.3"
 }
 ```
 
