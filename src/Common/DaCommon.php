@@ -22,6 +22,8 @@ class DaCommon extends Common
     protected $fontePadrao = 'times';
     protected $aFont = ['font' => 'times', 'size' => 8, 'style' => ''];
     protected $creditos;
+    protected $logomarca = '';
+    protected $logotype = 'jpg';
 
     /**
      * Ativa ou desativa o modo debug
@@ -39,6 +41,9 @@ class DaCommon extends Common
             //ativar modo debug
             error_reporting(E_ALL);
             ini_set('display_errors', 'On');
+            set_error_handler(function (int $number, string $message, string $errfile, int $errline) {
+                throw new \Exception("Handler captured error $number: '$message' $errfile [linha:" . $errline . "]");
+            });
         } else {
             //desativar modo debug
             error_reporting(0);
@@ -58,7 +63,8 @@ class DaCommon extends Common
         $orientacao = 'P',
         $papel = 'A4',
         $margSup = null,
-        $margEsq = null
+        $margEsq = null,
+        $logoAlign = null
     ) {
         if ($orientação === 'P' || $orientacao === 'L') {
             $this->force = $orientacao;
@@ -69,6 +75,9 @@ class DaCommon extends Common
         }
         $this->margsup = $margSup ?? 2;
         $this->margesq = $margEsq ?? 2;
+        if (!empty($logoAlign)) {
+            $this->logoAlign = $logoAlign;
+        }
     }
 
     /**
@@ -76,15 +85,14 @@ class DaCommon extends Common
      *
      * @return string
      */
-    public function render()
-    {
+    public function render(
+        $logo = '',
+        $depecNumReg = ''
+    ) {
         if (empty($this->pdf)) {
-            $this->monta();
+            $this->monta($logo, $depecNumReg);
         }
-        if (!$this->debugmode) {
-            return $this->pdf->getPdf();
-        }
-        throw new \Exception("Modo Debug Ativado");
+        return $this->pdf->getPdf();
     }
 
     /**
@@ -171,14 +179,46 @@ class DaCommon extends Common
         $this->hPrint = $this->maxH - $this->margsup - 5;
     }
     
-    protected function imagePNGtoJPG($original)
+    protected function adjustImage($logo, $turn_bw = false)
     {
-        $image = imagecreatefrompng($original);
+        if (substr($logo, 0, 24) !== 'data://text/plain;base64') {
+            if (is_file($logo)) {
+                $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents($logo));
+            } else {
+                $logo = '';
+            }
+        }
+        $logoInfo = getimagesize($logo);
+        //1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order),
+        //8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC,
+        //14 = IFF, 15 = WBMP, 16 = XBM
+        $type = $logoInfo[2];
+        if ($type != '2' && $type != '3') {
+            throw new Exception('O formato da imagem não é aceitável! Somente PNG ou JPG podem ser usados.');
+        }
+        if ($type == '3') { //3 = PNG
+            $image = imagecreatefrompng($logo);
+            if ($turn_bw) {
+                imagefilter($image, IMG_FILTER_GRAYSCALE);
+                //imagefilter($image, IMG_FILTER_CONTRAST, -100);
+            }
+            return $this->getImageStringFromObject($image);
+        } elseif ($type == '2' && $turn_bw) {
+            $image = imagecreatefromjpeg($logo);
+            imagefilter($image, IMG_FILTER_GRAYSCALE);
+            //imagefilter($image, IMG_FILTER_CONTRAST, -100);
+            return $this->getImageStringFromObject($image);
+        }
+        return $logo;
+    }
+    
+    private function getImageStringFromObject($image)
+    {
         ob_start();
         imagejpeg($image, null, 100);
         imagedestroy($image);
-        $stringdata = ob_get_contents(); // read from buffer
+        $logo = ob_get_contents(); // read from buffer
         ob_end_clean();
-        return 'data://text/plain;base64,'.base64_encode($stringdata);
+        return 'data://text/plain;base64,'.base64_encode($logo);
     }
 }

@@ -18,9 +18,9 @@ namespace NFePHP\DA\NFe;
 use Exception;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
-use NFePHP\DA\Legacy\Common;
+use NFePHP\DA\Common\DaCommon;
 
-class Daevento extends Common
+class Daevento extends DaCommon
 {
     public $chNFe;
 
@@ -30,7 +30,6 @@ class Daevento extends Common
     protected $dadosEmitente = array();
     protected $pdf;
     protected $xml;
-    protected $logomarca = '';
     protected $errMsg = '';
     protected $errStatus = false;
     protected $orientacao = 'P';
@@ -64,7 +63,7 @@ class Daevento extends Common
     private $infEvento;
     private $retEvento;
     private $rinfEvento;
-    private $creditos;
+    protected $creditos;
 
     /**
      * __construct
@@ -114,10 +113,14 @@ class Daevento extends Common
      * Dados brutos do PDF
      * @return string
      */
-    public function render()
-    {
+    public function render(
+        $logo = null,
+        $orientacao = 'P',
+        $papel = 'A4',
+        $logoAlign = 'C'
+    ) {
         if (empty($this->pdf)) {
-            $this->monta();
+            $this->monta($logo, $orientacao, $papel, $logoAlign);
         }
         return $this->pdf->getPdf();
     }
@@ -180,7 +183,7 @@ class Daevento extends Common
         $papel = 'A4',
         $logoAlign = 'C'
     ) {
-        $this->logomarca = $logo;
+        $this->logomarca = $this->adjustImage($logo);
         $this->fontePadrao = 'Times';
         $this->orientacao = $orientacao;
         $this->papel = $papel;
@@ -267,11 +270,6 @@ class Daevento extends Common
         $this->pdf->textBox($x, $y, $w, 5, $texto, $aFont, 'T', 'C', 0, '');
         if (!empty($this->logomarca)) {
             $logoInfo = getimagesize($this->logomarca);
-            $type = strtolower(explode('/', $logoInfo['mime'])[1]);
-            if ($type == 'png') {
-                $this->logomarca = $this->imagePNGtoJPG($this->logomarca);
-                $type == 'jpg';
-            }
             // largura da imagem em mm
             $logoWmm = ($logoInfo[0] / 72) * 25.4;
             // altura da imagem em mm
@@ -305,7 +303,7 @@ class Daevento extends Common
                 $tw = round(2 * $w / 3, 0);
             }
             $type = (substr($this->logomarca, 0, 7) === 'data://') ? 'jpg' : null;
-            $this->pdf->image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, $type);
+            $this->pdf->image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, 'jpeg');
         } else {
             $x1 = $x;
             $y1 = round($h / 3 + $y, 0);
@@ -534,16 +532,5 @@ class Daevento extends Common
         $texto = $this->creditos .  "  Powered by NFePHP®";
         $aFont = ['font' => $this->fontePadrao,'size' => 6,'style' => 'I'];
         $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'R', 0, 'http://www.nfephp.org');
-    }
-    
-    private function imagePNGtoJPG($original)
-    {
-        $image = imagecreatefrompng($original);
-        ob_start();
-        imagejpeg($image, null, 100);
-        imagedestroy($image);
-        $stringdata = ob_get_contents(); // read from buffer
-        ob_end_clean();
-        return 'data://text/plain;base64,'.base64_encode($stringdata);
     }
 }

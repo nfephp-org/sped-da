@@ -19,17 +19,15 @@ use Com\Tecnick\Barcode\Barcode;
 use Exception;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
-use NFePHP\DA\Legacy\Common;
+use NFePHP\DA\Common\DaCommon;
 
-class DacteOS extends Common
+class DacteOS extends DaCommon
 {
-
     protected $logoAlign = 'C';
     protected $yDados = 0;
     protected $numero_registro_dpec = '';
     protected $pdf;
     protected $xml;
-    protected $logomarca = '';
     protected $errMsg = '';
     protected $errStatus = false;
     protected $orientacao = 'P';
@@ -69,7 +67,6 @@ class DacteOS extends Common
     protected $infServico;
     protected $wAdic = 150;
     protected $textoAdic = '';
-    protected $debugmode = false;
     protected $formatPadrao;
     protected $formatNegrito;
     protected $aquav;
@@ -83,7 +80,7 @@ class DacteOS extends Common
     protected $lota;
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     protected $margemInterna = 0;
-    private $creditos;
+    protected $creditos;
 
     /**
      * __construct
@@ -93,28 +90,7 @@ class DacteOS extends Common
     public function __construct(
         $xml = ''
     ) {
-        $this->debugMode();
         $this->loadDoc($xml);
-    }
-
-    /**
-     * Ativa ou desativa o modo debug
-     * @param bool $activate
-     * @return bool
-     */
-    private function debugMode($activate = null)
-    {
-        if (isset($activate) && is_bool($activate)) {
-            $this->debugmode = $activate;
-        }
-        if ($this->debugmode) {
-            error_reporting(E_ALL);
-            ini_set('display_errors', 'On');
-        } else {
-            error_reporting(0);
-            ini_set('display_errors', 'Off');
-        }
-        return $this->debugmode;
     }
 
     private function loadDoc($xml)
@@ -190,18 +166,6 @@ class DacteOS extends Common
         }
     }
 
-    /**
-     * Dados brutos do PDF
-     * @return string
-     */
-    public function render()
-    {
-        if (empty($this->pdf)) {
-            $this->monta();
-        }
-        return $this->pdf->getPdf();
-    }
-
 
     protected function cteDPEC()
     {
@@ -229,7 +193,7 @@ class DacteOS extends Common
         $logoAlign = 'C'
     ) {
         $this->pdf = '';
-        $this->logomarca = $logo;
+        $this->logomarca = $this->adjustImage($logo);
         //se a orientação estiver em branco utilizar o padrão estabelecido na NF
         if ($orientacao == '') {
             if ($this->tpImp == '1') {

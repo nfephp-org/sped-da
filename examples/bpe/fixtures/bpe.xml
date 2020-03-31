@@ -1,0 +1,115 @@
+<BPe xmlns="http://www.portalfiscal.inf.br/bpe">
+    <infBPe versao="1.00" Id="BPe43180107364617000135630000000000081000000087">
+        <ide>
+            <cUF>43</cUF>
+            <tpAmb>2</tpAmb>
+            <mod>63</mod>
+            <serie>0</serie>
+            <nBP>8</nBP>
+            <cBP>00000008</cBP>
+            <cDV>7</cDV>
+            <modal>1</modal>
+            <dhEmi>2018-01-25T15:32:00-02:00</dhEmi>
+            <tpEmis>1</tpEmis>
+            <verProc>1.00</verProc>
+            <tpBPe>0</tpBPe>
+            <indPres>1</indPres>
+            <UFIni>RS</UFIni>
+            <cMunIni>4314902</cMunIni>
+            <UFFim>PR</UFFim>
+            <cMunFim>4106902</cMunFim>
+        </ide>
+        <emit>
+            <CNPJ>11111111111111</CNPJ>
+            <IE>1111111111</IE>
+            <xNome>EMPRESA TESTE</xNome>
+            <IM>516830</IM>
+            <CNAE>1234567</CNAE>
+            <CRT>1</CRT>
+            <enderEmit>
+                <xLgr>RUA ANTONIO DURO</xLgr>
+                <nro>870</nro>
+                <xBairro>CENTRO</xBairro>
+                <cMun>4303509</cMun>
+                <xMun>CAMAQUA</xMun>
+                <UF>RS</UF>
+            </enderEmit>
+            <TAR>113645236</TAR>
+        </emit>
+        <comp>
+            <xNome>JOHN DOE</xNome>
+            <CPF>11111111111</CPF>
+            <enderComp>
+                <xLgr>RUA ANDRADAS EM CURITIBANAS</xLgr>
+                <nro>870</nro>
+                <xBairro>CENTRO</xBairro>
+                <cMun>4106902</cMun>
+                <xMun>CURITIBA</xMun>
+                <UF>PR</UF>
+            </enderComp>
+        </comp>
+        <agencia>
+            <xNome>AGENCIA LTDA</xNome>
+            <CNPJ>11111111111111</CNPJ>
+            <enderAgencia>
+                <xLgr>Largo Vespasiano Julio Veppo</xLgr>
+                <nro>870</nro>
+                <xBairro>CENTRO</xBairro>
+                <cMun>4303509</cMun>
+                <xMun>CAMAQUA</xMun>
+                <UF>RS</UF>
+            </enderAgencia>
+        </agencia>
+        <infPassagem>
+            <cLocOrig>4314902</cLocOrig>
+            <xLocOrig>PORTO ALEGRE</xLocOrig>
+            <cLocDest>PR</cLocDest>
+            <xLocDest>CURITIBA</xLocDest>
+            <dhEmb>2018-01-31T15:00:00-02:00</dhEmb>
+            <infPassageiro>
+                <xNome>JOHN DOE</xNome>
+                <CPF>00269925074</CPF>
+                <tpDoc>1</tpDoc>
+                <nDoc>3076507718</nDoc>
+            </infPassageiro>
+        </infPassagem>
+        <infViagem>
+            <cPercurso>1</cPercurso>
+            <xPercurso>teste da descricao do percurso</xPercurso>
+            <tpViagem>00</tpViagem>
+            <tpServ>4</tpServ>
+            <tpAcomodacao>1</tpAcomodacao>
+            <tpTrecho>1</tpTrecho>
+            <dhViagem>2018-01-31T15:00:00-02:00</dhViagem>
+        </infViagem>
+        <infValorBPe>
+            <vBP>85.00</vBP>
+            <vDesconto>0.00</vDesconto>
+            <vPgto>85.00</vPgto>
+            <vTroco>0.00</vTroco>
+            <Comp>
+                <tpComp>01</tpComp>
+                <vComp>65.00</vComp>
+            </Comp>
+            <Comp>
+                <tpComp>02</tpComp>
+                <vComp>20.00</vComp>
+            </Comp>
+        </infValorBPe>
+        <imp>
+            <ICMS>
+                <ICMSSN>
+                    <CST>90</CST>
+                    <indSN>1</indSN>
+                </ICMSSN>
+            </ICMS>
+        </imp>
+        <pag>
+            <tPag>01</tPag>
+            <vPag>85.00</vPag>
+        </pag>
+    </infBPe>
+    <infBPeSupl>
+        <qrCodBPe><![CDATA[https://bpe-portal.sefazvirtual.rs.gov.br/Site/qrCode?chBPe=43180107364617000135630000000000081000000087&tpAmb=2]]></qrCodBPe>
+    </infBPeSupl>
+</BPe>

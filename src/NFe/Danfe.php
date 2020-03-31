@@ -5,9 +5,9 @@ namespace NFePHP\DA\NFe;
 use InvalidArgumentException;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
-use NFePHP\DA\Legacy\Common;
+use \NFePHP\DA\Common\DaCommon;
 
-class Danfe extends Common
+class Danfe extends DaCommon
 {
 
     /**
@@ -75,11 +75,6 @@ class Danfe extends Common
      */
     protected $xml;
     /**
-     * path para logomarca em jpg
-     * @var string
-     */
-    protected $logomarca = '';
-    /**
      * mesagens de erro
      * @var string
      */
@@ -94,12 +89,15 @@ class Danfe extends Common
      * P-Retrato ou L-Paisagem
      * @var string
      */
-    protected $orientacao = 'P';
+    protected $orientacao = null;
     /**
      * formato do papel
      * @var string
      */
     protected $papel = 'A4';
+    protected $margSup = 2;
+    protected $margEsq = 2;
+    protected $margInf = 2;
     /**
      * Nome da Fonte para gerar o DANFE
      * @var string
@@ -286,31 +284,9 @@ class Danfe extends Common
      */
     public function __construct($xml)
     {
-        $this->debugMode();
         $this->loadDoc($xml);
     }
-    
-    /**
-     * Ativa ou desativa o modo debug
-     * @param bool $activate
-     * @return bool
-     */
-    public function debugMode($activate = null)
-    {
-        if (isset($activate) && is_bool($activate)) {
-            $this->debugmode = $activate;
-        }
-        if ($this->debugmode) {
-            //ativar modo debug
-            error_reporting(E_ALL);
-            ini_set('display_errors', 'On');
-        } else {
-            //desativar modo debug
-            error_reporting(0);
-            ini_set('display_errors', 'Off');
-        }
-        return $this->debugmode;
-    }
+
 
     /**
      * Add the credits to the integrator in the footer message
@@ -320,18 +296,6 @@ class Danfe extends Common
     {
         $this->creditos = trim($message);
     }
-    
-    /**
-     * Dados brutos do PDF
-     * @return string
-     */
-    public function render()
-    {
-        if (empty($this->pdf)) {
-            $this->monta();
-        }
-        return $this->pdf->getPdf();
-    }
 
     /**
      * monta
@@ -340,34 +304,23 @@ class Danfe extends Common
      * A definição de margens e posições iniciais para a impressão são estabelecidas
      * pelo conteúdo da funçao e podem ser modificados.
      *
-     * @param  string $orientacao (Opcional) Estabelece a orientação da impressão
-     *  (ex. P-retrato), se nada for fornecido será usado o padrão da NFe
-     * @param  string $papel      (Opcional) Estabelece o tamanho do papel (ex. A4)
+
      * @return string O ID da NFe numero de 44 digitos extraido do arquivo XML
      */
     public function monta(
         $logo = '',
-        $orientacao = '',
-        $papel = 'A4',
-        $logoAlign = 'C',
-        $depecNumReg = '',
-        $margSup = 2,
-        $margEsq = 2,
-        $margInf = 2
+        $depecNumReg = null
     ) {
         $this->pdf = '';
-        $this->logomarca = $logo;
+        $this->logomarca = $this->adjustImage($logo);
         //se a orientação estiver em branco utilizar o padrão estabelecido na NF
-        if ($orientacao == '') {
+        if (empty($this->orientacao)) {
             if ($this->tpImp == '2') {
-                $orientacao = 'L';
+                $this->orientacao = 'L';
             } else {
-                $orientacao = 'P';
+                $this->orientacao = 'P';
             }
         }
-        $this->orientacao = $orientacao;
-        $this->papel = $papel;
-        $this->logoAlign = $logoAlign;
         $this->numero_registro_dpec = $depecNumReg;
         //instancia a classe pdf
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
@@ -375,9 +328,9 @@ class Danfe extends Common
         //margem esquerda. A margem inferior *não* existe na FPDF, é definida aqui
         //apenas para controle se necessário ser maior do que a margem superior
         // posição inicial do conteúdo, a partir do canto superior esquerdo da página
-        $xInic = $margEsq;
+        $xInic = $this->margEsq;
         if ($this->orientacao == 'P') {
-            if ($papel == 'A4') {
+            if ($this->papel == 'A4') {
                 $this->maxW = 210;
                 $this->maxH = 297;
             }
@@ -385,7 +338,7 @@ class Danfe extends Common
             if ($papel == 'A4') {
                 $this->maxW = 297;
                 $this->maxH = 210;
-                $xInic = $margEsq+10;
+                $xInic = $this->margEsq+10;
                 //se paisagem multiplica a largura do canhoto pela quantidade de canhotos
                 //$this->wCanhoto *= $this->qCanhoto;
             }
@@ -393,14 +346,14 @@ class Danfe extends Common
         //total inicial de paginas
         $totPag = 1;
         //largura imprimivel em mm: largura da folha menos as margens esq/direita
-        $this->wPrint = $this->maxW-($margEsq * 2);
+        $this->wPrint = $this->maxW-($this->margEsq * 2);
         //comprimento (altura) imprimivel em mm: altura da folha menos as margens
         //superior e inferior
-        $this->hPrint = $this->maxH-$margSup-$margInf;
+        $this->hPrint = $this->maxH-$this->margSup-$this->margInf;
         // estabelece contagem de paginas
         $this->pdf->aliasNbPages();
         // fixa as margens
-        $this->pdf->setMargins($margEsq, $margSup);
+        $this->pdf->setMargins($this->margEsq, $this->margSup);
         $this->pdf->setDrawColor(0, 0, 0);
         $this->pdf->setFillColor(255, 255, 255);
         // inicia o documento
@@ -613,13 +566,13 @@ class Danfe extends Common
         //montagem da primeira página
         $pag = 1;
         
-        $x = $margEsq;
-        $y = $margSup;
+        $x = $this->margEsq;
+        $y = $this->margSup;
         //coloca o(s) canhoto(s) da NFe
         if ($this->orientacao == 'P') {
-            $y = $this->canhoto($margEsq, $margSup);
+            $y = $this->canhoto($this->margEsq, $this->margSup);
         } else {
-            $this->canhoto($margEsq, $margSup);
+            $this->canhoto($this->margEsq, $this->margSup);
             $x = 25;
         }
         //$x = $xInic;
@@ -948,11 +901,6 @@ class Danfe extends Common
         // coloca o logo
         if (!empty($this->logomarca)) {
             $logoInfo = getimagesize($this->logomarca);
-            $type = strtolower(explode('/', $logoInfo['mime'])[1]);
-            if ($type == 'png') {
-                $this->logomarca = $this->imagePNGtoJPG($this->logomarca);
-                $type == 'jpg';
-            }
             //largura da imagem em mm
             $logoWmm = ($logoInfo[0]/72)*25.4;
             //altura da imagem em mm
@@ -992,7 +940,7 @@ class Danfe extends Common
                 $tw = $w;
             }
             $type = (substr($this->logomarca, 0, 7) === 'data://') ? 'jpg' : null;
-            $this->pdf->Image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, $type);
+            $this->pdf->Image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, 'jpeg');
         } else {
             $x1 = $x;
             $y1 = round($h/3+$y, 0);
@@ -2949,7 +2897,10 @@ class Danfe extends Common
                 $this->pdf->textBox($x, $y, $w9, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
                 $x += $w9;
                 //Valor do Desconto
-                $texto = number_format($prod->getElementsByTagName("vDesc")->item(0)->nodeValue, 2, ",", ".");
+                $vdesc = !empty($prod->getElementsByTagName("vDesc")->item(0)->nodeValue)
+                    ? $prod->getElementsByTagName("vDesc")->item(0)->nodeValue : 0;
+                    
+                $texto = number_format($vdesc, 2, ",", ".");
                 $this->pdf->textBox($x, $y, $w10, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
                 //Valor da Base de calculo
                 $x += $w10;
@@ -3749,16 +3700,5 @@ class Danfe extends Common
             $this->tpImp = $this->getTagValue($this->ide, "tpImp");
             $this->infProt = $this->dom->getElementsByTagName("infProt")->item(0);
         }
-    }
-    
-    private function imagePNGtoJPG($original)
-    {
-        $image = imagecreatefrompng($original);
-        ob_start();
-        imagejpeg($image, null, 100);
-        imagedestroy($image);
-        $stringdata = ob_get_contents(); // read from buffer
-        ob_end_clean();
-        return 'data://text/plain;base64,'.base64_encode($stringdata);
     }
 }

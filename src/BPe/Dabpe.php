@@ -19,11 +19,11 @@ use Exception;
 use InvalidArgumentException;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
-use NFePHP\DA\Legacy\Common;
+use NFePHP\DA\Common\DaCommon;
 use Com\Tecnick\Barcode\Barcode;
 use DateTime;
 
-class Dabpe extends Common
+class Dabpe extends DaCommon
 {
     protected $papel;
     protected $paperwidth = 80;
@@ -66,40 +66,18 @@ class Dabpe extends Common
     protected $protBPe;
     protected $ICMSSN;
     protected $dhCont;
+    protected $cUF;
 
     /**
      * __contruct
      *
      * @param string $docXML
-     * @param string $sPathLogo
-     * @param string $mododebug
-     * @param string $idToken
-     * @param string $Token
      */
     public function __construct(
-        $docXML,
-        $sPathLogo = '',
-        $mododebug = 0,
-        // habilita os erros do sistema
-        $idToken = '',
-        $emitToken = '',
-        $urlQR = ''
+        $docXML
     ) {
-        if (is_numeric($mododebug)) {
-            $this->debugMode = $mododebug;
-        }
-        if ($this->debugMode) {
-            //ativar modo debug
-            error_reporting(E_ALL);
-            ini_set('display_errors', 'On');
-        } else {
-            //desativar modo debug
-            error_reporting(0);
-            ini_set('display_errors', 'Off');
-        }
+        
         $this->xml = $docXML;
-        $this->logomarca = $sPathLogo;
-
         $this->fontePadrao = empty($fonteDABPE) ? 'Times' : $fonteDABPE;
         $this->aFontTit = array('font' => $this->fontePadrao, 'size' => 9, 'style' => 'B');
         $this->aFontTex = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
@@ -124,6 +102,7 @@ class Dabpe extends Common
             $this->protBPe = $this->dom->getElementsByTagName("protBPe")->item(0);
             $this->ICMSSN = $this->dom->getElementsByTagName("ICMSSN")->item(0);
             $this->dhCont = $this->getTagValue($this->ide, "dhCont") ?? '';
+            $this->cUF = $this->getTagValue($this->ide, "cUF") ?? '';
         }
         $this->qrCodBPe = !empty($this->dom->getElementsByTagName('qrCodBPe')->item(0)->nodeValue)
             ? $this->dom->getElementsByTagName('qrCodBPe')->item(0)->nodeValue : null;
@@ -133,6 +112,22 @@ class Dabpe extends Common
             throw new InvalidArgumentException("O xml do DOCUMENTO deve ser uma BP-e modelo 63");
         }
     }
+    
+    /**
+     * Renderiza o pdf e retorna como raw
+     *
+     * @return string
+     */
+    public function render(
+        $logo = '',
+        $depecNumReg = ''
+    ) {
+        if (empty($this->pdf)) {
+            $this->monta($logo);
+        }
+        return $this->pdf->getPdf();
+    }
+
 
     protected function urlConsulta($uf)
     {
@@ -246,28 +241,6 @@ class Dabpe extends Common
     }
 
     /**
-     * Ativa ou desativa o modo debug
-     * @param bool $activate
-     * @return bool
-     */
-    public function debugMode($activate = null)
-    {
-        if (isset($activate) && is_bool($activate)) {
-            $this->debugmode = $activate;
-        }
-        if ($this->debugmode) {
-            //ativar modo debug
-            error_reporting(E_ALL);
-            ini_set('display_errors', 'On');
-        } else {
-            //desativar modo debug
-            error_reporting(0);
-            ini_set('display_errors', 'Off');
-        }
-        return $this->debugmode;
-    }
-
-    /**
      * Add the credits to the integrator in the footer message
      * @param string $message
      */
@@ -276,24 +249,10 @@ class Dabpe extends Common
         $this->creditos = trim($message);
     }
 
-    /**
-     * Dados brutos do PDF
-     * @return string
-     */
-    public function render()
-    {
-        if (empty($this->pdf)) {
-            $this->monta();
-        }
-        return $this->pdf->getPdf();
-    }
-
     public function monta(
-        $logo = null,
-        $depecNumReg = '',
-        $logoAlign = 'C'
+        $logo = null
     ) {
-        $this->logomarca = $logo;
+        $this->logomarca = $this->adjustImage($logo, true);
         $qtdItens = $this->Comp->length;
         $qtdPgto = $this->pag->length;
         $hMaxLinha = $this->hMaxLinha;
@@ -309,9 +268,6 @@ class Dabpe extends Common
                 ->nodeValue
             )
                 ? 'Inf. Contribuinte: '
-                . trim($this->anfaveaDANFE(
-                    $this->infAdic->getElementsByTagName('infCpl')->item(0)->nodeValue
-                ))
                 : '';
             if (!empty($this->textoAdic)) {
                 $this->textoAdic = str_replace(";", "\n", $this->textoAdic);
@@ -333,9 +289,6 @@ class Dabpe extends Common
         }
         $this->orientacao = 'P';
         $this->papel = [$this->paperwidth, $tamPapelVert];
-        $this->logoAlign = $logoAlign;
-        //$this->situacao_externa = $situacaoExterna;
-        $this->numero_registro_dpec = $depecNumReg;
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
 
         //margens do PDF, em milímetros. Obs.: a margem direita é sempre igual à
@@ -399,7 +352,7 @@ class Dabpe extends Common
         $totPag = 1;
         $pag = 1;
         $x = $xInic;
-//COLOCA CABEÇALHO
+        //COLOCA CABEÇALHO
         $y = $yInic;
         if (!empty($this->agencia)) {
             $y += $this->cabecalhoAgencia($x, $y, $hagencia, $pag, $totPag);
@@ -414,19 +367,19 @@ class Dabpe extends Common
             }
             $y += $this->cabecalhoDABPE($x, $y, $hcabecalho, $pag, $totPag) + 2;
         }
-//COLOCA CABEÇALHO SECUNDÁRIO
+        //COLOCA CABEÇALHO SECUNDÁRIO
         $y += $this->cabecalhoSecundarioDABPE($x, $y, $hcabecalhoSecundario);
-//COLOCA Componentes
+        //COLOCA Componentes
         $y += $this->produtosDABPE($x, $y, $hprodutos);
-//COLOCA TOTAL
+        //COLOCA TOTAL
         $y += $this->totalDABPE($x, $y, $hTotal);
-//COLOCA PAGAMENTOS
+        //COLOCA PAGAMENTOS
         $y += $this->pagamentosDABPE($x, $y, $hpagamentos);
-//COLOCA MENSAGEM FISCAL
+        //COLOCA MENSAGEM FISCAL
         $y += $this->fiscalDABPE($x, $y, $hmsgfiscal);
-//COLOCA QRCODE
+        //COLOCA QRCODE
         $y += $this->qrCodeDABPE($x, $y, $hQRCode);
-//adiciona as informações opcionais
+        //adiciona as informações opcionais
         if (!empty($this->textoAdic)) {
             $y = $xInic + $hcabecalho + $hcabecalhoSecundario + $hprodutos
                 + $hTotal + $hpagamentos + $hmsgfiscal + $hcliente + $hQRCode;
@@ -527,12 +480,19 @@ class Dabpe extends Common
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
         //COLOCA LOGOMARCA
-        $temLogo = !empty($this->logomarca);
-        if ($temLogo) {
+        if (!empty($this->logomarca)) {
             $xImg = $margemInterna;
-            $yImg = $margemInterna + 1;
-            $type = (substr($this->logomarca, 0, 7) === 'data://') ? 'jpg' : null;
-            $this->pdf->image($this->logomarca, $x, $y + $margemInterna, 30, 22.5, $type);
+            $logoInfo = getimagesize($this->logomarca);
+            $logoWmm = ($logoInfo[0]/72)*25.4;
+            $logoHmm = ($logoInfo[1]/72)*25.4;
+            $nImgW = 30;
+            $nImgH = round($logoHmm * ($nImgW/$logoWmm), 0);
+            if ($nImgH > 18) {
+                $nImgH = 18;
+                $nImgW = round($logoWmm * ($nImgH/$logoHmm), 0);
+            }
+            $yImg = 15;
+            $this->pdf->image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, 'jpeg');
             $xRs = ($maxW * 0.4) + $margemInterna;
             $wRs = ($maxW * 0.6);
             $alignEmit = 'L';
@@ -627,10 +587,10 @@ class Dabpe extends Common
         $hBox2 = 11;
         $origem = $this->getTagValue($this->infPassagem, "xLocOrig");
         $uforigem = $this->getTagValue($this->ide, "UFIni");
-        $texto = "\nOrigem:" . $origem . "(" . $uforigem . ")";
+        $texto = "\nOrigem: " . $origem . "(" . $uforigem . ")";
         $destino = $this->getTagValue($this->infPassagem, "xLocDest");
         $ufdestino = $this->getTagValue($this->ide, "UFFim");
-        $texto = $texto . "\nDestino:" . $destino . "(" . $ufdestino . ")";
+        $texto = $texto . "\nDestino: " . $destino . "(" . $ufdestino . ")";
         $dhViagem = $this->getTagValue($this->infViagem, "dhViagem");
         $dhViagemformatado = new \DateTime($dhViagem);
         $data = $dhViagemformatado->format('d/m/Y');
