@@ -2,35 +2,95 @@
 
 namespace NFePHP\DA\Common;
 
+/**
+ * Classe comum para a impressão em PDF do Documento Auxiliar de Bilhete de Passagem eletronico
+ *
+ * @category  Library
+ * @package   nfephp-org/sped-da
+ * @copyright 2009-2020 NFePHP
+ * @license   http://www.gnu.org/licenses/lesser.html LGPL v3 or MIT
+ * @link      http://github.com/nfephp-org/sped-da for the canonical source repository
+ * @author    Roberto L. Machado <linux at rlm dot gmail dot com>
+ */
+
 use NFePHP\DA\Legacy\Common;
 
 class DaCommon extends Common
 {
-
+    /**
+     * @var bool
+     */
     protected $debugmode;
-    protected $orientacao = 'P';
-    protected $force;
+    /**
+     * @var string
+     */
+    protected $orientacao;
+    /**
+     * @var string|array
+     */
     protected $papel = 'A4';
+    /**
+     * @var int
+     */
     protected $margsup = 2;
+    /**
+     * @var int
+     */
     protected $margesq = 2;
+    /**
+     * @var float
+     */
     protected $wPrint;
+    /**
+     * @var float
+     */
     protected $hPrint;
+    /**
+     * @var float
+     */
     protected $xIni;
+    /**
+     * @var float
+     */
     protected $yIni;
+    /**
+     * @var float
+     */
     protected $maxH;
+    /**
+     * @var float
+     */
     protected $maxW;
+    /**
+     * @var string
+     */
     protected $fontePadrao = 'times';
+    /**
+     * @var array
+     */
     protected $aFont = ['font' => 'times', 'size' => 8, 'style' => ''];
+    /**
+     * @var string
+     */
     protected $creditos;
-    protected $logomarca = '';
-    protected $logotype = 'jpg';
+    /**
+     * @var string
+     */
+    protected $logomarca;
+    /**
+     * @var string
+     */
+    protected $logoAlign = 'L';
+    /**
+     * @var \NFePHP\DA\Legacy\Pdf
+     */
+    protected $pdf;
 
     /**
      * Ativa ou desativa o modo debug
-     *
      * @param bool $activate Ativa ou desativa o modo debug
-     *
      * @return bool
+     * @throws \Exception
      */
     public function debugMode($activate = null)
     {
@@ -41,8 +101,8 @@ class DaCommon extends Common
             //ativar modo debug
             error_reporting(E_ALL);
             ini_set('display_errors', 'On');
-            set_error_handler(function (int $number, string $message, string $errfile, int $errline) {
-                throw new \Exception("Handler captured error $number: '$message' $errfile [linha:" . $errline . "]");
+            set_error_handler(function (int $errnum, string $errmsg, string $errfile, int $errline) {
+                throw new \Exception("Erro identificado $errnum: '$errmsg' $errfile [linha:" . $errline . "]");
             });
         } else {
             //desativar modo debug
@@ -58,16 +118,16 @@ class DaCommon extends Common
      * @param string $papel
      * @param int $margSup
      * @param int $margEsq
+     * @return void
      */
     public function printParameters(
-        $orientacao = 'P',
+        $orientacao = '',
         $papel = 'A4',
         $margSup = null,
-        $margEsq = null,
-        $logoAlign = null
+        $margEsq = null
     ) {
-        if ($orientação === 'P' || $orientacao === 'L') {
-            $this->force = $orientacao;
+        if ($orientacao === 'P' || $orientacao === 'L') {
+            $this->orientacao = $orientacao;
         }
         $p = strtoupper($papel);
         if ($p == 'A4' || $p == 'LEGAL') {
@@ -75,14 +135,27 @@ class DaCommon extends Common
         }
         $this->margsup = $margSup ?? 2;
         $this->margesq = $margEsq ?? 2;
+    }
+    
+    /**
+     * Set logo e sua posição
+     * @param string $logo
+     * @param string $logoAlign
+     * @param bool $mode_bw se tru converte a imagem em branco e preto
+     * @return void
+     */
+    public function logoParameters($logo, $logoAlign = null, $mode_bw = false)
+    {
         if (!empty($logoAlign)) {
             $this->logoAlign = $logoAlign;
         }
+        $this->logomarca = $this->adjustImage($logo, $mode_bw);
     }
 
     /**
      * Renderiza o pdf e retorna como raw
-     *
+     * @param string $logo
+     * @param string $depecNumReg
      * @return string
      */
     public function render(
@@ -94,12 +167,20 @@ class DaCommon extends Common
         }
         return $this->pdf->getPdf();
     }
+    
+    /**
+     * Metodo de montagem do PDF
+     * @param string $logo
+     * @param string $depecNumReg
+     */
+    protected function monta($logo = null, $depecNumReg = null)
+    {
+        //todo replaced in other classes
+    }
 
     /**
      * Add the credits to the integrator in the footer message
-     *
      * @param string $message Mensagem do integrador a ser impressa no rodapé das paginas
-     *
      * @return void
      */
     public function creditsIntegratorFooter($message = '')
@@ -108,7 +189,7 @@ class DaCommon extends Common
     }
 
     /**
-     *
+     * Seta a fonte padrão é times
      * @param string $font
      */
     public function setFontType(string $font = 'times')
@@ -118,9 +199,7 @@ class DaCommon extends Common
 
     /**
      * Seta o tamanho da fonte
-     *
      * @param int $size
-     *
      * @return void
      */
     protected function setFontSize(int $size = 8)
@@ -129,7 +208,7 @@ class DaCommon extends Common
     }
 
     /**
-     *
+     * Seta o stilo da fonte
      * @param string $style
      */
     protected function setFontStyle(string $style = '')
@@ -139,10 +218,8 @@ class DaCommon extends Common
 
     /**
      * Seta a orientação
-     *
      * @param string $force
      * @param string $tpImp
-     *
      * @return void
      */
     protected function setOrientationAndSize($force = null, $tpImp = null)
@@ -179,8 +256,18 @@ class DaCommon extends Common
         $this->hPrint = $this->maxH - $this->margsup - 5;
     }
     
+    /**
+     * Ajusta a imagem do logo
+     * @param string $logo
+     * @param bool $turn_bw
+     * @return string
+     * @throws \Exception
+     */
     protected function adjustImage($logo, $turn_bw = false)
     {
+        if (empty($logo)) {
+            return '';
+        }
         if (substr($logo, 0, 24) !== 'data://text/plain;base64') {
             if (is_file($logo)) {
                 $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents($logo));
@@ -194,7 +281,7 @@ class DaCommon extends Common
         //14 = IFF, 15 = WBMP, 16 = XBM
         $type = $logoInfo[2];
         if ($type != '2' && $type != '3') {
-            throw new Exception('O formato da imagem não é aceitável! Somente PNG ou JPG podem ser usados.');
+            throw new \Exception('O formato da imagem não é aceitável! Somente PNG ou JPG podem ser usados.');
         }
         if ($type == '3') { //3 = PNG
             $image = imagecreatefrompng($logo);
@@ -212,6 +299,11 @@ class DaCommon extends Common
         return $logo;
     }
     
+    /**
+     * Cria uma imagem JPEG com o objeto GD
+     * @param resource $image
+     * @return string
+     */
     private function getImageStringFromObject($image)
     {
         ob_start();
