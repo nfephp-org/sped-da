@@ -25,12 +25,9 @@ class Danfce extends DaCommon
 {
     protected $papel;
     protected $paperwidth = 80;
-    protected $creditos;
     protected $xml; // string XML NFe
     protected $logomarca=''; // path para logomarca em jpg
     protected $formatoChave="#### #### #### #### #### #### #### #### #### #### ####";
-    protected $tpImp; //ambiente
-    protected $fontePadrao='Times';
     protected $nfeProc;
     protected $nfe;
     protected $infNFe;
@@ -63,15 +60,11 @@ class Danfce extends DaCommon
      * @param string $docXML
      */
     public function __construct(
-        $docXML = ''
+        $docXML
     ) {
         
         $this->xml = $docXML;
-        
-        $this->fontePadrao = empty($fonteDANFE) ? 'Times' : $fonteDANFE;
-        $this->aFontTit = array('font' => $this->fontePadrao, 'size' => 9, 'style' => 'B');
-        $this->aFontTex = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        
+      
         if (!empty($this->xml)) {
             $this->dom = new Dom();
             $this->dom->loadXML($this->xml);
@@ -123,32 +116,48 @@ class Danfce extends DaCommon
      * @return string
      */
     public function render(
-        $logo = '',
-        $orientacao = 'P',
-        $papel = 'A4',
-        $logoAlign = 'C',
-        $depecNumReg = ''
+        $logo = ''
     ) {
         if (empty($this->pdf)) {
-            $this->monta($logo, $depecNumReg, $logoAlign);
+            $this->monta($logo);
         }
         return $this->pdf->getPdf();
     }
     
-    public function paperWidth($width = 80)
+    /**
+     * Seta a largura do papel de impressão
+     * @param int $width
+     */
+    public function setPaperWidth($width = 80)
     {
-        if (is_int($width) && $width > 60) {
-            $this->paperwidth = $width;
-        }
-        return $this->paperwidth;
+        $this->paperwidth = $width;
     }
     
-    public function monta(
-        $logo = '',
-        $depecNumReg = '',
-        $logoAlign = 'C'
+    /**
+     * Parametros de impressão
+     * @param string $orientacao
+     * @param string $papel
+     * @param int $margSup
+     * @param int $margEsq
+     */
+    public function printParameters($orientacao = '', $papel = 'A4', $margSup = 2, $margEsq = 2)
+    {
+        //do nothing
+    }
+    
+    /**
+     *
+     * @param string $logo
+     */
+    protected function monta(
+        $logo = ''
     ) {
-        $this->logomarca = $this->adjustImage($logo, true);
+        
+        $this->aFontTit = array('font' => $this->fontePadrao, 'size' => 9, 'style' => 'B');
+        $this->aFontTex = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+        if (!empty($logo)) {
+            $this->logomarca = $this->adjustImage($logo, true);
+        }
         $qtdItens = $this->det->length;
         $qtdPgto = $this->pag->length;
         $hMaxLinha = $this->hMaxLinha;
@@ -181,9 +190,7 @@ class Danfce extends DaCommon
         }
         $this->orientacao = 'P';
         $this->papel = [$this->paperwidth, $tamPapelVert];
-        $this->logoAlign = $logoAlign;
-        //$this->situacao_externa = $situacaoExterna;
-        $this->numero_registro_dpec = $depecNumReg;
+        $this->logoAlign = 'L';
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         
         //margens do PDF, em milímetros. Obs.: a margem direita é sempre igual à

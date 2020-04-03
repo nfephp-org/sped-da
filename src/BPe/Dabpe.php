@@ -6,121 +6,229 @@ namespace NFePHP\DA\BPe;
  * Classe para a impressão em PDF do Documento Auxiliar de Bilhete de Passagem eletronico
  * NOTA: Esta classe não é a indicada para quem faz uso de impressoras térmicas ESCPOS
  *
- * @category  Library
+* @category  Library
  * @package   nfephp-org/sped-da
- * @copyright 2009-2019 NFePHP
- * @license   http://www.gnu.org/licenses/lesser.html LGPL v3
+ * @copyright 2009-2020 NFePHP
+ * @license   http://www.gnu.org/licenses/lesser.html LGPL v3 or MIT
  * @link      http://github.com/nfephp-org/sped-da for the canonical source repository
- * @author    Roberto Spadim <roberto at spadim dot com dot br>
+ * @author    Roberto L. Machado <linux at rlm dot gmail dot com>
  */
 
-
-use Exception;
+use \Exception;
 use InvalidArgumentException;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Common\DaCommon;
 use Com\Tecnick\Barcode\Barcode;
-use DateTime;
+use \DateTime;
 
 class Dabpe extends DaCommon
 {
-    protected $papel;
+    /**
+     * @var array
+     */
+    protected $aFontTit;
+    /**
+     * @var array
+     */
+    protected $aFontTex;
+    /**
+     * @var int
+     */
     protected $paperwidth = 80;
+    /**
+     * @var string
+     */
     protected $creditos;
+    /**
+     * @var string
+     */
     protected $xml; // string XML BPe
-    protected $logomarca = ''; // path para logomarca em jpg
-    protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
-    protected $debugMode = 0; //ativa ou desativa o modo de debug
-    protected $tpImp; //ambiente
-    protected $fontePadrao = 'Times';
-    protected $nfeProc;
-    protected $infBPeSupl;
-    protected $nfe;
+    /**
+     * @var \NFePHP\DA\Legacy\Dom
+     */
+    protected $dom;
+    /**
+     * @var \DOMElement
+     */
     protected $infBPe;
+    /**
+     * @var \DOMElement
+     */
     protected $ide;
-    protected $enderDest;
-    protected $ICMSTot;
-    protected $imposto;
+    /**
+     * @var \DOMElement
+     */
     protected $agencia;
+    /**
+     * @var \DOMElement
+     */
     protected $enderAgencia;
+    /**
+     * @var \DOMElement
+     */
     protected $emit;
+    /**
+     * @var \DOMElement
+     */
     protected $enderEmit;
-    protected $qrCode;
-    protected $urlChave;
-    protected $det;
-    protected $infAdic;
-    protected $textoAdic;
-    protected $tpEmis;
+    /**
+     * @var \DOMElement
+     */
+    protected $infViagem;
+    /**
+     * @var \DOMElement
+     */
+    protected $infPassagem;
+    /**
+     * @var \DOMElement
+     */
+    protected $infPassageiro;
+    /**
+     * @var \DOMElement
+     */
+    protected $infValorBPe;
+    /**
+     * @var \DOMNodeList
+     */
     protected $Comp;
+    /**
+     * @var \DOMNodeList
+     */
     protected $pag;
-    protected $vTroco;
-    protected $dest;
-    protected $imgQRCode;
-    protected $urlQR = '';
-    protected $pdf;
-    protected $margemInterna = 2;
-    protected $hMaxLinha = 9;
-    protected $hBoxLinha = 6;
-    protected $hLinha = 3;
+    /**
+     * @var \DOMElement
+     */
+    protected $infProt;
+    /**
+     * @var int
+     */
+    protected $tpEmis;
+    /**
+     * @var \DOMElement
+     */
+    protected $nBP;
+    /**
+     * @var \DOMElement
+     */
     protected $protBPe;
+    /**
+     * @var \DOMElement
+     */
     protected $ICMSSN;
+    /**
+     * @var string
+     */
     protected $dhCont;
+    /**
+     * @var string
+     */
     protected $cUF;
+    /**
+     * @var \DOMElement
+     */
+    protected $infBPeSupl;
+    /**
+     * @var string|null
+     */
+    protected $qrCodBPe;
+    /**
+     * @var string
+     */
+    protected $urlChave;
+    /**
+     * @var string
+     */
+    protected $infAdic;
+    /**
+     * @var string
+     */
+    protected $textoAdic;
+    /**
+     * @var int
+     */
+    protected $margemInterna = 2;
+    /**
+     * @var int
+     */
+    protected $hMaxLinha = 9;
+    /**
+     * @var int
+     */
+    protected $hBoxLinha = 6;
+    /**
+     * @var int
+     */
+    protected $hLinha = 3;
 
     /**
-     * __contruct
-     *
-     * @param string $docXML
+     * Construtor
+     * @param string $xml
+     * @return void
+     * @throws \Exception
      */
     public function __construct(
-        $docXML
+        $xml
     ) {
-        
-        $this->xml = $docXML;
-        $this->fontePadrao = empty($fonteDABPE) ? 'Times' : $fonteDABPE;
+        $this->xml = $xml;
         $this->aFontTit = array('font' => $this->fontePadrao, 'size' => 9, 'style' => 'B');
         $this->aFontTex = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        if (!empty($this->xml)) {
-            $this->dom = new Dom();
-            $this->dom->loadXML($this->xml);
-            $this->infBPe = $this->dom->getElementsByTagName("infBPe")->item(0);
-            $this->ide = $this->dom->getElementsByTagName("ide")->item(0);
-            $this->agencia = $this->dom->getElementsByTagName("agencia")->item(0);
-            $this->enderAgencia = $this->dom->getElementsByTagName("enderAgencia")->item(0);
-            $this->emit = $this->dom->getElementsByTagName("emit")->item(0);
-            $this->enderEmit = $this->dom->getElementsByTagName("enderEmit")->item(0);
-            $this->infViagem = $this->dom->getElementsByTagName("infViagem")->item(0);
-            $this->infPassagem = $this->dom->getElementsByTagName("infPassagem")->item(0);
-            $this->infPassageiro = $this->dom->getElementsByTagName("infPassageiro")->item(0);
-            $this->infValorBPe = $this->dom->getElementsByTagName("infValorBPe")->item(0);
-            $this->Comp = $this->dom->getElementsByTagName("Comp");
-            $this->pag = $this->dom->getElementsByTagName("pag");
-            $this->infProt = $this->dom->getElementsByTagName("infProt")->item(0);
-            $this->tpEmis = $this->dom->getElementsByTagName('tpEmis')->item(0)->nodeValue;
-            $this->nBP = $this->dom->getElementsByTagName("nBP")->item(0);
-            $this->protBPe = $this->dom->getElementsByTagName("protBPe")->item(0);
-            $this->ICMSSN = $this->dom->getElementsByTagName("ICMSSN")->item(0);
-            $this->dhCont = $this->getTagValue($this->ide, "dhCont") ?? '';
-            $this->cUF = $this->getTagValue($this->ide, "cUF") ?? '';
+        if (empty($this->xml)) {
+            throw new \Exception('É necessário passar um XML de BPe.');
         }
+        $this->dom = new Dom();
+        $this->dom->loadXML($this->xml);
+        $this->ide = $this->dom->getElementsByTagName("ide")->item(0);
+        if ($this->getTagValue($this->ide, "mod") != '63') {
+            throw new \Exception("O xml do DOCUMENTO deve ser uma BPe modelo 63");
+        }
+        $this->protBPe = $this->dom->getElementsByTagName("protBPe")->item(0);
+        $this->infBPe = $this->dom->getElementsByTagName("infBPe")->item(0);
+        $this->agencia = $this->dom->getElementsByTagName("agencia")->item(0);
+        $this->enderAgencia = $this->dom->getElementsByTagName("enderAgencia")->item(0);
+        $this->emit = $this->dom->getElementsByTagName("emit")->item(0);
+        $this->enderEmit = $this->dom->getElementsByTagName("enderEmit")->item(0);
+        $this->infViagem = $this->dom->getElementsByTagName("infViagem")->item(0);
+        $this->infPassagem = $this->dom->getElementsByTagName("infPassagem")->item(0);
+        $this->infPassageiro = $this->dom->getElementsByTagName("infPassageiro")->item(0);
+        $this->infValorBPe = $this->dom->getElementsByTagName("infValorBPe")->item(0);
+        $this->Comp = $this->dom->getElementsByTagName("Comp");
+        $this->pag = $this->dom->getElementsByTagName("pag");
+        $this->infProt = $this->dom->getElementsByTagName("infProt")->item(0);
+        $this->tpEmis = (int) $this->dom->getElementsByTagName('tpEmis')->item(0)->nodeValue;
+        $this->nBP = $this->dom->getElementsByTagName("nBP")->item(0);
+        $this->ICMSSN = !empty($this->dom->getElementsByTagName("ICMSSN")->item(0))
+            ? $this->dom->getElementsByTagName("ICMSSN")->item(0) : '';
+        $this->dhCont = $this->getTagValue($this->ide, "dhCont") ?? '';
+        $this->cUF = $this->getTagValue($this->ide, "cUF") ?? '';
+        $this->infBPeSupl = !empty($this->dom->getElementsByTagName("infBPeSupl")->item(0))
+            ? $this->dom->getElementsByTagName("infBPeSupl")->item(0) : null;
         $this->qrCodBPe = !empty($this->dom->getElementsByTagName('qrCodBPe')->item(0)->nodeValue)
             ? $this->dom->getElementsByTagName('qrCodBPe')->item(0)->nodeValue : null;
-
         $this->urlChave = $this->urlConsulta($this->cUF);
-        if ($this->getTagValue($this->ide, "mod") != '63') {
-            throw new InvalidArgumentException("O xml do DOCUMENTO deve ser uma BP-e modelo 63");
-        }
+    }
+    
+    /**
+     * Seta a largura do papel de impressão
+     * @param int $width
+     */
+    public function setPaperWidth($width = 80)
+    {
+        $this->paperwidth = $width;
+    }
+    
+    public function printParameters($orientacao = '', $papel = 'A4', $margSup = 2, $margEsq = 2)
+    {
+        //do nothing
     }
     
     /**
      * Renderiza o pdf e retorna como raw
-     *
+     * @param string $logo
      * @return string
      */
     public function render(
-        $logo = '',
-        $depecNumReg = ''
+        $logo = ''
     ) {
         if (empty($this->pdf)) {
             $this->monta($logo);
@@ -128,131 +236,111 @@ class Dabpe extends DaCommon
         return $this->pdf->getPdf();
     }
 
-
+    /**
+     * Busca a url de consulta
+     * @param string $uf
+     * @return string
+     */
     protected function urlConsulta($uf)
     {
         switch ($uf) {
             case "11": // Rondônia
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "12": //Acre
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "13": //Amazonas
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "14": //Roraima
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "15": //Pará
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "16": //Amapá
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "17": //Tocantins
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "21": //Maranhão
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "22": //Piauí
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "23": //Ceará
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "24": //Rio Grande do Norte
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "25": //Paraíba
-                return "https://www.sefaz.pb.gov.br/bpe/consulta";
+                $url = "https://www.sefaz.pb.gov.br/bpe/consulta";
                 break;
             case "26": //Pernambuco
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "27": //Alagoas
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "28": //Sergipe
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "29": //Bahia
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "31": //Minas Gerais
-                return "https://bpe.fazenda.mg.gov.br/portalbpe/sistema/consultaarg.xhtml";
+                $url = "https://bpe.fazenda.mg.gov.br/portalbpe/sistema/consultaarg.xhtml";
                 break;
             case "32": //Espírito Santo
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "33": //Rio de Janeiro
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "35": //São Paulo
-                return "https://bpe.fazenda.sp.gov.br/BPe/";
+                $url = "https://bpe.fazenda.sp.gov.br/BPe/";
                 break;
             case "41": //Paraná
-                return "http://www.sped.fazenda.pr.gov.br/modules/conteudo/bpe.php?consulta=completa";
+                $url = "http://www.sped.fazenda.pr.gov.br/modules/conteudo/bpe.php?consulta=completa";
                 break;
             case "42": //Santa Catarina(Não usa BPE)
-                return "";
+                $url = "";
                 break;
             case "43": //Rio Grande do Sul (*)
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "50": //Mato Grosso do Sul
-                return "http://www.dfe.ms.gov.br/bpe/#/consulta";
+                $url = "http://www.dfe.ms.gov.br/bpe/#/consulta";
                 break;
             case "51": //Mato Grosso
-                return "https://www.sefaz.mt.gov.br/BPe/consulta";
+                $url = "https://www.sefaz.mt.gov.br/BPe/consulta";
                 break;
             case "52": //Goiás
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             case "53": //Distrito Federal
-                return "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
-                break;
-        }
-    }
-
-    protected static function getCardName($tBand)
-    {
-        switch ($tBand) {
-            case '01':
-                $tBandNome = 'VISA';
-                break;
-            case '02':
-                $tBandNome = 'MASTERCARD';
-                break;
-            case '03':
-                $tBandNome = 'AMERICAM EXPRESS';
-                break;
-            case '04':
-                $tBandNome = 'SOROCRED';
-                break;
-            case '99':
-                $tBandNome = 'OUTROS';
+                $url = "https://dfe-portal.svrs.rs.gov.br/BPE/Consulta";
                 break;
             default:
-                $tBandNome = '';
+                $url = '';
         }
-        return $tBandNome;
+        return $url;
     }
 
     /**
-     * Add the credits to the integrator in the footer message
-     * @param string $message
+     * Monta o pdf
+     * @param string|null $logo
      */
-    public function creditsIntegratorFooter($message = '')
-    {
-        $this->creditos = trim($message);
-    }
-
-    public function monta(
+    protected function monta(
         $logo = null
     ) {
-        $this->logomarca = $this->adjustImage($logo, true);
+        if (!empty($logo)) {
+            $this->logomarca = $this->adjustImage($logo, true);
+        }
         $qtdItens = $this->Comp->length;
         $qtdPgto = $this->pag->length;
         $hMaxLinha = $this->hMaxLinha;
@@ -260,33 +348,6 @@ class Dabpe extends DaCommon
         $hLinha = $this->hLinha;
         $tamPapelVert = 190 + (($qtdItens - 1) * $hLinha) + ($qtdPgto * $hLinha);
         // verifica se existe informações adicionais
-        $this->textoAdic = '';
-        if (isset($this->infAdic)) {
-            $this->textoAdic .= !empty(
-                $this->infAdic->getElementsByTagName('infCpl')
-                ->item(0)
-                ->nodeValue
-            )
-                ? 'Inf. Contribuinte: '
-                : '';
-            if (!empty($this->textoAdic)) {
-                $this->textoAdic = str_replace(";", "\n", $this->textoAdic);
-                $alinhas = explode("\n", $this->textoAdic);
-                $numlinhasdados = 0;
-                $tempPDF = new Pdf(); // cria uma instancia temporaria da class pdf
-                $tempPDF->setFont('times', '', '8'); // seta a font do PDF
-                foreach ($alinhas as $linha) {
-                    $linha = trim($linha);
-                    $numlinhasdados += $tempPDF->wordWrap($linha, 76 - 0.2);
-                }
-                $hdadosadic = round(($numlinhasdados + 1) * $tempPDF->fontSize, 0);
-                if ($hdadosadic < 5) {
-                    $hdadosadic = 5;
-                }
-                // seta o tamanho do papel
-                $tamPapelVert += $hdadosadic;
-            }
-        }
         $this->orientacao = 'P';
         $this->papel = [$this->paperwidth, $tamPapelVert];
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
@@ -300,10 +361,8 @@ class Dabpe extends DaCommon
         // posição inicial do conteúdo, a partir do canto superior esquerdo da página
         $xInic = $margEsq;
         $yInic = $margSup;
-        $maxW = 80;
+        $maxW = $this->paperwidth;
         $maxH = $tamPapelVert;
-        //total inicial de paginas
-        $totPag = 1;
         //largura imprimivel em mm: largura da folha menos as margens esq/direita
         $this->wPrint = $maxW - ($margEsq * 2);
         //comprimento (altura) imprimivel em mm: altura da folha menos as margens
@@ -349,13 +408,11 @@ class Dabpe extends DaCommon
 
         $hUsado = $hCabecItens;
         $w2 = round($this->wPrint * 0.31, 0);
-        $totPag = 1;
-        $pag = 1;
         $x = $xInic;
         //COLOCA CABEÇALHO
         $y = $yInic;
         if (!empty($this->agencia)) {
-            $y += $this->cabecalhoAgencia($x, $y, $hagencia, $pag, $totPag);
+            $y += $this->cabecalhoAgencia($x, $y, $hagencia);
             if (!empty($this->dhCont)) {
                 $hcabecalho = $hcabecalho + ($this->hLinha * 2);
             }
@@ -365,7 +422,7 @@ class Dabpe extends DaCommon
             if (!empty($this->dhCont)) {
                 $hcabecalho = $hcabecalho + ($this->hLinha * 2);
             }
-            $y += $this->cabecalhoDABPE($x, $y, $hcabecalho, $pag, $totPag) + 2;
+            $y += $this->cabecalhoDABPE($x, $y, $hcabecalho) + 2;
         }
         //COLOCA CABEÇALHO SECUNDÁRIO
         $y += $this->cabecalhoSecundarioDABPE($x, $y, $hcabecalhoSecundario);
@@ -386,18 +443,21 @@ class Dabpe extends DaCommon
             $hInfAdic = 0;
             $y = $this->infAdic($x, $y, $hInfAdic);
         }
+        //creditos do integrador
+        $aFont = array('font' => $this->fontePadrao, 'size' => 6, 'style' => 'I');
+        $this->pdf->textBox($x, $this->hPrint-1, $this->wPrint, 3, $this->creditos, $aFont, 'T', 'L', false, '', false);
+        $texto = "Powered by NFePHP®";
+        $this->pdf->textBox($x, $this->hPrint-1, $this->wPrint, 0, $texto, $aFont, 'T', 'R', false, '');
     }
 
     /**
-     *
-     * Função para transformar o campo cdata do padrão ANFAVEA para
-     * texto imprimível
-     *
-     * @param string $cdata campo CDATA
-     * @return string conteúdo do campo CDATA como string
+     * Coloca o cabeçalho da agencia
+     * @param float $x
+     * @param float $y
+     * @param float $h
+     * @return float
      */
-
-    protected function cabecalhoAgencia($x = 0, $y = 0, $h = 0, $pag = '1', $totPag = '1')
+    protected function cabecalhoAgencia($x = 0.0, $y = 0.0, $h = 0.0)
     {
         $hTotal = 0;
         $agenciaRazao = $this->getTagValue($this->agencia, "xNome");
@@ -442,13 +502,18 @@ class Dabpe extends DaCommon
         $texto .= "\n____________________________________________________";
         $hTotal += $this->hLinha;
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-
-        $this->pdf->textBox($xRs, $y, $wRs, $hTotal, $texto, $aFont, 'T', $alignEmit, 0, '', false);
-
+        $this->pdf->textBox($xRs, $y, $wRs, $hTotal, $texto, $aFont, 'T', $alignEmit, false, '', false);
         return $hTotal;
     }
-
-    protected function cabecalhoDABPE($x = 0, $y = 0, $h = 0, $pag = '1', $totPag = '1')
+    
+    /**
+     * Monta o cabeçalho do BPe
+     * @param float $x
+     * @param float $y
+     * @param float $h
+     * @return float
+     */
+    protected function cabecalhoDABPE($x = 0.0, $y = 0.0, $h = 0.0)
     {
         $hTotal = 0;
         $emitRazao = $this->getTagValue($this->emit, "xNome");
@@ -485,7 +550,7 @@ class Dabpe extends DaCommon
             $logoInfo = getimagesize($this->logomarca);
             $logoWmm = ($logoInfo[0]/72)*25.4;
             $logoHmm = ($logoInfo[1]/72)*25.4;
-            $nImgW = 30;
+            $nImgW = $this->paperwidth/2 - ($this->paperwidth/10 + 4);
             $nImgH = round($logoHmm * ($nImgW/$logoWmm), 0);
             if ($nImgH > 18) {
                 $nImgH = 18;
@@ -507,8 +572,8 @@ class Dabpe extends DaCommon
         $hRazao = ceil(strlen($emitRazao) / $limiteChar) * $this->hLinha;
 
         $hTotal += $hRazao;
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
-        $this->pdf->textBox($xRs, $y, $wRs, $hRazao, $emitRazao, $aFont, 'T', $alignEmit, 0, '', false);
+        $aFont = ['font' => $this->fontePadrao, 'size' => 8, 'style' => 'B'];
+        $this->pdf->textBox($xRs, $y, $wRs, $hRazao, $emitRazao, $aFont, 'T', $alignEmit, false, '', false);
 
         $y += $hRazao;
 
@@ -539,34 +604,34 @@ class Dabpe extends DaCommon
             if (empty($this->logomarca)) {
                 $texto = $texto . $linhaDabpe . "\n____________________________________________________";
                 $h = $h + $this->hLinha;
-                $this->pdf->textBox($xRs, $y, $wRs, $h, $texto, $aFont, 'T', $alignEmit, 0, '', false);
+                $this->pdf->textBox($xRs, $y, $wRs, $h, $texto, $aFont, 'T', $alignEmit, false, '', false);
             } else {
                 if (empty($this->agencia)) {
                     $y += $this->hLinha;
                     $hTotal += $this->hLinha;
                 }
-                $this->pdf->textBox($xRs, $y, $wRs, $h, $texto, $aFont, 'T', $alignEmit, 0, '', false);
+                $this->pdf->textBox($xRs, $y, $wRs, $h, $texto, $aFont, 'T', $alignEmit, false, '', false);
                 $h = $h + $this->hLinha * 2;
                 $y += $h;
                 $texto = $linhaDabpe . "\n____________________________________________________";
-                $this->pdf->textBox($x, $y, $maxW, $this->hLinha, $texto, $aFont, 'T', 'C', 0, '', false);
+                $this->pdf->textBox($x, $y, $maxW, $this->hLinha, $texto, $aFont, 'T', 'C', false, '', false);
                 $hTotal += $this->hLinha * 2;
             }
         } else {
             $texto = $texto . "\n____________________________________________________";
-            $this->pdf->textBox($xRs, $y, $wRs, $this->hLinha, $texto, $aFont, 'T', $alignEmit, 0, '', false);
+            $this->pdf->textBox($xRs, $y, $wRs, $this->hLinha, $texto, $aFont, 'T', $alignEmit, false, '', false);
             $texto = "\nEMITIDA EM CONTINGÊNCIA\nPendente de autorização";
             $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
             $this->pdf->textBox(
                 $xRs,
                 $h - $this->hLinha,
                 $wRs,
-                $this->hlinha * 2,
+                $this->hLinha * 2,
                 $texto,
                 $aFont,
                 'T',
                 $alignEmit,
-                0,
+                false,
                 '',
                 false
             );
@@ -575,7 +640,14 @@ class Dabpe extends DaCommon
         return $hTotal;
     }
 
-    protected function cabecalhoSecundarioDABPE($x = 0, $y = 0, $h = 0)
+    /**
+     * Cabeçalho secundário com os dados da viagem
+     * @param float $x
+     * @param float $y
+     * @param float $h
+     * @return float
+     */
+    protected function cabecalhoSecundarioDABPE($x = 0.0, $y = 0.0, $h = 0.0): float
     {
         $hTotal = 0;
         $margemInterna = $this->margemInterna;
@@ -597,15 +669,16 @@ class Dabpe extends DaCommon
         $hora = $dhViagemformatado->format('H:i:s');
         $texto = "\n" . $texto . "\nData: " . $data . " | Horário: " . $hora;
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
-        $this->pdf->textBox($x, $y, $w, $hBox1, $texto, $aFont, 'T', 'C', 0, '', false);
+        $this->pdf->textBox($x, $y, $w, $hBox1, $texto, $aFont, 'T', 'C', false, '', false);
         $hTotal += $hBox1;
-        if ($this->getTagValue($this->infViagem, "prefixo") !== null) {
+        if (!empty($this->getTagValue($this->infViagem, "prefixo"))) {
             $prefixo = $this->getTagValue($this->infViagem, "prefixo");
         } else {
             $prefixo = "";
         }
         $linha = $this->getTagValue($this->infViagem, "xPercurso");
         $tpServ = $this->getTagValue($this->infViagem, "tpServ");
+        $tipo = "Não Definido";
         switch ($tpServ) {
             case "1":
                 $tipo = "Convencional com sanitário";
@@ -651,7 +724,7 @@ class Dabpe extends DaCommon
             . "\n_____________________________________________________________";
         $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => 'B');
         $y += $hBox1;
-        $this->pdf->textBox($x, $y, $w, $hBox2, $texto, $aFont, 'T', 'C', 0, '', false);
+        $this->pdf->textBox($x, $y, $w, $hBox2, $texto, $aFont, 'T', 'C', false, '', false);
         $hTotal += $hBox2;
         return $hTotal;
     }
@@ -708,11 +781,11 @@ class Dabpe extends DaCommon
                     $aFontComp,
                     'T',
                     'L',
-                    0,
+                    false,
                     '',
                     false
                 );
-                $vComp = number_format($this->getTagValue($item, "vComp"), 2, ",", ".");
+                $vComp = number_format((float) $this->getTagValue($item, "vComp"), 2, ",", ".");
                 //COLOCA VALOR DO COMPONENTE
 
                 $xBoxValor = $x + $wBoxCompEsq;
@@ -726,7 +799,7 @@ class Dabpe extends DaCommon
                     $aFontComp,
                     'T',
                     'R',
-                    0,
+                    false,
                     '',
                     false
                 );
@@ -747,36 +820,36 @@ class Dabpe extends DaCommon
         $xValor = $x + $wColEsq;
         $qtdItens = $this->Comp->length;
 
-        $vBP = number_format($this->getTagValue($this->infValorBPe, "vBP"), 2, ",", ".");
-        $vDesconto = number_format($this->getTagValue($this->infValorBPe, "vDesconto"), 2, ",", ".");
-        $vTroco = number_format($this->getTagValue($this->infValorBPe, "vTroco"), 2, ",", ".");
-        $vPgto = number_format($this->getTagValue($this->infValorBPe, "vPgto"), 2, ",", ".");
+        $vBP = number_format((float) $this->getTagValue($this->infValorBPe, "vBP"), 2, ",", ".");
+        $vDesconto = number_format((float) $this->getTagValue($this->infValorBPe, "vDesconto"), 2, ",", ".");
+        $vTroco = number_format((float) $this->getTagValue($this->infValorBPe, "vTroco"), 2, ",", ".");
+        $vPgto = number_format((float) $this->getTagValue($this->infValorBPe, "vPgto"), 2, ",", ".");
 
 
         $texto = "Valor total R$";
         $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
-        $this->pdf->textBox($x, $y, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
+        $this->pdf->textBox($x, $y, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', false, '', false);
         $texto = $vBP;
         $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
-        $this->pdf->textBox($xValor, $y, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', 0, '', false);
+        $this->pdf->textBox($xValor, $y, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', false, '', false);
         $hTotal += $this->hLinha;
         $y += $this->hLinha;
 
         $texto = "Desconto R$";
         $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
-        $this->pdf->textBox($x, $y, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
+        $this->pdf->textBox($x, $y, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', false, '', false);
         $texto = $vDesconto;
         $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
-        $this->pdf->textBox($xValor, $y, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', 0, '', false);
+        $this->pdf->textBox($xValor, $y, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', false, '', false);
         $y += $this->hLinha;
         $hTotal += $this->hLinha;
 
         $texto = "Valor a Pagar R$";
         $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => 'B'];
-        $this->pdf->textBox($x, $y, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
+        $this->pdf->textBox($x, $y, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', false, '', false);
         $texto = $vPgto;
         $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => 'B'];
-        $this->pdf->textBox($xValor, $y, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', 0, '', false);
+        $this->pdf->textBox($xValor, $y, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', false, '', false);
         $hTotal += $this->hLinha;
         return $hTotal;
     }
@@ -805,36 +878,18 @@ class Dabpe extends DaCommon
                 ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'B'],
                 'T',
                 'C',
-                0,
+                false,
                 ''
             );
             $this->pdf->setTextColor(0, 0, 0);
         }
-//
-//        if ($this->checkNaoAutorizada()) {
-//            //'' Não Aprovada
-//            $this->pdf->setTextColor(255, 0, 0);
-//            $texto = "SEM VALOR FISCAL";
-//            $this->pdf->textBox(
-//                $x,
-//                $y,
-//                $w,
-//                $this->hLinha*2,
-//                $texto,
-//                ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'B'],
-//                'T',
-//                'C',
-//                0,
-//                ''
-//            );
-//            $this->pdf->setTextColor(0, 0, 0);
-//        }
+
 
         if ($this->checkSubstituto()) {
             //uso denegado
             $this->pdf->setTextColor(255, 0, 0);
             $texto = "BPe Substituto";
-            $this->pdf->textBox($x, $y - 25, $w, $h, $texto, $aFontTit, 'T', 'C', 0, '');
+            $this->pdf->textBox($x, $y - 25, $w, $h, $texto, $aFontTit, 'T', 'C', false, '');
             $this->pdf->SetTextColor(0, 0, 0);
         }
 
@@ -845,14 +900,14 @@ class Dabpe extends DaCommon
         $dhEmilocal = new \DateTime($dhEmi);
         $dhEmiLocalFormat = $dhEmilocal->format('d/m/Y H:i:s');
         $texto = "Consulte pela chave de acesso em \n";
-        $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTex, 'T', 'C', 0, '', false);
+        $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTex, 'T', 'C', false, '', false);
         $texto = $this->urlConsulta($this->getTagValue($this->ide, 'cUF'));
         $y += $this->hLinha;
-        $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTit, 'T', 'C', 0, '', false);
+        $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTit, 'T', 'C', false, '', false);
 
         $texto = $chBPe ?? 'Chave Não Localizada no XML';
         $y += $this->hLinha;
-        $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTex, 'T', 'C', 0, '', false);
+        $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTex, 'T', 'C', false, '', false);
 
         $y += $this->hLinha;
         $hTex1 = $hLinha * 2;
@@ -861,7 +916,7 @@ class Dabpe extends DaCommon
             $xNome = $this->getTagValue($this->infPassageiro, "xNome");
             $nDoc = $this->getTagValue($this->infPassageiro, "nDoc");
             $texto = "PASSAGEIRO: DOC: " . $nDoc . " - " . $xNome;
-            $this->pdf->textBox($x, $y, $w, $hLinha * 2, $texto, $aFontTex, 'T', 'C', 0, '', false);
+            $this->pdf->textBox($x, $y, $w, $hLinha * 2, $texto, $aFontTex, 'T', 'C', false, '', false);
             $y += $this->hLinha;
         }
 
@@ -900,33 +955,35 @@ class Dabpe extends DaCommon
                 case "99":
                     $xtpDesconto = "Outros";
                     break;
+                default:
+                    $xtpDesconto = '';
             }
             $y += $this->hLinha * 3;
             $texto = "TIPO DE DESCONTO: " . $xtpDesconto;
-            $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTex, 'T', 'C', 0, '', false);
+            $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTex, 'T', 'C', false, '', false);
         }
 
         $texto = "BP-e nº " . $nBP . " Série " . $serieBPe . " " . $dhEmiLocalFormat;
         $y += $this->hLinha;
-        $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTit, 'T', 'C', 0, '', false);
+        $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTit, 'T', 'C', false, '', false);
         $y += $this->hLinha * 2;
         if (empty($this->dhCont)) {
             $nProt = $this->getTagValue($this->protBPe, "nProt");
             $dhRecbto = $this->getTagValue($this->protBPe, "dhRecbto");
             $dhRecbto = new \DateTime($dhRecbto);
             $texto = "Protocolo de autorização: " . $nProt;
-            $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTex, 'T', 'C', 0, '', false);
+            $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTex, 'T', 'C', false, '', false);
             $y += $this->hLinha * 2;
             $texto = "\nData de autorização: " . $dhRecbto->format('d/m/Y H:i:s');
-            $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTex, 'T', 'C', 0, '', false);
+            $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTex, 'T', 'C', false, '', false);
         } else {
             $texto = "EMITIDA EM CONTINGÊNCIA";
             $aFontTex = ['font' => $this->fontePadrao, 'size' => 12, 'style' => 'B'];
-            $this->pdf->textBox($x, $yTex3 + $hLinha, $w, $hLinha, $texto, $aFontTex, 'T', 'C', 0, '', false);
+            $this->pdf->textBox($x, $y + $hLinha, $w, $hLinha, $texto, $aFontTex, 'T', 'C', false, '', false);
             $yTex4 = $y + ($hLinha * 8);
             $texto = "\nPendente de autorização ";
             $aFontTex = ['font' => $this->fontePadrao, 'size' => 8, 'style' => ''];
-            $this->pdf->textBox($x, $yTex4 + $hLinha, $w, $hLinha, $texto, $aFontTex, 'T', 'C', 0, '', false);
+            $this->pdf->textBox($x, $yTex4 + $hLinha, $w, $hLinha, $texto, $aFontTex, 'T', 'C', false, '', false);
         }
     }
 
@@ -971,8 +1028,8 @@ class Dabpe extends DaCommon
         $dhRecbto = '';
         $nProt = '';
         if (isset($this->infBPeSupl)) {
-            $nProt = $this->getTagValue($this->nfeProc, "nProt");
-            $dhRecbto = $this->getTagValue($this->nfeProc, "dhRecbto");
+            $nProt = $this->getTagValue($this->infProt, "nProt");
+            $dhRecbto = $this->getTagValue($this->infProt, "dhRecbto");
         }
 
         $barcode = new Barcode();
@@ -1008,7 +1065,7 @@ class Dabpe extends DaCommon
                 $aFontTex,
                 'T',
                 'C',
-                0,
+                false,
                 '',
                 false
             );
@@ -1026,18 +1083,10 @@ class Dabpe extends DaCommon
         $aFontTex = ['font' => $this->fontePadrao, 'size' => 8, 'style' => ''];
         // seta o textbox do titulo
         $texto = "INFORMAÇÃO ADICIONAL";
-        $heigthText = $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTit, 'C', 'C', 0, '', false);
+        $heigthText = $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTit, 'C', 'C', false, '', false);
 
         // seta o textbox do texto adicional
-        $this->pdf->textBox($x, $y + 3, $w - 2, $hLinha - 3, $this->textoAdic, $aFontTex, 'T', 'L', 0, '', false);
-    }
-
-    public function paperWidth($width = 80)
-    {
-        if (is_int($width) && $width > 60) {
-            $this->paperwidth = $width;
-        }
-        return $this->paperwidth;
+        $this->pdf->textBox($x, $y + 3, $w - 2, $hLinha - 3, $this->textoAdic, $aFontTex, 'T', 'L', false, '', false);
     }
 
     protected function pagamentosDABPE($x = 0, $y = 0, $h = 0)
@@ -1055,11 +1104,11 @@ class Dabpe extends DaCommon
         $aFontPgto = array('font' => $this->fontePadrao, 'size' => 7, 'style' => '');
         $wBoxEsq = $w * 0.7;
         $texto = "FORMA PAGAMENTO";
-        $this->pdf->textBox($x, $y, $wBoxEsq, $this->hLinha, $texto, $aFontPgto, 'T', 'L', 0, '', false);
+        $this->pdf->textBox($x, $y, $wBoxEsq, $this->hLinha, $texto, $aFontPgto, 'T', 'L', false, '', false);
         $wBoxDir = $w * 0.3;
         $xBoxDescricao = $x + $wBoxEsq;
         $texto = "VALOR PAGO";
-        $this->pdf->textBox($xBoxDescricao, $y, $wBoxDir, $hLinha, $texto, $aFontPgto, 'T', 'R', 0, '', false);
+        $this->pdf->textBox($xBoxDescricao, $y, $wBoxDir, $hLinha, $texto, $aFontPgto, 'T', 'R', false, '', false);
         $y += $this->hLinha;
         $hTotal += $this->hLinha;
 
@@ -1086,10 +1135,12 @@ class Dabpe extends DaCommon
                     case "99":
                         $tPagNome = "Outros";
                         break;
+                    default:
+                        $tPagNome = '';
                 }
-                $vPag = number_format($this->getTagValue($pagI, "vPag"), 2, ",", ".");
+                $vPag = number_format((float) $this->getTagValue($pagI, "vPag"), 2, ",", ".");
                 $texto = $tPagNome;
-                $this->pdf->textBox($x, $y, $wBoxEsq, $hLinha, $texto, $aFontPgto, 'T', 'L', 0, '', false);
+                $this->pdf->textBox($x, $y, $wBoxEsq, $hLinha, $texto, $aFontPgto, 'T', 'L', false, '', false);
                 //COLOCA PRODUTO DESCRIÇÃO
                 $xBoxDescricao = $wBoxEsq + $x;
                 $texto = $vPag;
@@ -1102,7 +1153,7 @@ class Dabpe extends DaCommon
                     $aFontPgto,
                     'T',
                     'R',
-                    0,
+                    false,
                     '',
                     false
                 );
@@ -1113,9 +1164,9 @@ class Dabpe extends DaCommon
             }
         }
         $texto = "Troco";
-        $this->pdf->textBox($x, $y, $wBoxEsq, $this->hLinha, $texto, $aFontPgto, 'T', 'L', 0, '', false);
+        $this->pdf->textBox($x, $y, $wBoxEsq, $this->hLinha, $texto, $aFontPgto, 'T', 'L', false, '', false);
 
-        $vTroco = number_format($this->getTagValue($this->infValorBPe, "vTroco"), 2, ",", ".");
+        $vTroco = number_format((float) $this->getTagValue($this->infValorBPe, "vTroco"), 2, ",", ".");
         $texto = $vTroco;
         $this->pdf->textBox(
             $xBoxDescricao,
@@ -1126,7 +1177,7 @@ class Dabpe extends DaCommon
             $aFontPgto,
             'T',
             'R',
-            0,
+            false,
             '',
             false
         );

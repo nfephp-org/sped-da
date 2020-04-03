@@ -24,22 +24,12 @@ class Daevento extends DaCommon
 {
     public $chNFe;
 
-    protected $logoAlign = 'C';
     protected $yDados = 0;
-    protected $debugmode = false;
     protected $dadosEmitente = array();
-    protected $pdf;
     protected $xml;
     protected $errMsg = '';
     protected $errStatus = false;
-    protected $orientacao = 'P';
-    protected $papel = 'A4';
-    protected $destino = 'I';
-    protected $pdfDir = '';
-    protected $fontePadrao = 'Times';
     protected $version = '0.1.4';
-    protected $wPrint;
-    protected $hPrint;
     protected $wCanhoto;
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     protected $id;
@@ -63,7 +53,6 @@ class Daevento extends DaCommon
     private $infEvento;
     private $retEvento;
     private $rinfEvento;
-    protected $creditos;
 
     /**
      * __construct
@@ -172,22 +161,18 @@ class Daevento extends DaCommon
      * A definição de margens e posições iniciais para a impressão são estabelecidas no
      * pelo conteúdo da funçao e podem ser modificados.
      *
-     * @param  string $orientacao (Opcional) Estabelece a orientação da impressão (ex. P-retrato),
-     *  se nada for fornecido será usado o padrão da NFe
-     * @param  string $papel      (Opcional) Estabelece o tamanho do papel (ex. A4)
+     * @param  string $logo
      * @return string O ID do evento extraido do arquivo XML
      */
-    public function monta(
-        $logo = null,
-        $orientacao = 'P',
-        $papel = 'A4',
-        $logoAlign = 'C'
+    protected function monta(
+        $logo = ''
     ) {
-        $this->logomarca = $this->adjustImage($logo);
-        $this->fontePadrao = 'Times';
-        $this->orientacao = $orientacao;
-        $this->papel = $papel;
-        $this->logoAlign = $logoAlign;
+        if (!empty($logo)) {
+            $this->logomarca = $this->adjustImage($logo);
+        }
+        if (empty($this->orientacao)) {
+            $this->orientacao = 'P';
+        }
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         if ($this->orientacao == 'P') {
             // margens do PDF

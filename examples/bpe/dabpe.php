@@ -6,14 +6,17 @@ require_once '../../bootstrap.php';
 use NFePHP\DA\BPe\Dabpe;
 
 try {
-    $docxml = file_get_contents(__DIR__ . "/fixtures/bpe.xml");
+    $xml = file_get_contents(__DIR__ . "/fixtures/bpe.xml");
     $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(realpath(__DIR__ . '/../images/logo.jpg')));
     //$logo = realpath(__DIR__ . '/../images/tulipas.png');
 
-    $dabpe = new Dabpe($docxml);
-    $dabpe->debugMode(true);
-    $dabpe->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webenf.com.br');
-    $pdf = $dabpe->render($logo);
+    $da = new Dabpe($xml);
+    //metodos publicos
+    $da->debugMode(true);
+    $da->setPaperWidth(80);
+    $da->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webenf.com.br');
+    //renderiza o PDF e retorna como uma scring
+    $pdf = $da->render($logo);
     header('Content-Type: application/pdf');
     echo $pdf;
 } catch (\Exception $e) {

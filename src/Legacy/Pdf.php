@@ -869,7 +869,7 @@ class Pdf extends Fpdf
         $aFont = array('font' => 'Times', 'size' => 8, 'style' => ''),
         $vAlign = 'T',
         $hAlign = 'L',
-        $border = 1,
+        $border = true,
         $link = '',
         $force = true,
         $hmax = 0,

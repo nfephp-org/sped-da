@@ -11,23 +11,11 @@ class Danfe extends DaCommon
 {
 
     /**
-     * alinhamento padrão do logo (C-Center)
-     *
-     * @var string
-     */
-    protected $logoAlign = 'C';
-    /**
      * Posição
      * @var float
      */
     protected $yDados = 0;
     /**
-     * Numero DPEC
-     *
-     * @var string
-     */
-    protected $numero_registro_dpec = '';
-     /**
      * Parâmetro para exibir ou ocultar os valores do PIS/COFINS.
      * @var boolean
      */
@@ -65,11 +53,6 @@ class Danfe extends DaCommon
      */
     protected $descProdQuebraLinha = true;
     /**
-     * objeto fpdf()
-     * @var \NFePHP\DA\Legacy\Pdf
-     */
-    protected $pdf;
-    /**
      * XML NFe
      * @var string
      */
@@ -85,25 +68,6 @@ class Danfe extends DaCommon
      */
     protected $errStatus = false;
     /**
-     * orientação da DANFE
-     * P-Retrato ou L-Paisagem
-     * @var string
-     */
-    protected $orientacao = null;
-    /**
-     * formato do papel
-     * @var string
-     */
-    protected $papel = 'A4';
-    protected $margSup = 2;
-    protected $margEsq = 2;
-    protected $margInf = 2;
-    /**
-     * Nome da Fonte para gerar o DANFE
-     * @var string
-     */
-    protected $fontePadrao = 'Times';
-    /**
      * Texto adicional da DANFE
      * @var string
      */
@@ -113,26 +77,6 @@ class Danfe extends DaCommon
      * @var float
      */
     protected $wAdic = 0;
-    /**
-     * largura imprimivel, em milímetros
-     * @var float
-     */
-    protected $wPrint;
-    /**
-     * Comprimento (altura) imprimivel, em milímetros
-     * @var float
-     */
-    protected $hPrint;
-    /**
-     * Altura maxima
-     * @var float
-     */
-    protected $maxH;
-    /**
-     * Largura maxima
-     * @var float
-     */
-    protected $maxW;
     /**
      * largura do canhoto (25mm) apenas para a formatação paisagem
      * @var float
@@ -263,16 +207,6 @@ class Danfe extends DaCommon
      * @var \DOMNode
      */
     protected $compra;
-    /**
-     * ativa ou desativa o modo de debug
-     * @var integer
-     */
-    protected $debugmode = false;
-    /**
-     * Creditos para integrador
-     * @var string
-     */
-    protected $creditos = '';
     
     protected $textadicfontsize;
 
@@ -307,9 +241,8 @@ class Danfe extends DaCommon
 
      * @return string O ID da NFe numero de 44 digitos extraido do arquivo XML
      */
-    public function monta(
-        $logo = '',
-        $depecNumReg = null
+    protected function monta(
+        $logo = ''
     ) {
         $this->pdf = '';
         $this->logomarca = $this->adjustImage($logo);

@@ -23,25 +23,25 @@ use NFePHP\DA\Common\DaCommon;
 class Daevento extends DaCommon
 {
     public $chCTe;
-    protected $logoAlign = 'C';
     protected $yDados = 0;
-    protected $dadosEmitente = array();
-    protected $pdf;
+
     protected $xml;
-    protected $logomarca = '';
     protected $errMsg = '';
     protected $errStatus = false;
-    protected $orientacao = 'P';
-    protected $papel = 'A4';
     protected $destino = 'I';
     protected $pdfDir = '';
-    protected $fontePadrao = 'Times';
     protected $version = '0.1.1';
-    protected $wPrint;
-    protected $hPrint;
     protected $wCanhoto;
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
+
     protected $id;
+    protected $dadosEmitente = array();
+    private $dom;
+    private $procEventoCTe;
+    private $evento;
+    private $infEvento;
+    private $retEvento;
+    private $rinfEvento;
     protected $tpAmb;
     protected $cOrgao;
     protected $xCorrecao;
@@ -56,13 +56,6 @@ class Daevento extends DaCommon
     protected $nProt;
     protected $tpEvento;
     protected $creditos;
-    
-    private $dom;
-    private $procEventoCTe;
-    private $evento;
-    private $infEvento;
-    private $retEvento;
-    private $rinfEvento;
     
 
     /**
@@ -131,30 +124,23 @@ class Daevento extends DaCommon
      * pelo conteúdo da funçao e podem ser modificados.
      *
      * @param string $logo base64 da logomarca
-     * @param string $orientacao (Opcional) Estabelece a orientação da impressão (ex. P-retrato),
-     *               se nada for fornecido será usado o padrão da CTe
-     * @param string $papel (Opcional) Estabelece o tamanho do papel (ex. A4)
      * @return string O ID do evento extraido do arquivo XML
      */
     protected function monta(
-        $logo = '',
-        $orientacao = '',
-        $papel = 'A4',
-        $logoAlign = 'C'
+        $logo = ''
     ) {
-        if ($orientacao == '') {
-            $orientacao = 'P';
+        if (!empty($logo)) {
+            $this->logomarca = $this->adjustImage($logo);
         }
-        $this->logomarca = $this->adjustImage($logo);
-        $this->orientacao = $orientacao;
-        $this->papel = $papel;
-        $this->logoAlign = $logoAlign;
+        if (empty($this->orientacao)) {
+            $this->orientacao = 'P';
+        }
+        // margens do PDF
+        $margSup = $this->margsup;
+        $margEsq = $this->margesq;
+        $margDir = $this->margesq;
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         if ($this->orientacao == 'P') {
-            // margens do PDF
-            $margSup = 2;
-            $margEsq = 2;
-            $margDir = 2;
             // posição inicial do relatorio
             $xInic = 1;
             $yInic = 1;
@@ -163,10 +149,6 @@ class Daevento extends DaCommon
                 $maxH = 297;
             }
         } else {
-            // margens do PDF
-            $margSup = 3;
-            $margEsq = 3;
-            $margDir = 3;
             // posição inicial do relatorio
             $xInic = 5;
             $yInic = 5;

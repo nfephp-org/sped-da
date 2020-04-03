@@ -23,18 +23,11 @@ use NFePHP\DA\Common\DaCommon;
 
 class DacteOS extends DaCommon
 {
-    protected $logoAlign = 'C';
     protected $yDados = 0;
-    protected $numero_registro_dpec = '';
-    protected $pdf;
     protected $xml;
     protected $errMsg = '';
     protected $errStatus = false;
-    protected $orientacao = 'P';
-    protected $papel = 'A4';
-    protected $fontePadrao = 'Times';
-    protected $wPrint;
-    protected $hPrint;
+
     protected $dom;
     protected $infCte;
     protected $infPercurso;
@@ -65,11 +58,13 @@ class DacteOS extends DaCommon
     protected $tpAmb;
     protected $vPrest;
     protected $infServico;
+    protected $aquav;
+    
     protected $wAdic = 150;
     protected $textoAdic = '';
     protected $formatPadrao;
     protected $formatNegrito;
-    protected $aquav;
+    
     protected $preVisualizar;
     protected $flagDocOrigContinuacao;
     protected $arrayNFe = array();
@@ -80,15 +75,14 @@ class DacteOS extends DaCommon
     protected $lota;
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     protected $margemInterna = 0;
-    protected $creditos;
 
     /**
      * __construct
      *
-     * @param string $xml Arquivo XML da CTe
+     * @param string $xml Arquivo XML da CTeOS
      */
     public function __construct(
-        $xml = ''
+        $xml
     ) {
         $this->loadDoc($xml);
     }
@@ -166,13 +160,6 @@ class DacteOS extends DaCommon
         }
     }
 
-
-    protected function cteDPEC()
-    {
-        return $this->numero_registro_dpec != '';
-    }
-
-
     /**
      * montaDACTE
      * Esta função monta a DACTE conforme as informações fornecidas para a classe
@@ -180,32 +167,29 @@ class DacteOS extends DaCommon
      * A definição de margens e posições iniciais para a impressão são estabelecidas no
      * pelo conteúdo da funçao e podem ser modificados.
      *
-     * @param  string $orientacao (Opcional) Estabelece a orientação da
-     *                impressão (ex. P-retrato), se nada for fornecido será
-     *                usado o padrão da NFe
-     * @param  string $papel (Opcional) Estabelece o tamanho do papel (ex. A4)
+     * @param  string $logo
      * @return string O ID da NFe numero de 44 digitos extraido do arquivo XML
      */
-    public function monta(
-        $logo = '',
-        $orientacao = '',
-        $papel = 'A4',
-        $logoAlign = 'C'
+    protected function monta(
+        $logo = ''
     ) {
         $this->pdf = '';
-        $this->logomarca = $this->adjustImage($logo);
+        if (!empty($logo)) {
+            $this->logomarca = $this->adjustImage($logo);
+        }
         //se a orientação estiver em branco utilizar o padrão estabelecido na NF
-        if ($orientacao == '') {
+        if ($this->orientacao == '') {
             if ($this->tpImp == '1') {
-                $orientacao = 'P';
+                $this->orientacao = 'P';
             } else {
-                $orientacao = 'P';
+                $this->orientacao = 'P';
             }
         }
-        $this->orientacao = $orientacao;
-        $this->papel = $papel;
-        $this->logoAlign = $logoAlign;
         //instancia a classe pdf
+        $margSup = $this->margsup;
+        $margEsq = $this->margesq;
+        $margDir = $this->margesq;
+        
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         $this->formatPadrao = array(
             'font' => $this->fontePadrao,
@@ -216,27 +200,19 @@ class DacteOS extends DaCommon
             'size' => 7,
             'style' => 'B');
         if ($this->orientacao == 'P') {
-            // margens do PDF
-            $margSup = 2;
-            $margEsq = 2;
-            $margDir = 2;
             // posição inicial do relatorio
             $xInic = 1;
             $yInic = 1;
-            if ($papel == 'A4') {
+            if ($this->papel == 'A4') {
                 //A4 210x297mm
                 $maxW = 210;
                 $maxH = 297;
             }
         } else {
-            // margens do PDF
-            $margSup = 3;
-            $margEsq = 3;
-            $margDir = 3;
             // posição inicial do relatorio
             $xInic = 5;
             $yInic = 5;
-            if ($papel == 'A4') {
+            if ($this->papel == 'A4') {
                 //A4 210x297mm
                 $maxH = 210;
                 $maxW = 297;
@@ -696,7 +672,7 @@ class DacteOS extends DaCommon
         $h = 8.5;
         $wa = $w;
         $this->pdf->textBox($x, $y + 7.5, $w + 0.5, $h);
-        if ($this->cteDPEC()) {
+        if (!empty($this->numdepec)) {
             $texto = 'NÚMERO DE REGISTRO DPEC';
         } elseif ($this->tpEmis == 5 || $this->tpEmis == 7 || $this->tpEmis == 8) {
             $texto = "DADOS DO CT-E";
@@ -705,8 +681,8 @@ class DacteOS extends DaCommon
         }
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x, $y + 7.5, $wa, $h, $texto, $aFont, 'T', 'L', 0, '');
-        if ($this->cteDPEC()) {
-            $texto = $this->numero_registro_dpec;
+        if (!empty($this->numdepec)) {
+            $texto = $this->numdepec;
         } elseif ($this->tpEmis == 5) {
             $chaveContingencia = $this->geraChaveAdicCont();
             $aFont = array(
