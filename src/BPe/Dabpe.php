@@ -163,14 +163,14 @@ class Dabpe extends DaCommon
 
     /**
      * Construtor
-     * @param string $docXML
+     * @param string $xml
      * @return void
      * @throws \Exception
      */
     public function __construct(
-        $docXML
+        $xml
     ) {
-        $this->xml = $docXML;
+        $this->xml = $xml;
         $this->aFontTit = array('font' => $this->fontePadrao, 'size' => 9, 'style' => 'B');
         $this->aFontTex = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         if (empty($this->xml)) {
@@ -209,14 +209,26 @@ class Dabpe extends DaCommon
     }
     
     /**
+     * Seta a largura do papel de impressão
+     * @param int $width
+     */
+    public function setPaperWidth($width = 80)
+    {
+        $this->paperwidth = $width;
+    }
+    
+    public function printParameters($orientacao = '', $papel = 'A4', $margSup = 2, $margEsq = 2)
+    {
+        //do nothing
+    }
+    
+    /**
      * Renderiza o pdf e retorna como raw
      * @param string $logo
-     * @param string $depecNumReg Não usado
      * @return string
      */
     public function render(
-        $logo = '',
-        $depecNumReg = ''
+        $logo = ''
     ) {
         if (empty($this->pdf)) {
             $this->monta($logo);
@@ -320,24 +332,15 @@ class Dabpe extends DaCommon
     }
 
     /**
-     * Add the credits to the integrator in the footer message
-     * @param string $message
-     */
-    public function creditsIntegratorFooter($message = '')
-    {
-        $this->creditos = trim($message);
-    }
-
-    /**
      * Monta o pdf
      * @param string|null $logo
-     * @param string|null $depecNumReg não usado
      */
     protected function monta(
-        $logo = null,
-        $depecNumReg = null
+        $logo = null
     ) {
-        $this->logomarca = $this->adjustImage($logo, true);
+        if (!empty($logo)) {
+            $this->logomarca = $this->adjustImage($logo, true);
+        }
         $qtdItens = $this->Comp->length;
         $qtdPgto = $this->pag->length;
         $hMaxLinha = $this->hMaxLinha;
@@ -358,7 +361,7 @@ class Dabpe extends DaCommon
         // posição inicial do conteúdo, a partir do canto superior esquerdo da página
         $xInic = $margEsq;
         $yInic = $margSup;
-        $maxW = 80;
+        $maxW = $this->paperwidth;
         $maxH = $tamPapelVert;
         //largura imprimivel em mm: largura da folha menos as margens esq/direita
         $this->wPrint = $maxW - ($margEsq * 2);
@@ -547,7 +550,7 @@ class Dabpe extends DaCommon
             $logoInfo = getimagesize($this->logomarca);
             $logoWmm = ($logoInfo[0]/72)*25.4;
             $logoHmm = ($logoInfo[1]/72)*25.4;
-            $nImgW = 30;
+            $nImgW = $this->paperwidth/2 - ($this->paperwidth/10 + 4);
             $nImgH = round($logoHmm * ($nImgW/$logoWmm), 0);
             if ($nImgH > 18) {
                 $nImgH = 18;
@@ -569,7 +572,7 @@ class Dabpe extends DaCommon
         $hRazao = ceil(strlen($emitRazao) / $limiteChar) * $this->hLinha;
 
         $hTotal += $hRazao;
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
+        $aFont = ['font' => $this->fontePadrao, 'size' => 8, 'style' => 'B'];
         $this->pdf->textBox($xRs, $y, $wRs, $hRazao, $emitRazao, $aFont, 'T', $alignEmit, false, '', false);
 
         $y += $hRazao;
@@ -637,7 +640,14 @@ class Dabpe extends DaCommon
         return $hTotal;
     }
 
-    protected function cabecalhoSecundarioDABPE($x = 0, $y = 0, $h = 0)
+    /**
+     * Cabeçalho secundário com os dados da viagem
+     * @param float $x
+     * @param float $y
+     * @param float $h
+     * @return float
+     */
+    protected function cabecalhoSecundarioDABPE($x = 0.0, $y = 0.0, $h = 0.0): float
     {
         $hTotal = 0;
         $margemInterna = $this->margemInterna;
@@ -1077,14 +1087,6 @@ class Dabpe extends DaCommon
 
         // seta o textbox do texto adicional
         $this->pdf->textBox($x, $y + 3, $w - 2, $hLinha - 3, $this->textoAdic, $aFontTex, 'T', 'L', false, '', false);
-    }
-
-    public function paperWidth($width = 80)
-    {
-        if (is_int($width) && $width > 60) {
-            $this->paperwidth = $width;
-        }
-        return $this->paperwidth;
     }
 
     protected function pagamentosDABPE($x = 0, $y = 0, $h = 0)

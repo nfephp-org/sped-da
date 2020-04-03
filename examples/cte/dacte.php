@@ -10,10 +10,21 @@ $xml = file_get_contents(__DIR__ . '/fixtures/cte_hom_com_prot.xml');
 $logo = realpath(__DIR__ . '/../images/tulipas.png');
 
 try {
-    $dacte = new Dacte($xml);
-    $dacte->debugMode(true);
-    $dacte->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webenf.com.br');
-    $pdf = $dacte->render($logo);
+    //instanciação da classe (OBRIGATÓRIO)
+    $da = new Dacte($xml);
+    
+    //Métodos públicos (TODOS OPCIONAIS)
+    $da->debugMode(true);
+    //$da->printParameters('P', 'A4', 2, 2);
+    $da->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webenf.com.br');
+    $da->setDefaultFont('times');
+    $da->logoParameters($logo, 'C', false);
+    $da->setDefaultDecimalPlaces(2);
+    //$da->depecNumber('12345678');
+    
+    
+    //Renderização do PDF  (OBRIGATÓRIO)
+    $pdf = $da->render();
     header('Content-Type: application/pdf');
     echo $pdf;
 } catch (InvalidArgumentException $e) {

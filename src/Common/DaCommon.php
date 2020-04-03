@@ -85,6 +85,14 @@ class DaCommon extends Common
      * @var \NFePHP\DA\Legacy\Pdf
      */
     protected $pdf;
+    /**
+     * @var string
+     */
+    protected $numdepec;
+    /**
+     * @var int
+     */
+    protected $decimalPlaces;
 
     /**
      * Ativa ou desativa o modo debug
@@ -123,8 +131,8 @@ class DaCommon extends Common
     public function printParameters(
         $orientacao = '',
         $papel = 'A4',
-        $margSup = null,
-        $margEsq = null
+        $margSup = 2,
+        $margEsq = 2
     ) {
         if ($orientacao === 'P' || $orientacao === 'L') {
             $this->orientacao = $orientacao;
@@ -135,105 +143,6 @@ class DaCommon extends Common
         }
         $this->margsup = $margSup ?? 2;
         $this->margesq = $margEsq ?? 2;
-    }
-    
-    /**
-     * Set logo e sua posição
-     * @param string $logo
-     * @param string $logoAlign
-     * @param bool $mode_bw se tru converte a imagem em branco e preto
-     * @return void
-     */
-    public function logoParameters($logo, $logoAlign = null, $mode_bw = false)
-    {
-        if (!empty($logoAlign)) {
-            $this->logoAlign = $logoAlign;
-        }
-        $this->logomarca = $this->adjustImage($logo, $mode_bw);
-    }
-
-    /**
-     * Renderiza o pdf e retorna como raw
-     * @param string $logo
-     * @param string $depecNumReg
-     * @return string
-     */
-    public function render(
-        $logo = '',
-        $depecNumReg = ''
-    ) {
-        if (empty($this->pdf)) {
-            $this->monta($logo, $depecNumReg);
-        }
-        return $this->pdf->getPdf();
-    }
-    
-    /**
-     * Metodo de montagem do PDF
-     * @param string $logo
-     * @param string $depecNumReg
-     */
-    protected function monta($logo = null, $depecNumReg = null)
-    {
-        //todo replaced in other classes
-    }
-
-    /**
-     * Add the credits to the integrator in the footer message
-     * @param string $message Mensagem do integrador a ser impressa no rodapé das paginas
-     * @return void
-     */
-    public function creditsIntegratorFooter($message = '')
-    {
-        $this->creditos = trim($message);
-    }
-
-    /**
-     * Seta a fonte padrão é times
-     * @param string $font
-     */
-    public function setFontType(string $font = 'times')
-    {
-        $this->aFont['font'] = $font;
-    }
-
-    /**
-     * Seta o tamanho da fonte
-     * @param int $size
-     * @return void
-     */
-    protected function setFontSize(int $size = 8)
-    {
-        $this->aFont['size'] = $size;
-    }
-
-    /**
-     * Seta o stilo da fonte
-     * @param string $style
-     */
-    protected function setFontStyle(string $style = '')
-    {
-        $this->aFont['style'] = $style;
-    }
-
-    /**
-     * Seta a orientação
-     * @param string $force
-     * @param string $tpImp
-     * @return void
-     */
-    protected function setOrientationAndSize($force = null, $tpImp = null)
-    {
-        $this->orientacao = 'P';
-        if (!empty($force)) {
-            $this->orientacao = $force;
-        } elseif (!empty($tpImp)) {
-            if ($tpImp == '2') {
-                $this->orientacao = 'L';
-            } else {
-                $this->orientacao = 'P';
-            }
-        }
         if (strtoupper($this->papel) == 'A4') {
             $this->maxW = 210;
             $this->maxH = 297;
@@ -257,6 +166,88 @@ class DaCommon extends Common
     }
     
     /**
+     * Set logo e sua posição
+     * @param string $logo
+     * @param string $logoAlign
+     * @param bool $mode_bw se true converte a imagem em branco e preto
+     * @return void
+     */
+    public function logoParameters($logo, $logoAlign = null, $mode_bw = false)
+    {
+        if (!empty($logoAlign)) {
+            $this->logoAlign = $logoAlign;
+        }
+        $this->logomarca = $this->adjustImage($logo, $mode_bw);
+    }
+    
+    /**
+     * Numero DPEC
+     * @param string $numdepec
+     * @return void
+     */
+    public function depecNumber($numdepec)
+    {
+        $this->numdepec = $numdepec;
+    }
+
+    /**
+     * Renderiza o pdf e retorna como raw
+     * @param string $logo
+     * @return string
+     */
+    public function render(
+        $logo = ''
+    ) {
+        if (empty($this->pdf)) {
+            $this->monta($logo);
+        }
+        return $this->pdf->getPdf();
+    }
+
+    /**
+     * Add the credits to the integrator in the footer message
+     * @param string $message Mensagem do integrador a ser impressa no rodapé das paginas
+     * @return void
+     */
+    public function creditsIntegratorFooter($message = '')
+    {
+        $this->creditos = trim($message);
+    }
+
+    /**
+     * Seta a fonte padrão é times
+     * @param string $font
+     */
+    public function setDefaultFont(string $font = 'times')
+    {
+        $this->fontePadrao = $font;
+    }
+    
+    /**
+     * Seta o numero de casas decimais a serem usadas como padrão
+     * @param int $dec
+     */
+    public function setDefaultDecimalPlaces($dec)
+    {
+        if ($dec > 4) {
+            $dec = 4;
+        }
+        if ($dec < 2) {
+            $dec = 2;
+        }
+        $this->decimalPlaces = $dec;
+    }
+    
+    /**
+     * Metodo de montagem do PDF
+     * @param string $logo
+     */
+    protected function monta($logo = null)
+    {
+        //todo replaced in other classes
+    }
+
+    /**
      * Ajusta a imagem do logo
      * @param string $logo
      * @param bool $turn_bw
@@ -265,9 +256,6 @@ class DaCommon extends Common
      */
     protected function adjustImage($logo, $turn_bw = false)
     {
-        if (empty($logo)) {
-            return '';
-        }
         if (substr($logo, 0, 24) !== 'data://text/plain;base64') {
             if (is_file($logo)) {
                 $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents($logo));

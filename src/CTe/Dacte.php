@@ -24,18 +24,11 @@ use NFePHP\DA\Common\DaCommon;
 class Dacte extends DaCommon
 {
 
-    protected $logoAlign = 'C';
     protected $yDados = 0;
-    protected $numero_registro_dpec = '';
-    protected $pdf;
     protected $xml;
     protected $errMsg = '';
     protected $errStatus = false;
-    protected $orientacao = 'P';
-    protected $papel = 'A4';
-    protected $fontePadrao = 'Times';
-    protected $wPrint;
-    protected $hPrint;
+    
     protected $dom;
     protected $infCte;
     protected $infCteComp;
@@ -75,22 +68,20 @@ class Dacte extends DaCommon
     protected $tpImp;
     protected $tpAmb;
     protected $vPrest;
-    protected $wAdic = 150;
     protected $textoAdic = '';
-    protected $debugmode = false;
-    protected $formatPadrao;
-    protected $formatNegrito;
     protected $aquav;
+    protected $idDocAntEle = [];
+    protected $qrCodCTe;
+    protected $infCTeMultimodal = [];
+    
+    protected $wAdic = 150;
+    protected $formatNegrito;
     protected $preVisualizar;
     protected $flagDocOrigContinuacao;
     protected $arrayNFe = array();
     protected $totPag;
-    protected $idDocAntEle = [];
-    protected $qrCodCTe;
     protected $margemInterna = 0;
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
-    protected $infCTeMultimodal = [];
-    protected $creditos;
 
     /**
      * __construct
@@ -102,7 +93,6 @@ class Dacte extends DaCommon
     ) {
         $this->loadDoc($xml);
     }
-
 
     private function loadDoc($xml)
     {
@@ -207,11 +197,6 @@ class Dacte extends DaCommon
         }
     }
 
-    protected function cteDPEC()
-    {
-        return $this->numero_registro_dpec != '';
-    }
-
     /**
      * montaDACTE
      * Esta função monta a DACTE conforme as informações fornecidas para a classe
@@ -225,25 +210,20 @@ class Dacte extends DaCommon
      * @param  string $papel (Opcional) Estabelece o tamanho do papel (ex. A4)
      * @return string O ID da NFe numero de 44 digitos extraido do arquivo XML
      */
-    public function monta(
-        $logo = '',
-        $orientacao = '',
-        $papel = 'A4',
-        $logoAlign = 'C'
+    protected function monta(
+        $logo = ''
     ) {
+        if (!empty($logo)) {
+            $this->logomarca = $this->adjustImage($logo);
+        }
         $this->pdf = '';
-        $this->logomarca = $this->adjustImage($logo);
-        //se a orientação estiver em branco utilizar o padrão estabelecido no CTe
-        if ($orientacao == '') {
-            if ($this->tpImp == '1') {
-                $orientacao = 'P';
-            } else {
-                $orientacao = 'P';
+        //pega o orientação do documento
+        if (empty($this->orientacao)) {
+            $this->orientacao = 'P';
+            if ($this->tpImp == 2) {
+                $this->orientacao = 'L';
             }
         }
-        $this->orientacao = $orientacao;
-        $this->papel = $papel;
-        $this->logoAlign = $logoAlign;
         //instancia a classe pdf
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         // verifica se foi passa a fonte a ser usada
@@ -263,7 +243,7 @@ class Dacte extends DaCommon
             // posição inicial do relatorio
             $xInic = 1;
             $yInic = 1;
-            if ($papel == 'A4') {
+            if ($this->papel == 'A4') {
                 //A4 210x297mm
                 $maxW = 210;
                 $maxH = 297;
@@ -276,7 +256,7 @@ class Dacte extends DaCommon
             // posição inicial do relatorio
             $xInic = 5;
             $yInic = 5;
-            if ($papel == 'A4') {
+            if ($this->papel == 'A4') {
                 //A4 210x297mm
                 $maxH = 210;
                 $maxW = 297;
@@ -842,7 +822,7 @@ class Dacte extends DaCommon
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x, $y + 7.5, $wa, $h, $texto, $aFont, 'T', 'L', 0, '');
         if ($this->cteDPEC()) {
-            $texto = $this->numero_registro_dpec;
+            $texto = $this->numdepec;
         } elseif ($this->tpEmis == 5) {
             $chaveContingencia = $this->geraChaveAdicCont();
             $aFont = array(
@@ -1129,10 +1109,10 @@ class Dacte extends DaCommon
         $x1 = $x + 16;
         $texto = 'REMETENTE';
         $aFont = $this->formatPadrao;
-        $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
+        $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', true, '');
         $aFont = $this->formatNegrito;
         $texto = $this->getTagValue($this->rem, "xNome");
-        $this->pdf->textBox($x1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $this->pdf->textBox($x1, $y, $w-18, $h, $texto, $aFont, 'T', 'L', false, '', true);
         $y += 3;
         $texto = 'ENDEREÇO';
         $aFont = $this->formatPadrao;
@@ -1217,10 +1197,10 @@ class Dacte extends DaCommon
         $x1 = $x + 19;
         $texto = 'DESTINATÁRIO';
         $aFont = $this->formatPadrao;
-        $this->pdf->textBox($x - 0.5, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
+        $this->pdf->textBox($x - 0.5, $y, $w, $h, $texto, $aFont, 'T', 'L', true, '');
         $aFont = $this->formatNegrito;
         $texto = $this->getTagValue($this->dest, "xNome");
-        $this->pdf->textBox($x1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $this->pdf->textBox($x1, $y, $w-18, $h, $texto, $aFont, 'T', 'L', false, '', true);
         $y += 3;
         $texto = 'ENDEREÇO';
         $aFont = $this->formatPadrao;

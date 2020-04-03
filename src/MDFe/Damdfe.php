@@ -22,18 +22,11 @@ use NFePHP\DA\Common\DaCommon;
 
 class Damdfe extends DaCommon
 {
-    protected $logoAlign = 'L'; //alinhamento do logo
+
     protected $yDados = 0;
-    protected $debugmode = false; //ativa ou desativa o modo de debug
-    protected $pdf; // objeto fpdf()
     protected $xml; // string XML NFe
     protected $errMsg = ''; // mesagens de erro
     protected $errStatus = false;// status de erro TRUE um erro ocorreu false sem erros
-    protected $orientacao = 'P'; //orientação da DANFE P-Retrato ou L-Paisagem
-    protected $papel = 'A4'; //formato do papel
-    protected $fontePadrao = 'Times'; //Nome da Fonte para gerar o DANFE
-    protected $wPrint; //largura imprimivel
-    protected $hPrint; //comprimento imprimivel
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     protected $margemInterna = 2;
     protected $id;
@@ -50,7 +43,6 @@ class Damdfe extends DaCommon
     protected $tpEmis;
     protected $qrCodMDFe;
     private $dom;
-    protected $creditos;
 
     /**
      * __construct
@@ -58,7 +50,7 @@ class Damdfe extends DaCommon
      * @param string $xml Arquivo XML da MDFe
      */
     public function __construct(
-        $xml = ''
+        $xml
     ) {
         $this->loadDoc($xml);
     }
@@ -154,6 +146,22 @@ class Damdfe extends DaCommon
             }
         }
     }
+    
+    protected function monta(
+        $logo = '',
+        $depecNumReg = null
+    ) {
+        $this->pdf = '';
+        if (!empty($logo)) {
+            $this->logomarca = $this->adjustImage($logo);
+        }
+        //pega o orientação do documento
+        if (empty($this->orientacao)) {
+            $this->orientacao = 'P';
+        }
+        $this->buildMDFe();
+    }
+
 
     /**
      * buildMDFe
@@ -1175,14 +1183,7 @@ class Damdfe extends DaCommon
         $this->pdf->textBox($x, $y, $w, 0, $texto, $aFont, 'T', 'R', false, '');
     }
 
-    public function monta(
-        $logo = ''
-    ) {
-        $this->pdf = '';
-        $this->logomarca = $this->adjustImage($logo);
-        $this->buildMDFe();
-    }
-
+    
     /**
      * Add the credits to the integrator in the footer message
      *
