@@ -136,9 +136,9 @@ class Daevento extends DaCommon
             $this->orientacao = 'P';
         }
         // margens do PDF
-        $margSup = $this->margsup;
-        $margEsq = $this->margesq;
-        $margDir = $this->margesq;
+        $margSup = $this->margSup;
+        $margEsq = $this->margEsq;
+        $margDir = $this->margEsq;
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         if ($this->orientacao == 'P') {
             // posição inicial do relatorio
