@@ -317,7 +317,6 @@ class Danfce extends DaCommon
             $logoHmm = ($logoInfo[1]/72)*25.4;
             $nImgW = 30;
             $nImgH = round($logoHmm * ($nImgW/$logoWmm), 0);
-            $yImg = $margemInterna + $nImgH/2;
             $this->pdf->image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, 'jpeg');
             $xRs = ($maxW*0.4) + $margemInterna;
             $wRs = ($maxW*0.6);
