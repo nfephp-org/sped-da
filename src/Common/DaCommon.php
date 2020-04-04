@@ -32,11 +32,11 @@ class DaCommon extends Common
     /**
      * @var int
      */
-    protected $margsup = 2;
+    protected $margSup = 2;
     /**
      * @var int
      */
-    protected $margesq = 2;
+    protected $margEsq = 2;
     /**
      * @var float
      */
@@ -141,8 +141,8 @@ class DaCommon extends Common
         if ($p == 'A4' || $p == 'LEGAL') {
             $this->papel = $papel;
         }
-        $this->margsup = $margSup ?? 2;
-        $this->margesq = $margEsq ?? 2;
+        $this->margSup = $margSup ?? 2;
+        $this->margEsq = $margEsq ?? 2;
         if (strtoupper($this->papel) == 'A4') {
             $this->maxW = 210;
             $this->maxH = 297;
@@ -161,8 +161,8 @@ class DaCommon extends Common
                 $this->maxW = 355;
             }
         }
-        $this->wPrint = $this->maxW - $this->margesq * 2;
-        $this->hPrint = $this->maxH - $this->margsup - 5;
+        $this->wPrint = $this->maxW - $this->margEsq * 2;
+        $this->hPrint = $this->maxH - $this->margSup - 5;
     }
     
     /**
