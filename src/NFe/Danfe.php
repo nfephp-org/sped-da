@@ -242,7 +242,7 @@ class Danfe extends DaCommon
      * @return string O ID da NFe numero de 44 digitos extraido do arquivo XML
      */
     protected function monta(
-        $logo = ''
+        $logo = '', $depecNumReg = ''
     ) {
         $this->pdf = '';
         $this->logomarca = $this->adjustImage($logo);
