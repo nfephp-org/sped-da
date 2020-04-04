@@ -186,9 +186,9 @@ class DacteOS extends DaCommon
             }
         }
         //instancia a classe pdf
-        $margSup = $this->margsup;
-        $margEsq = $this->margesq;
-        $margDir = $this->margesq;
+        $margSup = $this->margSup;
+        $margEsq = $this->margEsq;
+        $margDir = $this->margEsq;
         
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         $this->formatPadrao = array(
