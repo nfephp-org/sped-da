@@ -254,7 +254,6 @@ class Danfe extends DaCommon
                 $this->orientacao = 'P';
             }
         }
-        $this->numero_registro_dpec = $depecNumReg;
         //instancia a classe pdf
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         //margens do PDF, em milímetros. Obs.: a margem direita é sempre igual à
@@ -268,7 +267,7 @@ class Danfe extends DaCommon
                 $this->maxH = 297;
             }
         } else {
-            if ($papel == 'A4') {
+            if ($this->papel == 'A4') {
                 $this->maxW = 297;
                 $this->maxH = 210;
                 $xInic = $this->margEsq+10;
@@ -575,7 +574,7 @@ class Danfe extends DaCommon
         //loop para páginas seguintes
         for ($n = 2; $n <= $totPag; $n++) {
             // fixa as margens
-            $this->pdf->setMargins($margEsq, $margSup);
+            $this->pdf->setMargins($this->margEsq, $this->margSup);
             //adiciona nova página
             $this->pdf->addPage($this->orientacao, $this->papel);
             //ajusta espessura das linhas
@@ -583,17 +582,17 @@ class Danfe extends DaCommon
             //seta a cor do texto para petro
             $this->pdf->settextcolor(0, 0, 0);
             // posição inicial do relatorio
-            $x = $margEsq;
-            $y = $margSup;
+            $x = $this->margEsq;
+            $y = $this->margSup;
             //coloca o cabeçalho na página adicional
             $y = $this->header($x, $y, $n, $totPag);
             //coloca os itens na página adicional
             $y = $this->itens($x, $y+1, $nInicial, $hDispo2, $n, $totPag, $hCabecItens);
             //coloca o rodapé da página
             if ($this->orientacao == 'P') {
-                $this->rodape($margEsq);
+                $this->rodape($this->margEsq);
             } else {
-                $this->rodape($margEsq);
+                $this->rodape($this->margEsq);
             }
             //se estiver na última página e ainda restar itens para inserir, adiciona mais uma página
             if ($n == $totPag && $this->qtdeItensProc < $qtdeItens) {
@@ -784,7 +783,7 @@ class Danfe extends DaCommon
 
     protected function notaDPEC()
     {
-        return $this->numero_registro_dpec != '';
+        return $this->numdepec != '';
     }
 
     /**
@@ -1055,7 +1054,7 @@ class Danfe extends DaCommon
         } else {
             $aFont = ['font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B'];
             if ($this->notaDpec()) {
-                $texto = $this->numero_registro_dpec;
+                $texto = $this->numdepec;
                 $cStat = '';
             } else {
                 if (isset($this->nfeProc)) {
