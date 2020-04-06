@@ -148,6 +148,8 @@
             <digVal>d+G8eKmX3NIGzIhbdGS5CLMisG4=</digVal>
             <cStat>100</cStat>
             <xMotivo>Autorizado o uso da NF-e</xMotivo>
+            <cMsg>200</cMsg>
+            <xMsg>NOTA MS PREMIADA | DEZENAS: ( 07 09 30 34 36 41 56 60 ) | www.notamspremiada.ms.gov.br</xMsg>
         </infProt>
     </protNFe>
 </nfeProc>

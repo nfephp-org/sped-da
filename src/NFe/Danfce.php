@@ -68,10 +68,13 @@ class Danfce extends DaCommon
         if (!empty($this->xml)) {
             $this->dom = new Dom();
             $this->dom->loadXML($this->xml);
+            $this->ide = $this->dom->getElementsByTagName("ide")->item(0);
+            if ($this->getTagValue($this->ide, "mod") != '65') {
+                throw new InvalidArgumentException("O xml do DANFE deve ser uma NFC-e modelo 65");
+            }
             $this->nfeProc = $this->dom->getElementsByTagName("nfeProc")->item(0);
             $this->nfe = $this->dom->getElementsByTagName("NFe")->item(0);
             $this->infNFe = $this->dom->getElementsByTagName("infNFe")->item(0);
-            $this->ide = $this->dom->getElementsByTagName("ide")->item(0);
             $this->emit = $this->dom->getElementsByTagName("emit")->item(0);
             $this->enderEmit = $this->dom->getElementsByTagName("enderEmit")->item(0);
             $this->det = $this->dom->getElementsByTagName("det");
@@ -81,7 +84,7 @@ class Danfce extends DaCommon
             $this->tpImp = $this->ide->getElementsByTagName("tpImp")->item(0)->nodeValue;
             $this->infAdic = $this->dom->getElementsByTagName("infAdic")->item(0);
             $this->tpEmis = $this->dom->getValue($this->ide, "tpEmis");
-            
+                
             //se for o layout 4.0 busca pelas tags de detalhe do pagamento
             //senao, busca pelas tags de pagamento principal
             if ($this->infNFe->getAttribute("versao") == "4.00") {
@@ -97,9 +100,6 @@ class Danfce extends DaCommon
             ? $this->dom->getElementsByTagName('qrCode')->item(0)->nodeValue : null;
         $this->urlChave = !empty($this->dom->getElementsByTagName('urlChave')->item(0)->nodeValue)
             ? $this->dom->getElementsByTagName('urlChave')->item(0)->nodeValue : null;
-        if ($this->getTagValue($this->ide, "mod") != '65') {
-            throw new InvalidArgumentException("O xml do DANFE deve ser uma NFC-e modelo 65");
-        }
     }
     
     /**
@@ -167,27 +167,29 @@ class Danfce extends DaCommon
         // verifica se existe informações adicionais
         $this->textoAdic = '';
         if (isset($this->infAdic)) {
+            //$this->textoAdic .= !empty($this->textoAdic) ? "\n" : '';
             $this->textoAdic .= !empty($this->infAdic->getElementsByTagName('infCpl')->item(0)->nodeValue) ?
             'Inf. Contribuinte: '.
             trim($this->anfaveaDANFE($this->infAdic->getElementsByTagName('infCpl')->item(0)->nodeValue)) : '';
-            if (!empty($this->textoAdic)) {
-                $this->textoAdic = str_replace(";", "\n", $this->textoAdic);
-                $alinhas = explode("\n", $this->textoAdic);
-                $numlinhasdados = 0;
-                $tempPDF = new Pdf(); // cria uma instancia temporaria da class pdf
-                $tempPDF->setFont('times', '', '8'); // seta a font do PDF
-                foreach ($alinhas as $linha) {
-                    $linha = trim($linha);
-                    $numlinhasdados += $tempPDF->wordWrap($linha, 76 - 0.2);
-                }
-                $hdadosadic = round(($numlinhasdados + 1) * $tempPDF->fontSize, 0);
-                if ($hdadosadic < 5) {
-                    $hdadosadic = 5;
-                }
-                // seta o tamanho do papel
-                $tamPapelVert += $hdadosadic;
-            }
         }
+        if (!empty($this->textoAdic)) {
+            $this->textoAdic = str_replace([';', '|'], "\n", $this->textoAdic);
+            $alinhas = explode("\n", $this->textoAdic);
+            $numlinhasdados = 0;
+            $tempPDF = new Pdf(); // cria uma instancia temporaria da class pdf
+            $tempPDF->setFont('times', '', '8'); // seta a font do PDF
+            foreach ($alinhas as $linha) {
+                $linha = trim($linha);
+                $numlinhasdados += $tempPDF->wordWrap($linha, 76 - 0.2);
+            }
+            $hdadosadic = round(($numlinhasdados + 1) * $tempPDF->fontSize, 0);
+            if ($hdadosadic < 5) {
+                $hdadosadic = 5;
+            }
+            // seta o tamanho do papel
+            $tamPapelVert += $hdadosadic;
+        }
+        
         $this->orientacao = 'P';
         $this->papel = [$this->paperwidth, $tamPapelVert];
         $this->logoAlign = 'L';
@@ -273,7 +275,7 @@ class Danfce extends DaCommon
             $y = $xInic + $hcabecalho + $hcabecalhoSecundario + $hprodutos
             + $hTotal + $hpagamentos + $hmsgfiscal + $hcliente + $hQRCode;
             $hInfAdic = 0;
-            $y = $this->infAdic($x, $y, $hInfAdic);
+            $y = $this->blocoInfAdic($x, $y, $hInfAdic);
         }
     }
     
@@ -830,7 +832,7 @@ class Danfce extends DaCommon
             . $dt->format('d/m/Y H:i:s'), $aFontTex, 'C', 'C', 0, '', false);
     }
    
-    protected function infAdic($x = 0, $y = 0, $h = 0)
+    protected function blocoInfAdic($x = 0, $y = 0, $h = 0)
     {
         $y += 17;
         $margemInterna = $this->margemInterna;
@@ -843,7 +845,9 @@ class Danfce extends DaCommon
         $texto = "INFORMAÇÃO ADICIONAL";
         if (isset($this->nfeProc) && $this->nfeProc->getElementsByTagName("xMsg")->length) {
             $y += 3;
-            $texto = $texto . ' ' . $this->nfeProc->getElementsByTagName("xMsg")->item(0)->nodeValue;
+            $msg = $this->nfeProc->getElementsByTagName("xMsg")->item(0)->nodeValue;
+            $msg = str_replace('|', "\n", $msg);
+            $texto .= " {$msg}";
             $heigthText = $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTit, 'C', 'C', 0, '', false);
             $y += 4;
         } else {
