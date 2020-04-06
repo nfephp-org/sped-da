@@ -167,7 +167,6 @@ class Danfce extends DaCommon
         // verifica se existe informações adicionais
         $this->textoAdic = '';
         if (isset($this->infAdic)) {
-            //$this->textoAdic .= !empty($this->textoAdic) ? "\n" : '';
             $this->textoAdic .= !empty($this->infAdic->getElementsByTagName('infCpl')->item(0)->nodeValue) ?
             'Inf. Contribuinte: '.
             trim($this->anfaveaDANFE($this->infAdic->getElementsByTagName('infCpl')->item(0)->nodeValue)) : '';
