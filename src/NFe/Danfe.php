@@ -254,14 +254,13 @@ class Danfe extends DaCommon
                 $this->orientacao = 'P';
             }
         }
-        $this->numero_registro_dpec = $depecNumReg;
         //instancia a classe pdf
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         //margens do PDF, em milímetros. Obs.: a margem direita é sempre igual à
         //margem esquerda. A margem inferior *não* existe na FPDF, é definida aqui
         //apenas para controle se necessário ser maior do que a margem superior
         // posição inicial do conteúdo, a partir do canto superior esquerdo da página
-        $xInic = $this->margEsq;
+        $xInic = $this->margesq;
         if ($this->orientacao == 'P') {
             if ($this->papel == 'A4') {
                 $this->maxW = 210;
@@ -271,7 +270,7 @@ class Danfe extends DaCommon
             if ($papel == 'A4') {
                 $this->maxW = 297;
                 $this->maxH = 210;
-                $xInic = $this->margEsq+10;
+                $xInic = $this->margesq+10;
                 //se paisagem multiplica a largura do canhoto pela quantidade de canhotos
                 //$this->wCanhoto *= $this->qCanhoto;
             }
@@ -279,14 +278,14 @@ class Danfe extends DaCommon
         //total inicial de paginas
         $totPag = 1;
         //largura imprimivel em mm: largura da folha menos as margens esq/direita
-        $this->wPrint = $this->maxW-($this->margEsq * 2);
+        $this->wPrint = $this->maxW-($this->margesq * 2);
         //comprimento (altura) imprimivel em mm: altura da folha menos as margens
         //superior e inferior
-        $this->hPrint = $this->maxH-$this->margSup-$this->margInf;
+        $this->hPrint = $this->maxH-$this->margsup-$this->marginf;
         // estabelece contagem de paginas
         $this->pdf->aliasNbPages();
         // fixa as margens
-        $this->pdf->setMargins($this->margEsq, $this->margSup);
+        $this->pdf->setMargins($this->margesq, $this->margsup);
         $this->pdf->setDrawColor(0, 0, 0);
         $this->pdf->setFillColor(255, 255, 255);
         // inicia o documento
@@ -499,13 +498,13 @@ class Danfe extends DaCommon
         //montagem da primeira página
         $pag = 1;
         
-        $x = $this->margEsq;
-        $y = $this->margSup;
+        $x = $this->margesq;
+        $y = $this->margsup;
         //coloca o(s) canhoto(s) da NFe
         if ($this->orientacao == 'P') {
-            $y = $this->canhoto($this->margEsq, $this->margSup);
+            $y = $this->canhoto($this->margesq, $this->margsup);
         } else {
-            $this->canhoto($this->margEsq, $this->margSup);
+            $this->canhoto($this->margesq, $this->margsup);
             $x = 25;
         }
         //$x = $xInic;
@@ -784,7 +783,7 @@ class Danfe extends DaCommon
 
     protected function notaDPEC()
     {
-        return $this->numero_registro_dpec != '';
+        return !empty($this->numdepec);
     }
 
     /**
@@ -1055,7 +1054,7 @@ class Danfe extends DaCommon
         } else {
             $aFont = ['font'=>$this->fontePadrao, 'size'=>10, 'style'=>'B'];
             if ($this->notaDpec()) {
-                $texto = $this->numero_registro_dpec;
+                $texto = $this->numdepec;
                 $cStat = '';
             } else {
                 if (isset($this->nfeProc)) {
