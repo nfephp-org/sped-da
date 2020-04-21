@@ -267,7 +267,7 @@ class Danfe extends DaCommon
                 $this->maxH = 297;
             }
         } else {
-            if ($papel == 'A4') {
+            if ($this->papel == 'A4') {
                 $this->maxW = 297;
                 $this->maxH = 210;
                 $xInic = $this->margesq+10;
@@ -574,7 +574,7 @@ class Danfe extends DaCommon
         //loop para páginas seguintes
         for ($n = 2; $n <= $totPag; $n++) {
             // fixa as margens
-            $this->pdf->setMargins($margEsq, $margSup);
+            $this->pdf->setMargins($this->margesq, $this->margsup);
             //adiciona nova página
             $this->pdf->addPage($this->orientacao, $this->papel);
             //ajusta espessura das linhas
@@ -582,17 +582,17 @@ class Danfe extends DaCommon
             //seta a cor do texto para petro
             $this->pdf->settextcolor(0, 0, 0);
             // posição inicial do relatorio
-            $x = $margEsq;
-            $y = $margSup;
+            $x = $this->margesq;
+            $y = $this->margsup;
             //coloca o cabeçalho na página adicional
             $y = $this->header($x, $y, $n, $totPag);
             //coloca os itens na página adicional
             $y = $this->itens($x, $y+1, $nInicial, $hDispo2, $n, $totPag, $hCabecItens);
             //coloca o rodapé da página
             if ($this->orientacao == 'P') {
-                $this->rodape($margEsq);
+                $this->rodape($this->margesq);
             } else {
-                $this->rodape($margEsq);
+                $this->rodape($this->margesq);
             }
             //se estiver na última página e ainda restar itens para inserir, adiciona mais uma página
             if ($n == $totPag && $this->qtdeItensProc < $qtdeItens) {
