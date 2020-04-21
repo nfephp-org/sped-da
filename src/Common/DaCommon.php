@@ -36,6 +36,10 @@ class DaCommon extends Common
     /**
      * @var int
      */
+    protected $marginf = 2;
+    /**
+     * @var int
+     */
     protected $margesq = 2;
     /**
      * @var float
@@ -143,6 +147,7 @@ class DaCommon extends Common
         }
         $this->margsup = $margSup ?? 2;
         $this->margesq = $margEsq ?? 2;
+        $this->marginf = $margSup ?? 2; 
         if (strtoupper($this->papel) == 'A4') {
             $this->maxW = 210;
             $this->maxH = 297;
