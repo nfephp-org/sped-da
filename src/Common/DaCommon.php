@@ -123,7 +123,7 @@ class DaCommon extends Common
         }
         return $this->debugmode;
     }
-    
+
     /**
      * Define parametros de impressão
      * @param string $orientacao
@@ -147,7 +147,7 @@ class DaCommon extends Common
         }
         $this->margsup = $margSup ?? 2;
         $this->margesq = $margEsq ?? 2;
-        $this->marginf = $margSup ?? 2; 
+        $this->marginf = $margSup ?? 2;
         if (strtoupper($this->papel) == 'A4') {
             $this->maxW = 210;
             $this->maxH = 297;
@@ -169,7 +169,7 @@ class DaCommon extends Common
         $this->wPrint = $this->maxW - $this->margesq * 2;
         $this->hPrint = $this->maxH - $this->margsup - 5;
     }
-    
+
     /**
      * Set logo e sua posição
      * @param string $logo
@@ -184,7 +184,7 @@ class DaCommon extends Common
         }
         $this->logomarca = $this->adjustImage($logo, $mode_bw);
     }
-    
+
     /**
      * Numero DPEC
      * @param string $numdepec
@@ -227,7 +227,7 @@ class DaCommon extends Common
     {
         $this->fontePadrao = $font;
     }
-    
+
     /**
      * Seta o numero de casas decimais a serem usadas como padrão
      * @param int $dec
@@ -242,7 +242,7 @@ class DaCommon extends Common
         }
         $this->decimalPlaces = $dec;
     }
-    
+
     /**
      * Metodo de montagem do PDF
      * @param string $logo
@@ -261,11 +261,15 @@ class DaCommon extends Common
      */
     protected function adjustImage($logo, $turn_bw = false)
     {
+        if (empty($logo)) {
+            return null;
+        }
         if (substr($logo, 0, 24) !== 'data://text/plain;base64') {
             if (is_file($logo)) {
                 $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents($logo));
             } else {
-                $logo = '';
+                //se não é uma string e nem um file retorna nulo
+                return null;
             }
         }
         $logoInfo = getimagesize($logo);
@@ -291,7 +295,7 @@ class DaCommon extends Common
         }
         return $logo;
     }
-    
+
     /**
      * Cria uma imagem JPEG com o objeto GD
      * @param resource $image
