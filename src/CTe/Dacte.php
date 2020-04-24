@@ -812,7 +812,7 @@ class Dacte extends DaCommon
         $h = 8.5;
         $wa = $w;
         $this->pdf->textBox($x, $y + 7.5, $w + 0.5, $h);
-        if ($this->cteDPEC()) {
+        if (!empty($this->numdepec)) {
             $texto = 'NÚMERO DE REGISTRO DPEC';
         } elseif ($this->tpEmis == 5 || $this->tpEmis == 7 || $this->tpEmis == 8) {
             $texto = "DADOS DO CT-E";
@@ -821,7 +821,7 @@ class Dacte extends DaCommon
         }
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x, $y + 7.5, $wa, $h, $texto, $aFont, 'T', 'L', 0, '');
-        if ($this->cteDPEC()) {
+        if (!empty($this->numdepec)) {
             $texto = $this->numdepec;
         } elseif ($this->tpEmis == 5) {
             $chaveContingencia = $this->geraChaveAdicCont();
@@ -1005,7 +1005,7 @@ class Dacte extends DaCommon
             $w = $maxW - (2 * $x);
             $this->pdf->setTextColor(90, 90, 90);
             //indicar FALTA DO PROTOCOLO se NFe não for em contingência
-            if (($this->tpEmis == 5 || $this->tpEmis == 7 || $this->tpEmis == 8) && !$this->cteDPEC()) {
+            if (($this->tpEmis == 5 || $this->tpEmis == 7 || $this->tpEmis == 8) && !empty($this->numdepec)) {
                 //Contingência
                 $texto = "DACTE Emitido em Contingência";
                 $aFont = array(
@@ -1021,7 +1021,7 @@ class Dacte extends DaCommon
                 $this->pdf->textBox($x, $y + 12, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             } else {
                 if (!isset($this->protCTe)) {
-                    if (!$this->cteDPEC()) {
+                    if (!empty($this->numdepec)) {
                         $texto = "SEM VALOR FISCAL";
                         $aFont = array(
                             'font' => $this->fontePadrao,
@@ -1034,7 +1034,7 @@ class Dacte extends DaCommon
                         'size' => 30,
                         'style' => 'B');
                     $texto = "FALTA PROTOCOLO DE APROVAÇÃO DA SEFAZ";
-                    if (!$this->cteDPEC()) {
+                    if (!empty($this->numdepec)) {
                         $this->pdf->textBox($x, $y + 12, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
                     } else {
                         $this->pdf->textBox($x, $y + 25, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
