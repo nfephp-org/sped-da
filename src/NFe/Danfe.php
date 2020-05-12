@@ -547,11 +547,13 @@ class Danfe extends DaCommon
         $x = $this->margesq;
         $y = $this->margsup;
         //coloca o(s) canhoto(s) da NFe
-        if ($this->orientacao == 'P') {
-            $y = $this->canhoto($this->margesq, $this->margsup);
-        } else {
-            $this->canhoto($this->margesq, $this->margsup);
-            $x = 25;
+        if ($this->qCanhoto) {
+            if ($this->orientacao == 'P') {
+                $y = $this->canhoto($this->margesq, $this->margsup);
+            } else {
+                $this->canhoto($this->margesq, $this->margsup);
+                $x = $this->wCanhoto;
+            }
         }
         //$x = $xInic;
         //$y = $yInic;
@@ -3377,6 +3379,17 @@ class Danfe extends DaCommon
     }
 
     /**
+     * @param bool $gerar
+     * @return $this
+     */
+    public function gerarCanhoto($gerar = true)
+    {
+        $this->qCanhoto = $gerar ? 1 : 0;
+        $this->wCanhoto = $gerar ? 25 : 0;
+        return $this;
+    }
+
+    /**
      * pCcanhotoDANFE
      * Monta o canhoto da DANFE (retrato e paisagem)
      *
@@ -3389,6 +3402,10 @@ class Danfe extends DaCommon
      */
     protected function canhoto($x, $y)
     {
+        if (!$this->qCanhoto) {
+            return $this->orientacao === 'P' ? $y : $x;
+        }
+
         $oldX = $x;
         $oldY = $y;
         //#################################################################################
