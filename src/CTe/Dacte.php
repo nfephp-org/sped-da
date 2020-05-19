@@ -23,12 +23,19 @@ use NFePHP\DA\Common\DaCommon;
 
 class Dacte extends DaCommon
 {
+    const CODIGOUNIDADEMEDIDA_M3 = '00';
+    const CODIGOUNIDADEMEDIDA_TON = '02';
+    const CODIGOUNIDADEMEDIDA_UNIDADE = '03';
+
+    const TIPOMEDIDA_PESOBRUTO = 'PESO BRUTO';
+    const TIPOMEDIDA_PESOBASECALCULO = 'PESO BASE DE CÁLCULO';
+    const TIPOMEDIDA_PESOAFERIDO = 'PESO AFERIDO';
 
     protected $yDados = 0;
     protected $xml;
     protected $errMsg = '';
     protected $errStatus = false;
-    
+
     protected $dom;
     protected $infCte;
     protected $infCteComp;
@@ -73,7 +80,7 @@ class Dacte extends DaCommon
     protected $idDocAntEle = [];
     protected $qrCodCTe;
     protected $infCTeMultimodal = [];
-    
+
     protected $wAdic = 150;
     protected $formatNegrito;
     protected $preVisualizar;
@@ -1546,6 +1553,63 @@ class Dacte extends DaCommon
     }
 
     /**
+     * Extrai o valor do node DOM com base no valor de outro node DOM dentro do mesmo nível do objeto principal
+     * Exemplo:
+     * Dado a cadeia de elementos:
+     * <infQ>
+     *      <cUnid>02</cUnid>
+     *      <tpMed>PESO BRUTO</tpMed>
+     *      <qCarga>35.0000</qCarga>
+     * </infQ>
+     * <infQ>
+     *      <cUnid>02</cUnid>
+     *      <tpMed>PESO AFERIDO</tpMed>
+     *      <qCarga>35.0000</qCarga>
+     * </infQ>
+     * <infQ>
+     *      <cUnid>03</cUnid>
+     *      <tpMed>UND</tpMed>
+     *      <qCarga>1.0000</qCarga>
+     * </infQ>
+     *
+     * É possível recuperar o valor de qCarga com base no valor de tpMed = PESO BRUTO, por exemplo:
+     * $this->getTagValueByTagReference($this->infQ, 'tpMed', 'PESO BRUTO', 'qCarga');
+     *
+     * @param DOMDocument|DOMElement $object Instancia de DOMDocument ou DOMElement
+     * @param string $keyReference identificador da TAG do elemento de referencia
+     * @param string $valueReference valor da TAG do elemento de referencia
+     * @param string $keyDestiny identificador da TAG do elemento a ser recuperado
+     * @param string $extraTextBefore sufixo do retorno
+     * @param string $extraTextAfter sufixo do retorno
+     * @return string|float
+     */
+    private function getTagValueByTagReference(
+        $object,
+        $keyReference,
+        $valueReference,
+        $keyDestiny,
+        $extraTextBefore = '',
+        $extraTextAfter = ''
+    ) {
+        if (empty($object)) {
+            return '';
+        }
+
+        foreach ($object as $index => $objectElement) {
+            $fatorConversao = 1;
+            $referenceElement = $objectElement->getElementsByTagName($keyReference)->item(0);
+            if ($referenceElement->nodeValue == $valueReference) {
+                if ($this->getTagValue($objectElement, 'cUnid') == self::CODIGOUNIDADEMEDIDA_TON){
+                    $fatorConversao = 1000;
+                }
+                return (float) $this->getTagValue($objectElement, $keyDestiny, $extraTextBefore, $extraTextAfter, 0) * $fatorConversao;
+            }
+        }
+
+        return '';
+    }
+
+    /**
      * descricaoCarga
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
      *
@@ -1594,26 +1658,23 @@ class Dacte extends DaCommon
         $y += 8;
         $x = $oldX;
         $this->pdf->line($x, $y, $w + 1, $y);
-        //Identifica código da unidade
-        //01 = KG (QUILOS)
-        $qCarga = 0;
-        foreach ($this->infQ as $infQ) {
-            if (in_array($this->getTagValue($infQ, "cUnid"), array('01', '02'))) {
-                $qCarga += (float)$this->getTagValue($infQ, "qCarga");
-            }
-        }
+
+        //PESO BRUTO (KG)
         $texto = 'PESO BRUTO (KG)';
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 5,
             'style' => '');
         $this->pdf->textBox($x + 8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = number_format($qCarga, 3, ",", ".");
+        $valorPesoBruto = $this->getTagValueByTagReference($this->infQ, 'tpMed', self::TIPOMEDIDA_PESOBRUTO, 'qCarga');
+        $texto = number_format($valorPesoBruto, 3, ",", ".");
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
             'style' => 'B');
         $this->pdf->textBox($x + 2, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+
+        //PESO BASE CÁLCULO (KG)
         $x = $w * 0.12;
         $this->pdf->line($x + 13.5, $y, $x + 13.5, $y + 9);
         $texto = 'PESO BASE CÁLCULO (KG)';
@@ -1622,12 +1683,15 @@ class Dacte extends DaCommon
             'size' => 5,
             'style' => '');
         $this->pdf->textBox($x + 20, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = number_format($qCarga, 3, ",", ".");
+        $valorPesoBaseCalculo = $this->getTagValueByTagReference($this->infQ, 'tpMed', self::TIPOMEDIDA_PESOBASECALCULO, 'qCarga');
+        $texto = number_format($valorPesoBaseCalculo, 3, ",", ".");
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
             'style' => 'B');
         $this->pdf->textBox($x + 17, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+
+        //PESO AFERIDO (KG)
         $x = $w * 0.24;
         $this->pdf->line($x + 25, $y, $x + 25, $y + 9);
         $texto = 'PESO AFERIDO (KG)';
@@ -1636,41 +1700,36 @@ class Dacte extends DaCommon
             'size' => 5,
             'style' => '');
         $this->pdf->textBox($x + 35, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = number_format($qCarga, 3, ",", ".");
+        $valorPesoAferido = $this->getTagValueByTagReference($this->infQ, 'tpMed', self::TIPOMEDIDA_PESOAFERIDO, 'qCarga');
+        $texto = number_format($valorPesoAferido, 3, ",", ".");
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
             'style' => 'B');
         $this->pdf->textBox($x + 28, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+
+        //CUBAGEM(M3)
         $x = $w * 0.36;
         $this->pdf->line($x + 41.3, $y, $x + 41.3, $y + 9);
         $texto = 'CUBAGEM(M3)';
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x + 60, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $qCarga = 0;
-        foreach ($this->infQ as $infQ) {
-            if ($this->getTagValue($infQ, "cUnid") == '00') {
-                $qCarga += (float)$this->getTagValue($infQ, "qCarga");
-            }
-        }
-        $texto = !empty($qCarga) ? number_format($qCarga, 3, ",", ".") : '';
+        $valorCubagem = $this->getTagValueByTagReference($this->infQ, 'cUnid', self::CODIGOUNIDADEMEDIDA_M3, 'qCarga');
+        $texto = !empty($valorCubagem) ? number_format($valorCubagem, 3, ",", ".") : '';
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
             'style' => 'B');
         $this->pdf->textBox($x + 50, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+
+        //QTDE(VOL)
         $x = $w * 0.45;
         //$this->pdf->line($x+37, $y, $x+37, $y + 9);
         $texto = 'QTDE(VOL)';
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x + 85, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $qCarga = 0;
-        foreach ($this->infQ as $infQ) {
-            if ($this->getTagValue($infQ, "cUnid") == '03') {
-                $qCarga += (float)$this->getTagValue($infQ, "qCarga");
-            }
-        }
-        $texto = !empty($qCarga) ? number_format($qCarga, 3, ",", ".") : '';
+        $valorQuantidade = $this->getTagValueByTagReference($this->infQ, 'cUnid', self::CODIGOUNIDADEMEDIDA_UNIDADE, 'qCarga');
+        $texto = !empty($valorQuantidade) ? number_format($valorQuantidade, 3, ",", ".") : '';
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
