@@ -585,7 +585,7 @@ class Pdf extends Fpdf
                 $wordwidth = $this->getStringWidth($word);
                 if ($wordwidth > $maxwidth) {
                     // Word is too long, we cut it
-                    for ($i=0; $i<strlen($word); $i++) {
+                    for ($i=0; $i < strlen($word); $i++) {
                         $wordwidth = $this->getStringWidth(substr($word, $i, 1));
                         if ($width + $wordwidth <= $maxwidth) {
                             $width += $wordwidth;
@@ -598,10 +598,10 @@ class Pdf extends Fpdf
                     }
                 } elseif ($width + $wordwidth <= $maxwidth) {
                     $width += $wordwidth + $space;
-                    $text .= $word.' ';
+                    $text .= $word . ' ';
                 } else {
                     $width = $wordwidth + $space;
-                    $text = rtrim($text)."\n".$word.' ';
+                    $text = rtrim($text) . "\n" . $word . ' ';
                     $count++;
                 }
             }
