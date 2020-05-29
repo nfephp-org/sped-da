@@ -78,13 +78,17 @@ class DaCommon extends Common
      */
     protected $creditos;
     /**
+     * @var bool
+     */
+    protected $powered = true;
+    /**
      * @var string
      */
     protected $logomarca;
     /**
      * @var string
      */
-    protected $logoAlign = 'L';
+    protected $logoAlign = 'C';
     /**
      * @var \NFePHP\DA\Legacy\Pdf
      */
@@ -214,9 +218,10 @@ class DaCommon extends Common
      * @param string $message Mensagem do integrador a ser impressa no rodapé das paginas
      * @return void
      */
-    public function creditsIntegratorFooter($message = '')
+    public function creditsIntegratorFooter($message = '', $powered = true)
     {
         $this->creditos = trim($message);
+        $this->powered = $powered;
     }
 
     /**
