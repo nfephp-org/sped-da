@@ -360,7 +360,6 @@ class Danfe extends DaCommon
     
     protected function calculoItensPorPagina()
     {
-        
     }
 
     /**
@@ -484,9 +483,7 @@ class Danfe extends DaCommon
         $hissqn = 11;// para issqn
         $hfooter = 5;// para rodape
         $hCabecItens = 4;//cabeçalho dos itens
-        //
-        $hOCUPADA = 
-            $hcabecalho
+        $hOCUPADA = $hcabecalho
             + $hdestinatario
             + $hlocalentrega
             + $hlocalretirada
@@ -3279,7 +3276,6 @@ class Danfe extends DaCommon
     }
 
     /**
-     * pCcanhotoDANFE
      * Monta o canhoto da DANFE (retrato e paisagem)
      *
      * @name   canhotoDANFE
