@@ -15,7 +15,7 @@ try {
     //metodos publicos
     $da->debugMode(true);
     $da->setPaperWidth(80);
-    $da->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webenf.com.br', false);
+    $da->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webenf.com.br');
     //renderiza o PDF e retorna como uma scring
     $pdf = $da->render($logo);
     header('Content-Type: application/pdf');
