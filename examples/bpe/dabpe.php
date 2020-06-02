@@ -7,6 +7,7 @@ use NFePHP\DA\BPe\Dabpe;
 
 try {
     $xml = file_get_contents(__DIR__ . "/fixtures/bpe.xml");
+    //$logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(realpath(__DIR__ . '/../images/tulipas.png')));
     $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(realpath(__DIR__ . '/../images/logo.jpeg')));
     //$logo = realpath(__DIR__ . '/../images/tulipas.png');
 
@@ -14,7 +15,7 @@ try {
     //metodos publicos
     $da->debugMode(true);
     $da->setPaperWidth(80);
-    $da->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webenf.com.br');
+    $da->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webenf.com.br', false);
     //renderiza o PDF e retorna como uma scring
     $pdf = $da->render($logo);
     header('Content-Type: application/pdf');

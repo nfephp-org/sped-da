@@ -346,7 +346,7 @@ class Dabpe extends DaCommon
         $hMaxLinha = $this->hMaxLinha;
         $hBoxLinha = $this->hBoxLinha;
         $hLinha = $this->hLinha;
-        $tamPapelVert = 190 + (($qtdItens - 1) * $hLinha) + ($qtdPgto * $hLinha);
+        $tamPapelVert = 205 + (($qtdItens - 1) * $hLinha) + ($qtdPgto * $hLinha);
         // verifica se existe informações adicionais
         $this->orientacao = 'P';
         $this->papel = [$this->paperwidth, $tamPapelVert];
@@ -378,6 +378,7 @@ class Dabpe extends DaCommon
         $this->pdf->setLineWidth(0.1); // define a largura da linha
         $this->pdf->setTextColor(0, 0, 0);
         $this->pdf->textBox(0, 0, $maxW, $maxH); // POR QUE PRECISO DESA LINHA?
+        
         $hcabecalho = 16;//para cabeçalho (dados emitente mais logomarca)  (FIXO)
         if (strlen($this->getTagValue($this->emit, "xNome")) > 40) {
             $hcabecalho += 2;
@@ -446,7 +447,10 @@ class Dabpe extends DaCommon
         //creditos do integrador
         $aFont = array('font' => $this->fontePadrao, 'size' => 6, 'style' => 'I');
         $this->pdf->textBox($x, $this->hPrint-1, $this->wPrint, 3, $this->creditos, $aFont, 'T', 'L', false, '', false);
-        $texto = "Powered by NFePHP®";
+        $texto = '';
+        if ($this->powered) {
+            $texto = "Powered by NFePHP®";
+        }
         $this->pdf->textBox($x, $this->hPrint-1, $this->wPrint, 0, $texto, $aFont, 'T', 'R', false, '');
     }
 
@@ -556,7 +560,7 @@ class Dabpe extends DaCommon
                 $nImgH = 18;
                 $nImgW = round($logoWmm * ($nImgH/$logoHmm), 0);
             }
-            $yImg = 15;
+            $yImg = $y;
             $this->pdf->image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, 'jpeg');
             $xRs = ($maxW * 0.4) + $margemInterna;
             $wRs = ($maxW * 0.6);
@@ -962,7 +966,6 @@ class Dabpe extends DaCommon
             $texto = "TIPO DE DESCONTO: " . $xtpDesconto;
             $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTex, 'T', 'C', false, '', false);
         }
-
         $texto = "BP-e nº " . $nBP . " Série " . $serieBPe . " " . $dhEmiLocalFormat;
         $y += $this->hLinha;
         $this->pdf->textBox($x, $y, $w, $hLinha, $texto, $aFontTit, 'T', 'C', false, '', false);
@@ -1017,7 +1020,7 @@ class Dabpe extends DaCommon
 
     protected function qrCodeDABPE($x = 0, $y = 0, $h = 0)
     {
-        $y += 30;
+        $y += 38;
         $margemInterna = $this->margemInterna;
         $maxW = $this->wPrint;
         $w = ($maxW * 1) + 4;
