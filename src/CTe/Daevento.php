@@ -107,14 +107,6 @@ class Daevento extends DaCommon
         $this->nProt = $this->rinfEvento->getElementsByTagName("nProt")->item(0)->nodeValue;
     }
 
-    /**
-     * Add the credits to the integrator in the footer message
-     * @param string $message
-     */
-    public function creditsIntegratorFooter($message = '')
-    {
-        $this->creditos = trim($message);
-    }
 
     /**
      * monta
@@ -443,11 +435,11 @@ class Daevento extends DaCommon
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'I');
         $this->pdf->textBox($x, $y, $w, 20, $texto, $aFont, 'T', 'C', 0, '', false);
         $y = $this->hPrint - 4;
-        $texto = "Impresso em  " . date('d/m/Y   H:i:s');
+        $texto = "Impresso em  " . date('d/m/Y   H:i:s') . ' ' . $this->creditos;
         $w = $this->wPrint - 4;
         $aFont = array('font' => $this->fontePadrao, 'size' => 6, 'style' => 'I');
         $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = $this->creditos . "  Powered by NFePHP®";
+        $texto = $this->powered ? "Powered by NFePHP®" : '';
         $aFont = array('font' => $this->fontePadrao, 'size' => 6, 'style' => 'I');
         $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'R', 0, 'http://www.nfephp.org');
     }

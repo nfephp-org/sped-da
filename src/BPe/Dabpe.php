@@ -448,9 +448,7 @@ class Dabpe extends DaCommon
         $aFont = array('font' => $this->fontePadrao, 'size' => 6, 'style' => 'I');
         $this->pdf->textBox($x, $this->hPrint-1, $this->wPrint, 3, $this->creditos, $aFont, 'T', 'L', false, '', false);
         $texto = '';
-        if ($this->powered) {
-            $texto = "Powered by NFePHP®";
-        }
+        $texto = $this->powered ? "Powered by NFePHP®" : '';
         $this->pdf->textBox($x, $this->hPrint-1, $this->wPrint, 0, $texto, $aFont, 'T', 'R', false, '');
     }
 

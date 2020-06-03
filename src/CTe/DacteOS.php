@@ -960,15 +960,14 @@ class DacteOS extends DaCommon
      */
     protected function rodape($x, $y)
     {
-        $texto = "Impresso em  " . date('d/m/Y   H:i:s');
+        $texto = "Impresso em  " . date('d/m/Y   H:i:s') . ' ' .  $this->creditos;
         $w = $this->wPrint - 4;
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 6,
             'style' => '');
         $this->pdf->textBox($x-1, $y+2, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
-
-        $texto = $this->creditos .  "  Powered by NFePHP®";
+        $texto = $this->powered ? "Powered by NFePHP®" : '';
         $this->pdf->textBox($x, $y, $w, 0, $texto, $aFont, 'T', 'R', false, '');
     }
 
