@@ -2426,13 +2426,4 @@ class DacteOS extends DaCommon
         $pic = 'data://text/plain;base64,' . base64_encode($qrcode);
         $this->pdf->image($pic, $xQr, $yQr, $wQr, $hQr, 'PNG');
     }
-
-    /**
-     * Add the credits to the integrator in the footer message
-     * @param string $message
-     */
-    public function creditsIntegratorFooter($message = '')
-    {
-        $this->creditos = trim($message);
-    }
 }
