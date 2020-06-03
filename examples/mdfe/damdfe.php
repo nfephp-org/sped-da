@@ -13,6 +13,7 @@ try {
     $damdfe = new Damdfe($xml);
     $damdfe->debugMode(true);
     $damdfe->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webenf.com.br');
+    //$damdfe->logoParameters($logo, 'L');
     $pdf = $damdfe->render($logo);
     header('Content-Type: application/pdf');
     echo $pdf;

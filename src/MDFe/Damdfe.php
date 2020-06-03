@@ -42,6 +42,10 @@ class Damdfe extends DaCommon
     protected $nProt;
     protected $tpEmis;
     protected $qrCodMDFe;
+    /**
+     * @var string
+     */
+    protected $logoAlign = 'L';
     private $dom;
 
     /**
@@ -148,8 +152,7 @@ class Damdfe extends DaCommon
     }
     
     protected function monta(
-        $logo = '',
-        $depecNumReg = null
+        $logo = ''
     ) {
         $this->pdf = '';
         if (!empty($logo)) {
@@ -1174,23 +1177,16 @@ class Damdfe extends DaCommon
         ' . $this->infCpl;
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         $this->pdf->textBox($x, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-        $y = $this->hPrint - 4;
-        $texto = "Impresso em  " . date('d/m/Y H:i:s');
+        //$y = $this->hPrint - 4;
+        $y = $this->hPrint+8;
+        $texto = "Impresso em  " . date('d/m/Y H:i:s') . ' ' . $this->creditos;
         $w = $this->wPrint - 4;
         $aFont = array('font' => $this->fontePadrao, 'size' => 6, 'style' => 'I');
         $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = $this->creditos . "  Powered by NFePHP®";
+        $texto = '';
+        if ($this->powered) {
+            $texto = "Powered by NFePHP®";
+        }
         $this->pdf->textBox($x, $y, $w, 0, $texto, $aFont, 'T', 'R', false, '');
-    }
-
-    
-    /**
-     * Add the credits to the integrator in the footer message
-     *
-     * @param string $message
-     */
-    public function creditsIntegratorFooter($message = '')
-    {
-        $this->creditos = trim($message);
     }
 }

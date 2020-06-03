@@ -103,15 +103,6 @@ class Danfce extends DaCommon
     }
     
     /**
-     * Add the credits to the integrator in the footer message
-     * @param string $message
-     */
-    public function creditsIntegratorFooter($message = '')
-    {
-        $this->creditos = trim($message);
-    }
-    
-    /**
      * Dados brutos do PDF
      * @return string
      */
