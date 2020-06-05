@@ -93,7 +93,8 @@ class Dacte extends DaCommon
      */
     public function __construct(
         $xml = ''
-    ) {
+    )
+    {
         $this->loadDoc($xml);
     }
 
@@ -210,15 +211,16 @@ class Dacte extends DaCommon
      * A definição de margens e posições iniciais para a impressão são estabelecidas no
      * pelo conteúdo da funçao e podem ser modificados.
      *
-     * @param  string $orientacao (Opcional) Estabelece a orientação da
+     * @param string $orientacao (Opcional) Estabelece a orientação da
      *                impressão (ex. P-retrato), se nada for fornecido será
      *                usado o padrão da NFe
-     * @param  string $papel (Opcional) Estabelece o tamanho do papel (ex. A4)
+     * @param string $papel (Opcional) Estabelece o tamanho do papel (ex. A4)
      * @return string O ID da NFe numero de 44 digitos extraido do arquivo XML
      */
     protected function monta(
         $logo = ''
-    ) {
+    )
+    {
         if (!empty($logo)) {
             $this->logomarca = $this->adjustImage($logo);
         }
@@ -361,7 +363,9 @@ class Dacte extends DaCommon
                     $r = $this->modalAereo($x, $y);
                     break;
                 case '3':
-                    $y += 17.9;
+                    if(empty($this->detCont)) {
+                        $y += 17.9;
+                    }
                     $x = $xInic;
                     $r = $this->modalAquaviario($x, $y);
                     $y += 37.5;
@@ -421,7 +425,8 @@ class Dacte extends DaCommon
             $this->rodape(2, $this->hPrint - 2);
         } else {
             $this->rodape($xInic, $this->hPrint + 2.3);
-        }if ($this->modal == 3) {
+        }
+        if ($this->modal == 3) {
             if ($this->flagDetContContinuacao == 1) {
                 $this->detContContinuacao(1, 71);
             }
@@ -436,10 +441,10 @@ class Dacte extends DaCommon
      * cabecalho
      * Monta o cabelhalho da DACTE ( retrato e paisagem )
      *
-     * @param  number $x Posição horizontal inicial, canto esquerdo
-     * @param  number $y Posição vertical inicial, canto superior
-     * @param  number $pag Número da Página
-     * @param  number $totPag Total de páginas
+     * @param number $x Posição horizontal inicial, canto esquerdo
+     * @param number $y Posição vertical inicial, canto superior
+     * @param number $pag Número da Página
+     * @param number $totPag Total de páginas
      * @return number Posição vertical final
      */
     protected function cabecalho($x = 0, $y = 0, $pag = '1', $totPag = '1')
@@ -1096,7 +1101,7 @@ class Dacte extends DaCommon
      */
     protected function rodape($x, $y)
     {
-        $texto = "Impresso em  " . date('d/m/Y H:i:s') . ' ' . $this->creditos ;
+        $texto = "Impresso em  " . date('d/m/Y H:i:s') . ' ' . $this->creditos;
         $w = $this->wPrint - 4;
         $aFont = array(
             'font' => $this->fontePadrao,
@@ -1116,8 +1121,8 @@ class Dacte extends DaCommon
      * remetente
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
      *
-     * @param  number $x Posição horizontal canto esquerdo
-     * @param  number $y Posição vertical canto superior
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
     protected function remetente($x = 0, $y = 0)
@@ -1137,7 +1142,7 @@ class Dacte extends DaCommon
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', true, '');
         $aFont = $this->formatNegrito;
         $texto = $this->getTagValue($this->rem, "xNome");
-        $this->pdf->textBox($x1, $y, $w-18, $h, $texto, $aFont, 'T', 'L', false, '', true);
+        $this->pdf->textBox($x1, $y, $w - 18, $h, $texto, $aFont, 'T', 'L', false, '', true);
         $y += 3;
         $texto = 'ENDEREÇO';
         $aFont = $this->formatPadrao;
@@ -1204,8 +1209,8 @@ class Dacte extends DaCommon
      * destinatario
      * Monta o campo com os dados do destinatário na DACTE.
      *
-     * @param  number $x Posição horizontal canto esquerdo
-     * @param  number $y Posição vertical canto superior
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
     protected function destinatario($x = 0, $y = 0)
@@ -1225,7 +1230,7 @@ class Dacte extends DaCommon
         $this->pdf->textBox($x - 0.5, $y, $w, $h, $texto, $aFont, 'T', 'L', true, '');
         $aFont = $this->formatNegrito;
         $texto = $this->getTagValue($this->dest, "xNome");
-        $this->pdf->textBox($x1, $y, $w-18, $h, $texto, $aFont, 'T', 'L', false, '', true);
+        $this->pdf->textBox($x1, $y, $w - 18, $h, $texto, $aFont, 'T', 'L', false, '', true);
         $y += 3;
         $texto = 'ENDEREÇO';
         $aFont = $this->formatPadrao;
@@ -1291,8 +1296,8 @@ class Dacte extends DaCommon
      * expedidor
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
      *
-     * @param  number $x Posição horizontal canto esquerdo
-     * @param  number $y Posição vertical canto superior
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
     protected function expedidor($x = 0, $y = 0)
@@ -1388,8 +1393,8 @@ class Dacte extends DaCommon
      * recebedor
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
      *
-     * @param  number $x Posição horizontal canto esquerdo
-     * @param  number $y Posição vertical canto superior
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
     protected function recebedor($x = 0, $y = 0)
@@ -1485,8 +1490,8 @@ class Dacte extends DaCommon
      * tomador
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
      *
-     * @param  number $x Posição horizontal canto esquerdo
-     * @param  number $y Posição vertical canto superior
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
     protected function tomador($x = 0, $y = 0)
@@ -1574,8 +1579,8 @@ class Dacte extends DaCommon
      * descricaoCarga
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
      *
-     * @param  number $x Posição horizontal canto esquerdo
-     * @param  number $y Posição vertical canto superior
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
     protected function descricaoCarga($x = 0, $y = 0)
@@ -1751,8 +1756,8 @@ class Dacte extends DaCommon
      * compValorServ
      * Monta o campo com os componentes da prestação de serviços.
      *
-     * @param  number $x Posição horizontal canto esquerdo
-     * @param  number $y Posição vertical canto superior
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
     protected function compValorServ($x = 0, $y = 0)
@@ -1850,8 +1855,8 @@ class Dacte extends DaCommon
      * impostos
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
      *
-     * @param  number $x Posição horizontal canto esquerdo
-     * @param  number $y Posição vertical canto superior
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
     protected function impostos($x = 0, $y = 0)
@@ -2185,7 +2190,7 @@ class Dacte extends DaCommon
         }
         $qtdeNFe = 1;
         $qtdDocs = count($this->arrayNFe) + $totalNF;
-        if ($qtdDocs) {
+        if ($qtdDocs > 7) {
             $this->flagDetContContinuacao = 1;
         }
 
@@ -2228,20 +2233,17 @@ class Dacte extends DaCommon
         }
         //$r = $this->cabecalho(1, 1, '1', $this->totPag);
         $contador = 0;
-        if ($totalNF < 7) {
-            while ($contador < count($this->arrayNFe)) {
-                if ($contador == 7) {
+        if ($qtdDocs < 7) {
+            while ($contador < $qtdDocs - $totalNF) {
+                if ($contador == 8) {
                     break;
                 }
+                $auxX = $oldX;
                 $tp = 'NF-e';
                 $chaveNFe = $this->arrayNFe[$contador];
                 $numNFe = substr($chaveNFe, 25, 9);
                 $serieNFe = substr($chaveNFe, 22, 3);
                 $doc = $serieNFe . '/' . $numNFe;
-                if ($auxX > $w * 0.90) {
-                    $yIniDados = $yIniDados + 3.5;
-                    $auxX = $oldX;
-                }
                 $texto = $tp;
                 $aFont = array(
                     'font' => $this->fontePadrao,
@@ -2264,43 +2266,10 @@ class Dacte extends DaCommon
                 $this->pdf->textBox($auxX, $yIniDados, $w * 0.30, $h, $texto, $aFont, 'T', 'L', 0, '');
                 $auxX += $w * 0.15;
                 $contador++;
+                $yIniDados = $yIniDados + 3.5;
             }
         } else {
 
-        }
-        foreach ($this->infOutros as $k => $d) {
-            $temp = $this->infOutros->item($k);
-            $tpDoc = $this->getTagValue($temp, "tpDoc");
-            $descOutros = $this->getTagValue($temp, "descOutros");
-            $nDoc = $this->getTagValue($temp, "nDoc");
-            $dEmi = "Emissão: " . date('d/m/Y', strtotime($this->getTagValue($temp, "dEmi")));
-            $vDocFisc = $this->getTagValue($temp, "vDocFisc", "Valor: ");
-            $dPrev = "Entrega: " . date('d/m/Y', strtotime($this->getTagValue($temp, "dPrev")));
-            switch ($tpDoc) {
-                case "00":
-                    $tpDoc = "00 - Declaração";
-                    break;
-                case "10":
-                    $tpDoc = "10 - Dutoviário";
-                    break;
-                case "99":
-                    $tpDoc = "99 - Outros: [" . $descOutros . "]";
-                    break;
-                default:
-                    break;
-            }
-            $numeroDocumento = $nDoc;
-            $cnpjChave = $dEmi . " " . $vDocFisc . " " . $dPrev;
-            if ($auxX > $w * 0.90) {
-                $yIniDados = $yIniDados + 4;
-                $auxX = $oldX;
-            }
-            $this->pdf->textBox($auxX, $yIniDados, $w * 0.10, $h, $tpDoc, $aFont, 'T', 'L', 0, '');
-            $auxX += $w * 0.09;
-            $this->pdf->textBox($auxX, $yIniDados, $w * 0.27, $h, $cnpjChave, $aFont, 'T', 'L', 0, '');
-            $auxX += $w * 0.28;
-            $this->pdf->textBox($auxX, $yIniDados, $w * 0.30, $h, $nDoc, $aFont, 'T', 'L', 0, '');
-            $auxX += $w * 0.14;
         }
     }
 
@@ -2432,8 +2401,8 @@ class Dacte extends DaCommon
      * docOrig
      * Monta o campo com os documentos originarios.
      *
-     * @param  number $x Posição horizontal canto esquerdo
-     * @param  number $y Posição vertical canto superior
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
     protected function docOrig($x = 0, $y = 0)
@@ -2728,8 +2697,8 @@ class Dacte extends DaCommon
      * docOrigContinuacao
      * Monta o campo com os documentos originarios.
      *
-     * @param  number $x Posição horizontal canto esquerdo
-     * @param  number $y Posição vertical canto superior
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
     protected function docOrigContinuacao($x = 0, $y = 0)
@@ -2918,8 +2887,8 @@ class Dacte extends DaCommon
      * observacao
      * Monta o campo com os dados do remetente na DACTE.
      *
-     * @param  number $x Posição horizontal canto esquerdo
-     * @param  number $y Posição vertical canto superior
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
     protected function observacao($x = 0, $y = 0)
@@ -2961,8 +2930,8 @@ class Dacte extends DaCommon
      * modalRod
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
      *
-     * @param  number $x Posição horizontal canto esquerdo
-     * @param  number $y Posição vertical canto superior
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
     protected function modalRod($x = 0, $y = 0)
@@ -3002,8 +2971,8 @@ class Dacte extends DaCommon
      * modalAereo
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
      *
-     * @param  number $x Posição horizontal canto esquerdo
-     * @param  number $y Posição vertical canto superior
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
     protected function modalAereo($x = 0, $y = 0)
@@ -3059,8 +3028,8 @@ class Dacte extends DaCommon
      * modalAquaviario
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
      *
-     * @param  number $x Posição horizontal canto esquerdo
-     * @param  number $y Posição vertical canto superior
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
     protected function modalAquaviario($x = 0, $y = 0)
@@ -3176,8 +3145,8 @@ class Dacte extends DaCommon
      * modalFerr
      * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
      *
-     * @param  number $x Posição horizontal canto esquerdo
-     * @param  number $y Posição vertical canto superior
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
     protected function modalFerr($x = 0, $y = 0)
@@ -3454,8 +3423,8 @@ class Dacte extends DaCommon
      * canhoto
      * Monta o campo com os dados do remetente na DACTE.
      *
-     * @param  number $x Posição horizontal canto esquerdo
-     * @param  number $y Posição vertical canto superior
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
      * @return number Posição vertical final
      */
     protected function canhoto($x = 0, $y = 0)
@@ -3528,9 +3497,9 @@ class Dacte extends DaCommon
      * dadosAdic
      * Coloca o grupo de dados adicionais da DACTE.
      *
-     * @param  number $x Posição horizontal canto esquerdo
-     * @param  number $y Posição vertical canto superior
-     * @param  number $h altura do campo
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
+     * @param number $h altura do campo
      * @return number Posição vertical final
      */
     protected function dadosAdic($x, $y, $pag, $h)
@@ -3611,7 +3580,7 @@ class Dacte extends DaCommon
      * formatCNPJCPF
      * Formata campo CnpjCpf contida na CTe
      *
-     * @param  string $field campo cnpjCpf da CT-e
+     * @param string $field campo cnpjCpf da CT-e
      * @return string
      */
     protected function formatCNPJCPF($field)
@@ -3634,7 +3603,7 @@ class Dacte extends DaCommon
      * formatFone
      * Formata campo fone contida na CTe
      *
-     * @param  string $field campo fone da CT-e
+     * @param string $field campo fone da CT-e
      * @return string
      */
     protected function formatFone($field)
@@ -3660,7 +3629,7 @@ class Dacte extends DaCommon
      * unidade
      * Converte a imformação de peso contida na CTe
      *
-     * @param  string $c unidade de trafego extraida da CTe
+     * @param string $c unidade de trafego extraida da CTe
      * @return string
      */
     protected function unidade($c = '')
@@ -3694,7 +3663,7 @@ class Dacte extends DaCommon
      * convertUnidTrafego
      * Converte a imformação de peso contida na CTe
      *
-     * @param  string $U Informação de trafego extraida da CTe
+     * @param string $U Informação de trafego extraida da CTe
      * @return string
      */
     protected function convertUnidTrafego($U = '')
@@ -3722,7 +3691,7 @@ class Dacte extends DaCommon
      * multiUniPeso
      * Fornece a imformação multiplicação de peso contida na CTe
      *
-     * @param  interger $U Informação de peso extraida da CTe
+     * @param interger $U Informação de peso extraida da CTe
      * @return interger
      */
     protected function multiUniPeso($U = '')
