@@ -93,8 +93,7 @@ class Dacte extends DaCommon
      */
     public function __construct(
         $xml = ''
-    )
-    {
+    ) {
         $this->loadDoc($xml);
     }
 
@@ -219,8 +218,7 @@ class Dacte extends DaCommon
      */
     protected function monta(
         $logo = ''
-    )
-    {
+    ) {
         if (!empty($logo)) {
             $this->logomarca = $this->adjustImage($logo);
         }
@@ -363,7 +361,7 @@ class Dacte extends DaCommon
                     $r = $this->modalAereo($x, $y);
                     break;
                 case '3':
-                    if(empty($this->detCont)) {
+                    if (empty($this->detCont)) {
                         $y += 17.9;
                     }
                     $x = $xInic;
@@ -2143,7 +2141,10 @@ class Dacte extends DaCommon
                     $nLacre .= $this->getTagValue($lacre, 'nLacre') . '/';
                 }
                 $texto = substr($nLacre, 0, -1);
-                $this->arrayCont[] = ["nCont" => $this->detCont->item($k)->getElementsByTagName('nCont')->item(0)->nodeValue, "nLacre" => $texto];
+                $this->arrayCont[] = [
+                    "nCont" => $this->detCont->item($k)->getElementsByTagName('nCont')->item(0)->nodeValue,
+                    "nLacre" => $texto
+                ];
             }
             if ($qtdCont < 8) {
                 $this->pdf->textBox($x - $w * 0.2, $yCont, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
@@ -2151,7 +2152,10 @@ class Dacte extends DaCommon
             foreach ($infNF as $i => $z) {
                 $totalNF += 1;
                 if ($totalNF > 7) {
-                    $this->arrayNF[] = ["serie" => $this->getTagValue($infNF->item($i), 'serie'), "nDoc" => $this->getTagValue($infNF->item($i), 'nDoc')];
+                    $this->arrayNF[] = [
+                        "serie" => $this->getTagValue($infNF->item($i), 'serie'),
+                        "nDoc" => $this->getTagValue($infNF->item($i), 'nDoc')
+                    ];
                 } else {
                     $tp = 'NF';
                     $cnpj = '-';
@@ -2269,7 +2273,6 @@ class Dacte extends DaCommon
                 $yIniDados = $yIniDados + 3.5;
             }
         } else {
-
         }
     }
 
@@ -2393,7 +2396,6 @@ class Dacte extends DaCommon
                 $yIniDados = $yIniDados + 3;
                 $contador++;
             }
-
         }
     }
 
