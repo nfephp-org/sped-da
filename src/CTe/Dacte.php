@@ -70,7 +70,7 @@ class Dacte extends DaCommon
     protected $vPrest;
     protected $textoAdic = '';
     protected $aquav;
-    protected $detCont = array();
+    protected $detCont;
     protected $arrayCont = array();
     protected $idDocAntEle = [];
     protected $qrCodCTe;
@@ -322,11 +322,10 @@ class Dacte extends DaCommon
             $r = $this->impostos($x, $y);
             $y += 13;
             $x = $xInic;
-            if (empty($this->detCont)) {
-                $r = $this->docOrig($x, $y);
-            } else {
+            if ($this->detCont->length) {
                 $r = $this->detCont($x, $y);
-                $y += 33;
+            } else {
+                $r = $this->docOrig($x, $y);
             }
             if ($this->modal == '1') {
                 if ($this->lota == 1) {
@@ -338,8 +337,8 @@ class Dacte extends DaCommon
             } elseif ($this->modal == '2') {
                 $y += 53;
             } elseif ($this->modal == '3') {
-                if (empty($this->detCont)) {
-                    $y += 33;
+                if ($this->detCont->length) {
+                    $y += 15;
                 }
             } else {
                 $y += 24.95;
@@ -361,7 +360,7 @@ class Dacte extends DaCommon
                     $r = $this->modalAereo($x, $y);
                     break;
                 case '3':
-                    if (empty($this->detCont)) {
+                    if ($this->detCont->length) {
                         $y += 17.9;
                     }
                     $x = $xInic;
@@ -412,7 +411,11 @@ class Dacte extends DaCommon
         }
         $x = $xInic;
         if ($this->modal == 3) {
-            $y -= 30;
+            if ($this->detCont->length) {
+                $y -= 30;
+            } else {
+                $y -= 17.5;
+            }
         }
         $r = $this->dadosAdic($x, $y, $pag, $totPag);
         //$y += 19;
@@ -427,6 +430,8 @@ class Dacte extends DaCommon
         if ($this->modal == 3) {
             if ($this->flagDetContContinuacao == 1) {
                 $this->detContContinuacao(1, 71);
+            } else if ($this->flagDocOrigContinuacao == 1) {
+                $this->docOrigContinuacao(1, 71);
             }
         } else {
             if ($this->flagDocOrigContinuacao == 1) {
@@ -2228,10 +2233,10 @@ class Dacte extends DaCommon
             case ($qtdDocs > 116):
                 $this->totPag = 3;
                 break;
-            case ($qtdDocs > 16):
+            case ($qtdDocs > 12):
                 $this->totPag = 2;
                 break;
-            case ($qtdDocs <= 7):
+            case ($qtdDocs <= 12):
                 $this->totPag = 1;
                 break;
         }
@@ -2459,7 +2464,7 @@ class Dacte extends DaCommon
         } elseif ($this->modal == '2') {
             $this->pdf->line($x, $y, $x, $y + 49.5);
         } elseif ($this->modal == '3') {
-            $this->pdf->line($x, $y, $x, $y + 34.1);
+            $this->pdf->line($x, $y, $x, $y + 24);
         } else {
             $this->pdf->line($x, $y, $x, $y + 21.5);
         }
@@ -3045,7 +3050,7 @@ class Dacte extends DaCommon
         }
         $w = $maxW;
         $h = 8.5;
-        if (empty($this->detCont)) {
+        if ($this->detCont->length) {
             $texto = 'DETALHAMENTO DO CONTAINER - INFORMAÇÕES ESPECÍFICAS DO MODAL AQUAVIÁRIO';
             $aFont = $this->formatPadrao;
             $this->pdf->textBox($x, $y, $w, $h * 1.3, $texto, $aFont, 'T', 'C', 1, '');
@@ -3060,6 +3065,8 @@ class Dacte extends DaCommon
             $aFont = $this->formatPadrao;
             $this->pdf->textBox($x, $y, $w * 0.33, $h, $texto, $aFont, 'T', 'L', 0, '');
             $y += 7.5;
+        } else {
+            $y += 27.5;
         }
         $texto = 'PREVISÃO DO FLUXO DE CARGA';
         $aFont = $this->formatPadrao;
