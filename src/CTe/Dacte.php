@@ -322,7 +322,7 @@ class Dacte extends DaCommon
             $r = $this->impostos($x, $y);
             $y += 13;
             $x = $xInic;
-            if ($this->detCont->length) {
+            if (!empty($this->detCont)) {
                 $r = $this->detCont($x, $y);
             } else {
                 $r = $this->docOrig($x, $y);
@@ -337,7 +337,7 @@ class Dacte extends DaCommon
             } elseif ($this->modal == '2') {
                 $y += 53;
             } elseif ($this->modal == '3') {
-                if ($this->detCont->length) {
+                if (!empty($this->detCont)) {
                     $y += 15;
                 }
             } else {
@@ -360,7 +360,7 @@ class Dacte extends DaCommon
                     $r = $this->modalAereo($x, $y);
                     break;
                 case '3':
-                    if ($this->detCont->length) {
+                    if (!empty($this->detCont)) {
                         $y += 17.9;
                     }
                     $x = $xInic;
@@ -411,7 +411,7 @@ class Dacte extends DaCommon
         }
         $x = $xInic;
         if ($this->modal == 3) {
-            if ($this->detCont->length) {
+            if (!empty($this->detCont)) {
                 $y -= 30;
             } else {
                 $y -= 17.5;
@@ -3050,7 +3050,7 @@ class Dacte extends DaCommon
         }
         $w = $maxW;
         $h = 8.5;
-        if ($this->detCont->length) {
+        if (!empty($this->detCont)) {
             $texto = 'DETALHAMENTO DO CONTAINER - INFORMAÇÕES ESPECÍFICAS DO MODAL AQUAVIÁRIO';
             $aFont = $this->formatPadrao;
             $this->pdf->textBox($x, $y, $w, $h * 1.3, $texto, $aFont, 'T', 'C', 1, '');
