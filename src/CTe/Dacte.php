@@ -322,7 +322,7 @@ class Dacte extends DaCommon
             $r = $this->impostos($x, $y);
             $y += 13;
             $x = $xInic;
-            if (!empty($this->detCont)) {
+            if ($this->detCont->length > 0) {
                 $r = $this->detCont($x, $y);
             } else {
                 $r = $this->docOrig($x, $y);
