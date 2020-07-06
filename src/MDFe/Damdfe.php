@@ -150,7 +150,7 @@ class Damdfe extends DaCommon
             }
         }
     }
-    
+
     protected function monta(
         $logo = ''
     ) {
@@ -1172,7 +1172,12 @@ class Damdfe extends DaCommon
     {
         $maxW = $this->wPrint;
         $x2 = $maxW;
-        $this->pdf->textBox($x, $y, $x2, 30);
+        if ($this->orientacao == 'P') {
+            $h = 145;
+        } else {
+            $h = 45;
+        }
+        $this->pdf->textBox($x, $y, $x2, $h);
         $texto = 'Observação
         ' . $this->infCpl;
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
