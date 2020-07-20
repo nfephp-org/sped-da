@@ -430,7 +430,7 @@ class Dacte extends DaCommon
         if ($this->modal == 3) {
             if ($this->flagDetContContinuacao == 1) {
                 $this->detContContinuacao(1, 71);
-            } else if ($this->flagDocOrigContinuacao == 1) {
+            } elseif ($this->flagDocOrigContinuacao == 1) {
                 $this->docOrigContinuacao(1, 71);
             }
         } else {
