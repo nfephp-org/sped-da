@@ -48,6 +48,11 @@ class Danfe extends DaCommon
      */
     public $descProdInfoComplemento = true;
     /**
+     *`Parâmetro que habilita a geração de automatica de informações 
+     * @var boolean
+     */
+    public $gerarInformacoesAutomaticas = true;
+    /**
      * Parâmetro do controle se deve gerar quebras de linha com "\n" a partir de ";" na descrição do produto.
      * @var boolean
      */
@@ -3430,6 +3435,9 @@ class Danfe extends DaCommon
      */
     protected function geraInformacoesDaTagCompra()
     {
+        if (!$this->gerarInformacoesAutomaticas) {
+            return '';
+        }
         $saida = "";
         if (isset($this->compra)) {
             if (! empty($this->compra->getElementsByTagName("xNEmp")->item(0)->nodeValue)) {
@@ -3494,6 +3502,9 @@ class Danfe extends DaCommon
      */
     protected function geraInformacoesDasNotasReferenciadas()
     {
+        if (!$this->gerarInformacoesAutomaticas) {
+            return '';
+        }
         $formaNfeRef = "\r\nNFe Ref.: série:%d número:%d emit:%s em %s [%s]";
         $formaCTeRef = "\r\nCTe Ref.: série:%d número:%d emit:%s em %s [%s]";
         $formaNfRef = "\r\nNF  Ref.: série:%d numero:%d emit:%s em %s modelo: %d";
