@@ -868,6 +868,8 @@ class Danfe extends DaCommon
         $this->pdf->textBox($x, $y, $w, $h);
         $texto = 'IDENTIFICAÇÃO DO EMITENTE';
         $this->pdf->textBox($x, $y, $w, 5, $texto, $aFont, 'T', 'C', 0, '');
+        
+        $h -= 5; //Desconsiderar da altura o texto de identificação do emitente        
         //estabelecer o alinhamento
         //pode ser left L, center C, right R, full logo L
         //se for left separar 1/3 da largura para o tamanho da imagem
@@ -878,49 +880,51 @@ class Danfe extends DaCommon
         // coloca o logo
         if (!empty($this->logomarca)) {
             $logoInfo = getimagesize($this->logomarca);
+            $type = strtolower(explode('/', $logoInfo['mime'])[1]);
+
             //largura da imagem em mm
-            $logoWmm = ($logoInfo[0]/72)*25.4;
+            $logoWmm = ($logoInfo[0] / 72) * 25.4;
             //altura da imagem em mm
-            $logoHmm = ($logoInfo[1]/72)*25.4;
-            if ($this->logoAlign=='L') {
-                $nImgW = round($w/3, 0);
-                $nImgH = round($logoHmm * ($nImgW/$logoWmm), 0);
-                $xImg = $x+1;
-                $yImg = round(($h-$nImgH)/2, 0)+$y;
+            $logoHmm = ($logoInfo[1] / 72) * 25.4;
+            if ($this->logoAlign == 'L') {
+                $nImgW = min(round($w / 3, 0), $h - 2);
+                $nImgH = min(round($logoHmm * ($nImgW / $logoWmm), 0), $h - 2);
+                $xImg = $x + (round($w / 6, 0) - round($nImgW / 2, 0));
+                $yImg = ($y + 5) + (round(($h - 2) / 2, 0) - round($nImgH / 2, 0));
                 //estabelecer posições do texto
-                $x1 = round($xImg + $nImgW +1, 0);
-                $y1 = round($h/3+$y, 0);
-                $tw = round(2*$w/3, 0);
-            } elseif ($this->logoAlign=='C') {
-                $nImgH = round($h/3, 0);
-                $nImgW = round($logoWmm * ($nImgH/$logoHmm), 0);
-                $xImg = round(($w-$nImgW)/2+$x, 0);
-                $yImg = $y+3;
+                $x1 = round($xImg + $nImgW + 1, 0);
+                $y1 = round($h / 3 + $y, 0);
+                $tw = round(2 * $w / 3, 0);
+            } elseif ($this->logoAlign == 'C') {
+                $nImgH = round(($h - 2) / 3, 0);
+                $nImgW = round($logoWmm * ($nImgH / $logoHmm), 0);
+                $xImg = $x + (round($w / 2, 0) - round($nImgW / 2, 0));
+                $yImg = $y + 4;
                 $x1 = $x;
                 $y1 = round($yImg + $nImgH + 1, 0);
                 $tw = $w;
-            } elseif ($this->logoAlign=='R') {
-                $nImgW = round($w/3, 0);
-                $nImgH = round($logoHmm * ($nImgW/$logoWmm), 0);
-                $xImg = round($x+($w-(1+$nImgW)), 0);
-                $yImg = round(($h-$nImgH)/2, 0)+$y;
+            } elseif ($this->logoAlign == 'R') {
+                $nImgW = min(round($w / 3, 0), $h - 2);
+                $nImgH = min(round($logoHmm * ($nImgW / $logoWmm), 0), $h - 2);
+                $xImg = $x + ($w - (round($w / 6, 0) + round($nImgW / 2, 0)));
+                $yImg = ($y + 5) + (round(($h - 2) / 2, 0) - round($nImgH / 2, 0));
                 $x1 = $x;
-                $y1 = round($h/3+$y, 0);
-                $tw = round(2*$w/3, 0);
-            } elseif ($this->logoAlign=='F') {
-                $nImgH = round($h-5, 0);
-                $nImgW = round($logoWmm * ($nImgH/$logoHmm), 0);
-                $xImg = round(($w-$nImgW)/2+$x, 0);
-                $yImg = $y+3;
+                $y1 = round($h / 3 + $y, 0);
+                $tw = round(2 * $w / 3, 0);
+            } elseif ($this->logoAlign == 'F') {
+                $nImgH = round($h - 5, 0);
+                $nImgW = round($logoWmm * ($nImgH / $logoHmm), 0);
+                $xImg = round(($w - $nImgW) / 2 + $x, 0);
+                $yImg = $y + 3;
                 $x1 = $x;
                 $y1 = round($yImg + $nImgH + 1, 0);
                 $tw = $w;
             }
-            $type = (substr($this->logomarca, 0, 7) === 'data://') ? 'jpg' : null;
-            $this->pdf->Image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, 'jpeg');
+
+            $this->pdf->Image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, $type);
         } else {
             $x1 = $x;
-            $y1 = round($h/3+$y, 0);
+            $y1 = round($h / 3 + $y, 0);
             $tw = $w;
         }
         // monta as informações apenas se diferente de full logo
