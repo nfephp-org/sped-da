@@ -583,8 +583,8 @@ class Danfe extends DaCommon
         if ($this->dup->length > 0) {
             $y = $this->fatura($x, $y+1);
         } else {
-            //Se somente tiver a forma de pagamento sem pagamento ou outros não imprimir nada
-            if (count($formaPag)=='1' && (isset($formaPag[90]) || isset($formaPag[99]))) {
+            //Se somente tiver a forma de pagamento sem pagamento não imprimir nada
+            if (count($formaPag)=='1' && isset($formaPag[90])) {
                 $y = $y;
             } else {
                 //caso tenha mais de uma forma de pagamento ou seja diferente de boleto exibe a
@@ -1968,8 +1968,8 @@ class Danfe extends DaCommon
                 $h = 6;
                 $texto = '';
                 if (isset($formaPagamento[$fPag])) {
-                    /*Exibir Item sem pagamento ou outros?*/
-                    if ($fPag=='90' || $fPag=='99') {
+                    /*Exibir Item sem pagamento*/
+                    if ($fPag=='90') {
                         continue;
                     }
                     $aFont = ['font'=>$this->fontePadrao, 'size'=>6, 'style'=>''];
