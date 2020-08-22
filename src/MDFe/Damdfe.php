@@ -298,7 +298,7 @@ class Damdfe extends DaCommon
         } else {
             $cpfcnpj = 'CNPJ: ' . $this->formatField($this->CNPJ, "###.###.###/####-##");
         }
-        $ie = 'IE: ' . $this->formatField($this->IE, '##/########');
+        $ie = 'IE: ' . strlen($this->IE) == 9 ? $this->formatField($this->IE, '###/#######') : $this->formatField($this->IE, '###.###.###.###');
         $lgr = 'Logradouro: ' . $this->xLgr;
         $nro = 'Nº: ' . $this->nro;
         $bairro = 'Bairro: ' . $this->xBairro;
@@ -449,7 +449,7 @@ class Damdfe extends DaCommon
         } else {
             $cpfcnpj = 'CNPJ: ' . $this->formatField($this->CNPJ, "###.###.###/####-##");
         }
-        $ie = 'IE: ' . $this->formatField($this->IE, '###/#######');
+        $ie = 'IE: ' . strlen($this->IE) == 9 ? $this->formatField($this->IE, '###/#######') : $this->formatField($this->IE, '###.###.###.###');
         $lgr = 'Logradouro: ' . $this->xLgr;
         $nro = 'Nº: ' . $this->nro;
         $bairro = 'Bairro: ' . $this->xBairro;
