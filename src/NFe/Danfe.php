@@ -2692,11 +2692,11 @@ class Danfe extends DaCommon
         $aFont = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>''];
 
         if ($this->orientacao == 'P') {
-            $w = $this->wPrint;
+            $wCalc = $this->wPrint;
         } else {
-            $w = $this->wPrint - $this->wCanhoto;
+            $wCalc = $this->wPrint - $this->wCanhoto;
         }
-        $w2 = round($w*0.28, 0);
+        $wCalc = round($wCalc*0.28, 0);
 
         foreach ($this->det as $d) {
             if ($i >= $nInicio) {
@@ -2714,7 +2714,7 @@ class Danfe extends DaCommon
                     $yTrib = 0;
                 }
 
-                $numlinhas = $this->pdf->getNumLines($textoProduto, $w2, $aFont);
+                $numlinhas = $this->pdf->getNumLines($textoProduto, $wCalc, $aFont);
                 $h = round(($numlinhas * $this->pdf->fontSize) + ($numlinhas * 0.5), 2);
                 $hUsado += $h;
 
