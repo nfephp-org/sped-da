@@ -812,6 +812,7 @@ class Danfe extends DaCommon
             || $cStat == '151'
             || $cStat == '135'
             || $cStat == '155'
+            || $this->cancelFlag === true
         ) {
             return ['status' => false, 'message' => 'NFe CANCELADA'];
         }
