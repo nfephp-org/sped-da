@@ -1,7 +1,6 @@
 <?php
 namespace NFePHP\DA\NFe;
 
-use InvalidArgumentException;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use \NFePHP\DA\Common\DaCommon;
@@ -288,7 +287,8 @@ class Danfe extends DaCommon
      *
      * @param string $xml Conteúdo XML da NF-e (com ou sem a tag nfeProc)
      */
-    public function __construct($xml) {
+    public function __construct($xml)
+    {
         $this->loadDoc($xml);
     }
 
@@ -298,7 +298,8 @@ class Danfe extends DaCommon
      *
      * @param boolean $mostrarUnidadeTributavel
      */
-    public function setMostrarUnidadeTributavel($mostrarUnidadeTributavel) {
+    public function setMostrarUnidadeTributavel($mostrarUnidadeTributavel)
+    {
         $this->mostrarUnidadeTributavel = $mostrarUnidadeTributavel;
     }
 
@@ -307,7 +308,8 @@ class Danfe extends DaCommon
      *
      * @param integer $vUnComCasasDec
      */
-    public function setVUnComCasasDec($vUnComCasasDec) {
+    public function setVUnComCasasDec($vUnComCasasDec)
+    {
         $this->vUnComCasasDec = $vUnComCasasDec;
     }
 
@@ -316,11 +318,13 @@ class Danfe extends DaCommon
      *
      * @param integer $qComCasasDec
      */
-    public function setQComCasasDec($qComCasasDec) {
+    public function setQComCasasDec($qComCasasDec)
+    {
         $this->qComCasasDec = $qComCasasDec;
     }
 
-    protected function calculoEspacoVericalDadosAdicionais() {
+    protected function calculoEspacoVericalDadosAdicionais()
+    {
         $this->textoAdic = '';
         //informações adicionais
         $fontProduto            = [
@@ -376,7 +380,6 @@ class Danfe extends DaCommon
         }
         //fim da alteração NT 2013.003 Lei da Transparência
         $this->textoAdic        = str_replace(";", "\n", $this->textoAdic);
-        $alinhas                = explode("\n", $this->textoAdic);
         $numlinhasdados         = $this->pdf->getNumLines($this->textoAdic, $this->wAdic, $fontProduto) + 1.5;
         $this->textadicfontsize = $this->pdf->fontSize;
         $hdadosadic             = ceil($numlinhasdados * ($this->textadicfontsize));
@@ -405,7 +408,8 @@ class Danfe extends DaCommon
         return $hdadosadic;
     }
 
-    protected function calculoItensPorPagina() {
+    protected function calculoItensPorPagina()
+    {
     }
 
     /**
@@ -688,7 +692,8 @@ class Danfe extends DaCommon
      *
      * @return string conteúdo do campo CDATA como string
      */
-    protected function anfaveaDANFE($cdata = '') {
+    protected function anfaveaDANFE($cdata = '')
+    {
         if ($cdata == '') {
             return '';
         }
@@ -833,7 +838,8 @@ class Danfe extends DaCommon
      *
      * @return array
      */
-    protected function statusNFe() {
+    protected function statusNFe()
+    {
         if (! isset($this->nfeProc)) {
             return ['status' => false, 'message' => 'NFe NÃO PROTOCOLADA'];
         }
@@ -860,7 +866,8 @@ class Danfe extends DaCommon
         return ['status' => true, 'message' => ''];
     }
 
-    protected function notaDPEC() {
+    protected function notaDPEC()
+    {
         return ! empty($this->numdepec);
     }
 
@@ -875,7 +882,8 @@ class Danfe extends DaCommon
      *
      * @return number Posição vertical final
      */
-    protected function header($x = 0, $y = 0, $pag = '1', $totPag = '1') {
+    protected function header($x = 0, $y = 0, $pag = '1', $totPag = '1')
+    {
         $oldX = $x;
         $oldY = $y;
         if ($this->orientacao == 'P') {
@@ -1262,7 +1270,8 @@ class Danfe extends DaCommon
      *
      * @return number Posição vertical final
      */
-    protected function destinatarioDANFE($x = 0, $y = 0) {
+    protected function destinatarioDANFE($x = 0, $y = 0)
+    {
         //####################################################################################
         //DESTINATÁRIO / REMETENTE
         $oldX = $x;
@@ -1476,7 +1485,8 @@ class Danfe extends DaCommon
      *
      * @return number Posição vertical final
      */
-    protected function localEntregaDANFE($x = 0, $y = 0) {
+    protected function localEntregaDANFE($x = 0, $y = 0)
+    {
         //####################################################################################
         //LOCAL DE ENTREGA
         $oldX = $x;
@@ -1628,7 +1638,8 @@ class Danfe extends DaCommon
      *
      * @return number Posição vertical final
      */
-    protected function localRetiradaDANFE($x = 0, $y = 0) {
+    protected function localRetiradaDANFE($x = 0, $y = 0)
+    {
         //####################################################################################
         //LOCAL DE RETIRADA
         $oldX = $x;
@@ -1776,7 +1787,8 @@ class Danfe extends DaCommon
      * @name   getTextoFatura
      * @return uma String com o texto ou "";
      */
-    protected function getTextoFatura() {
+    protected function getTextoFatura()
+    {
         if (isset($this->cobr)) {
             $fat = $this->cobr->getElementsByTagName("fat")->item(0);
             if (isset($fat)) {
@@ -1814,7 +1826,8 @@ class Danfe extends DaCommon
      * @name   sizeExtraTextoFatura
      * @return integer
      */
-    protected function sizeExtraTextoFatura() {
+    protected function sizeExtraTextoFatura()
+    {
         $textoFatura = $this->getTextoFatura();
         //verificar se existem duplicatas
         if ($this->dup->length == 0 && $textoFatura !== "") {
@@ -1835,7 +1848,8 @@ class Danfe extends DaCommon
      *
      * @return number Posição vertical final
      */
-    protected function fatura($x, $y) {
+    protected function fatura($x, $y)
+    {
         $linha       = 1;
         $h           = 8 + 3;
         $oldx        = $x;
@@ -1962,7 +1976,8 @@ class Danfe extends DaCommon
      *
      * @return number Posição vertical final
      */
-    protected function pagamento($x, $y) {
+    protected function pagamento($x, $y)
+    {
         $linha = 1;
         $h     = 8 + 3;
         $oldx  = $x;
@@ -2093,7 +2108,8 @@ class Danfe extends DaCommon
      *
      * @return float Sugestão do $x do próximo imposto
      */
-    protected function impostoHelper($x, $y, $w, $h, $titulo, $campoImposto) {
+    protected function impostoHelper($x, $y, $w, $h, $titulo, $campoImposto)
+    {
         $valorImposto = '0,00';
         $the_field    = $this->ICMSTot->getElementsByTagName($campoImposto)->item(0);
         if (isset($the_field)) {
@@ -2122,7 +2138,8 @@ class Danfe extends DaCommon
      *
      * @return number Posição vertical final
      */
-    protected function imposto($x, $y) {
+    protected function imposto($x, $y)
+    {
         $x_inicial = $x;
         //#####################################################################
         $campos_por_linha = 9;
@@ -2199,7 +2216,8 @@ class Danfe extends DaCommon
      *
      * @return float Posição vertical final
      */
-    protected function transporte($x, $y) {
+    protected function transporte($x, $y)
+    {
         $oldX = $x;
         if ($this->orientacao == 'P') {
             $maxW = $this->wPrint;
@@ -2513,7 +2531,8 @@ class Danfe extends DaCommon
     } //fim transporte
 
 
-    protected function descricaoProdutoHelper($origem, $campo, $formato) {
+    protected function descricaoProdutoHelper($origem, $campo, $formato)
+    {
         $valor_original = $origem->getElementsByTagName($campo)->item(0);
         if (! isset($valor_original)) {
             return "";
@@ -2538,7 +2557,8 @@ class Danfe extends DaCommon
      *
      * @return string descricao do produto
      */
-    protected function descricaoProduto($itemProd) {
+    protected function descricaoProduto($itemProd)
+    {
         $prod       = $itemProd->getElementsByTagName('prod')->item(0);
         $ICMS       = $itemProd->getElementsByTagName("ICMS")->item(0);
         $ICMSUFDest = $itemProd->getElementsByTagName("ICMSUFDest")->item(0);
@@ -2625,8 +2645,8 @@ class Danfe extends DaCommon
      *
      * @return float Posição vertical final
      */
-    protected function itens($x, $y, &$nInicio, $hmax, $pag = 0, $totpag = 0, $hCabecItens = 7) {
-
+    protected function itens($x, $y, &$nInicio, $hmax, $pag = 0, $totpag = 0, $hCabecItens = 7)
+    {
         $oldX     = $x;
         $oldY     = $y;
         $totItens = $this->det->length;
@@ -2992,7 +3012,8 @@ class Danfe extends DaCommon
      * @param object $prod Contendo todos os dados do item
      */
 
-    protected function dadosItenVeiculoDANFE($x, $y, &$nInicio, $h, $prod) {
+    protected function dadosItenVeiculoDANFE($x, $y, &$nInicio, $h, $prod)
+    {
         $oldX = $x;
         $oldY = $y;
 
@@ -3164,7 +3185,8 @@ class Danfe extends DaCommon
      *
      * @return float Posição vertical final
      */
-    protected function issqn($x, $y) {
+    protected function issqn($x, $y)
+    {
         $oldX = $x;
         //#####################################################################
         //CÁLCULO DO ISSQN
@@ -3247,7 +3269,8 @@ class Danfe extends DaCommon
      *
      * @return float Posição vertical final (eixo Y)
      */
-    protected function dadosAdicionais($x, $y, $h) {
+    protected function dadosAdicionais($x, $y, $h)
+    {
         $y = $this->maxH - (7 + $h);
         //$y = $this->maxH - 20;
         //##################################################################################
@@ -3340,7 +3363,8 @@ class Danfe extends DaCommon
      *
      * @return void
      */
-    protected function rodape($x) {
+    protected function rodape($x)
+    {
         $y = $this->maxH - 4;
         if ($this->orientacao == 'P') {
             $w = $this->wPrint;
@@ -3368,7 +3392,8 @@ class Danfe extends DaCommon
      *
      * TODO 21/07/14 fmertins: quando orientação L-paisagem, o canhoto está sendo gerado incorretamente
      */
-    protected function canhoto($x, $y) {
+    protected function canhoto($x, $y)
+    {
         $oldX = $x;
         $oldY = $y;
         //#################################################################################
@@ -3512,7 +3537,8 @@ class Danfe extends DaCommon
      * @name   pGeraInformacoesDaTagCompra
      * @return string com as informacoes dos pedidos.
      */
-    protected function geraInformacoesDaTagCompra() {
+    protected function geraInformacoesDaTagCompra()
+    {
         if (! $this->gerarInformacoesAutomaticas) {
             return '';
         }
@@ -3538,7 +3564,8 @@ class Danfe extends DaCommon
      * @name   geraChaveAdicionalDeContingencia
      * @return string chave
      */
-    protected function geraChaveAdicionalDeContingencia() {
+    protected function geraChaveAdicionalDeContingencia()
+    {
         //cUF tpEmis CNPJ vNF ICMSp ICMSs DD  DV
         // Quantidade de caracteres  02   01      14  14    01    01  02 01
         $forma = "%02d%d%s%014d%01d%01d%02d";
@@ -3579,7 +3606,8 @@ class Danfe extends DaCommon
      *
      * @return string Informacoes a serem adicionadas no rodapé sobre notas referenciadas.
      */
-    protected function geraInformacoesDasNotasReferenciadas() {
+    protected function geraInformacoesDasNotasReferenciadas()
+    {
         if (! $this->gerarInformacoesAutomaticas) {
             return '';
         }
@@ -3663,7 +3691,8 @@ class Danfe extends DaCommon
         return $saida;
     }
 
-    private function loadDoc($xml) {
+    private function loadDoc($xml)
+    {
         $this->xml = $xml;
         if (! empty($xml)) {
             $this->dom = new Dom();
@@ -3706,7 +3735,8 @@ class Danfe extends DaCommon
      *
      * @return float
      */
-    protected function calculeHeight($item) {
+    protected function calculeHeight($item)
+    {
         if ($this->orientacao == 'P') {
             $w = $this->wPrint;
         } else {
