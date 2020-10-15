@@ -269,13 +269,6 @@ class Danfe extends DaCommon
     protected $vUnComCasasDec = 4;
 
     /**
-     * Configuração para determinar se irá exibir ou não informações
-     * das unidades de medidas tributáveis.
-     *
-     * @var boolean
-     */
-    protected $mostrarUnidadeTributavel = false;
-    /**
      * @var int
      */
     protected $hdadosadic = 10;
@@ -292,16 +285,6 @@ class Danfe extends DaCommon
         $this->loadDoc($xml);
     }
 
-
-    /**
-     * Define se irá mostrar ou não dados as unidades de medidas tributaveis.
-     *
-     * @param boolean $mostrarUnidadeTributavel
-     */
-    public function setMostrarUnidadeTributavel($mostrarUnidadeTributavel)
-    {
-        $this->mostrarUnidadeTributavel = $mostrarUnidadeTributavel;
-    }
 
     /**
      * Define a quantidade de casas decimais para unidade comercial.
@@ -571,7 +554,18 @@ class Danfe extends DaCommon
         $totPag    = 1;
         $i         = 0;
         while ($i < $this->det->length) {
-            $hUsado += $this->calculeHeight($this->det->item($i));
+            $itemProd = $this->det->item($i);
+            $texto = $this->descricaoProduto($itemProd);
+            $mostrarUnidadeTributavel = false;
+
+            $prod = $itemProd->getElementsByTagName('prod')->item(0);
+            $uCom = $prod->getElementsByTagName("uCom")->item(0)->nodeValue;
+            $uTrib = $prod->getElementsByTagName("uTrib")->item(0);
+            if (! empty($uTrib) && strcmp($uCom, $uTrib->nodeValue) != 0) {
+                $mostrarUnidadeTributavel = true;
+            }
+
+            $hUsado += $this->calculeHeight($itemProd, $mostrarUnidadeTributavel);
             if ($hUsado > $hDispo) {
                 $totPag ++;
                 $hDispo = $hDispo2;
@@ -2799,10 +2793,28 @@ class Danfe extends DaCommon
 
                 // Posição y dos dados das unidades tributaveis.
                 $yTrib = $this->pdf->fontSize + .5;
-                if (! $this->mostrarUnidadeTributavel) {
+
+                $uCom = $prod->getElementsByTagName("uCom")->item(0)->nodeValue;
+                $uTrib = $prod->getElementsByTagName("uTrib")->item(0);
+                // A Configuração serve para informar se irá exibir
+                //   de forma obrigatória, estando diferente ou não,
+                //   a unidade de medida tributária.
+                // ========
+                // A Exibição será realizada sempre que a unidade comercial for
+                //   diferente da unidade de medida tributária.
+                // "Nas situações em que o valor unitário comercial for diferente do valor unitário tributável,
+                //   ambas as informações deverão estar expressas e identificadas no DANFE, podendo ser
+                //   utilizada uma das linhas adicionais previstas, ou o campo de informações adicionais."
+                // > Manual Integração - Contribuinte 4.01 - NT2009.006, Item 7.1.5, página 91.
+                $mostrarUnidadeTributavel = (! empty($uTrib) && strcmp($uCom, $uTrib->nodeValue));
+
+                // Informação sobre unidade de medida tributavel.
+                // Se não for para exibir a unidade de medida tributavel, então
+                // A Escrita irá começar em 0.
+                if (! $mostrarUnidadeTributavel) {
                     $yTrib = 0;
                 }
-                $h      = $this->calculeHeight($thisItem);
+                $h      = $this->calculeHeight($thisItem, $mostrarUnidadeTributavel);
                 $hUsado += $h;
 
                 $yTrib += $y;
@@ -2852,15 +2864,12 @@ class Danfe extends DaCommon
                 $this->pdf->textBox($x, $y, $w5, $h, $texto, $aFont, 'T', 'C', 0, '');
                 //Unidade
                 $x     += $w5;
-                $texto = $prod->getElementsByTagName("uCom")->item(0)->nodeValue;
+                $texto = $uCom;
                 $this->pdf->textBox($x, $y, $w6, $h, $texto, $aFont, 'T', 'C', 0, '');
                 //Unidade de medida tributável
-                if ($this->mostrarUnidadeTributavel) {
-                    $uTrib = $prod->getElementsByTagName("uTrib")->item(0);
-                    if (! empty($uTrib)) {
-                        $texto = $uTrib->nodeValue;
-                        $this->pdf->textBox($x, $yTrib, $w6, $h, $texto, $aFont, 'T', 'C', 0, '');
-                    }
+                if ($mostrarUnidadeTributavel && !empty($uTrib)) {
+                    $texto = $uTrib->nodeValue;
+                    $this->pdf->textBox($x, $yTrib, $w6, $h, $texto, $aFont, 'T', 'C', 0, '');
                 }
                 $x += $w6;
                 if ($this->orientacao == 'P') {
@@ -2873,7 +2882,7 @@ class Danfe extends DaCommon
                 $texto = number_format($qCom->nodeValue, $this->qComCasasDec, ",", ".");
                 $this->pdf->textBox($x, $y, $w7, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
                 // QTDADE Tributável
-                if ($this->mostrarUnidadeTributavel) {
+                if ($mostrarUnidadeTributavel) {
                     $qTrib = $prod->getElementsByTagName("qTrib")->item(0);
                     if (! empty($qTrib)) {
                         $texto = number_format($qTrib->nodeValue, $this->qComCasasDec, ",", ".");
@@ -2886,7 +2895,7 @@ class Danfe extends DaCommon
                 $texto  = number_format($vUnCom->nodeValue, $this->vUnComCasasDec, ",", ".");
                 $this->pdf->textBox($x, $y, $w8, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
                 // Valor Unitário Tributável
-                if ($this->mostrarUnidadeTributavel) {
+                if ($mostrarUnidadeTributavel) {
                     $vUnTrib = $prod->getElementsByTagName("vUnTrib")->item(0);
                     if (! empty($vUnTrib)) {
                         $texto = number_format($vUnTrib->nodeValue, $this->vUnComCasasDec, ",", ".");
@@ -3736,7 +3745,7 @@ class Danfe extends DaCommon
      *
      * @return float
      */
-    protected function calculeHeight($item)
+    protected function calculeHeight($item, $mostrarUnidadeTributavel = false)
     {
         if ($this->orientacao == 'P') {
             $w = $this->wPrint;
@@ -3747,6 +3756,9 @@ class Danfe extends DaCommon
         $aFont        = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
         $textoProduto = $this->descricaoProduto($item);
         $numlinhas    = $this->pdf->getNumLines($textoProduto, $w2, $aFont);
+
+        if ($mostrarUnidadeTributavel && $numlinhas == 1)
+            $numlinhas ++;
 
         return round(($numlinhas * $this->pdf->fontSize) + ($numlinhas * 0.5), 2);
     }
