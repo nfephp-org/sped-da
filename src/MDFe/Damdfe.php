@@ -876,7 +876,8 @@ class Damdfe extends DaCommon
             $altura = $y;
             for ($i = 0; $i < $valesPedagios; $i++) {
                 $altura += 4;
-                $texto = $this->valePed->item($i)->getElementsByTagName('CNPJForn')->item(0)->nodeValue;
+                $pgNode = $this->valePed->item($i)->getElementsByTagName('CNPJPg');
+                $texto = $pgNode->length == 0 ? '' : $pgNode->item(0)->nodeValue;
                 $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
                 $this->pdf->textBox($x1 + 1, $altura, $x2 - 5, 10, $texto, $aFont, 'T', 'L', 0, '', false);
             }
@@ -888,7 +889,8 @@ class Damdfe extends DaCommon
             $altura = $y;
             for ($i = 0; $i < $valesPedagios; $i++) {
                 $altura += 4;
-                $texto = $this->valePed->item($i)->getElementsByTagName('CNPJPg')->item(0)->nodeValue;
+                $pgNode = $this->valePed->item($i)->getElementsByTagName('CNPJForn');
+                $texto = $pgNode->length == 0 ? '' : $pgNode->item(0)->nodeValue;
                 $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
                 $this->pdf->textBox($x1 + 1, $altura, $x2 - 5, 10, $texto, $aFont, 'T', 'L', 0, '', false);
             }
