@@ -2587,7 +2587,7 @@ class Danfe extends DaCommon
         $this->pdf->line($x+$w1, $y, $x+$w1, $y+$hmax);
         //DESCRIÇÃO DO PRODUTO / SERVIÇO
         $x += $w1;
-        $w2 = round($w*0.25, 0);
+        $w2 = round($w*0.2835, 0);
         $texto = 'DESCRIÇÃO DO PRODUTO / SERVIÇO';
         $aFont = ['font'=>$this->fontePadrao, 'size'=>6, 'style'=>''];
         $this->pdf->textBox($x, $y, $w2, $h, $texto, $aFont, 'C', 'C', 0, '', false);
@@ -2625,7 +2625,7 @@ class Danfe extends DaCommon
         $this->pdf->line($x+$w6, $y, $x+$w6, $y+$hmax);
         //QUANT
         $x += $w6;
-        $w7 = round($w*0.08, 0);
+        $w7 = round($w*0.0465, 0);
         $texto = 'QUANT';
         $aFont = ['font'=>$this->fontePadrao, 'size'=>6, 'style'=>''];
         $this->pdf->textBox($x, $y, $w7, $h, $texto, $aFont, 'C', 'C', 0, '', false);
