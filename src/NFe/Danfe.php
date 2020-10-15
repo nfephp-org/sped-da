@@ -277,7 +277,7 @@ class Danfe extends DaCommon
     {
         $this->qComCasasDec = $qComCasasDec;
     }
-    
+
     protected function calculoEspacoVericalDadosAdicionais()
     {
         $this->textoAdic = '';
@@ -362,7 +362,7 @@ class Danfe extends DaCommon
         }
         return $hdadosadic;
     }
-    
+
     protected function calculoItensPorPagina()
     {
     }
@@ -466,9 +466,9 @@ class Danfe extends DaCommon
             $this->wAdic = round(($this->wPrint-$this->wCanhoto)*0.5, 0);
         }
         $fontProduto = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
-        
+
         $this->hdadosadic = $this->calculoEspacoVericalDadosAdicionais();
-        
+
         //altura disponivel para os campos da DANFE
         $hcabecalho = 47;//para cabeçalho
         $hdestinatario = 25;//para destinatario
@@ -499,7 +499,7 @@ class Danfe extends DaCommon
             + $hfooter
             + $hCabecItens
             + $this->sizeExtraTextoFatura();
-        
+
         //alturas disponiveis para os dados
         $hDispo1 = $this->hPrint - $hOCUPADA;
             /*($hcabecalho +
@@ -508,7 +508,7 @@ class Danfe extends DaCommon
             ($linhasDup * $hduplicatas) + $himposto + $htransporte +
             ($linhaISSQN * $hissqn) + $this->hdadosadic + $hfooter + $hCabecItens +
             $this->sizeExtraTextoFatura());*/
-        
+
         if ($this->orientacao == 'P') {
             $hDispo1 -= 24 * $this->qCanhoto;//para canhoto
             $w = $this->wPrint;
@@ -546,7 +546,7 @@ class Danfe extends DaCommon
         $qtdeItens = $i; //controle da quantidade de itens no DANFE
         //montagem da primeira página
         $pag = 1;
-        
+
         $x = $this->margesq;
         $y = $this->margsup;
         //coloca o(s) canhoto(s) da NFe
@@ -568,7 +568,7 @@ class Danfe extends DaCommon
         if (isset($this->entrega)) {
             $y = $this->localEntregaDANFE($x, $y+1);
         }
-        
+
         //Verifica as formas de pagamento da nota fiscal
         $formaPag = [];
         if (isset($this->detPag) && $this->detPag->length > 0) {
@@ -815,11 +815,11 @@ class Danfe extends DaCommon
         ) {
             return ['status' => false, 'message' => 'NFe CANCELADA'];
         }
-        
+
         if ($cStat == '110' ||
                $cStat == '301' ||
                $cStat == '302'
-               
+
         ) {
             return ['status' => false, 'message' => 'NFe DENEGADA'];
         }
@@ -956,7 +956,7 @@ class Danfe extends DaCommon
         $w2 = $w;
         $h = 32;
         $this->pdf->textBox($x, $y, $w, $h);
-  
+
         $texto = "DANFE";
         $aFont = ['font'=>$this->fontePadrao, 'size'=>14, 'style'=>'B'];
         $this->pdf->textBox($x, $y+1, $w, $h, $texto, $aFont, 'T', 'C', 0, '');
@@ -1106,7 +1106,7 @@ class Danfe extends DaCommon
                     $texto = ! empty($this->nfeProc->getElementsByTagName("nProt")->item(0)->nodeValue)
                     ? $this->nfeProc->getElementsByTagName("nProt")->item(0)->nodeValue
                     : '';
-                    $tsHora = $this->toTimestamp(
+                    $tsHora = strtotime(
                         $this->nfeProc->getElementsByTagName("dhRecbto")->item(0)->nodeValue
                     );
                     if ($texto != '') {
@@ -1418,7 +1418,7 @@ class Danfe extends DaCommon
             $dhSaiEnt = ! empty($this->ide->getElementsByTagName("dhSaiEnt")->item(0)->nodeValue)
             ? $this->ide->getElementsByTagName("dhSaiEnt")->item(0)->nodeValue
             : '';
-            $tsDhSaiEnt = $this->toTimestamp($dhSaiEnt);
+            $tsDhSaiEnt = strtotime($dhSaiEnt);
             if ($tsDhSaiEnt != '') {
                 $hSaiEnt = date('H:i:s', $tsDhSaiEnt);
             }
@@ -1578,7 +1578,7 @@ class Danfe extends DaCommon
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'B', 'C', 0, '');
         return ($y + $h);
     } //fim da função localEntregaDANFE
-    
+
     /**
      * localretiradaDANFE
      * Monta o campo com os dados do local de entrega na DANFE. (retrato e paisagem)
@@ -1728,7 +1728,7 @@ class Danfe extends DaCommon
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'B', 'C', 0, '');
         return ($y + $h);
     } //fim da função localRetiradaDANFE
-    
+
      /**
      * getTextoFatura
      * Gera a String do Texto da Fatura
@@ -2008,7 +2008,7 @@ class Danfe extends DaCommon
             return ($y-2);
         }
     } //fim da função pagamento
-    
+
     /**
      * impostoHelper
      * Auxilia a montagem dos campos de impostos e totais da DANFE
@@ -2551,7 +2551,7 @@ class Danfe extends DaCommon
      */
     protected function itens($x, $y, &$nInicio, $hmax, $pag = 0, $totpag = 0, $hCabecItens = 7)
     {
-        
+
         $oldX = $x;
         $oldY = $y;
         $totItens = $this->det->length;
@@ -2810,7 +2810,7 @@ class Danfe extends DaCommon
                 //Valor do Desconto
                 $vdesc = !empty($prod->getElementsByTagName("vDesc")->item(0)->nodeValue)
                     ? $prod->getElementsByTagName("vDesc")->item(0)->nodeValue : 0;
-                    
+
                 $texto = number_format($vdesc, 2, ",", ".");
                 $this->pdf->textBox($x, $y, $w10, $h, $texto, $aFont, 'T', $alinhamento, 0, '');
                 //Valor da Base de calculo
@@ -3184,7 +3184,7 @@ class Danfe extends DaCommon
         }
         $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style'=> 'B'];
         $this->pdf->textBox($x, $y, $w, 8, $texto, $aFont, 'T', 'L', 0, '');
-        
+
         //INFORMAÇÕES COMPLEMENTARES
         $texto = "INFORMAÇÕES COMPLEMENTARES";
         $y += 3;
@@ -3583,7 +3583,7 @@ class Danfe extends DaCommon
         }
         return $saida;
     }
-    
+
     private function loadDoc($xml)
     {
         $this->xml = $xml;
