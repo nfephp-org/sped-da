@@ -2607,7 +2607,8 @@ class Dacte extends DaCommon
             $nDoc = $this->getTagValue($temp, "nDoc");
             $dEmi = "Emissão: " . date('d/m/Y', strtotime($this->getTagValue($temp, "dEmi")));
             $vDocFisc = $this->getTagValue($temp, "vDocFisc", "Valor: ");
-            $dPrev = "Entrega: " . date('d/m/Y', strtotime($this->getTagValue($temp, "dPrev")));
+            $dPrev = $this->getTagValue($temp, "dPrev");
+            $dPrev = !empty($dPrev) ? ("Entrega: " . date('d/m/Y', strtotime($this->getTagValue($temp, "dPrev")))) : '';
             switch ($tpDoc) {
                 case "00":
                     $tpDoc = "00 - Declaração";
