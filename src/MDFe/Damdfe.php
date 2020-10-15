@@ -498,7 +498,7 @@ class Damdfe extends DaCommon
             $texto = "AMBIENTE DE HOMOLOGAÇÃO";
             $this->pdf->textBox($x, $yy + 14, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $this->pdf->setTextColor(0, 0, 0);
-        } elseif ($cStat->item(0)->nodeValue == '101') {
+        } elseif ($cStat->item(0)->nodeValue == '101' || $this->cancelFlag === true) {
             $x = 10;
             if ($this->orientacao == 'P') {
                 $yy = round($this->hPrint * 2 / 3, 0);

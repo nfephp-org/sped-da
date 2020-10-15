@@ -1033,7 +1033,8 @@ class Danfce extends DaCommon
         return $cStat == '101' ||
                 $cStat == '151' ||
                 $cStat == '135' ||
-                $cStat == '155';
+                $cStat == '155' ||
+                $this->cancelFlag === true;
     }
 
     protected function checkDenegada()
