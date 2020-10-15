@@ -62,7 +62,6 @@ class Danfce extends DaCommon
     public function __construct(
         $docXML
     ) {
-        
         $this->xml = $docXML;
       
         if (!empty($this->xml)) {
@@ -143,7 +142,6 @@ class Danfce extends DaCommon
     protected function monta(
         $logo = ''
     ) {
-        
         $this->aFontTit = array('font' => $this->fontePadrao, 'size' => 9, 'style' => 'B');
         $this->aFontTex = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         if (!empty($logo)) {
