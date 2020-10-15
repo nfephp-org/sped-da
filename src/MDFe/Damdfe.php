@@ -298,7 +298,9 @@ class Damdfe extends DaCommon
         } else {
             $cpfcnpj = 'CNPJ: ' . $this->formatField($this->CNPJ, "###.###.###/####-##");
         }
-        $ie = 'IE: ' . $this->formatField($this->IE, '##/########');
+        $ie = 'IE: ' . strlen($this->IE) == 9
+            ? $this->formatField($this->IE, '###/#######')
+            : $this->formatField($this->IE, '###.###.###.###');
         $lgr = 'Logradouro: ' . $this->xLgr;
         $nro = 'Nº: ' . $this->nro;
         $bairro = 'Bairro: ' . $this->xBairro;
@@ -449,7 +451,9 @@ class Damdfe extends DaCommon
         } else {
             $cpfcnpj = 'CNPJ: ' . $this->formatField($this->CNPJ, "###.###.###/####-##");
         }
-        $ie = 'IE: ' . $this->formatField($this->IE, '###/#######');
+        $ie = 'IE: ' . strlen($this->IE) == 9
+            ? $this->formatField($this->IE, '###/#######')
+            : $this->formatField($this->IE, '###.###.###.###');
         $lgr = 'Logradouro: ' . $this->xLgr;
         $nro = 'Nº: ' . $this->nro;
         $bairro = 'Bairro: ' . $this->xBairro;
@@ -498,7 +502,7 @@ class Damdfe extends DaCommon
             $texto = "AMBIENTE DE HOMOLOGAÇÃO";
             $this->pdf->textBox($x, $yy + 14, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $this->pdf->setTextColor(0, 0, 0);
-        } elseif ($cStat->item(0)->nodeValue == '101') {
+        } elseif ($cStat->item(0)->nodeValue == '101' || $this->cancelFlag === true) {
             $x = 10;
             if ($this->orientacao == 'P') {
                 $yy = round($this->hPrint * 2 / 3, 0);
@@ -876,7 +880,8 @@ class Damdfe extends DaCommon
             $altura = $y;
             for ($i = 0; $i < $valesPedagios; $i++) {
                 $altura += 4;
-                $texto = $this->valePed->item($i)->getElementsByTagName('CNPJForn')->item(0)->nodeValue;
+                $pgNode = $this->valePed->item($i)->getElementsByTagName('CNPJPg');
+                $texto = $pgNode->length == 0 ? '' : $pgNode->item(0)->nodeValue;
                 $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
                 $this->pdf->textBox($x1 + 1, $altura, $x2 - 5, 10, $texto, $aFont, 'T', 'L', 0, '', false);
             }
@@ -888,7 +893,8 @@ class Damdfe extends DaCommon
             $altura = $y;
             for ($i = 0; $i < $valesPedagios; $i++) {
                 $altura += 4;
-                $texto = $this->valePed->item($i)->getElementsByTagName('CNPJPg')->item(0)->nodeValue;
+                $pgNode = $this->valePed->item($i)->getElementsByTagName('CNPJForn');
+                $texto = $pgNode->length == 0 ? '' : $pgNode->item(0)->nodeValue;
                 $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
                 $this->pdf->textBox($x1 + 1, $altura, $x2 - 5, 10, $texto, $aFont, 'T', 'L', 0, '', false);
             }

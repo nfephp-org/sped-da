@@ -785,7 +785,7 @@ class Dacte extends DaCommon
             'style' => '');
         $this->pdf->textBox($xa, $y + 1, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
         $texto = !empty($this->ide->getElementsByTagName("dhEmi")->item(0)->nodeValue) ?
-            date('d/m/Y H:i:s', $this->toTimestamp($this->getTagValue($this->ide, "dhEmi"))) : '';
+            date('d/m/Y H:i:s', strtotime($this->getTagValue($this->ide, "dhEmi"))) : '';
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($xa, $y + 5, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
         $this->pdf->line($xa + $wa, $y, $xa + $wa, $y + $h + 1);
@@ -870,7 +870,7 @@ class Dacte extends DaCommon
             ) {
                 $texto .= date(
                     'd/m/Y   H:i:s',
-                    $this->toTimestamp($this->getTagValue($this->protCTe, "dhRecbto"))
+                    strtotime($this->getTagValue($this->protCTe, "dhRecbto"))
                 );
             }
             $texto = $this->getTagValue($this->protCTe, "nProt") == '' ? '' : $texto;
@@ -932,7 +932,7 @@ class Dacte extends DaCommon
         $tpAmb = $this->ide->getElementsByTagName('tpAmb')->item(0)->nodeValue;
         //indicar cancelamento
         $cStat = $this->getTagValue($this->cteProc, "cStat");
-        if ($cStat == '101' || $cStat == '135') {
+        if ($cStat == '101' || $cStat == '135' || $this->cancelFlag === true) {
             //101 Cancelamento
             $x = 10;
             $y = $this->hPrint - 130;
@@ -2607,7 +2607,8 @@ class Dacte extends DaCommon
             $nDoc = $this->getTagValue($temp, "nDoc");
             $dEmi = "Emissão: " . date('d/m/Y', strtotime($this->getTagValue($temp, "dEmi")));
             $vDocFisc = $this->getTagValue($temp, "vDocFisc", "Valor: ");
-            $dPrev = "Entrega: " . date('d/m/Y', strtotime($this->getTagValue($temp, "dPrev")));
+            $dPrev = $this->getTagValue($temp, "dPrev");
+            $dPrev = !empty($dPrev) ? ("Entrega: " . date('d/m/Y', strtotime($this->getTagValue($temp, "dPrev")))) : '';
             switch ($tpDoc) {
                 case "00":
                     $tpDoc = "00 - Declaração";

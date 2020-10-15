@@ -851,6 +851,7 @@ class Danfe extends DaCommon
             || $cStat == '151'
             || $cStat == '135'
             || $cStat == '155'
+            || $this->cancelFlag === true
         ) {
             return ['status' => false, 'message' => 'NFe CANCELADA'];
         }
@@ -2647,8 +2648,8 @@ class Danfe extends DaCommon
      */
     protected function itens($x, $y, &$nInicio, $hmax, $pag = 0, $totpag = 0, $hCabecItens = 7)
     {
-        $oldX     = $x;
-        $oldY     = $y;
+        $oldX = $x;
+        $oldY = $y;
         $totItens = $this->det->length;
         //#####################################################################
         //DADOS DOS PRODUTOS / SERVIÇOS

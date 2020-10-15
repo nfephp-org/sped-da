@@ -50,7 +50,7 @@ class Danfce extends DaCommon
     protected $urlQR = '';
     protected $pdf;
     protected $margemInterna = 2;
-    protected $hMaxLinha = 9;
+    protected $hMaxLinha = 5;
     protected $hBoxLinha = 6;
     protected $hLinha = 3;
   
@@ -213,8 +213,8 @@ class Danfce extends DaCommon
         $this->pdf->textBox(0, 0, $maxW, $maxH); // POR QUE PRECISO DESA LINHA?
         $hcabecalho = 27;//para cabeçalho (dados emitente mais logomarca)  (FIXO)
         $hcabecalhoSecundario = 10 + 3;//para cabeçalho secundário (cabeçalho sefaz) (FIXO)
-        $hprodutos = $hLinha + ($qtdItens * $hMaxLinha) ;//box poduto
-        $hTotal = 12; //box total (FIXO)
+        $hprodutos = $hLinha + ($qtdItens * $hMaxLinha)+2 ;//box poduto
+        $hTotal = 17; //box total (FIXO)
         $hpagamentos = $hLinha + ($qtdPgto * $hLinha) + 3;//para pagamentos
         if (!empty($this->vTroco)) {
             $hpagamentos += $hLinha;
@@ -398,7 +398,7 @@ class Danfce extends DaCommon
                 $prod       = $thisItem->getElementsByTagName("prod")->item(0);
                 $nitem      = $thisItem->getAttribute("nItem");
                 $cProd      = $this->getTagValue($prod, "cProd");
-                $xProd      = $this->getTagValue($prod, "xProd");
+                $xProd      = substr($this->getTagValue($prod, "xProd"), 1, 45);
                 $qCom       = number_format($this->getTagValue($prod, "qCom"), 2, ",", ".");
                 $uCom       = $this->getTagValue($prod, "uCom");
                 $vUnCom     = number_format($this->getTagValue($prod, "vUnCom"), 2, ",", ".");
@@ -525,6 +525,7 @@ class Danfce extends DaCommon
         $vNF = $this->getTagValue($this->ICMSTot, "vNF");
         $vDesc  = $this->getTagValue($this->ICMSTot, "vDesc");
         $vFrete = $this->getTagValue($this->ICMSTot, "vFrete");
+        $vOutro = $this->getTagValue($this->ICMSTot, "vOutro");
         $vTotTrib = $this->getTagValue($this->ICMSTot, "vTotTrib");
         $texto = "Qtd. Total de Itens";
         $aFont = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B'];
@@ -553,14 +554,21 @@ class Danfce extends DaCommon
         $texto = "R$ " . $vFrete;
         $aFont = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B'];
         $this->pdf->textBox($xValor, $yFrete, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', 0, '', false);
-        $yTotalFinal = $y + ($hLinha*4);
+        $yOutro= $y + ($hLinha*4);
+        $texto = "Outro";
+        $aFont = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B'];
+        $this->pdf->textBox($x, $yOutro, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
+        $texto = "R$ " . $vOutro;
+        $aFont = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B'];
+        $this->pdf->textBox($xValor, $yOutro, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', 0, '', false);
+        $yTotalFinal = $y + ($hLinha*5);
         $texto = "Total";
         $aFont = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B'];
         $this->pdf->textBox($x, $yTotalFinal, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
         $texto = "R$ " . $vNF;
         $aFont = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>'B'];
         $this->pdf->textBox($xValor, $yTotalFinal, $wColDir, $hLinha, $texto, $aFont, 'T', 'R', 0, '', false);
-        $yTotalFinal = $y + ($hLinha*5);
+        $yTotalFinal = $y + ($hLinha*6.3);
         $texto = "Informação dos Tributos Totais Incidentes";
         $aFont = ['font'=>$this->fontePadrao, 'size'=>7, 'style'=>''];
         $this->pdf->textBox($x, $yTotalFinal, $wColEsq, $hLinha, $texto, $aFont, 'T', 'L', 0, '', false);
@@ -1023,7 +1031,8 @@ class Danfce extends DaCommon
         return $cStat == '101' ||
                 $cStat == '151' ||
                 $cStat == '135' ||
-                $cStat == '155';
+                $cStat == '155' ||
+                $this->cancelFlag === true;
     }
 
     protected function checkDenegada()

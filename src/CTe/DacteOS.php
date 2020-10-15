@@ -788,7 +788,7 @@ class DacteOS extends DaCommon
         $tpAmb = $this->ide->getElementsByTagName('tpAmb')->item(0)->nodeValue;
         //indicar cancelamento
         $cStat = $this->getTagValue($this->cteProc, "cStat");
-        if ($cStat == '101' || $cStat == '135') {
+        if ($cStat == '101' || $cStat == '135' || $this->cancelFlag === true) {
             //101 Cancelamento
             $x = 10;
             $y = $this->hPrint - 130;

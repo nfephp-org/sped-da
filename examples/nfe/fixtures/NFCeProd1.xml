@@ -83,6 +83,80 @@
                     </COFINS>
                 </imposto>
             </det>
+            <det nItem="2">
+                <prod>
+                    <cProd>00003</cProd>
+                    <cEAN/>
+                    <xProd>Cabo USB 1.8M AB</xProd>
+                    <NCM>85444200</NCM>
+                    <CFOP>5102</CFOP>
+                    <uCom>Und</uCom>
+                    <qCom>1.00</qCom>
+                    <vUnCom>9.90</vUnCom>
+                    <vProd>9.90</vProd>
+                    <cEANTrib/>
+                    <uTrib>Und</uTrib>
+                    <qTrib>1.00</qTrib>
+                    <vUnTrib>9.90</vUnTrib>
+                    <indTot>1</indTot>
+                </prod>
+                <imposto>
+                    <vTotTrib>0.00</vTotTrib>
+                    <ICMS>
+                        <ICMSSN102>
+                            <orig>0</orig>
+                            <CSOSN>102</CSOSN>
+                        </ICMSSN102>
+                    </ICMS>
+                    <PIS>
+                        <PISNT>
+                            <CST>07</CST>
+                        </PISNT>
+                    </PIS>
+                    <COFINS>
+                        <COFINSNT>
+                            <CST>07</CST>
+                        </COFINSNT>
+                    </COFINS>
+                </imposto>
+            </det>
+            <det nItem="3">
+                <prod>
+                    <cProd>00003</cProd>
+                    <cEAN/>
+                    <xProd>Cabo USB 1.8M AB vamos colocar um nome mais enorme para ver até onde esse cara vai</xProd>
+                    <NCM>85444200</NCM>
+                    <CFOP>5102</CFOP>
+                    <uCom>Und</uCom>
+                    <qCom>1.00</qCom>
+                    <vUnCom>9.90</vUnCom>
+                    <vProd>9.90</vProd>
+                    <cEANTrib/>
+                    <uTrib>Und</uTrib>
+                    <qTrib>1.00</qTrib>
+                    <vUnTrib>9.90</vUnTrib>
+                    <indTot>1</indTot>
+                </prod>
+                <imposto>
+                    <vTotTrib>0.00</vTotTrib>
+                    <ICMS>
+                        <ICMSSN102>
+                            <orig>0</orig>
+                            <CSOSN>102</CSOSN>
+                        </ICMSSN102>
+                    </ICMS>
+                    <PIS>
+                        <PISNT>
+                            <CST>07</CST>
+                        </PISNT>
+                    </PIS>
+                    <COFINS>
+                        <COFINSNT>
+                            <CST>07</CST>
+                        </COFINSNT>
+                    </COFINS>
+                </imposto>
+            </det>
             <total>
                 <ICMSTot>
                     <vBC>0.00</vBC>
