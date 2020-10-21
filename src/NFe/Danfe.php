@@ -3757,8 +3757,9 @@ class Danfe extends DaCommon
         $textoProduto = $this->descricaoProduto($item);
         $numlinhas    = $this->pdf->getNumLines($textoProduto, $w2, $aFont);
 
-        if ($mostrarUnidadeTributavel && $numlinhas == 1)
+        if ($mostrarUnidadeTributavel && $numlinhas == 1) {
             $numlinhas ++;
+        }
 
         return round(($numlinhas * $this->pdf->fontSize) + ($numlinhas * 0.5), 2);
     }
