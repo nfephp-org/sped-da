@@ -340,10 +340,12 @@ class Dacte extends DaCommon
                 if (!empty($this->detCont)) {
                     $y += 15;
                 }
+            } elseif ($this->modal == '6') {
+                $y += 27.5;
             } else {
                 $y += 24.95;
             }
-            if ($this->modal != 3) {
+            if ($this->modal != 3 && $this->modal != 6) {
                 $x = $xInic;
                 $r = $this->observacao($x, $y);
                 $y = $y - 6;
@@ -378,6 +380,11 @@ class Dacte extends DaCommon
                     // TODO fmertins 31/10/14: este método não existe...
                     $r = $this->modalDutoviario($x, $y);
                     break;
+                case '6':
+                    $x = $xInic;
+                    $r = $this->modalMultimodal($x, $y);
+                    $y += 12.1;
+                    break;
             }
             if ($this->modal == '1') {
                 if ($this->lota == 1) {
@@ -388,6 +395,9 @@ class Dacte extends DaCommon
             } elseif ($this->modal == '2') {
                 $y += 8.9;
             } elseif ($this->modal == '3') {
+                $y += 42.05;
+                $y += 42.05;
+            } elseif ($this->modal == '6') {
                 $y += 42.05;
             } else {
                 $y += 37;
@@ -2431,6 +2441,8 @@ class Dacte extends DaCommon
             $h = 53;
         } elseif ($this->modal == '3') {
             $h = 27.6;
+        } elseif ($this->modal == '6') {
+            $h = 27.6;
         } else {
             $h = 35;
         }
@@ -2464,6 +2476,8 @@ class Dacte extends DaCommon
         } elseif ($this->modal == '2') {
             $this->pdf->line($x, $y, $x, $y + 49.5);
         } elseif ($this->modal == '3') {
+            $this->pdf->line($x, $y, $x, $y + 24);
+        } elseif ($this->modal == '6') {
             $this->pdf->line($x, $y, $x, $y + 24);
         } else {
             $this->pdf->line($x, $y, $x, $y + 21.5);
@@ -2605,7 +2619,8 @@ class Dacte extends DaCommon
             $tpDoc = $this->getTagValue($temp, "tpDoc");
             $descOutros = $this->getTagValue($temp, "descOutros");
             $nDoc = $this->getTagValue($temp, "nDoc");
-            $dEmi = "Emissão: " . date('d/m/Y', strtotime($this->getTagValue($temp, "dEmi")));
+            $dEmi = $this->getTagValue($temp, "dEmi");
+            if (!empty($dEmi)) $dEmi = "Emissão: " . date('d/m/Y', strtotime($this->getTagValue($temp, "dEmi")));
             $vDocFisc = $this->getTagValue($temp, "vDocFisc", "Valor: ");
             $dPrev = $this->getTagValue($temp, "dPrev");
             $dPrev = !empty($dPrev) ? ("Entrega: " . date('d/m/Y', strtotime($this->getTagValue($temp, "dPrev")))) : '';
@@ -2765,6 +2780,8 @@ class Dacte extends DaCommon
             } elseif ($this->modal == '2') {
                 $this->pdf->line($x, $y, $x, $y + 49.5);
             } elseif ($this->modal == '3') {
+                $this->pdf->line($x, $y, $x, $y + 34.1);
+            } elseif ($this->modal == '6') {
                 $this->pdf->line($x, $y, $x, $y + 34.1);
             } else {
                 $this->pdf->line($x, $y, $x, $y + 21.5);
@@ -3031,6 +3048,145 @@ class Dacte extends DaCommon
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x, $y + 3, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
     }
+
+    protected function modalMultimodal($x = 0, $y = 0)
+    {
+        $oldX = $x;
+        $oldY = $y;
+        if ($this->orientacao == 'P') {
+            $maxW = $this->wPrint;
+        } else {
+            $maxW = $this->wPrint - $this->wCanhoto;
+        }
+        $w = $maxW;
+        $h = 8.5;
+
+        $texto = 'PREVISÃO DO FLUXO DE CARGA';
+        $aFont = $this->formatPadrao;
+        $x = $oldX;
+        $this->pdf->textBox($x, $y, $w, $h * 1.2, $texto, $aFont, 'T', 'C', 1, '');
+        $y += 3.4;
+        $this->pdf->line($x, $y, $x + $w, $y);
+        $texto = 'SIGLA OU CÓDIGO INT. DA FILIAL/PORTO/ESTAÇÃO/AEROPORTO DE ORIGEM';
+        $this->pdf->textBox($x, $y, $w * 0.33, $h * 1.2, $texto, $aFont, 'T', 'C', 0, '');
+        $fluxo = $this->dom->getElementsByTagName("fluxo")->item(0);
+        $texto = $this->getTagValue($fluxo, 'xOrig');
+        $this->pdf->textBox($x, $y + 3.5, $w * 0.33, $h * 1.2, $texto, $aFont, 'T', 'C', 0, '');
+        $x += $w * 0.33;
+        $this->pdf->line($x, $y + 6.5, $x, $y);
+        $texto = 'SIGLA OU CÓDIGO INT. DA FILIAL/PORTO/ESTAÇÃO/AEROPORTO DE PASSAGEM';
+        $this->pdf->textBox($x, $y, $w * 0.33, $h * 1.2, $texto, $aFont, 'T', 'C', 0, '');
+        $pass = $this->dom->getElementsByTagName("pass");
+        $texto = '';
+        if (isset($pass)) {
+            foreach ($pass as $passagem) {
+                $texto .= $this->getTagValue($passagem, 'xPass');
+            }
+        }
+        $this->pdf->textBox($x, $y + 3.5, $w * 0.33, $h * 1.2, $texto, $aFont, 'T', 'C', 0, '');
+        $x += $w * 0.33;
+        $this->pdf->line($x, $y + 6.5, $x, $y);
+        $texto = 'SIGLA OU CÓDIGO INT. DA FILIAL/PORTO/ESTAÇÃO/AEROPORTO DE DESTINO';
+        $this->pdf->textBox($x, $y, $w * 0.33, $h * 1.3, $texto, $aFont, 'T', 'C', 0, '');
+        $texto = $this->getTagValue($fluxo, 'xDest');
+        $this->pdf->textBox($x, $y + 3.5, $w * 0.33, $h * 1.3, $texto, $aFont, 'T', 'C', 0, '');
+        $x = $oldX;
+        $y += 6.8;
+        $this->observacao($x, $y);
+        $y += $h * 2.2;
+        $h += 3;
+        $x = 1;
+        $aFont = $this->formatPadrao;
+        $texto = '';
+        $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
+        $texto = 'INFORMAÇÕES E ESPECIFICAÇÕES DO TRANSPORTE MULTIMODAL DE CARGAS';
+        $this->pdf->textBox($x, $y, $w, 2, $texto, $aFont, 'T', 'C', 0, '');
+        $y += 3;
+        $this->pdf->line($x, $y, $x + $w, $y);
+        $texto = 'Nº DO CERTIFICADO DO OPERADOR DE TRANSPORTE MULTIMODAL';
+        $aFont = $this->formatPadrao;
+        $this->pdf->textBox($x, $y, $w * 0.7, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $multimodal = $this->dom->getElementsByTagName("multimodal")->item(0);
+        $texto = $this->getTagValue($multimodal, 'COTM');
+        $aFont = $this->formatNegrito;
+        $this->pdf->textBox($x, $y + 3, $w * 0.50, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $x += $w * 0.7;
+        $this->pdf->line($x, $y, $x, $y + 8.5);
+        $texto = 'INDICADOR NEGOCIÁVEL';
+        $indNegociavel = $this->getTagValue($multimodal, 'indNegociavel');
+        if ($indNegociavel == 1) {
+            $aFont = array(
+                'font' => $this->fontePadrao,
+                'size' => 11,
+                'style' => '');
+            $this->pdf->textBox($x - ($w * 0.22), $y + 2.5, $w * 0.5, $h, 'X', $aFont, 'T', 'C', 0, '', false);
+        } else {
+            $aFont = array(
+                'font' => $this->fontePadrao,
+                'size' => 11,
+                'style' => '');
+            $this->pdf->textBox($x - ($w * 0.09), $y + 2.5, $w * 0.5, $h, 'X', $aFont, 'T', 'C', 0, '', false);
+        }
+
+        $aFont = $this->formatPadrao;
+        $this->pdf->textBox($x, $y, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
+
+        $this->pdf->line($x + 3, $y + 3, $x + 3, $y + 7);
+        $this->pdf->line($x + 8, $y + 3, $x + 8, $y + 7);
+        $this->pdf->line($x + 3, $y + 3, $x + 8, $y + 3);
+        $this->pdf->line($x + 3, $y + 7, $x + 8, $y + 7);
+
+        $texto = 'NEGOCIÁVEL';
+        $aFont = $this->formatNegrito;
+        $this->pdf->textBox($x + ($w * 0.04), $y + 3, $w * 0.50, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $x += $w * 0.15;
+
+        $this->pdf->line($x, $y + 3, $x, $y + 7);
+        $this->pdf->line($x + 5, $y + 3, $x + 5, $y + 7);
+        $this->pdf->line($x, $y + 3, $x + 5, $y + 3);
+        $this->pdf->line($x, $y + 7, $x + 5, $y + 7);
+
+        $texto = 'NÃO NEGOCIÁVEL';
+        $aFont = $this->formatNegrito;
+        $this->pdf->textBox($x + ($w * 0.03), $y + 3, $w * 0.50, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $x += 6;
+        $x = $oldX;
+        $y += $h - 1.5;
+        $texto = 'INFORMAÇÕES DO SEGURO DO MULTIMODAL';
+        $aFont = $this->formatPadrao;
+        $this->pdf->textBox($x, $y, $w, $h * 1.2, $texto, $aFont, 'T', 'C', 1, '');
+        $this->pdf->line($oldX, $y + 3.5, $oldX + $w, $y + 3.5);
+        $this->pdf->line($x + ($w * 0.25), $y + 3.5, $x + ($w * 0.25), $y + 13.5);
+        $this->pdf->line($x + ($w * 0.50), $y + 3.5, $x + ($w * 0.50), $y + 13.5);
+        $this->pdf->line($x + ($w * 0.75), $y + 3.5, $x + ($w * 0.75), $y + 13.5);
+        $texto = 'CNPJ DA SEGURADORA';
+        $aFont = $this->formatPadrao;
+        $this->pdf->textBox($oldX, $y + 3.5, $w * 0.33, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $segMultimodal = $multimodal->getElementsByTagName("seg")->item(0);
+        $cnpjSeg = $this->getTagValue($segMultimodal, 'CNPJ');
+        $texto = $cnpjSeg;
+        $aFont = $this->formatNegrito;
+        $this->pdf->textBox($oldX, $y + 7, $w * 0.33, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $texto = 'NOME DA SEGURADORA';
+        $aFont = $this->formatPadrao;
+        $this->pdf->textBox($oldX + ($w * 0.25), $y + 3.5, $w * 0.25, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $texto = $this->getTagValue($segMultimodal, 'xSeg');
+        $aFont = $this->formatNegrito;
+        $this->pdf->textBox($oldX + ($w * 0.25), $y + 7, $w * 0.25, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $texto = 'NÚMERO DA APÓLICE';
+        $aFont = $this->formatPadrao;
+        $this->pdf->textBox($oldX + ($w * 0.50), $y + 3.5, $w * 0.25, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $texto = $this->getTagValue($multimodal, 'nApol');
+        $aFont = $this->formatNegrito;
+        $this->pdf->textBox($oldX + ($w * 0.50), $y + 7, $w * 0.25, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $texto = 'NÚMERO DA AVERBAÇÃO';
+        $aFont = $this->formatPadrao;
+        $this->pdf->textBox($oldX + ($w * 0.75), $y + 3.5, $w * 0.25, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $texto = $this->getTagValue($multimodal, 'nAver');
+        $aFont = $this->formatNegrito;
+        $this->pdf->textBox($oldX + ($w * 0.75), $y + 7, $w * 0.25, $h, $texto, $aFont, 'T', 'L', 0, '');
+    }
+
 
     /**
      * modalAquaviario
