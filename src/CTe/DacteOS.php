@@ -137,6 +137,8 @@ class DacteOS extends DaCommon
             //modal aquaviário
             $this->aquav = $this->dom->getElementsByTagName("aquav")->item(0);
             $seguro = $this->getTagValue($this->seg, "respSeg");
+            $this->xSeg = $this->getTagValue($this->seg, "xSeg");
+            $this->nApol = $this->getTagValue($this->seg, "nApol");
             switch ($seguro) {
                 case '4':
                     $this->respSeg = 'Emitente';
@@ -1556,17 +1558,16 @@ class DacteOS extends DaCommon
         $texto = $this->respSeg;
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x, $y, $w * 0.26, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $x += $w * 0.26;
+        $x += $w * 0.33;
+        $texto = $this->xSeg;
 
-        $texto = '';
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x, $y, $w * $wCol02, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $x += $w * $wCol02;
+        $x += $w * 0.33;
+        $texto = $this->nApol;
 
-        $texto = '';
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x, $y, $w * $wCol02, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $x += $w * $wCol02;
     }
 
     /**
