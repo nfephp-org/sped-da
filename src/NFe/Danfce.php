@@ -312,7 +312,7 @@ class Danfce extends DaCommon
         if ($this->infNFe->getAttribute("versao") == "4.00") {
             $this->pag = $this->dom->getElementsByTagName("detPag");
             $tagPag = $this->dom->getElementsByTagName("pag")->item(0);
-            $this->vTroco = (float) $this->getTagValue($tagPag, "vTroco");
+            $this->vTroco = $this->getTagValue($tagPag, "vTroco");
         } else {
             $this->pag = $this->dom->getElementsByTagName("pag");
         }
