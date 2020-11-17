@@ -9,11 +9,9 @@ trait TraitBlocoII
 {
     protected function blocoII($y)
     {
-        $this->bloco2H = 12;
-        
+        //$this->bloco2H = 12;
         //$aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
         //$this->pdf->textBox($this->margem, $y, $this->wPrint, $this->bloco2H, '', $aFont, 'T', 'C', true, '', false);
-        
         if ($this->tpEmis == 9) {
             $texto = "Documento Auxiliar da Nota Fiscal de Consumidor Eletronica";
             $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
