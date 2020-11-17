@@ -9,13 +9,10 @@ trait TraitBlocoI
 {
     protected function blocoI()
     {
-        $this->bloco1H = 18;
+        //$this->bloco1H = 18;
         $y = $this->margem;
-        
         //$aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
         //$this->pdf->textBox($this->margem, $y, $this->wPrint, $this->bloco1H, '', $aFont, 'T', 'C', true, '', false);
-        
-        
         $emitRazao = $this->getTagValue($this->emit, "xNome");
         $emitCnpj = $this->getTagValue($this->emit, "CNPJ");
         $emitIE = $this->getTagValue($this->emit, "IE");
