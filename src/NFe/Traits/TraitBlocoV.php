@@ -58,7 +58,7 @@ trait TraitBlocoV
         
         $texto = "Troco R$";
         $this->pdf->textBox($this->margem, $z, $this->wPrint, 3, $texto, $aFont, 'T', 'L', false, '', false);
-        $texto = number_format($this->vTroco, 2, ',', '.');
+        $texto =  !empty($this->vTroco) ? number_format((float) $this->vTroco, 2, ',', '.') : '0,00';
         $y1 = $this->pdf->textBox($this->margem, $z, $this->wPrint, 3, $texto, $aFont, 'T', 'R', false, '', false);
         
         
