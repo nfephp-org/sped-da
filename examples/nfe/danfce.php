@@ -16,6 +16,7 @@ try {
     $danfce->setMargins(2);//seta as margens
     $danfce->setDefaultFont('arial');//altera o font pode ser 'times' ou 'arial'
     //$danfce->setPrintResume(true); //seta para imprimir apenas o resumo
+    $danfce->viaEstabelecimento();
     $danfce->setAsCanceled(); //marca nfce como cancelada 
     $danfce->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webenf.com.br');
     $pdf = $danfce->render($logo);
