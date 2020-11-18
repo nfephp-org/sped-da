@@ -8,7 +8,7 @@ trait TraitBlocoVII
 {
     protected function blocoVII($y)
     {
-        $this->bloco7H = 20;
+        //$this->bloco7H = 20;
         
         /*
         $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
@@ -168,7 +168,7 @@ trait TraitBlocoVII
                 $data = (new \DateTime($this->getTagValue($this->nfeProc, "dhRecbto")))->format('d/m/Y H:i:s');
             }
             
-            $texto = "Protodolo de Autorização:  {$protocolo}";
+            $texto = "Protocolo de Autorização:  {$protocolo}";
             $aFont = ['font'=> $this->fontePadrao, 'size' => (8-$subSize), 'style' => ''];
             $y3 = $this->pdf->textBox(
                 $this->margem,

@@ -9,7 +9,7 @@ trait TraitBlocoVI
 {
     protected function blocoVI($y)
     {
-        $this->bloco6H = 10;
+        //$this->bloco6H = 10;
         
         //$aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
         //$this->pdf->textBox($this->margem, $y, $this->wPrint, $this->bloco6H, '', $aFont, 'T', 'C', false, '', false);
