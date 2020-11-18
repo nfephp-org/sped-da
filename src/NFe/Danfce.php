@@ -218,13 +218,14 @@ class Danfce extends DaCommon
         $y = $this->blocoIX($y); //informações sobre tributos
         $y = $this->blocoX($y); //creditos
         
+        $ymark = $maxH/4;
         if ($this->tpAmb == 2) {
             $this->pdf->setTextColor(120, 120, 120);
             $texto = "SEM VALOR FISCAL\nEmitida em ambiente de homologacao";
-            $aFont = ['font' => $this->fontePadrao, 'size' => 20, 'style' => 'B'];
-            $this->pdf->textBox(
+            $aFont = ['font' => $this->fontePadrao, 'size' => 14, 'style' => 'B'];
+            $ymark += $this->pdf->textBox(
                 $this->margem,
-                ($maxH/3),
+                $ymark,
                 $this->wPrint,
                 $maxH/2,
                 $texto,
@@ -236,13 +237,14 @@ class Danfce extends DaCommon
                 false
             );
             $this->pdf->setTextColor(0, 0, 0);
-        } elseif ($this->canceled) {
+        }
+        if ($this->canceled) {
             $this->pdf->setTextColor(120, 120, 120);
             $texto = "CANCELADA";
-            $aFont = ['font' => $this->fontePadrao, 'size' => 20, 'style' => 'B'];
+            $aFont = ['font' => $this->fontePadrao, 'size' => 24, 'style' => 'B'];
             $this->pdf->textBox(
                 $this->margem,
-                ($maxH/3),
+                $ymark+4,
                 $this->wPrint,
                 $maxH/2,
                 $texto,

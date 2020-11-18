@@ -9,7 +9,7 @@ trait TraitBlocoIV
 {
     protected function blocoIV($y)
     {
-        $this->bloco4H = 13;
+        //$this->bloco4H = 13;
         
         //$aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
         //$this->pdf->textBox($this->margem, $y, $this->wPrint, $this->bloco4H, '', $aFont, 'T', 'C', true, '', false);

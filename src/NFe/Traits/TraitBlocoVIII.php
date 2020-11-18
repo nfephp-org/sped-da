@@ -10,7 +10,7 @@ trait TraitBlocoVIII
 {
     protected function blocoVIII($y)
     {
-        $this->bloco8H = 50;
+        //$this->bloco8H = 50;
         $y += 1;
         
         /*

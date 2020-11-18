@@ -152,11 +152,11 @@ trait TraitBlocoIII
             foreach ($this->det as $item) {
                 $prod = $item->getElementsByTagName("prod")->item(0);
                 $cProd      = $this->getTagValue($prod, "cProd");
-                $xProd      = substr($this->getTagValue($prod, "xProd"), 1, 45);
-                $qCom       = number_format($this->getTagValue($prod, "qCom"), 2, ",", ".");
+                $xProd      = substr($this->getTagValue($prod, "xProd"), 0, 45);
+                $qCom       = number_format((float) $this->getTagValue($prod, "qCom"), 2, ",", ".");
                 $uCom       = $this->getTagValue($prod, "uCom");
-                $vUnCom     = number_format($this->getTagValue($prod, "vUnCom"), 2, ",", ".");
-                $vProd      = number_format($this->getTagValue($prod, "vProd"), 2, ",", ".");
+                $vUnCom     = number_format((float) $this->getTagValue($prod, "vUnCom"), 2, ",", ".");
+                $vProd      = number_format((float) $this->getTagValue($prod, "vProd"), 2, ",", ".");
                 
                 $tempPDF = new \NFePHP\DA\Legacy\Pdf(); // cria uma instancia temporaria da class pdf
                 $tempPDF->setFont($this->fontePadrao, '', $fsize); // seta a font do PDF
@@ -169,7 +169,7 @@ trait TraitBlocoIII
                     $p = $xProd;
                     $n = $tempPDF->wordWrap($p, $descriptionWidth);
                 }
-                $h = ($hfont * $n);
+                $h = ($hfont * $n)+0.5;
                 $this->itens[] = [
                     "codigo" => $cProd,
                     "desc" => $xProd,
