@@ -44,6 +44,7 @@ class Danfce extends DaCommon
     protected $infAdic;
     protected $textoAdic;
     protected $tpEmis;
+    protected $tpAmb;
     protected $pag;
     protected $vTroco;
     protected $itens = [];
@@ -61,19 +62,18 @@ class Danfce extends DaCommon
     protected $via = "Via Consumidor";
     protected $canceled = false;
 
-
-    protected $bloco1H = 18; //cabecalho
-    protected $bloco2H = 12; //informação fiscal
+    protected $bloco1H = 18.0; //cabecalho
+    protected $bloco2H = 12.0; //informação fiscal
     
-    protected $bloco3H = 0; //itens
-    protected $bloco4H = 13; //totais
-    protected $bloco5H = 0; //formas de pagamento
+    protected $bloco3H = 0.0; //itens
+    protected $bloco4H = 13.0; //totais
+    protected $bloco5H = 0.0; //formas de pagamento
     
-    protected $bloco6H = 10; //informação para consulta
-    protected $bloco7H = 20; //informações do consumidor
-    protected $bloco8H = 50; //informações do consumidor
-    protected $bloco9H = 4; //informações sobre tributos
-    protected $bloco10H = 5; //informações do integrador
+    protected $bloco6H = 10.0; //informação para consulta
+    protected $bloco7H = 20.0; //informações do consumidor
+    protected $bloco8H = 50.0; //informações do consumidor
+    protected $bloco9H = 4.0; //informações sobre tributos
+    protected $bloco10H = 5.0; //informações do integrador
 
     use Traits\TraitBlocoI;
     use Traits\TraitBlocoII;
@@ -153,11 +153,28 @@ class Danfce extends DaCommon
         $this->flagResume = $flag;
     }
     
+    /**
+     * Marca como cancelada
+     */
     public function setAsCanceled()
     {
         $this->canceled = true;
     }
+    
+    /**
+     * Registra via do estabelecimento quando a impressção for offline 
+     */
+    public function viaEstabelecimento()
+    {
+        $this->via = "Via Estabelecimento";
+    }
 
+    /**
+     * Renderiza o pdf
+     * 
+     * @param string $logo
+     * @return string
+     */
     public function render($logo = '')
     {
         $this->monta($logo);
