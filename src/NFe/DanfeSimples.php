@@ -8,7 +8,8 @@ use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use \NFePHP\DA\Common\DaCommon;
 
-class DanfeSimples extends DaCommon {
+class DanfeSimples extends DaCommon 
+{
 
     /**
      * Tamanho do Papel
@@ -174,8 +175,8 @@ class DanfeSimples extends DaCommon {
     protected $compra;
     
     /*
-     * Guarda a estrutura da NF como Array para 
-     * interagir de maneira nativa com os dados 
+     * Guarda a estrutura da NF como Array para
+     * interagir de maneira nativa com os dados
      * do XML da NFe
      */
     protected $nfeArray = [];
@@ -187,7 +188,7 @@ class DanfeSimples extends DaCommon {
      *
      * @param string $xml Conteúdo XML da NF-e (com ou sem a tag nfeProc)
      */
-    public function __construct($xml, $orientacao = 'P')
+    public function __construct($xml, $orientacao = 'P') 
     {
         $this->loadDoc($xml);
         $this->orientacao = $orientacao;
@@ -253,7 +254,9 @@ class DanfeSimples extends DaCommon {
         $this->pdf->setFont('Arial', 'B', 10);
         $this->pdf->cell($c1, 5, "TIPO NF", 1, 0, 'C', 1);
         $this->pdf->setFont('Arial', '', 10);
-        $this->pdf->cell($c1, 5, "{$this->nfeArray['NFe']['infNFe']['ide']['tpNF']} - ".($this->nfeArray['NFe']['infNFe']['ide']['tpNF']==1 ? 'Saida':'Entrada'), 1, 0, 'C', 1);
+        $this->pdf->cell($c1, 5, "{$this->nfeArray['NFe']['infNFe']['ide']['tpNF']} - " . 
+                                  ($this->nfeArray['NFe']['infNFe']['ide']['tpNF']==1 ? 'Saida':'Entrada'),
+                                  1, 0, 'C', 1);
         $this->pdf->setFont('Arial', 'B', 10);
         $this->pdf->cell($c1, 5, "DATA EMISSAO", 1, 0, 'C', 1);
         $this->pdf->setFont('Arial', '', 10);
@@ -319,26 +322,35 @@ class DanfeSimples extends DaCommon {
         $this->pdf->cell(($c1 * 2), 5, "CNPJ/CPF {$cpfCnpj}", 1, 0, 'C', 1);
         $this->pdf->cell(($c1 * 2), 5, @"RG/IE {$this->nfeArray['NFe']['infNFe']['dest']['IE']}", 1, 1, 'C', 1);
 
-        if (isset($this->nfeArray['NFe']['infNFe']['entrega'])){
+        if (isset($this->nfeArray['NFe']['infNFe']['entrega'])) 
+        {
             $enderecoLinha1 = "{$this->nfeArray['NFe']['infNFe']['entrega']['xLgr']}";
-            if (!empty($this->nfeArray['NFe']['infNFe']['entrega']['nro'])){
+            if (!empty($this->nfeArray['NFe']['infNFe']['entrega']['nro'])) 
+            {
                 $enderecoLinha1 .= ", {$this->nfeArray['NFe']['infNFe']['entrega']['nro']}";
             }
             $enderecoLinha2 = '';
-            if (!empty($this->nfeArray['NFe']['infNFe']['entrega']['xCpl'])){
+            if (!empty($this->nfeArray['NFe']['infNFe']['entrega']['xCpl'])) 
+            {
                 $enderecoLinha2 .= "{$this->nfeArray['NFe']['infNFe']['entrega']['xCpl']} - ";
             }
-            $enderecoLinha2 .= "{$this->nfeArray['NFe']['infNFe']['entrega']['xMun']} / {$this->nfeArray['NFe']['infNFe']['entrega']['UF']} - CEP {$this->nfeArray['NFe']['infNFe']['entrega']['CEP']}";
+            $enderecoLinha2 .= "{$this->nfeArray['NFe']['infNFe']['entrega']['xMun']}"
+                             . " / {$this->nfeArray['NFe']['infNFe']['entrega']['UF']}"
+                             . " - CEP {$this->nfeArray['NFe']['infNFe']['entrega']['CEP']}";
         } else {
             $enderecoLinha1 = "{$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['xLgr']}";
-            if (!empty($this->nfeArray['NFe']['infNFe']['dest']['enderDest']['nro'])){
+            if (!empty($this->nfeArray['NFe']['infNFe']['dest']['enderDest']['nro'])) 
+            {
                 $enderecoLinha1 .= ", {$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['nro']}";
             }
             $enderecoLinha2 = '';
-            if (!empty($this->nfeArray['NFe']['infNFe']['dest']['enderDest']['xCpl'])){
+            if (!empty($this->nfeArray['NFe']['infNFe']['dest']['enderDest']['xCpl'])) 
+            {
                 $enderecoLinha2 .= "{$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['xCpl']} - ";
             }
-            $enderecoLinha2 .= "{$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['xMun']} / {$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['UF']} - CEP {$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['CEP']}";
+            $enderecoLinha2 .= "{$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['xMun']}"
+                             . " / {$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['UF']}"
+                             . " - CEP {$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['CEP']}";
         }
         
         // LINHA 12
@@ -353,8 +365,8 @@ class DanfeSimples extends DaCommon {
         $this->pdf->setFont('Arial', 'B', 12);
         $this->pdf->cell(($c1 * 2), 6, "TOTAL DA NF-e", 1, 0, 'C', 1);
         $this->pdf->setFont('Arial', '', 10);
-        $this->nfeArray['NFe']['infNFe']['total']['ICMSTot']['vNF'] = number_format($this->nfeArray['NFe']['infNFe']['total']['ICMSTot']['vNF'], 2, ',', '.');
-        $this->pdf->cell(($c1 * 2), 6, "R$ {$this->nfeArray['NFe']['infNFe']['total']['ICMSTot']['vNF']}", 1, 1, 'C', 1);
+        $vNF = number_format($this->nfeArray['NFe']['infNFe']['total']['ICMSTot']['vNF'], 2, ',', '.');
+        $this->pdf->cell(($c1 * 2), 6, "R$ {$vNF}", 1, 1, 'C', 1);
                                                                                                                                                                                                                                      
         // LINHA 15
         $this->pdf->setFont('Arial', 'B', 12);
@@ -363,7 +375,5 @@ class DanfeSimples extends DaCommon {
         // LINHA 16
         $this->pdf->setFont('Arial', '', 10);
         $this->pdf->multiCell(($c1 * 4), 5, "{$this->nfeArray['NFe']['infNFe']['infAdic']['infCpl']}", 1, 1, 'J', 1);
-
     }
-
 }
