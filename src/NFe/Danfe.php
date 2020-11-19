@@ -1853,7 +1853,7 @@ class Danfe extends DaCommon
         if ($this->dup->length > 0 || $textoFatura !== "") {
             //#####################################################################
             //FATURA / DUPLICATA
-            $texto = $y . " - FATURA / DUPLICATA";
+            $texto = "FATURA / DUPLICATA";
             if ($this->orientacao == 'P') {
                 $w = $this->wPrint;
             } else {
