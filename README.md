@@ -102,6 +102,7 @@ Caso você encontre algum problema relativo a segurança, por favor envie um ema
 ## Credits
 
 Roberto L. Machado (owner and developer)
+Newton Pasqualini Filho (DANFE Simplificado)
 
 ## License
 
