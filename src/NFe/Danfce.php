@@ -60,6 +60,7 @@ class Danfce extends DaCommon
     protected $aFontTit = ['font' => 'times', 'size' => 9, 'style' => 'B'];
     protected $aFontTex = ['font' => 'times', 'size' => 8, 'style' => ''];
     protected $via = "Via Consumidor";
+    protected $offline_double = true;
     protected $canceled = false;
 
     protected $bloco1H = 18.0; //cabecalho
@@ -162,16 +163,26 @@ class Danfce extends DaCommon
     }
     
     /**
-     * Registra via do estabelecimento quando a impressção for offline 
+     * Registra via do estabelecimento quando a impressção for offline
      */
-    public function viaEstabelecimento()
+    public function setViaEstabelecimento()
     {
         $this->via = "Via Estabelecimento";
+    }
+    
+    /**
+     * Habilita a impressão de duas vias quando NFCe for OFFLINE
+     *
+     * @param bool $flag
+     */
+    public function setOffLineDoublePrint($flag = true)
+    {
+        $this->offline_double = $flag;
     }
 
     /**
      * Renderiza o pdf
-     * 
+     *
      * @param string $logo
      * @return string
      */
@@ -272,6 +283,44 @@ class Danfce extends DaCommon
                 '',
                 false
             );
+            $this->pdf->setTextColor(0, 0, 0);
+        }
+        
+        if (!$this->canceled && $this->tpEmis == 9 && $this->offline_double) {
+            $this->setViaEstabelecimento();
+            //não está cancelada e foi emitida OFFLINE e está ativada a dupla impressão
+            $this->pdf->addPage($this->orientacao, $this->papel); // adiciona a primeira página
+            $this->pdf->setLineWidth(0.1); // define a largura da linha
+            $this->pdf->setTextColor(0, 0, 0);
+            $y = $this->blocoI(); //cabecalho
+            $y = $this->blocoII($y); //informação cabeçalho fiscal e contingência
+            $y = $this->blocoIII($y); //informação dos itens
+            $y = $this->blocoIV($y); //informação sobre os totais
+            $y = $this->blocoV($y); //informação sobre pagamento
+            $y = $this->blocoVI($y); //informações sobre consulta pela chave
+            $y = $this->blocoVII($y); //informações sobre o consumidor e dados da NFCe
+            $y = $this->blocoVIII($y); //QRCODE
+            $y = $this->blocoIX($y); //informações sobre tributos
+            $y = $this->blocoX($y); //creditos
+            $ymark = $maxH/4;
+            if ($this->tpAmb == 2) {
+                $this->pdf->setTextColor(120, 120, 120);
+                $texto = "SEM VALOR FISCAL\nEmitida em ambiente de homologacao";
+                $aFont = ['font' => $this->fontePadrao, 'size' => 14, 'style' => 'B'];
+                $ymark += $this->pdf->textBox(
+                    $this->margem,
+                    $ymark,
+                    $this->wPrint,
+                    $maxH/2,
+                    $texto,
+                    $aFont,
+                    'T',
+                    'C',
+                    false,
+                    '',
+                    false
+                );
+            }
             $this->pdf->setTextColor(0, 0, 0);
         }
     }
