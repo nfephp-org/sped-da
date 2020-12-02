@@ -53,6 +53,27 @@ class Common
     }
 
     /**
+     * Recupera e reformata a data do padrão da NFe para mm/aaaa
+     * @author Jandelson Oliveira
+     * @param  DOM    $theObj
+     * @param  string $keyName   identificador da TAG do xml
+     * @param  string $extraText prefixo do retorno
+     * @return string
+     */
+    protected function getTagDateMonthYear($theObj, $keyName, $extraText = '')
+    {
+        if (!isset($theObj) || !is_object($theObj)) {
+            return '';
+        }
+        $vct = $theObj->getElementsByTagName($keyName)->item(0);
+        if (isset($vct)) {
+            $theDate = explode("-", $vct->nodeValue);
+            return $extraText . $theDate[1] . "/" . $theDate[0];
+        }
+        return '';
+    }
+
+    /**
      * camcula digito de controle modulo 11
      * @param  string $numero
      * @return integer modulo11 do numero passado
@@ -111,7 +132,7 @@ class Common
             . '|[12][0-9]'
             . '|3[01])T([0-9]|0[0-9]'
             . '|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]-(00|01|02|03|04):00$';
-        
+
         if (!preg_match("/$regex/", $input)) {
             return '';
         }
