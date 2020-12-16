@@ -1,0 +1,153 @@
+<mdfeProc xmlns="http://www.portalfiscal.inf.br/mdfe" versao="3.00">
+<MDFe xmlns="http://www.portalfiscal.inf.br/mdfe">
+<infMDFe Id="MDFe24201201243220000109580010000010891973448530" versao="3.00">
+<ide>
+<cUF>24</cUF>
+<tpAmb>2</tpAmb>
+<tpEmit>1</tpEmit>
+<mod>58</mod>
+<serie>1</serie>
+<nMDF>1089</nMDF>
+<cMDF>97344853</cMDF>
+<cDV>0</cDV>
+<modal>1</modal>
+<dhEmi>2020-12-16T11:26:27-00:00</dhEmi>
+<tpEmis>1</tpEmis>
+<procEmi>0</procEmi>
+<verProc>1.0.0</verProc>
+<UFIni>RN</UFIni>
+<UFFim>RN</UFFim>
+<infMunCarrega>
+<cMunCarrega>2408003</cMunCarrega>
+<xMunCarrega>MossorÃ³</xMunCarrega>
+</infMunCarrega>
+</ide>
+<emit>
+<CNPJ>01243220000109</CNPJ>
+<IE>200783580</IE>
+<xNome>LEMOS E MARQUES LTDA</xNome>
+<xFant>LEMARQ INFORMATICA</xFant>
+<enderEmit>
+<xLgr>AV JOAO DA ESCOSSIA, 345 1 ANDAR</xLgr>
+<nro>345</nro>
+<xCpl>SALA 10, 11 E 12</xCpl>
+<xBairro>DOZE ANOS</xBairro>
+<cMun>2408003</cMun>
+<xMun>MOSSORO</xMun>
+<CEP>59603330</CEP>
+<UF>RN</UF>
+<fone>8433163070</fone>
+<email>deyviliani@lemarq.com.br</email>
+</enderEmit>
+</emit>
+<infModal versaoModal="3.00">
+<rodo>
+<infANTT>
+<infContratante>
+<CNPJ>01243220000109</CNPJ>
+</infContratante>
+</infANTT>
+<veicTracao>
+<cInt>000000001</cInt>
+<placa>PKJ7205</placa>
+<RENAVAM>1112735760</RENAVAM>
+<tara>0</tara>
+<prop>
+<CNPJ>20686626000100</CNPJ>
+<RNTRC>49131944</RNTRC>
+<xNome>3R LOGISTICA E TRANSPORTES LTDA</xNome>
+<IE>118274331</IE>
+<UF>BA</UF>
+<tpProp>0</tpProp>
+</prop>
+<condutor>
+<xNome>ANTONIO MARCIO SILVA OLIVEIRA</xNome>
+<CPF>04363058790</CPF>
+</condutor>
+<tpRod>03</tpRod>
+<tpCar>00</tpCar>
+<UF>BA</UF>
+</veicTracao>
+</rodo>
+</infModal>
+<infDoc>
+<infMunDescarga>
+<cMunDescarga>2408003</cMunDescarga>
+<xMunDescarga>MossorÃ³</xMunDescarga>
+<infCTe>
+<chCTe>24201201243220000109570010000010821799163844</chCTe>
+</infCTe>
+</infMunDescarga>
+</infDoc>
+<seg>
+<infResp>
+<respSeg>1</respSeg>
+<CNPJ>01243220000109</CNPJ>
+</infResp>
+<infSeg>
+<xSeg>LEMOS E MARQUES LTDA</xSeg>
+<CNPJ>01243220000109</CNPJ>
+</infSeg>
+<nApol>01243542151</nApol>
+<nAver>12348721387841</nAver>
+</seg>
+<prodPred>
+<tpCarga>01</tpCarga>
+<xProd>SAL PRODUTO TESTE</xProd>
+<NCM>25010011</NCM>
+<infLotacao>
+<infLocalCarrega>
+<CEP>59603330</CEP>
+</infLocalCarrega>
+<infLocalDescarrega>
+<CEP>59603330</CEP>
+</infLocalDescarrega>
+</infLotacao>
+</prodPred>
+<tot>
+<qCTe>1</qCTe>
+<vCarga>1562.50</vCarga>
+<cUnid>01</cUnid>
+<qCarga>15625.0000</qCarga>
+</tot>
+<infAdic/>
+</infMDFe>
+<infMDFeSupl>
+<qrCodMDFe>
+<![CDATA[ https://dfe-portal.svrs.rs.gov.br/mdfe/qrCode?chMDFe=24201201243220000109580010000010891973448530&tpAmb=2 ]]>
+</qrCodMDFe>
+</infMDFeSupl>
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+<SignedInfo>
+<CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+<SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+<Reference URI="#MDFe24201201243220000109580010000010891973448530">
+<Transforms>
+<Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+<Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+</Transforms>
+<DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+<DigestValue>s79KgTZrBWppcypCIJbf+xfsD9k=</DigestValue>
+</Reference>
+</SignedInfo>
+<SignatureValue>mHoo6koWdwGB4vSxEUo78mfaYB3enhBGHC1Iwq68Zz+DHFhZY6prVMmPKFT9zVllMMxmWnrgyTsPw51j36F+3xvKLeumU0OFy3Jh1Of/gk0tVzWUyb9pdVwh59jjkY4M/c4bP6jgzimYo2JKmLURMK7Wfkqhr1j9vtludoHR7Ign83RvOq4BqtYjZqfyBd7+LVUtdHA7+FyVM0xbAtm7VvJe35JT2eWs7M8EO/hl8jgve1+xZrKZb8R+pX1qnBCQrQv1bL+RoF9sXNyv1uFEZ5D6SipyX4NO024cq371tgKeixbBzLYLoZ/rSWrZJxbx2uZdBkasWWVG/q7dhDaWhw==</SignatureValue>
+<KeyInfo>
+<X509Data>
+<X509Certificate>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</X509Certificate>
+</X509Data>
+</KeyInfo>
+</Signature>
+</MDFe>
+<protMDFe xmlns="http://www.portalfiscal.inf.br/mdfe" versao="3.00">
+<infProt Id="MDFe924200000006190">
+<tpAmb>2</tpAmb>
+<verAplic>RS20200824094303</verAplic>
+<chMDFe>24201201243220000109580010000010891973448530</chMDFe>
+<dhRecbto>2020-12-16T11:26:28-03:00</dhRecbto>
+<nProt>924200000006190</nProt>
+<digVal>s79KgTZrBWppcypCIJbf+xfsD9k=</digVal>
+<cStat>100</cStat>
+<xMotivo>Autorizado o uso do MDF-e</xMotivo>
+</infProt>
+</protMDFe>
+</mdfeProc>
