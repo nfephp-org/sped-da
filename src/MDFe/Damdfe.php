@@ -818,8 +818,8 @@ class Damdfe extends DaCommon
                 $texto = "";
             }
             $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-            $this->pdf->textBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
-            $altura = $y + 4;
+            //$this->pdf->textBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+            //$altura = $y + 4;
             /**
              * @var \DOMNodeList $veicTracao
              */
@@ -830,9 +830,9 @@ class Damdfe extends DaCommon
                  */
                 $DOMNodeList = $item->getElementsByTagName('RNTRC');
                 if ($DOMNodeList->length > 0) {
-                    $altura += 4;
                     $texto = $DOMNodeList->item(0)->nodeValue;
                     $this->pdf->textBox($x1, $altura, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+                    $altura += 4;
                 }
             }
             /**
