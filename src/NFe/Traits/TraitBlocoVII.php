@@ -38,6 +38,9 @@ trait TraitBlocoVII
             $texto = 'CONSUMIDOR NÃO IDENTIFICADO';
             $yPlus = 1;
         }
+        if ($this->getTagValue($this->nfeProc, "xMsg")) {
+            $texto .= "\n {$this->getTagValue($this->nfeProc, "xMsg")}";
+        }
         $subSize = 0;
         if ($this->paperwidth < 70) {
             $subSize = 1.5;
