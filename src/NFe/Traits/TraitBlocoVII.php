@@ -40,6 +40,7 @@ trait TraitBlocoVII
         }
         if ($this->getTagValue($this->nfeProc, "xMsg")) {
             $texto .= "\n {$this->getTagValue($this->nfeProc, "xMsg")}";
+            $this->bloco7H += 4;
         }
         $subSize = 0;
         if ($this->paperwidth < 70) {
