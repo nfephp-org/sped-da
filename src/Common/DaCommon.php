@@ -270,6 +270,9 @@ class DaCommon extends Common
      */
     protected function adjustImage($logo, $turn_bw = false)
     {
+        if (!empty($this->logomarca)) {
+            return $this->logomarca;
+        }
         if (empty($logo)) {
             return null;
         }
