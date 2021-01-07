@@ -2540,7 +2540,27 @@ class Danfe extends DaCommon
         $cest   = (!empty($itemProd->getElementsByTagName('CEST')->item(0)->nodeValue)) ?
             ' - CEST: ' . $itemProd->getElementsByTagName('CEST')->item(0)->nodeValue : '';
 
-        $tmp_ad = $infAdProd . ($this->descProdInfoComplemento ? $loteTxt . $impostos . $nFCI . $cEAN . $cest: '');
+            $cest   = (!empty($itemProd->getElementsByTagName('CEST')->item(0)->nodeValue)) ?
+            ' - CEST: ' . $itemProd->getElementsByTagName('CEST')->item(0)->nodeValue : '';
+
+        $chassi = (!empty($itemProd->getElementsByTagName("veicProd")->item(0))) ? "\n Chassi: " .
+            $itemProd->getElementsByTagName("chassi")->item(0)->nodeValue : '';
+
+        $motor = (!empty($itemProd->getElementsByTagName("veicProd")->item(0))) ? "\n Motor: " .
+            $itemProd->getElementsByTagName("nMotor")->item(0)->nodeValue : '';
+
+        $anoFab = (!empty($itemProd->getElementsByTagName("veicProd")->item(0))) ? "\n anoFab: " .
+            $itemProd->getElementsByTagName("anoFab")->item(0)->nodeValue : '';
+
+        $anoMod = (!empty($itemProd->getElementsByTagName("veicProd")->item(0))) ? " AnoMod: " .
+            $itemProd->getElementsByTagName("anoMod")->item(0)->nodeValue : '';
+
+        $cor = (!empty($itemProd->getElementsByTagName("veicProd")->item(0))) ? " Cor: " .
+            $itemProd->getElementsByTagName("xCor")->item(0)->nodeValue : '';
+
+        $tmp_ad = $infAdProd . ($this->descProdInfoComplemento ? $loteTxt . $impostos . $nFCI . $cEAN . $cest. $chassi. $motor
+        .$anoFab .$anoMod .$cor: '');
+
         $texto = $prod->getElementsByTagName("xProd")->item(0)->nodeValue
             . (strlen($tmp_ad) != 0 ? "\n    " . $tmp_ad : '');
         //decodifica os caracteres html no xml
@@ -3019,7 +3039,7 @@ class Danfe extends DaCommon
             'M' => 'METALICA',
         ];
 
-        $veicProd = $prod->getElementsByTagName("veicProd")->item(0);
+        /* $veicProd = $prod->getElementsByTagName("veicProd")->item(0);
 
         $veiculoChassi = $veicProd->getElementsByTagName("chassi")->item(0)->nodeValue;
         $veiculoCor = $veicProd->getElementsByTagName("xCor")->item(0)->nodeValue;
@@ -3091,7 +3111,7 @@ class Danfe extends DaCommon
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
         $texto = 'Distancia Entre Eixos(mm)..: ' . $veiculoDistancia;
-        $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, ''); */
     }
 
     /**
