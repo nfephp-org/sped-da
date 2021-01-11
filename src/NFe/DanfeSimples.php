@@ -271,7 +271,7 @@ class DanfeSimples extends DaCommon
 
         // LINHA 3
         $this->pdf->setFont('Arial', 'B', 10);
-        $this->pdf->cell($c1, 5, "NUMERL", 1, 0, 'C', 1);
+        $this->pdf->cell($c1, 5, "NUMERO", 1, 0, 'C', 1);
         $this->pdf->setFont('Arial', '', 10);
         $this->pdf->cell($c1, 5, "{$this->nfeArray['NFe']['infNFe']['ide']['nNF']}", 1, 0, 'C', 1);
         $this->pdf->setFont('Arial', 'B', 10);
