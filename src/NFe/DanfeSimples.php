@@ -318,15 +318,23 @@ class DanfeSimples extends DaCommon
         $this->pdf->cell(($c1 * 2), 5, "CNPJ/CPF {$cpfCnpj}", 1, 0, 'C', 1);
         $this->pdf->cell(($c1 * 2), 5, @"RG/IE {$this->nfeArray['NFe']['infNFe']['emit']['IE']}", 1, 1, 'C', 1);
 
+        $enderecoEmit .= "{$this->nfeArray['NFe']['infNFe']['emit']['enderEmit']['xMun']}"
+                       . " / {$this->nfeArray['NFe']['infNFe']['emit']['enderEmit']['UF']}"
+                       . " - CEP {$this->nfeArray['NFe']['infNFe']['emit']['enderEmit']['CEP']}";
+
         // LINHA 9
+        $this->pdf->setFont('Arial', '', 10);
+        $this->pdf->cell(($c1 * 4), 5, "{$enderecoEmit}", 1, 1, 'C', 1);
+
+        // LINHA 10
         $this->pdf->setFont('Arial', 'B', 12);
         $this->pdf->cell(($c1 * 4), 6, "DESTINATARIO", 1, 1, 'C', 1);
 
-        // LINHA 10
+        // LINHA 11
         $this->pdf->setFont('Arial', '', 10);
         $this->pdf->cell(($c1 * 4), 5, "{$this->nfeArray['NFe']['infNFe']['dest']['xNome']}", 1, 1, 'C', 1);
 
-        // LINHA 11
+        // LINHA 12
         $cpfCnpj = (isset($this->nfeArray['NFe']['infNFe']['dest']['CNPJ'])
             ? $this->nfeArray['NFe']['infNFe']['dest']['CNPJ']
             :$this->nfeArray['NFe']['infNFe']['dest']['CPF']);
@@ -359,26 +367,26 @@ class DanfeSimples extends DaCommon
                              . " - CEP {$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['CEP']}";
         }
 
-        // LINHA 12
+        // LINHA 13
         $this->pdf->setFont('Arial', '', 10);
         $this->pdf->cell(($c1 * 4), 5, "{$enderecoLinha1}", 1, 1, 'C', 1);
 
-        // LINHA 13
+        // LINHA 14
         $this->pdf->setFont('Arial', '', 10);
         $this->pdf->cell(($c1 * 4), 5, "{$enderecoLinha2}", 1, 1, 'C', 1);
 
-        // LINHA 14
+        // LINHA 15
         $this->pdf->setFont('Arial', 'B', 12);
         $this->pdf->cell(($c1 * 2), 6, "TOTAL DA NF-e", 1, 0, 'C', 1);
         $this->pdf->setFont('Arial', '', 10);
         $vNF = number_format($this->nfeArray['NFe']['infNFe']['total']['ICMSTot']['vNF'], 2, ',', '.');
         $this->pdf->cell(($c1 * 2), 6, "R$ {$vNF}", 1, 1, 'C', 1);
 
-        // LINHA 15
+        // LINHA 16
         $this->pdf->setFont('Arial', 'B', 12);
         $this->pdf->cell(($c1 * 4), 6, "DADOS ADICIONAIS", 1, 1, 'C', 1);
 
-        // LINHA 16
+        // LINHA 11
         $this->pdf->setFont('Arial', '', 10);
         $this->pdf->multiCell(($c1 * 4), 5, "{$this->nfeArray['NFe']['infNFe']['infAdic']['infCpl']}", 1, 1, 'J', 1);
     }
