@@ -352,7 +352,14 @@ class DanfeSimples extends DaCommon
 
         // LINHA 7
         $this->pdf->setFont('Arial', '', $pequeno ? 9 : 10);
-        $this->pdf->multiCell(($c1 * 4), $pequeno ? 4 : 5, "{$this->nfeArray['NFe']['infNFe']['emit']['xNome']}", 1, 'C', false);
+        $this->pdf->multiCell(
+            ($c1 * 4),
+            $pequeno ? 4 : 5,
+            "{$this->nfeArray['NFe']['infNFe']['emit']['xNome']}",
+            1,
+            'C',
+            false
+        );
 
         // LINHA 8
         $cpfCnpj = (isset($this->nfeArray['NFe']['infNFe']['emit']['CNPJ'])
