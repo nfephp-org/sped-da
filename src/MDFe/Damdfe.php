@@ -811,35 +811,34 @@ class Damdfe extends DaCommon
             $texto = 'RNTRC';
             $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
             $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $prop = $this->veicTracao->getElementsByTagName("prop")->item(0);
+            $texto = $prop->getElementsByTagName("RNTRC")->item(0)->nodeValue ?? '';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+            $this->pdf->textBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+            $altura = $y + 4;
+            /*
             // RNTRC Não informado
             if ($this->rodo->getElementsByTagName("RNTRC")->length > 0) {
                 $texto = $this->rodo->getElementsByTagName("RNTRC")->item(0)->nodeValue;
             } else {
                 $texto = "";
-            }
-            $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+            }*/
+            //$aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
             //$this->pdf->textBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
             //$altura = $y + 4;
             /**
              * @var \DOMNodeList $veicTracao
              */
+            /*
             $veicTracao = $this->veicTracao->getElementsByTagName('prop');
             foreach ($veicTracao as $item) {
-                /**
-                 * @var \DOMElement $item
-                 */
                 $DOMNodeList = $item->getElementsByTagName('RNTRC');
                 if ($DOMNodeList->length > 0) {
                     $texto = $DOMNodeList->item(0)->nodeValue;
                     $this->pdf->textBox($x1, $altura, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
                     $altura += 4;
                 }
-            }
-            /**
-             *
-             *
-             * @var \DOMNodeList $veicReboque
-             */
+            }*/
             $veicReboque = $this->veicReboque;
             foreach ($veicReboque as $item) {
                 /**
@@ -850,7 +849,7 @@ class Damdfe extends DaCommon
                 $DOMNodeList = $item->getElementsByTagName('RNTRC');
                 if ($DOMNodeList->length > 0) {
                     $altura += 4;
-                    $texto = $DOMNodeList->item(0)->nodeValue;
+                    $texto = $DOMNodeList->item(0)->nodeValue ?? '';
                     $this->pdf->textBox($x1, $altura, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
                 }
             }
