@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mdfeProc xmlns="http://www.portalfiscal.inf.br/mdfe" versao="3.00">
+    <MDFe xmlns="http://www.portalfiscal.inf.br/mdfe">
+        <infMDFe Id="MDFe24210131626841000132580010000004881636061008" versao="3.00">
+            <ide>
+                <cUF>24</cUF>
+                <tpAmb>1</tpAmb>
+                <tpEmit>2</tpEmit>
+                <tpTransp>2</tpTransp>
+                <mod>58</mod>
+                <serie>1</serie>
+                <nMDF>488</nMDF>
+                <cMDF>63606100</cMDF>
+                <cDV>8</cDV>
+                <modal>1</modal>
+                <dhEmi>2021-01-15T10:56:49-00:00</dhEmi>
+                <tpEmis>1</tpEmis>
+                <procEmi>0</procEmi>
+                <verProc>1.0.0</verProc>
+                <UFIni>RN</UFIni>
+                <UFFim>RO</UFFim>
+                <infMunCarrega>
+                    <cMunCarrega>2408003</cMunCarrega>
+                    <xMunCarrega>Mossoró</xMunCarrega>
+                </infMunCarrega>
+                <infPercurso>
+                    <UFPer>PB</UFPer>
+                </infPercurso>
+                <infPercurso>
+                    <UFPer>CE</UFPer>
+                </infPercurso>
+                <infPercurso>
+                    <UFPer>PE</UFPer>
+                </infPercurso>
+                <infPercurso>
+                    <UFPer>PI</UFPer>
+                </infPercurso>
+                <infPercurso>
+                    <UFPer>MA</UFPer>
+                </infPercurso>
+                <infPercurso>
+                    <UFPer>TO</UFPer>
+                </infPercurso>
+                <infPercurso>
+                    <UFPer>GO</UFPer>
+                </infPercurso>
+                <infPercurso>
+                    <UFPer>MT</UFPer>
+                </infPercurso>
+            </ide>
+            <emit>
+                <CNPJ>31626841000132</CNPJ>
+                <IE>205015425</IE>
+                <xNome>R. J. T. DOS SANTOS COM E REPRESENTACOES EIRELI</xNome>
+                <xFant>R. J. T. DOS SANTOS COM E REPRESENTACOES EIRELI</xFant>
+                <enderEmit>
+                    <xLgr>RUA ARTUR PAULA</xLgr>
+                    <nro>25</nro>
+                    <xBairro>NOVA BETANIA</xBairro>
+                    <cMun>2408003</cMun>
+                    <xMun>MOSSORO</xMun>
+                    <CEP>59612120</CEP>
+                    <UF>RN</UF>
+                    <fone>8433216364</fone>
+                    <email>comercial@salalvorada.com.br</email>
+                </enderEmit>
+            </emit>
+            <infModal versaoModal="3.00">
+                <rodo>
+                    <infANTT/>
+                    <veicTracao>
+                        <cInt>000000001</cInt>
+                        <placa>RAJ9F98</placa>
+                        <RENAVAM>1235927595</RENAVAM>
+                        <tara>0</tara>
+                        <prop>
+                            <CNPJ>07944172000162</CNPJ>
+                            <RNTRC>08405753</RNTRC>
+                            <xNome>RODOCRIS TRANSPORTES LTDA</xNome>
+                            <IE>255169817</IE>
+                            <UF>SC</UF>
+                            <tpProp>0</tpProp>
+                        </prop>
+                        <condutor>
+                            <xNome>VOLNEI FERREIRA</xNome>
+                            <CPF>54283485934</CPF>
+                        </condutor>
+                        <tpRod>04</tpRod>
+                        <tpCar>03</tpCar>
+                        <UF>SC</UF>
+                    </veicTracao>
+                    <veicReboque>
+                        <cInt>000000001</cInt>
+                        <placa>RLA5F29</placa>
+                        <RENAVAM>1248609368</RENAVAM>
+                        <tara>0</tara>
+                        <capKG>0</capKG>
+                        <prop>
+                            <CNPJ>07944172000162</CNPJ>
+                            <RNTRC>08405753</RNTRC>
+                            <xNome>RODOCRIS TRANSPORTES LTDA</xNome>
+                            <IE>255169817</IE>
+                            <UF>SC</UF>
+                            <tpProp>0</tpProp>
+                        </prop>
+                        <tpCar>03</tpCar>
+                        <UF>SC</UF>
+                    </veicReboque>
+                    <veicReboque>
+                        <cInt>000000001</cInt>
+                        <placa>RLA5G69</placa>
+                        <RENAVAM>1249190646</RENAVAM>
+                        <tara>0</tara>
+                        <capKG>0</capKG>
+                        <prop>
+                            <CNPJ>07944172000162</CNPJ>
+                            <RNTRC>08405753</RNTRC>
+                            <xNome>RODOCRIS TRANSPORTES LTDA</xNome>
+                            <IE>255169817</IE>
+                            <UF>SC</UF>
+                            <tpProp>0</tpProp>
+                        </prop>
+                        <tpCar>03</tpCar>
+                        <UF>SC</UF>
+                    </veicReboque>
+                </rodo>
+            </infModal>
+            <infDoc>
+                <infMunDescarga>
+                    <cMunDescarga>1100338</cMunDescarga>
+                    <xMunDescarga>Nova Mamoré</xMunDescarga>
+                    <infNFe>
+                        <chNFe>24210131626841000132550010000008281730596311</chNFe>
+                    </infNFe>
+                </infMunDescarga>
+            </infDoc>
+            <tot>
+                <qNFe>1</qNFe>
+                <vCarga>6300.00</vCarga>
+                <cUnid>01</cUnid>
+                <qCarga>33000.0000</qCarga>
+            </tot>
+            <infAdic>
+                <infCpl>CHAVE DE ACESSO CTE 24210131626841000132570010000007381356739730 24210131626841000132570010000007391820660995 CONTRIBUINTE SUBSTITUTO OPTANTE BENEF PREV NO DECRETO 29.080 DE 15 DE AGOSTO DE 2019 ART 154B INCISO IV RICMS RN</infCpl>
+            </infAdic>
+        </infMDFe>
+        <infMDFeSupl>
+            <qrCodMDFe><![CDATA[https://dfe-portal.svrs.rs.gov.br/mdfe/qrCode?chMDFe=24210131626841000132580010000004881636061008&tpAmb=1]]></qrCodMDFe>
+        </infMDFeSupl>
+        <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+            <SignedInfo>
+                <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+                <Reference URI="#MDFe24210131626841000132580010000004881636061008">
+                    <Transforms>
+                        <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                        <Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                    </Transforms>
+                    <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                    <DigestValue>ZUSRiTAnx0SjYU+qyLRL0p3M5g0=</DigestValue>
+                </Reference>
+            </SignedInfo>
+            <SignatureValue>s4HZAZLnYfbWBbQwhOCFDRVj4NMp/FQsxQhQCkIs1+A5rG07ma/PXhdo6DlJ5lXWZlWYS53DQnQGCpReCQXp3p1sHF/1fnuxROyebR9D5Y3P5OHO8/qYLidyNimPfCn+//quvQJY4g1dONkUorB7fxBnIr0aZDZXdzJHlNL/IMYL9cdVnXP4DmCkvoKHvSy3G5tZBbmJWl6NYg8eFyGEB+EELvY/q6jHzSwzZ2o2Blf5J2V2OziVKq4ryZqyE4Da3XePzudqWx/rDOyWb7sE+Vea3ZWQqlAmTMAV5Iqw7lxMD9B4SCeK1r+FOAcKqYoq03n37nzkHBhNi0f3F+Exuw==</SignatureValue>
+            <KeyInfo>
+                <X509Data>
+                    <X509Certificate>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</X509Certificate>
+                </X509Data>
+            </KeyInfo>
+        </Signature>
+    </MDFe>
+    <protMDFe xmlns="http://www.portalfiscal.inf.br/mdfe" versao="3.00">
+        <infProt Id="MDFe924210000066327">
+            <tpAmb>1</tpAmb>
+            <verAplic>RS20200908105023</verAplic>
+            <chMDFe>24210131626841000132580010000004881636061008</chMDFe>
+            <dhRecbto>2021-01-15T10:56:50-03:00</dhRecbto>
+            <nProt>924210000066355</nProt>
+            <digVal>ZUSRiTAnx0SjYU+qyLRL0p3M5g0=</digVal>
+            <cStat>101</cStat>
+            <xMotivo>Cancelamento de MDF-e homologado</xMotivo>
+        </infProt>
+    </protMDFe>
+</mdfeProc>
