@@ -812,10 +812,12 @@ class Damdfe extends DaCommon
             $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
             $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
             $prop = $this->veicTracao->getElementsByTagName("prop")->item(0);
-            $texto = $prop->getElementsByTagName("RNTRC")->item(0)->nodeValue ?? '';
-            $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-            $this->pdf->textBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
-            $altura = $y + 4;
+            if (!empty($prop)) {
+                $texto = $prop->getElementsByTagName("RNTRC")->item(0)->nodeValue ?? '';
+                $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+                $this->pdf->textBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+                $altura = $y + 4;
+            }
             /*
             // RNTRC Não informado
             if ($this->rodo->getElementsByTagName("RNTRC")->length > 0) {
