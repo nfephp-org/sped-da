@@ -3641,21 +3641,22 @@ class Dacte extends DaCommon
         $y = $y + 5;
         $this->pdf->line($x, $y + 3, $w * 0.255, $y + 3); // LINHA HORIZONTAL ACIMA DO RG ABAIXO DO NOME
         $texto = 'RG';
-        $aFont = array(
-            'font' => $this->fontePadrao,
-            'size' => 6,
-            'style' => '');
+        $aFont = ['font' => $this->fontePadrao,'size' => 6,'style' => ''];
         $this->pdf->textBox($x, $y + 3, $w * 0.33, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x += $w * 0.85;
         $this->pdf->line($x, $y + 11.5, $x, $y - 5); // LINHA VERTICAL PROXIMO AO CT-E
         $texto = "CT-E";
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x, $y - 5, $w * 0.15, $h, $texto, $aFont, 'T', 'C', 0, '');
-        $texto = "\r\n Nº. DOCUMENTO  " . $this->getTagValue($this->ide, "nCT") . " \n";
-        $texto .= "\r\n SÉRIE  " . $this->getTagValue($this->ide, "serie");
+        $numCTe = str_pad($this->getTagValue($this->ide, "nCT"), 9, '0', STR_PAD_LEFT);
+        $texto = "Nº. " . $this->formatField($numCTe, "###.###.###") . "\n";
+        //$texto = "\r\n Nº. DOCUMENTO  " . $this->getTagValue($this->ide, "nCT") . " \n";
+        $numSerie = str_pad($this->getTagValue($this->ide, "serie"), 3, '0', STR_PAD_LEFT);
+        $texto .= "Série {$numSerie}";
+        //$texto .= "\r\n SÉRIE  " . $this->getTagValue($this->ide, "serie");
         $aFont = array(
             'font' => $this->fontePadrao,
-            'size' => 6,
+            'size' => 10,
             'style' => '');
         $this->pdf->textBox($x, $y - 8, $w * 0.15, $h, $texto, $aFont, 'C', 'C', 0, '');
         $x = $oldX;
