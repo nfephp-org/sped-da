@@ -411,9 +411,20 @@ class Danfce extends DaCommon
                 $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
                 $cStat = $this->getTagValue($infEvento, "cStat");
                 $tpEvento= $this->getTagValue($infEvento, "tpEvento");
-                $dhEvento = date("d/m/Y H:i:s", $this->toTimestamp($this->getTagValue($infEvento, "dhRegEvento")));
+                $dhEvento = date(
+                    "d/m/Y H:i:s",
+                    $this->toTimestamp(
+                        $this->getTagValue($infEvento, "dhRegEvento")
+                    )
+                );
                 $nProt = $this->getTagValue($infEvento, "nProt");
-                if ($tpEvento == '110111' && ($cStat == '101' || $cStat == '151' || $cStat == '135' || $cStat == '155')) {
+                if ($tpEvento == '110111'
+                    && (
+                        $cStat == '101'
+                        || $cStat == '151'
+                        || $cStat == '135'
+                        || $cStat == '155')
+                ) {
                     $this->canceled = true;
                     $this->submessage = "Data: {$dhEvento}\nProtocolo: {$nProt}";
                 }

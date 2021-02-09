@@ -2834,7 +2834,8 @@ class Danfe extends DaCommon
                 //   ambas as informações deverão estar expressas e identificadas no DANFE, podendo ser
                 //   utilizada uma das linhas adicionais previstas, ou o campo de informações adicionais."
                 // > Manual Integração - Contribuinte 4.01 - NT2009.006, Item 7.1.5, página 91.
-                $mostrarUnidadeTributavel = (!empty($uTrib) && strtoupper(trim($uCom)) !== strtoupper(trim($uTrib->nodeValue)));
+                $mostrarUnidadeTributavel = (!empty($uTrib)
+                    && strtoupper(trim($uCom)) !== strtoupper(trim($uTrib->nodeValue)));
 
                 // Informação sobre unidade de medida tributavel.
                 // Se não for para exibir a unidade de medida tributavel, então
