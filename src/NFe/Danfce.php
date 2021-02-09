@@ -62,6 +62,7 @@ class Danfce extends DaCommon
     protected $via = "Via Consumidor";
     protected $offline_double = true;
     protected $canceled = false;
+    protected $submessage = null;
 
     protected $bloco1H = 18.0; //cabecalho
     protected $bloco2H = 12.0; //informação fiscal
@@ -283,6 +284,20 @@ class Danfce extends DaCommon
                 '',
                 false
             );
+            $aFont = ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'B'];
+            $this->pdf->textBox(
+                $this->margem,
+                $ymark+14,
+                $this->wPrint,
+                $maxH/2,
+                $this->submessage,
+                $aFont,
+                'T',
+                'C',
+                false,
+                '',
+                false
+            );
             $this->pdf->setTextColor(0, 0, 0);
         }
         
@@ -392,6 +407,27 @@ class Danfce extends DaCommon
             $cStat = $this->getTagValue($this->infProt, 'cStat');
             if ($cStat != 100) {
                 $this->canceled = true;
+            } elseif (!empty($retEvento = $this->nfeProc->getElementsByTagName('retEvento')->item(0))) {
+                $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
+                $cStat = $this->getTagValue($infEvento, "cStat");
+                $tpEvento= $this->getTagValue($infEvento, "tpEvento");
+                $dhEvento = date(
+                    "d/m/Y H:i:s",
+                    $this->toTimestamp(
+                        $this->getTagValue($infEvento, "dhRegEvento")
+                    )
+                );
+                $nProt = $this->getTagValue($infEvento, "nProt");
+                if ($tpEvento == '110111'
+                    && (
+                        $cStat == '101'
+                        || $cStat == '151'
+                        || $cStat == '135'
+                        || $cStat == '155')
+                ) {
+                    $this->canceled = true;
+                    $this->submessage = "Data: {$dhEvento}\nProtocolo: {$nProt}";
+                }
             }
         }
     }
