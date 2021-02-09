@@ -707,6 +707,9 @@ class Danfe extends DaCommon
                 break;
             }
         }
+        if ($x === 0) {
+            return $cdata;
+        }
         if ($startPos > 0) {
             $parte1 = substr($cdata, 0, $startPos);
         } else {
