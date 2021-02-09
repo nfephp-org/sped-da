@@ -335,4 +335,19 @@
 <xMotivo>Autorizado o uso da NF-e</xMotivo>
 </infProt>
 </protNFe>
+<retEvento versao="1.00">
+    <infEvento>
+        <tpAmb>1</tpAmb>
+        <verAplic>SP_EVENTOS_PL_100</verAplic>
+        <cOrgao>35</cOrgao>
+        <cStat>135</cStat>
+        <xMotivo>Evento registrado e vinculado a NF-e</xMotivo>
+        <chNFe>41200323285089000185650010000013051817822496</chNFe>
+        <tpEvento>110111</tpEvento>
+        <xEvento>Cancelamento registrado</xEvento>
+        <nSeqEvento>1</nSeqEvento>
+        <dhRegEvento>2020-03-11T15:34:20-03:00</dhRegEvento>
+        <nProt>135210128997350</nProt>
+    </infEvento>
+</retEvento>
 </nfeProc>

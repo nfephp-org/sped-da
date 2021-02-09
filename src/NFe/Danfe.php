@@ -834,31 +834,47 @@ class Danfe extends DaCommon
      */
     protected function statusNFe()
     {
-        if (! isset($this->nfeProc)) {
-            return ['status' => false, 'message' => 'NFe NÃO PROTOCOLADA'];
+        $resp = [
+            'status' => true,
+            'message' => [],
+            'submessage' => ''
+        ];
+        if (!isset($this->nfeProc)) {
+            $resp['status'] = false;
+            $resp['message'][] = 'NFe NÃO PROTOCOLADA';
+        } elseif ($this->getTagValue($this->ide, "tpAmb") == '2') {
+            $resp['status'] = false;
+            $resp['message'][] =  "NFe EMITIDA EM HOMOLOGAÇÃO";
         }
-        if ($this->getTagValue($this->ide, "tpAmb") == '2') {
-            return ['status' => false, 'message' => 'NFe EMITIDA EM HOMOLOGAÇÃO'];
-        }
+        $retEvento = $this->nfeProc->getElementsByTagName('retEvento')->item(0);
         $cStat = $this->getTagValue($this->nfeProc, "cStat");
-        if ($cStat == '101'
+        if ($cStat == '110' ||
+            $cStat == '301' ||
+            $cStat == '302'
+        ) {
+            $resp['status'] = false;
+            $resp['message'][] = "NFe DENEGADA";
+        } elseif ($cStat == '101'
             || $cStat == '151'
             || $cStat == '135'
             || $cStat == '155'
             || $this->cancelFlag === true
         ) {
-            return ['status' => false, 'message' => 'NFe CANCELADA'];
+            $resp['status'] = false;
+            $resp['message'][] = "NFe CANCELADA";
+        } elseif (!empty($retEvento)) {
+            $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
+            $cStat = $this->getTagValue($infEvento, "cStat");
+            $tpEvento= $this->getTagValue($infEvento, "tpEvento");
+            $dhEvento = date("d/m/Y H:i:s", $this->toTimestamp($this->getTagValue($infEvento, "dhRegEvento")));
+            $nProt = $this->getTagValue($infEvento, "nProt");
+            if ($tpEvento == '110111' && ($cStat == '101' || $cStat == '151' || $cStat == '135' || $cStat == '155')) {
+                $resp['status'] = false;
+                $resp['message'][] = "NFe CANCELADA";
+                $resp['submessage'] = "{$dhEvento} - {$nProt}";
+            }
         }
-
-        if ($cStat == '110' ||
-            $cStat == '301' ||
-            $cStat == '302'
-
-        ) {
-            return ['status' => false, 'message' => 'NFe DENEGADA'];
-        }
-
-        return ['status' => true, 'message' => ''];
+        return $resp;
     }
 
     protected function notaDPEC()
@@ -1214,24 +1230,31 @@ class Danfe extends DaCommon
         $tpAmb = $this->ide->getElementsByTagName('tpAmb')->item(0)->nodeValue;
         //indicar cancelamento
         $resp = $this->statusNFe();
-        if (! $resp['status']) {
+        if (!$resp['status']) {
+            $n = count($resp['message']);
+            $alttot = $n * 15;
             $x = 10;
-            $y = $this->hPrint - 130;
-            $h = 25;
+            $y = $this->hPrint/2 - $alttot/2;
+            $h = 15;
             $w = $maxW - (2 * $x);
             $this->pdf->settextcolor(90, 90, 90);
-            $texto = $resp['message'];
-            $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
-            $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            $y += $h;
-            $h = 5;
-            $w = $maxW - (2 * $x);
-            if (isset($this->infProt) && $resp['status']) {
-                $xMotivo = $this->infProt->getElementsByTagName("xMotivo")->item(0)->nodeValue;
-            } else {
-                $xMotivo = '';
+            
+            foreach($resp['message'] as $msg) { 
+                $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
+                $this->pdf->textBox($x, $y, $w, $h, $msg, $aFont, 'C', 'C', 0, '');
+                $y += $h; 
             }
-            $texto = "SEM VALOR FISCAL\n" . $xMotivo;
+            $texto = $resp['submessage'];
+            if (!empty($texto)) {
+                $y += 3;
+                $h = 5;
+                $aFont = ['font' => $this->fontePadrao, 'size' => 20, 'style' => 'B'];
+                $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+                $y += $h; 
+            }
+            $y += 5;
+            $w = $maxW - (2 * $x);
+            $texto = "SEM VALOR FISCAL";
             $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
             $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $this->pdf->settextcolor(0, 0, 0);
@@ -2790,12 +2813,14 @@ class Danfe extends DaCommon
                 $ICMS         = $imposto->getElementsByTagName("ICMS")->item(0);
                 $IPI          = $imposto->getElementsByTagName("IPI")->item(0);
                 $textoProduto = $this->descricaoProduto($thisItem);
+                
 
                 // Posição y dos dados das unidades tributaveis.
                 $yTrib = $this->pdf->fontSize + .5;
 
                 $uCom = $prod->getElementsByTagName("uCom")->item(0)->nodeValue;
                 $uTrib = $prod->getElementsByTagName("uTrib")->item(0);
+                $cfop = $prod->getElementsByTagName("CFOP")->item(0)->nodeValue;
                 // A Configuração serve para informar se irá exibir
                 //   de forma obrigatória, estando diferente ou não,
                 //   a unidade de medida tributária.
@@ -2806,7 +2831,7 @@ class Danfe extends DaCommon
                 //   ambas as informações deverão estar expressas e identificadas no DANFE, podendo ser
                 //   utilizada uma das linhas adicionais previstas, ou o campo de informações adicionais."
                 // > Manual Integração - Contribuinte 4.01 - NT2009.006, Item 7.1.5, página 91.
-                $mostrarUnidadeTributavel = (! empty($uTrib) && strcmp($uCom, $uTrib->nodeValue));
+                $mostrarUnidadeTributavel = (!empty($uTrib) && strtoupper(trim($uCom)) !== strtoupper(trim($uTrib->nodeValue)));
 
                 // Informação sobre unidade de medida tributavel.
                 // Se não for para exibir a unidade de medida tributavel, então
@@ -2814,7 +2839,7 @@ class Danfe extends DaCommon
                 if (! $mostrarUnidadeTributavel) {
                     $yTrib = 0;
                 }
-                $h      = $this->calculeHeight($thisItem, $mostrarUnidadeTributavel);
+                $h = $this->calculeHeight($thisItem, $mostrarUnidadeTributavel);
                 $hUsado += $h;
 
                 $yTrib += $y;
