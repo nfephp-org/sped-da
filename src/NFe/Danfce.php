@@ -418,7 +418,7 @@ class Danfce extends DaCommon
                     )
                 );
                 $nProt = $this->getTagValue($infEvento, "nProt");
-                if ($tpEvento == '110111'
+                if (($tpEvento == '110111' || $tpEvento == '110112')
                     && (
                         $cStat == '101'
                         || $cStat == '151'
