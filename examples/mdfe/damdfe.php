@@ -5,7 +5,7 @@ require_once '../../bootstrap.php';
 
 use NFePHP\DA\MDFe\Damdfe;
 
-$xml = file_get_contents(__DIR__ . '/fixtures/24210131626841000132580010000004881636061008-mdfe.xml');
+$xml = file_get_contents(__DIR__ . '/fixtures/41200879549135000160580260000004071215501196-mdfe.xml');
 $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(realpath(__DIR__ . '/../images/tulipas.png')));
 //$logo = realpath(__DIR__ . '/../images/tulipas.png');
 
@@ -19,4 +19,4 @@ try {
     echo $pdf;
 } catch (Exception $e) {
     echo "Ocorreu um erro durante o processamento :" . $e->getMessage();
-}    
+}
