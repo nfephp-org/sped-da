@@ -2641,12 +2641,31 @@ class Danfe extends DaCommon
         $nFCI   = (! empty($itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue)) ?
             ' FCI:' . $itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue : '';
 
+        # EF: no momento desta alteração, upstream não exibe o os campos EAN
+        # e CEST da descrição do item
         $cEAN   = (!empty($itemProd->getElementsByTagName('cEAN')->item(0)->nodeValue)) ?
             "\n EAN: " . $itemProd->getElementsByTagName('cEAN')->item(0)->nodeValue : '';
 
         $cest   = (!empty($itemProd->getElementsByTagName('CEST')->item(0)->nodeValue)) ?
             ' - CEST: ' . $itemProd->getElementsByTagName('CEST')->item(0)->nodeValue : '';
 
+        # EF: no momento desta alteração, upstream está bastante
+        # bugada quando a nota possui um veículo, o texto sai na página
+        # inteira
+        $chassi = (!empty($itemProd->getElementsByTagName("veicProd")->item(0))) ? "\n Chassi: " .
+            $itemProd->getElementsByTagName("chassi")->item(0)->nodeValue : '';
+
+        $motor = (!empty($itemProd->getElementsByTagName("veicProd")->item(0))) ? "\n Motor: " .
+            $itemProd->getElementsByTagName("nMotor")->item(0)->nodeValue : '';
+
+        $anoFab = (!empty($itemProd->getElementsByTagName("veicProd")->item(0))) ? "\n anoFab: " .
+            $itemProd->getElementsByTagName("anoFab")->item(0)->nodeValue : '';
+
+        $anoMod = (!empty($itemProd->getElementsByTagName("veicProd")->item(0))) ? " AnoMod: " .
+            $itemProd->getElementsByTagName("anoMod")->item(0)->nodeValue : '';
+
+        $cor = (!empty($itemProd->getElementsByTagName("veicProd")->item(0))) ? " Cor: " .
+            $itemProd->getElementsByTagName("xCor")->item(0)->nodeValue : '';
 
         $tmp_ad = $infAdProd . ($this->descProdInfoComplemento ? $loteTxt . $impostos . $nFCI : '');
         $texto  = $prod->getElementsByTagName("xProd")->item(0)->nodeValue
@@ -3029,7 +3048,10 @@ class Danfe extends DaCommon
                 // Tag somente é gerada para veiculo 0k, e só é permitido um veiculo por NF-e por conta do detran
                 // Verifica se a Tag existe
                 if (! empty($veicProd)) {
-                    $this->dadosItenVeiculoDANFE($oldX, $y, $nInicio, $h, $prod);
+                    # EF: no momento desta alteração, estamos imprimindo os
+                    # dados do veículo na coluna com a descrição do produto,
+                    # porque essa função está bugada
+                    # $this->dadosItenVeiculoDANFE($oldX, $y, $nInicio, $h, $prod);
                 }
 
 
