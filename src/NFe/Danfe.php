@@ -2668,6 +2668,9 @@ class Danfe extends DaCommon
             $itemProd->getElementsByTagName("xCor")->item(0)->nodeValue : '';
 
         $tmp_ad = $infAdProd . ($this->descProdInfoComplemento ? $loteTxt . $impostos . $nFCI : '');
+        $tmp_ad = $infAdProd . ($this->descProdInfoComplemento ? $loteTxt . $impostos . $nFCI . $cEAN . $cest. $chassi. $motor
+        .$anoFab .$anoMod .$cor: '');
+
         $texto  = $prod->getElementsByTagName("xProd")->item(0)->nodeValue
             . (strlen($tmp_ad) != 0 ? "\n    " . $tmp_ad : '');
         //decodifica os caracteres html no xml
