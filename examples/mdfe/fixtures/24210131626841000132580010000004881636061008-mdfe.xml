@@ -1,0 +1,134 @@
+<mdfeProc xmlns="http://www.portalfiscal.inf.br/mdfe" versao="3.00">
+    <MDFe xmlns="http://www.portalfiscal.inf.br/mdfe">
+        <infMDFe Id="MDFe24210240783110000191580010000004731520374563" versao="3.00">
+            <ide>
+                <cUF>24</cUF>
+                <tpAmb>1</tpAmb>
+                <tpEmit>2</tpEmit>
+                <mod>58</mod>
+                <serie>1</serie>
+                <nMDF>473</nMDF>
+                <cMDF>52037456</cMDF>
+                <cDV>3</cDV>
+                <modal>1</modal>
+                <dhEmi>2021-02-09T16:33:07-00:00</dhEmi>
+                <tpEmis>1</tpEmis>
+                <procEmi>0</procEmi>
+                <verProc>1.0.0</verProc>
+                <UFIni>RN</UFIni>
+                <UFFim>BA</UFFim>
+                <infMunCarrega>
+                    <cMunCarrega>2404408</cMunCarrega>
+                    <xMunCarrega>Grossos</xMunCarrega>
+                </infMunCarrega>
+                <infPercurso>
+                    <UFPer>PB</UFPer>
+                </infPercurso>
+                <infPercurso>
+                    <UFPer>CE</UFPer>
+                </infPercurso>
+                <infPercurso>
+                    <UFPer>PE</UFPer>
+                </infPercurso>
+            </ide>
+            <emit>
+                <CNPJ>40783110000191</CNPJ>
+                <IE>200358375</IE>
+                <xNome>JOAO BATISTA DO NASCIMENTO - ME - MATRIZ</xNome>
+                <xFant>JOAO BATISTA DO NASCIMENTO - ME - MATRIZ</xFant>
+                <enderEmit>
+                    <xLgr>LG VARZEA DO BOI MORTO</xLgr>
+                    <nro>150</nro>
+                    <xBairro>ZONA RURAL</xBairro>
+                    <cMun>2404408</cMun>
+                    <xMun>GROSSOS</xMun>
+                    <CEP>59675000</CEP>
+                    <UF>RN</UF>
+                    <fone>8430646424</fone>
+                    <email>victorsal.faturamento@gmail.com</email>
+                </enderEmit>
+            </emit>
+            <infModal versaoModal="3.00">
+                <rodo>
+                    <infANTT/>
+                    <veicTracao>
+                        <cInt>000000001</cInt>
+                        <placa>MTB8D55</placa>
+                        <RENAVAM>00203087909</RENAVAM>
+                        <tara>0</tara>
+                        <prop>
+                            <CPF>03384472535</CPF>
+                            <RNTRC>49093000</RNTRC>
+                            <xNome>DARLAN LOPES FAGUNDES</xNome>
+                            <IE/>
+                            <UF>BA</UF>
+                            <tpProp>0</tpProp>
+                        </prop>
+                        <condutor>
+                            <xNome>IZAC FERREIRA DA SILVA</xNome>
+                            <CPF>01593909586</CPF>
+                        </condutor>
+                        <tpRod>04</tpRod>
+                        <tpCar>01</tpCar>
+                        <UF>BA</UF>
+                    </veicTracao>
+                </rodo>
+            </infModal>
+            <infDoc>
+                <infMunDescarga>
+                    <cMunDescarga>2927408</cMunDescarga>
+                    <xMunDescarga>Salvador</xMunDescarga>
+                    <infNFe>
+                        <chNFe>24210240783110000191550010000008641690118870</chNFe>
+                    </infNFe>
+                </infMunDescarga>
+            </infDoc>
+            <tot>
+                <qNFe>1</qNFe>
+                <vCarga>5792.00</vCarga>
+                <cUnid>01</cUnid>
+                <qCarga>32000.0000</qCarga>
+            </tot>
+            <infAdic>
+                <infCpl>CONTR SUBST OPT BENEF PREV NO DEC. 28.768 DE 02/04/2019 - ART 154-B, INCISO IV - RICMS-RN</infCpl>
+            </infAdic>
+        </infMDFe>
+        <infMDFeSupl>
+            <qrCodMDFe>
+                <![CDATA[ https://dfe-portal.svrs.rs.gov.br/mdfe/qrCode?chMDFe=24210240783110000191580010000004731520374563&tpAmb=1 ]]>
+            </qrCodMDFe>
+        </infMDFeSupl>
+        <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+            <SignedInfo>
+                <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+                <Reference URI="#MDFe24210240783110000191580010000004731520374563">
+                    <Transforms>
+                        <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                        <Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                    </Transforms>
+                    <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                    <DigestValue>f4CJhqOF1CST24V42l8KQgGNn8I=</DigestValue>
+                </Reference>
+            </SignedInfo>
+            <SignatureValue>jrQhkVhJDNC3SJJ4R0TbJp8G7uzCc1EWq07OJjb2qZJKhId0jkM5lJ7MHCFrrNL5CQE4BnJcGZ9x8FIehiX9lKMZzoWYRxx3yMDo4id+VyiUCmU8sXpmupSrfTyOilY8wr/BZP/mrBGSLSKTphcD8qOqBAhtk9Ch4EMMBzZBERqH6NCCqtlXot6HbimSEBnA7Xnz3Y6Xy+f3ffmeEPpJWQ1gUpY38KU8sJh0cogzmE759W//Db5BkwPZtZEj9I/RaPWBY9j/AAwCctQHC702/aW5EclUr/TQ640BNZZKj19tBCGa/z7LoNTl+gp2WfzBFRR5i7u1p5GS4HlCYxJs4A==</SignatureValue>
+            <KeyInfo>
+                <X509Data>
+                    <X509Certificate>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</X509Certificate>
+                </X509Data>
+            </KeyInfo>
+        </Signature>
+    </MDFe>
+    <protMDFe xmlns="http://www.portalfiscal.inf.br/mdfe" versao="3.00">
+        <infProt Id="MDFe924210000197449">
+            <tpAmb>1</tpAmb>
+            <verAplic>RS20200915181459</verAplic>
+            <chMDFe>24210240783110000191580010000004731520374563</chMDFe>
+            <dhRecbto>2021-02-09T16:33:07-03:00</dhRecbto>
+            <nProt>924210000197449</nProt>
+            <digVal>f4CJhqOF1CST24V42l8KQgGNn8I=</digVal>
+            <cStat>100</cStat>
+            <xMotivo>Autorizado o uso do MDF-e</xMotivo>
+        </infProt>
+    </protMDFe>
+</mdfeProc>

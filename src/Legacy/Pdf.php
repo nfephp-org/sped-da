@@ -939,6 +939,7 @@ class Pdf extends Fpdf
                 }
             }
             //ajustar ao alinhamento horizontal
+            $x1 = $x;
             if ($hAlign == 'L') {
                 $x1 = $x + 0.5;
             }

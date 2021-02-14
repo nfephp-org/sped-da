@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <nfeProc versao="3.10" xmlns="http://www.portalfiscal.inf.br/nfe">
     <NFe xmlns="http://www.portalfiscal.inf.br/nfe">
-        <infNFe Id="NFe41170410422724000187650010000000071000012588" versao="3.10">
+        <infNFe Id="NFe41170410422724000187650010000000071000012588" versao="4.00">
             <ide>
                 <cUF>41</cUF>
                 <cNF>00001258</cNF>
@@ -26,7 +26,7 @@
             </ide>
             <emit>
                 <CNPJ>10422724000187</CNPJ>
-                <xNome>Lumer Informática LTDA</xNome>
+                <xNome>Lumer Informática Serviços Digitais LTDA</xNome>
                 <xFant>Compusoft</xFant>
                 <enderEmit>
                     <xLgr>Av. Rio de Janeiro</xLgr>
@@ -34,7 +34,7 @@
                     <xCpl>Comercial</xCpl>
                     <xBairro>Centro</xBairro>
                     <cMun>4101903</cMun>
-                    <xMun>Assaí</xMun>
+                    <xMun>Santa Gertrudes do Assaí de Baixo</xMun>
                     <UF>PR</UF>
                     <CEP>86220000</CEP>
                     <cPais>1058</cPais>
@@ -46,11 +46,107 @@
                 <CNAE>4751201</CNAE>
                 <CRT>1</CRT>
             </emit>
+            <dest>
+                <CNPJ>10422724000187</CNPJ>
+                <xNome>Lumer Informática Serviços Digitais LTDA</xNome>
+                <xFant>Compusoft</xFant>
+                <enderDest>
+                    <xLgr>Av. Rio de Janeiro</xLgr>
+                    <nro>1060</nro>
+                    <xCpl>Comercial</xCpl>
+                    <xBairro>Centro</xBairro>
+                    <cMun>4101903</cMun>
+                    <xMun>Santa Gertrudes do Assaí de Baixo</xMun>
+                    <UF>PR</UF>
+                    <CEP>86220000</CEP>
+                    <cPais>1058</cPais>
+                    <xPais>Brasil</xPais>
+                    <fone>4332624001</fone>
+                </enderDest>
+                <IE>9045932653</IE>
+                <IM>14058</IM>
+                <CNAE>4751201</CNAE>
+                <CRT>1</CRT>
+            </dest>
             <det nItem="1">
                 <prod>
                     <cProd>00003</cProd>
                     <cEAN/>
                     <xProd>Cabo USB 1.8M AB</xProd>
+                    <NCM>85444200</NCM>
+                    <CFOP>5102</CFOP>
+                    <uCom>Und</uCom>
+                    <qCom>1.00</qCom>
+                    <vUnCom>9.90</vUnCom>
+                    <vProd>9.90</vProd>
+                    <cEANTrib/>
+                    <uTrib>Und</uTrib>
+                    <qTrib>1.00</qTrib>
+                    <vUnTrib>9.90</vUnTrib>
+                    <indTot>1</indTot>
+                </prod>
+                <imposto>
+                    <vTotTrib>0.00</vTotTrib>
+                    <ICMS>
+                        <ICMSSN102>
+                            <orig>0</orig>
+                            <CSOSN>102</CSOSN>
+                        </ICMSSN102>
+                    </ICMS>
+                    <PIS>
+                        <PISNT>
+                            <CST>07</CST>
+                        </PISNT>
+                    </PIS>
+                    <COFINS>
+                        <COFINSNT>
+                            <CST>07</CST>
+                        </COFINSNT>
+                    </COFINS>
+                </imposto>
+            </det>
+            <det nItem="2">
+                <prod>
+                    <cProd>000022222222</cProd>
+                    <cEAN/>
+                    <xProd>Cabo USB 1.8M AB MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM</xProd>
+                    <NCM>85444200</NCM>
+                    <CFOP>5102</CFOP>
+                    <uCom>Und</uCom>
+                    <qCom>1.00</qCom>
+                    <vUnCom>9.90</vUnCom>
+                    <vProd>9.90</vProd>
+                    <cEANTrib/>
+                    <uTrib>Und</uTrib>
+                    <qTrib>1.00</qTrib>
+                    <vUnTrib>9.90</vUnTrib>
+                    <indTot>1</indTot>
+                </prod>
+                <imposto>
+                    <vTotTrib>0.00</vTotTrib>
+                    <ICMS>
+                        <ICMSSN102>
+                            <orig>0</orig>
+                            <CSOSN>102</CSOSN>
+                        </ICMSSN102>
+                    </ICMS>
+                    <PIS>
+                        <PISNT>
+                            <CST>07</CST>
+                        </PISNT>
+                    </PIS>
+                    <COFINS>
+                        <COFINSNT>
+                            <CST>07</CST>
+                        </COFINSNT>
+                    </COFINS>
+                </imposto>
+            </det>
+            <det nItem="3">
+                <prod>
+                    <cProd>00003</cProd>
+                    <cEAN/>
+                    <xProd>Cabo USB 1.8M AB vamos colocar um nome mais enorme para ver até onde esse cara vai</xProd>
                     <NCM>85444200</NCM>
                     <CFOP>5102</CFOP>
                     <uCom>Und</uCom>
@@ -100,15 +196,33 @@
                     <vCOFINS>0.00</vCOFINS>
                     <vOutro>0.00</vOutro>
                     <vNF>9.90</vNF>
-                    <vTotTrib>0.00</vTotTrib>
+                    <vTotTrib>12.00</vTotTrib>
                 </ICMSTot>
             </total>
             <transp>
                 <modFrete>9</modFrete>
             </transp>
             <pag>
-                <tPag>01</tPag>
-                <vPag>9.90</vPag>
+                <detPag>
+                    <indPag>0</indPag>
+                    <tPag>01</tPag>
+                    <vPag>0.94</vPag>
+                </detPag>
+                <detPag>
+                    <indPag>0</indPag>
+                    <tPag>02</tPag>
+                    <vPag>10.94</vPag>
+                </detPag>
+                <detPag>
+                    <indPag>0</indPag>
+                    <tPag>03</tPag>
+                    <vPag>20.94</vPag>
+                </detPag>
+                <detPag>
+                    <indPag>0</indPag>
+                    <tPag>04</tPag>
+                    <vPag>20.94</vPag>
+                </detPag>
             </pag>
             <infAdic>
                 <infCpl>Valor aproximado de tributos R$ 1,41 (14.24%) - Fonte IBPT</infCpl>
@@ -116,6 +230,7 @@
         </infNFe>
         <infNFeSupl>
             <qrCode><![CDATA[http://www.dfeportal.fazenda.pr.gov.br/dfe-portal/rest/servico/consultaNFCe?chNFe=41170410422724000187650010000000071000012588&nVersao=100&tpAmb=1&dhEmi=323031372d30342d32375431333a32353a34342d30333a3030&vNF=9.90&vICMS=0.00&digVal=642b4738654b6d58334e49477a49686264475335434c4d697347343d&cIdToken=000001&cHashQRCode=58AD28AB7ABF1E610486F4077B1D6064BF64BB39]]></qrCode>
+            <urlChave>www.notamspremiada.ms.gov.br/consulta</urlChave>
         </infNFeSupl>
         <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
             <SignedInfo>

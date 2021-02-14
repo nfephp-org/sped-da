@@ -1,0 +1,169 @@
+<cteProc xmlns="http://www.portalfiscal.inf.br/cte" versao="3.00">
+    <CTe xmlns="http://www.portalfiscal.inf.br/cte">
+        <infCte Id="CTe24210231626841000132570010000007811746401259" versao="3.00">
+            <ide>
+                <cUF>24</cUF>
+                <cCT>74640125</cCT>
+                <CFOP>6353</CFOP>
+                <natOp>PREST SERV TRANSP ESTABELECIMENTO COMERCIAL FOB</natOp>
+                <mod>57</mod>
+                <serie>1</serie>
+                <nCT>781</nCT>
+                <dhEmi>2021-02-08T03:00:00-03:00</dhEmi>
+                <tpImp>1</tpImp>
+                <tpEmis>1</tpEmis>
+                <cDV>9</cDV>
+                <tpAmb>1</tpAmb>
+                <tpCTe>0</tpCTe>
+                <procEmi>0</procEmi>
+                <verProc>1.0.0</verProc>
+                <cMunEnv>2408003</cMunEnv>
+                <xMunEnv>MOSSORO</xMunEnv>
+                <UFEnv>RN</UFEnv>
+                <modal>01</modal>
+                <tpServ>0</tpServ>
+                <cMunIni>2408003</cMunIni>
+                <xMunIni>MossorÃ³</xMunIni>
+                <UFIni>RN</UFIni>
+                <cMunFim>1100304</cMunFim>
+                <xMunFim>Vilhena</xMunFim>
+                <UFFim>RO</UFFim>
+                <retira>1</retira>
+                <indIEToma>1</indIEToma>
+                <toma3>
+                    <toma>3</toma>
+                </toma3>
+            </ide>
+            <compl>
+                <xObs>* CONTRIBUINTE SUBSTITUTO OPTANTE BENEF PREV NO DEC. 29.080 de 15/08/19 - ART 154-B, INCISO IV - RICMS-RN. Em cumprimento a decisÃ£o judicial nos autos do processo nÂº 0800392-44.2020.4.05.8401, em trÃ¢mite perante a 10a Vara Federal de MossorÃ³/RN, estÃ¡ suspenso a emissÃ£o de CIOT, bem como a sua inclusÃ£o no MDF-E pelo prazo de 240 dias a contar da vigÃªncia da ResoluÃ§Ã£o 5.862/2019.</xObs>
+            </compl>
+            <emit>
+                <CNPJ>31626841000132</CNPJ>
+                <IE>205015425</IE>
+                <xNome>R. J. T. DOS SANTOS COM E REPRESENTACOES EIRELI</xNome>
+                <xFant>R. J. T. DOS SANTOS COM E REPRESENTACOES EIRELI</xFant>
+                <enderEmit>
+                    <xLgr>RUA ARTUR PAULA</xLgr>
+                    <nro>25</nro>
+                    <xBairro>NOVA BETANIA</xBairro>
+                    <cMun>2408003</cMun>
+                    <xMun>MOSSORO</xMun>
+                    <CEP>59612120</CEP>
+                    <UF>RN</UF>
+                    <fone>8433216364</fone>
+                </enderEmit>
+            </emit>
+            <rem>
+                <CNPJ>31626841000132</CNPJ>
+                <IE>205015425</IE>
+                <xNome>R. J. T. DOS SANTOS COMERCIO E REPRESENTACOES EIRE</xNome>
+                <xFant>R. J. T. DOS SANTOS COM E REPRESENTACOES EIRELI</xFant>
+                <fone>8498833888</fone>
+                <enderReme>
+                    <xLgr>RUA ARTUR PAULA</xLgr>
+                    <nro>25</nro>
+                    <xBairro>NOVA BETANIA</xBairro>
+                    <cMun>2408003</cMun>
+                    <xMun>MOSSORÃ</xMun>
+                    <UF>RN</UF>
+                </enderReme>
+            </rem>
+            <dest>
+                <CNPJ>01318353000105</CNPJ>
+                <IE>151889465</IE>
+                <xNome>L T DE SOUSA eamp; CIA LTDA</xNome>
+                <fone>9134621376</fone>
+                <enderDest>
+                    <xLgr>TRV ORIENTAL DO MERCADO</xLgr>
+                    <nro>84</nro>
+                    <xBairro>CENTRO</xBairro>
+                    <cMun>1502202</cMun>
+                    <xMun>CAPANEMA</xMun>
+                    <CEP>68700100</CEP>
+                    <UF>PA</UF>
+                    <cPais>1058</cPais>
+                    <xPais>BRASIL</xPais>
+                </enderDest>
+            </dest>
+            <vPrest>
+                <vTPrest>4840.42</vTPrest>
+                <vRec>4840.42</vRec>
+            </vPrest>
+            <imp>
+                <ICMS>
+                    <ICMS20>
+                        <CST>20</CST>
+                        <pRedBC>50.00</pRedBC>
+                        <vBC>2420.21</vBC>
+                        <pICMS>12.00</pICMS>
+                        <vICMS>290.42</vICMS>
+                    </ICMS20>
+                </ICMS>
+            </imp>
+            <infCTeNorm>
+                <infCarga>
+                    <vCarga>1716.00</vCarga>
+                    <proPred>SAL</proPred>
+                    <infQ>
+                        <cUnid>01</cUnid>
+                        <tpMed>Peso Bruto</tpMed>
+                        <qCarga>13000.0000</qCarga>
+                    </infQ>
+                </infCarga>
+                <infDoc>
+                    <infNFe>
+                        <chave>24210234533611000117550010000005081684535350</chave>
+                    </infNFe>
+                </infDoc>
+                <infModal versaoModal="3.00">
+                    <rodo>
+                        <RNTRC>51054788</RNTRC>
+                    </rodo>
+                </infModal>
+            </infCTeNorm>
+            <infRespTec>
+                <CNPJ>01243220000109</CNPJ>
+                <xContato>LEMOS E MARQUES LTDA</xContato>
+                <email>werner@lemarq.com.br</email>
+                <fone>8433163070</fone>
+            </infRespTec>
+        </infCte>
+        <infCTeSupl>
+            <qrCodCTe>
+                <![CDATA[ https://dfe-portal.svrs.rs.gov.br/cte/qrCode?chCTe=24210231626841000132570010000007811746401259&tpAmb=1 ]]>
+            </qrCodCTe>
+        </infCTeSupl>
+        <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+            <SignedInfo>
+                <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+                <Reference URI="#CTe24210231626841000132570010000007811746401259">
+                    <Transforms>
+                        <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                        <Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                    </Transforms>
+                    <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                    <DigestValue>mFZCwxGa91HLKfAFwhroLeUy430=</DigestValue>
+                </Reference>
+            </SignedInfo>
+            <SignatureValue>yIfwL9X0CFoQQGurvZMirUgtrSt8jSi4wfkoGnAi92i2PvosMZUyLzrx6fWMc0YoOgUL68NaCdBE4Tbdfeva66qOsJoWiny+KmSRxz7LoaxxbPFLyiH+MYZ8UepDTPWrGPsajSVuKg/HrVpsG4B4p8jMfDlczZ9Mf1tBhv4juhgp7+Buvc9mmuGufUUtpWClFC1ep27wX4Gk5pL51g3QbFDIZBnGUFR+IRJ6eJdvQfYtVctsoNkIVWDrRx1Ek0H8fJb1ShYFbpEoA/F34RfzqNjDSA1vbqXUu+L1Bczh5flZRGt6cq/esKRnIDj0unMQ4TX9xtgQyOd/90F8qjnUSw==</SignatureValue>
+            <KeyInfo>
+                <X509Data>
+                    <X509Certificate>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</X509Certificate>
+                </X509Data>
+            </KeyInfo>
+        </Signature>
+    </CTe>
+    <protCTe versao="3.00">
+        <infProt Id="CTe324210000929982">
+            <tpAmb>1</tpAmb>
+            <verAplic>RS20200915181434</verAplic>
+            <chCTe>24210231626841000132570010000007811746401259</chCTe>
+            <dhRecbto>2021-02-08T15:28:30-03:00</dhRecbto>
+            <nProt>324210000930048</nProt>
+            <digVal>mFZCwxGa91HLKfAFwhroLeUy430=</digVal>
+            <cStat>101</cStat>
+            <xMotivo>Cancelamento de CT-e homologado</xMotivo>
+        </infProt>
+    </protCTe>
+</cteProc>

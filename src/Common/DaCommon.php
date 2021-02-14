@@ -101,6 +101,10 @@ class DaCommon extends Common
      * @var int
      */
     protected $decimalPlaces;
+    /**
+     * @var bool
+     */
+    protected $cancelFlag = false;
 
     /**
      * Ativa ou desativa o modo debug
@@ -266,6 +270,9 @@ class DaCommon extends Common
      */
     protected function adjustImage($logo, $turn_bw = false)
     {
+        if (!empty($this->logomarca)) {
+            return $this->logomarca;
+        }
         if (empty($logo)) {
             return null;
         }
@@ -314,5 +321,14 @@ class DaCommon extends Common
         $logo = ob_get_contents(); // read from buffer
         ob_end_clean();
         return 'data://text/plain;base64,'.base64_encode($logo);
+    }
+
+    /**
+     * Atribui uma sinalização de cancelamento externa
+     * @param bool $cancelFlag
+     */
+    public function setCancelFlag($cancelFlag = true)
+    {
+        $this->cancelFlag = filter_var($cancelFlag, FILTER_VALIDATE_BOOLEAN);
     }
 }
