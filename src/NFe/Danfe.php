@@ -312,7 +312,7 @@ class Danfe extends DaCommon
         //informações adicionais
         $fontProduto            = [
             'font'  => $this->fontePadrao,
-            'size'  => 8,
+            'size'  => 7,
             'style' => ''
         ];
         $k                      = $this->pdf->k;
