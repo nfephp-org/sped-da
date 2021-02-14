@@ -1241,7 +1241,7 @@ class Danfe extends DaCommon
             $h = 15;
             $w = $maxW - (2 * $x);
             $this->pdf->settextcolor(90, 90, 90);
-            
+
             foreach ($resp['message'] as $msg) {
                 $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
                 $this->pdf->textBox($x, $y, $w, $h, $msg, $aFont, 'C', 'C', 0, '');
@@ -2640,6 +2640,14 @@ class Danfe extends DaCommon
         //NT2013.006 FCI
         $nFCI   = (! empty($itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue)) ?
             ' FCI:' . $itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue : '';
+
+        $cEAN   = (!empty($itemProd->getElementsByTagName('cEAN')->item(0)->nodeValue)) ?
+            "\n EAN: " . $itemProd->getElementsByTagName('cEAN')->item(0)->nodeValue : '';
+
+        $cest   = (!empty($itemProd->getElementsByTagName('CEST')->item(0)->nodeValue)) ?
+            ' - CEST: ' . $itemProd->getElementsByTagName('CEST')->item(0)->nodeValue : '';
+
+
         $tmp_ad = $infAdProd . ($this->descProdInfoComplemento ? $loteTxt . $impostos . $nFCI : '');
         $texto  = $prod->getElementsByTagName("xProd")->item(0)->nodeValue
             . (strlen($tmp_ad) != 0 ? "\n    " . $tmp_ad : '');
@@ -2816,7 +2824,7 @@ class Danfe extends DaCommon
                 $ICMS         = $imposto->getElementsByTagName("ICMS")->item(0);
                 $IPI          = $imposto->getElementsByTagName("IPI")->item(0);
                 $textoProduto = $this->descricaoProduto($thisItem);
-                
+
 
                 // Posição y dos dados das unidades tributaveis.
                 $yTrib = $this->pdf->fontSize + .5;
