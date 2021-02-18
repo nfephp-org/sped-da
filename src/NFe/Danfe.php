@@ -2717,9 +2717,9 @@ class Danfe extends DaCommon
         //O/CST ou O/CSOSN
         $x     += $w3;
         $w4    = round($w * 0.05, 0);
-        $texto = 'O/CSOSN';//Regime do Simples CRT = 1 ou CRT = 2
-        if ($this->getTagValue($this->emit, 'CRT') == '3') {
-            $texto = 'O/CST';//Regime Normal
+        $texto = 'O/CST'; // CRT = 2 ou CRT = 3
+        if ($this->getTagValue($this->emit, 'CRT') == '1') {
+            $texto = 'O/CSOSN';//Regime do Simples CRT = 1
         }
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w4, $h, $texto, $aFont, 'C', 'C', 0, '', false);
