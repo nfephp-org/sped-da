@@ -872,10 +872,10 @@ class Danfe extends DaCommon
                 $tpEvento= $this->getTagValue($infEvento, "tpEvento");
                 $dhEvento = date("d/m/Y H:i:s", $this->toTimestamp($this->getTagValue($infEvento, "dhRegEvento")));
                 $nProt = $this->getTagValue($infEvento, "nProt");
-                if ($tpEvento == '110111' && 
-                    ($cStat == '101' || 
-                     $cStat == '151' || 
-                     $cStat == '135' || 
+                if ($tpEvento == '110111' &&
+                    ($cStat == '101' ||
+                     $cStat == '151' ||
+                     $cStat == '135' ||
                      $cStat == '155')
                 ) {
                     $resp['status'] = false;
