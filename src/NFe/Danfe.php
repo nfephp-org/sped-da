@@ -845,37 +845,39 @@ class Danfe extends DaCommon
         if (!isset($this->nfeProc)) {
             $resp['status'] = false;
             $resp['message'][] = 'NFe NÃO PROTOCOLADA';
-        } elseif ($this->getTagValue($this->ide, "tpAmb") == '2') {
-            $resp['status'] = false;
-            $resp['message'][] =  "NFe EMITIDA EM HOMOLOGAÇÃO";
-        }
-        $retEvento = $this->nfeProc->getElementsByTagName('retEvento')->item(0);
-        $cStat = $this->getTagValue($this->nfeProc, "cStat");
-        if ($cStat == '110' ||
-            $cStat == '301' ||
-            $cStat == '302'
-        ) {
-            $resp['status'] = false;
-            $resp['message'][] = "NFe DENEGADA";
-        } elseif ($cStat == '101'
-            || $cStat == '151'
-            || $cStat == '135'
-            || $cStat == '155'
-            || $this->cancelFlag === true
-        ) {
-            $resp['status'] = false;
-            $resp['message'][] = "NFe CANCELADA";
-        } elseif (!empty($retEvento)) {
-            $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
-            $cStat = $this->getTagValue($infEvento, "cStat");
-            $tpEvento= $this->getTagValue($infEvento, "tpEvento");
-            $dhEvento = date("d/m/Y H:i:s", $this->toTimestamp($this->getTagValue($infEvento, "dhRegEvento")));
-            $nProt = $this->getTagValue($infEvento, "nProt");
-            if ($tpEvento == '110111' && ($cStat == '101' || $cStat == '151' || $cStat == '135' || $cStat == '155')) {
+        } else {
+            if ($this->getTagValue($this->ide, "tpAmb") == '2') {
+                $resp['status'] = false;
+                $resp['message'][] =  "NFe EMITIDA EM HOMOLOGAÇÃO";
+            }
+            $retEvento = $this->nfeProc->getElementsByTagName('retEvento')->item(0);
+            $cStat = $this->getTagValue($this->nfeProc, "cStat");
+            if ($cStat == '110' ||
+                $cStat == '301' ||
+                $cStat == '302'
+            ) {
+                $resp['status'] = false;
+                $resp['message'][] = "NFe DENEGADA";
+            } elseif ($cStat == '101'
+                || $cStat == '151'
+                || $cStat == '135'
+                || $cStat == '155'
+                || $this->cancelFlag === true
+            ) {
                 $resp['status'] = false;
                 $resp['message'][] = "NFe CANCELADA";
-                $resp['submessage'] = "{$dhEvento} - {$nProt}";
-            }
+            } elseif (!empty($retEvento)) {
+                $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
+                $cStat = $this->getTagValue($infEvento, "cStat");
+                $tpEvento= $this->getTagValue($infEvento, "tpEvento");
+                $dhEvento = date("d/m/Y H:i:s", $this->toTimestamp($this->getTagValue($infEvento, "dhRegEvento")));
+                $nProt = $this->getTagValue($infEvento, "nProt");
+                if ($tpEvento == '110111' && ($cStat == '101' || $cStat == '151' || $cStat == '135' || $cStat == '155')) {
+                    $resp['status'] = false;
+                    $resp['message'][] = "NFe CANCELADA";
+                    $resp['submessage'] = "{$dhEvento} - {$nProt}";
+                }
+            }            
         }
         return $resp;
     }
