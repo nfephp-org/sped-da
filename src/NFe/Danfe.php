@@ -877,7 +877,7 @@ class Danfe extends DaCommon
                     $resp['message'][] = "NFe CANCELADA";
                     $resp['submessage'] = "{$dhEvento} - {$nProt}";
                 }
-            }            
+            }
         }
         return $resp;
     }
