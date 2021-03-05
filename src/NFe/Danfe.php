@@ -1843,7 +1843,6 @@ class Danfe extends DaCommon
                 }
             }
         }
-
         return "";
     }
 
@@ -2048,6 +2047,10 @@ class Danfe extends DaCommon
                 '13' => 'Vale Combustível',
                 '14' => 'Duplicata Mercantil',
                 '15' => 'Boleto',
+                '16' => 'Depósito Bancário',
+                '17' => 'Pagamento Instantâneo (PIX)',
+                '18' => 'Transferência bancária, Carteira Digital',
+                '19' => 'Programa de fidelidade, Cashback, Crédito Virtual',
                 '90' => 'Sem pagamento',
                 '99' => 'Outros'
             ];
