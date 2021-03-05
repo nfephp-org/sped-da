@@ -242,16 +242,16 @@ class Common
             case '15':
                 $tPagNome = 'Boleto Bancário';
                 break;
-            case '16': 
+            case '16':
                 $tPagNome = 'Depósito Bancário';
                 break;
-            case '17': 
+            case '17':
                 $tPagNome = 'Pagamento Instantâneo (PIX)';
                 break;
-            case '18': 
+            case '18':
                 $tPagNome = 'Transferência bancária, Carteira Digital';
                 break;
-            case '19': 
+            case '19':
                 $tPagNome = 'Programa de fidelidade, Cashback, Crédito Virtual';
                 break;
             case '90':
