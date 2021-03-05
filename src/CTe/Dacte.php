@@ -1571,7 +1571,8 @@ class Dacte extends DaCommon
         $qCarga = 0;
         foreach ($this->infQ as $infQ) {
             if (in_array($this->getTagValue($infQ, "cUnid"), array('01', '02'))) {
-                $qCarga += (float)$this->getTagValue($infQ, "qCarga");
+                $qCarga += $this->getTagValue($infQ, "cUnid") == '01' ?
+                    $this->getTagValue($infQ, "qCarga") : $this->getTagValue($infQ, "qCarga") * 1000;
             }
         }
         $texto = 'PESO BRUTO (KG)';
