@@ -67,7 +67,7 @@ class Danfce extends DaCommon
     protected $bloco2H = 12.0; //informação fiscal
     
     protected $bloco3H = 0.0; //itens
-    protected $bloco4H = 13.0; //totais
+    protected $bloco4H = 16.0; //totais
     protected $bloco5H = 0.0; //formas de pagamento
     
     protected $bloco6H = 10.0; //informação para consulta
