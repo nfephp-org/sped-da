@@ -391,52 +391,54 @@ class Damdfe extends DaCommon
         if (!isset($this->mdfeProc)) {
             $resp['status'] = false;
             $resp['message'][] = 'MDFe NÃO PROTOCOLADA';
-        } elseif ($this->getTagValue($this->ide, "tpAmb") == '2') {
-            $resp['status'] = false;
-            $resp['valida'] = false;
-            $resp['message'][] =  "MDFe EMITIDA EM HOMOLOGAÇÃO";
-        }
-        $retEvento = $this->mdfeProc->getElementsByTagName('retEventoMDFe')->item(0);
-        $cStat = $this->getTagValue($this->mdfeProc, "cStat");
-        $tpEvento = $this->getTagValue($this->mdfeProc, "tpEvento");
-        if ($cStat == '101'
-            || $cStat == '151'
-            || $cStat == '135'
-            || $cStat == '155'
-            || $this->cancelFlag === true
-        ) {
-            $resp['status'] = false;
-            $resp['valida'] = false;
-            $resp['message'][] = "MDFe CANCELADA";
-        } elseif (($cStat == '103'
-            || $cStat == '136'
-            || $cStat == '135'
-            || $cStat == '155'
-            || $tpEvento === '110112')
-            and empty($retEvento)
-        ) {
-            $resp['status'] = false;
-            $resp['message'][] = "MDFe ENCERRADA";
-        } elseif (!empty($retEvento)) {
-            $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
-            $cStat = $this->getTagValue($infEvento, "cStat");
-            $tpEvento= $this->getTagValue($infEvento, "tpEvento");
-            $dhEvento = date("d/m/Y H:i:s", $this->toTimestamp($this->getTagValue($infEvento, "dhRegEvento")));
-            $nProt = $this->getTagValue($infEvento, "nProt");
-            if ($tpEvento == '110111' && ($cStat == '101' || $cStat == '151' || $cStat == '135' || $cStat == '155')) {
+        } else {
+            if ($this->getTagValue($this->ide, "tpAmb") == '2') {
+                $resp['status'] = false;
+                $resp['valida'] = false;
+                $resp['message'][] = "MDFe EMITIDA EM HOMOLOGAÇÃO";
+            }
+            $retEvento = $this->mdfeProc->getElementsByTagName('retEventoMDFe')->item(0);
+            $cStat = $this->getTagValue($this->mdfeProc, "cStat");
+            $tpEvento = $this->getTagValue($this->mdfeProc, "tpEvento");
+            if ($cStat == '101'
+                || $cStat == '151'
+                || $cStat == '135'
+                || $cStat == '155'
+                || $this->cancelFlag === true
+            ) {
                 $resp['status'] = false;
                 $resp['valida'] = false;
                 $resp['message'][] = "MDFe CANCELADA";
-                $resp['submessage'] = "{$dhEvento} - {$nProt}";
-            } elseif ($tpEvento == '110112' && ($cStat == '136' || $cStat == '135' || $cStat == '155')) {
+            } elseif (($cStat == '103'
+                    || $cStat == '136'
+                    || $cStat == '135'
+                    || $cStat == '155'
+                    || $tpEvento === '110112')
+                and empty($retEvento)
+            ) {
                 $resp['status'] = false;
                 $resp['message'][] = "MDFe ENCERRADA";
-                $resp['submessage'] = "{$dhEvento} - {$nProt}";
+            } elseif (!empty($retEvento)) {
+                $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
+                $cStat = $this->getTagValue($infEvento, "cStat");
+                $tpEvento = $this->getTagValue($infEvento, "tpEvento");
+                $dhEvento = date("d/m/Y H:i:s", $this->toTimestamp($this->getTagValue($infEvento, "dhRegEvento")));
+                $nProt = $this->getTagValue($infEvento, "nProt");
+                if ($tpEvento == '110111' && ($cStat == '101' || $cStat == '151' || $cStat == '135' || $cStat == '155')) {
+                    $resp['status'] = false;
+                    $resp['valida'] = false;
+                    $resp['message'][] = "MDFe CANCELADA";
+                    $resp['submessage'] = "{$dhEvento} - {$nProt}";
+                } elseif ($tpEvento == '110112' && ($cStat == '136' || $cStat == '135' || $cStat == '155')) {
+                    $resp['status'] = false;
+                    $resp['message'][] = "MDFe ENCERRADA";
+                    $resp['submessage'] = "{$dhEvento} - {$nProt}";
+                }
+            } elseif (($this->tpEmis == 2 || $this->tpEmis == 5) and empty($this->nProt)) {
+                $resp['status'] = false;
+                $resp['message'][] = "MDFE Emitido em Contingência";
+                $resp['message'][] = "devido à problemas técnicos";
             }
-        } elseif (($this->tpEmis == 2 || $this->tpEmis == 5) and empty($this->nProt)) {
-            $resp['status'] = false;
-            $resp['message'][] = "MDFE Emitido em Contingência";
-            $resp['message'][] = "devido à problemas técnicos";
         }
         return $resp;
     }

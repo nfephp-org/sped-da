@@ -987,49 +987,51 @@ class Dacte extends DaCommon
         if (!isset($this->cteProc)) {
             $resp['status'] = false;
             $resp['message'][] = 'CTe NÃO PROTOCOLADO';
-        } elseif ($this->getTagValue($this->ide, "tpAmb") == '2' && $this->preVisualizar == '0') {
-            $resp['status'] = false;
-            $resp['message'][] =  "CTe EMITIDO EM HOMOLOGAÇÃO";
-        } elseif ($this->preVisualizar == '1') {
-            $resp['status'] = false;
-            $resp['message'][] =  "PRÉ-VISUALIZAÇÃO";
-        }
-        $retEvento = $this->cteProc->getElementsByTagName('retEventoCTe')->item(0);
-        $cStat = $this->getTagValue($this->cteProc, "cStat");
-        if ($cStat == '110' ||
-            $cStat == '301' ||
-            $cStat == '302'
-        ) {
-            $resp['status'] = false;
-            $resp['message'][] = "CTe DENEGADO";
-        } elseif ($cStat == '101'
-            || $cStat == '151'
-            || $cStat == '135'
-            || $cStat == '155'
-            || $this->cancelFlag === true
-        ) {
-            $resp['status'] = false;
-            $resp['message'][] = "CTe CANCELADO";
-        } elseif (!empty($retEvento)) {
-            $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
-            $cStat = $this->getTagValue($infEvento, "cStat");
-            $tpEvento= $this->getTagValue($infEvento, "tpEvento");
-            $dhEvento = date("d/m/Y H:i:s", $this->toTimestamp($this->getTagValue($infEvento, "dhRegEvento")));
-            $nProt = $this->getTagValue($infEvento, "nProt");
-            if ($tpEvento == '110111' && ($cStat == '101' || $cStat == '151' || $cStat == '135' || $cStat == '155')) {
+        } else {
+            if ($this->getTagValue($this->ide, "tpAmb") == '2' && $this->preVisualizar == '0') {
+                $resp['status'] = false;
+                $resp['message'][] = "CTe EMITIDO EM HOMOLOGAÇÃO";
+            } elseif ($this->preVisualizar == '1') {
+                $resp['status'] = false;
+                $resp['message'][] = "PRÉ-VISUALIZAÇÃO";
+            }
+            $retEvento = $this->cteProc->getElementsByTagName('retEventoCTe')->item(0);
+            $cStat = $this->getTagValue($this->cteProc, "cStat");
+            if ($cStat == '110' ||
+                $cStat == '301' ||
+                $cStat == '302'
+            ) {
+                $resp['status'] = false;
+                $resp['message'][] = "CTe DENEGADO";
+            } elseif ($cStat == '101'
+                || $cStat == '151'
+                || $cStat == '135'
+                || $cStat == '155'
+                || $this->cancelFlag === true
+            ) {
                 $resp['status'] = false;
                 $resp['message'][] = "CTe CANCELADO";
-                $resp['submessage'] = "{$dhEvento} - {$nProt}";
+            } elseif (!empty($retEvento)) {
+                $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
+                $cStat = $this->getTagValue($infEvento, "cStat");
+                $tpEvento = $this->getTagValue($infEvento, "tpEvento");
+                $dhEvento = date("d/m/Y H:i:s", $this->toTimestamp($this->getTagValue($infEvento, "dhRegEvento")));
+                $nProt = $this->getTagValue($infEvento, "nProt");
+                if ($tpEvento == '110111' && ($cStat == '101' || $cStat == '151' || $cStat == '135' || $cStat == '155')) {
+                    $resp['status'] = false;
+                    $resp['message'][] = "CTe CANCELADO";
+                    $resp['submessage'] = "{$dhEvento} - {$nProt}";
+                }
+            } elseif (($this->tpEmis == 5 || $this->tpEmis == 7 || $this->tpEmis == 8) && !empty($this->numdepec)) {
+                $resp['status'] = true;
+                $resp['message'][] = "CTe Emitido em Contingência";
+                $resp['message'][] = "devido à problemas técnicos";
+            } elseif ($this->tpEmis == 4) {
+                $resp['status'] = true;
+                $resp['message'][] = "CTe impresso em contingência -";
+                $resp['message'][] = "DPEC regularmente recebido pela Receita";
+                $resp['message'][] = "Federal do Brasil";
             }
-        } elseif (($this->tpEmis == 5 || $this->tpEmis == 7 || $this->tpEmis == 8) && !empty($this->numdepec)) {
-            $resp['status'] = true;
-            $resp['message'][] = "CTe Emitido em Contingência";
-            $resp['message'][] = "devido à problemas técnicos";
-        } elseif ($this->tpEmis == 4) {
-            $resp['status'] = true;
-            $resp['message'][] = "CTe impresso em contingência -";
-            $resp['message'][] = "DPEC regularmente recebido pela Receita";
-            $resp['message'][] = "Federal do Brasil";
         }
         return $resp;
     }
