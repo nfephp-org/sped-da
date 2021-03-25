@@ -272,6 +272,11 @@ class Danfe extends DaCommon
      * @var int
      */
     protected $hdadosadic = 10;
+    /**
+     *
+     * @var array
+     */
+    protected $epec = [];
 
     /**
      * __construct
@@ -283,6 +288,17 @@ class Danfe extends DaCommon
     public function __construct($xml)
     {
         $this->loadDoc($xml);
+    }
+    
+    public function epec($protocolo, $data)
+    {
+        if ($this->dom->getElementsByTagName("tpEmis")->item(0)->nodeValue != '4') {
+            throw new \Exception('Esta nota não foi emitida em contingência EPEC, tpEmis != 4.');
+        }
+        $this->epec = [
+            'protocolo' => $protocolo,
+            'data' => $data
+        ];
     }
 
 
@@ -842,6 +858,9 @@ class Danfe extends DaCommon
             'message' => [],
             'submessage' => ''
         ];
+        if (!empty($this->epec)) {
+            return $resp;
+        }
         if (!isset($this->nfeProc)) {
             $resp['status'] = false;
             $resp['message'][] = 'NFe NÃO PROTOCOLADA';
@@ -885,11 +904,6 @@ class Danfe extends DaCommon
             }
         }
         return $resp;
-    }
-
-    protected function notaDPEC()
-    {
-        return ! empty($this->numdepec);
     }
 
     /**
@@ -1097,12 +1111,12 @@ class Danfe extends DaCommon
         $y1                = $y + 12 + $bH;
         $aFont             = ['font' => $this->fontePadrao, 'size' => 8, 'style' => ''];
         $chaveContingencia = "";
-        if ($this->notaDpec()) {
-            $cabecalhoProtoAutorizacao = 'NÚMERO DE REGISTRO DPEC';
+        if (!empty($this->epec)) {
+            $cabecalhoProtoAutorizacao = 'NÚMERO DE REGISTRO EPEC';
         } else {
             $cabecalhoProtoAutorizacao = 'PROTOCOLO DE AUTORIZAÇÃO DE USO';
         }
-        if (($this->tpEmis == 2 || $this->tpEmis == 5) && ! $this->notaDpec()) {
+        if (($this->tpEmis == 2 || $this->tpEmis == 5) && empty($this->epec)) {
             $cabecalhoProtoAutorizacao = "DADOS DA NF-E";
             $chaveContingencia         = $this->geraChaveAdicionalDeContingencia();
             $this->pdf->setFillColor(0, 0, 0);
@@ -1151,7 +1165,7 @@ class Danfe extends DaCommon
         // NOTA : DANFE sem protocolo deve existir somente no caso de contingência !!!
         // Além disso, existem várias NFes em contingência que eu recebo com protocolo de autorização.
         // Na minha opinião, deveríamos mostra-lo, mas o  manual  da NFe v4.01 diz outra coisa...
-        if (($this->tpEmis == 2 || $this->tpEmis == 5) && ! $this->notaDpec()) {
+        if (($this->tpEmis == 2 || $this->tpEmis == 5) && empty($this->epec)) {
             $aFont = ['font' => $this->fontePadrao, 'size' => 8, 'style' => 'B'];
             $texto = $this->formatField(
                 $chaveContingencia,
@@ -1160,8 +1174,8 @@ class Danfe extends DaCommon
             $cStat = '';
         } else {
             $aFont = ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'B'];
-            if ($this->notaDpec()) {
-                $texto = $this->numdepec;
+            if (!empty($this->epec)) {
+                $texto = $this->epec['protocolo'] . ' - ' . $this->epec['data'];
                 $cStat = '';
             } else {
                 if (isset($this->nfeProc)) {
@@ -1269,15 +1283,15 @@ class Danfe extends DaCommon
             $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $this->pdf->settextcolor(0, 0, 0);
         }
-        if ($this->notaDpec() || $this->tpEmis == 4) {
-            //DPEC
+        if (!empty($this->epec) || $this->tpEmis == 4) {
+            //EPEC
             $x = 10;
             $y = $this->hPrint - 130;
             $h = 25;
             $w = $maxW - (2 * $x);
             $this->pdf->SetTextColor(200, 200, 200);
             $texto = "DANFE impresso em contingência -\n" .
-                "DPEC regularmente recebido pela Receita\n" .
+                "EPEC regularmente recebido pela Receita\n" .
                 "Federal do Brasil";
             $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
             $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
@@ -3367,7 +3381,7 @@ class Danfe extends DaCommon
         // 1 - Normal - emissão normal;
         // 2 - Contingência FS - emissão em contingência com impressão do DANFE em Formulário de Segurança;
         // 3 - Contingência SCAN - emissão em contingência no Sistema de Contingência do Ambiente Nacional;
-        // 4 - Contingência DPEC - emissão em contingência com envio da Declaração
+        // 4 - Contingência EPEC - emissão em contingência com envio da Evento
         //     Prévia de Emissão em Contingência;
         // 5 - Contingência FS-DA - emissão em contingência com impressão do DANFE em Formulário de
         //     Segurança para Impressão de Documento Auxiliar de Documento Fiscal Eletrônico (FS-DA);
@@ -3377,23 +3391,17 @@ class Danfe extends DaCommon
         $dhCont = $this->getTagValue($this->ide, 'dhCont', ' Entrada em contingência : ');
         $texto  = '';
         switch ($this->tpEmis) {
-            case 2:
-                $texto = 'CONTINGÊNCIA FS' . $dhCont . $xJust;
-                break;
-            case 3:
-                $texto = 'CONTINGÊNCIA SCAN' . $dhCont . $xJust;
-                break;
             case 4:
-                $texto = 'CONTINGÊNCIA DPEC' . $dhCont . $xJust;
+                $texto = "CONTINGÊNCIA EPEC\n" . $dhCont . "\n" . $xJust;
                 break;
             case 5:
-                $texto = 'CONTINGÊNCIA FSDA' . $dhCont . $xJust;
+                $texto = "CONTINGÊNCIA FSDA\n" . $dhCont . "\n" . $xJust;
                 break;
             case 6:
-                $texto = 'CONTINGÊNCIA SVC-AN' . $dhCont . $xJust;
+                $texto = "CONTINGÊNCIA SVC-AN\n" . $dhCont . "\n" . $xJust;
                 break;
             case 7:
-                $texto = 'CONTINGÊNCIA SVC-RS' . $dhCont . $xJust;
+                $texto = "CONTINGÊNCIA SVC-RS\n" . $dhCont . "\n" . $xJust;
                 break;
         }
         $y     += 2;
