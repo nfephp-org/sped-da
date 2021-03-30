@@ -1233,7 +1233,7 @@ class Danfe extends DaCommon
         //CNPJ
         $x     += $w;
         $w     = ($maxW - (3 * $w));
-        $texto = 'CNPJ';
+        $texto = 'CNPJ / CPF';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         //Pegando valor do CPF/CNPJ
