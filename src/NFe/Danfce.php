@@ -42,6 +42,7 @@ class Danfce extends DaCommon
     protected $urlChave;
     protected $det;
     protected $infAdic;
+    protected $infCpl;
     protected $textoAdic;
     protected $tpEmis;
     protected $tpAmb;
@@ -244,7 +245,7 @@ class Danfce extends DaCommon
         $y = $this->blocoVI($y); //informações sobre consulta pela chave
         $y = $this->blocoVII($y); //informações sobre o consumidor e dados da NFCe
         $y = $this->blocoVIII($y); //QRCODE
-        $y = $this->blocoIX($y); //informações sobre tributos
+        $y = $this->blocoIX($y); //informações complementares e sobre tributos
         $y = $this->blocoX($y); //creditos
         
         $ymark = $maxH/4;
@@ -346,6 +347,7 @@ class Danfce extends DaCommon
         $wprint = $this->paperwidth - (2 * $this->margem);
         $this->bloco3H = $this->calculateHeightItens($wprint * $this->descPercent);
         $this->bloco5H = $this->calculateHeightPag();
+        $this->bloco9H = $this->calculateHeighBlokIX();
         
         $length = $this->bloco1H //cabecalho
             + $this->bloco2H //informação fiscal
@@ -390,6 +392,7 @@ class Danfce extends DaCommon
         $this->tpImp = $this->ide->getElementsByTagName("tpImp")->item(0)->nodeValue;
         $this->infAdic = $this->dom->getElementsByTagName("infAdic")->item(0);
         $this->tpEmis = $this->dom->getValue($this->ide, "tpEmis");
+        $this->infCpl = $this->infAdic->getElementsByTagName("infCpl")->item(0)->nodeValue;
         //se for o layout 4.0 busca pelas tags de detalhe do pagamento
         //senão, busca pelas tags de pagamento principal
         if ($this->infNFe->getAttribute("versao") == "4.00") {
