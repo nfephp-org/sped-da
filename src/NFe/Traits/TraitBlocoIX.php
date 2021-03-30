@@ -50,7 +50,7 @@ trait TraitBlocoIX
     /**
      * Calcula a altura do bloco IX
      * Depende do conteudo de infCpl
-     * 
+     *
      * @return int
      */
     protected function calculateHeighBlokIX()
