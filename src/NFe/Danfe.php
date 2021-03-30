@@ -407,10 +407,6 @@ class Danfe extends DaCommon
         return $hdadosadic;
     }
 
-    protected function calculoItensPorPagina()
-    {
-    }
-
     /**
      * monta
      * Monta a DANFE conforme as informações fornecidas para a classe durante sua
@@ -576,11 +572,19 @@ class Danfe extends DaCommon
 
             $prod = $itemProd->getElementsByTagName('prod')->item(0);
             $uCom = $prod->getElementsByTagName("uCom")->item(0)->nodeValue;
+            $vUnCom = $prod->getElementsByTagName("vUnCom")->item(0)->nodeValue;
             $uTrib = $prod->getElementsByTagName("uTrib")->item(0);
-            if (! empty($uTrib) && strcmp($uCom, $uTrib->nodeValue) != 0) {
-                $mostrarUnidadeTributavel = true;
-            }
-
+            $qTrib = $prod->getElementsByTagName("qTrib")->item(0);
+            $vUnTrib = !empty($prod->getElementsByTagName("vUnTrib")->item(0)->nodeValue)
+                ? $prod->getElementsByTagName("vUnTrib")->item(0)->nodeValue
+                : 0;
+            //se as unidades forem diferentes e q qtda de qTrib for maior que 0
+            //mostrat as unidades
+            $mostrarUnidadeTributavel = (
+                !empty($uTrib)
+                && !empty($qTrib)
+                && number_format($vUnCom, 2, ',', '') !== number_format($vUnTrib, 2, ',', '')
+            );
             $hUsado += $this->calculeHeight($itemProd, $mostrarUnidadeTributavel);
             if ($hUsado > $hDispo) {
                 $totPag ++;
@@ -2846,8 +2850,13 @@ class Danfe extends DaCommon
                 $yTrib = $this->pdf->fontSize + .5;
 
                 $uCom = $prod->getElementsByTagName("uCom")->item(0)->nodeValue;
+                $vUnCom = $prod->getElementsByTagName("vUnCom")->item(0)->nodeValue;
                 $uTrib = $prod->getElementsByTagName("uTrib")->item(0);
+                $qTrib = $prod->getElementsByTagName("qTrib")->item(0);
                 $cfop = $prod->getElementsByTagName("CFOP")->item(0)->nodeValue;
+                $vUnTrib = !empty($prod->getElementsByTagName("vUnTrib")->item(0)->nodeValue)
+                    ? $prod->getElementsByTagName("vUnTrib")->item(0)->nodeValue
+                    : 0;
                 // A Configuração serve para informar se irá exibir
                 //   de forma obrigatória, estando diferente ou não,
                 //   a unidade de medida tributária.
@@ -2858,8 +2867,11 @@ class Danfe extends DaCommon
                 //   ambas as informações deverão estar expressas e identificadas no DANFE, podendo ser
                 //   utilizada uma das linhas adicionais previstas, ou o campo de informações adicionais."
                 // > Manual Integração - Contribuinte 4.01 - NT2009.006, Item 7.1.5, página 91.
-                $mostrarUnidadeTributavel = (!empty($uTrib)
-                    && strtoupper(trim($uCom)) !== strtoupper(trim($uTrib->nodeValue)));
+                $mostrarUnidadeTributavel = (
+                    !empty($uTrib)
+                    && !empty($qTrib)
+                    && number_format($vUnCom, 2, ',', '') !== number_format($vUnTrib, 2, ',', '')
+                );
 
                 // Informação sobre unidade de medida tributavel.
                 // Se não for para exibir a unidade de medida tributavel, então
@@ -2920,7 +2932,8 @@ class Danfe extends DaCommon
                 $texto = $uCom;
                 $this->pdf->textBox($x, $y, $w6, $h, $texto, $aFont, 'T', 'C', 0, '');
                 //Unidade de medida tributável
-                if ($mostrarUnidadeTributavel && !empty($uTrib)) {
+                $qTrib = $prod->getElementsByTagName("qTrib")->item(0)->nodeValue;
+                if ($mostrarUnidadeTributavel) {
                     $texto = $uTrib->nodeValue;
                     $this->pdf->textBox($x, $yTrib, $w6, $h, $texto, $aFont, 'T', 'C', 0, '');
                 }
