@@ -36,7 +36,7 @@ trait TraitBlocoIX
             $y+3,
             $this->wPrint,
             $this->bloco9H-4,
-            $this->infCpl,
+            str_replace(";", "\n", $this->infCpl),
             $aFont,
             'T',
             'L',
@@ -66,8 +66,9 @@ trait TraitBlocoIX
             $fsize = 5;
             $aFont = ['font'=> $this->fontePadrao, 'size' => 5, 'style' => ''];
         }
+        $linhas = str_replace(';', "\n", $this->infCpl);
         $hfont = (imagefontheight($fsize)/72)*13;
-        $numlinhas = $pdf->getNumLines($this->infCpl, $wprint, $aFont);
+        $numlinhas = $pdf->getNumLines($linhas, $wprint, $aFont);
         return (int) ($numlinhas * $hfont) + 2;
     }
 }
