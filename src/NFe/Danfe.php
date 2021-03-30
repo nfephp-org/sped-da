@@ -277,6 +277,10 @@ class Danfe extends DaCommon
      * @var array
      */
     protected $epec = [];
+    /**
+     * @var bool
+     */
+    protected $obsshow = true;
 
     /**
      * __construct
@@ -301,6 +305,10 @@ class Danfe extends DaCommon
         ];
     }
 
+    public function obsContShow($flag = true)
+    {
+        $this->obsshow = $flag;
+    }
 
     /**
      * Define a quantidade de casas decimais para unidade comercial.
@@ -350,15 +358,17 @@ class Danfe extends DaCommon
             $this->textoAdic .= ! empty($this->getTagValue($this->infAdic, "infAdFisco"))
                 ? "\n Inf. fisco: " . $this->getTagValue($this->infAdic, "infAdFisco")
                 : '';
-            $obsCont         = $this->infAdic->getElementsByTagName("obsCont");
-            if (isset($obsCont)) {
-                foreach ($obsCont as $obs) {
-                    $campo           = $obsCont->item($i)->getAttribute("xCampo");
-                    $xTexto          = ! empty($obsCont->item($i)->getElementsByTagName("xTexto")->item(0)->nodeValue)
-                        ? $obsCont->item($i)->getElementsByTagName("xTexto")->item(0)->nodeValue
-                        : '';
-                    $this->textoAdic .= "\n" . $campo . ':  ' . trim($xTexto);
-                    $i ++;
+            if ($this->obsshow) {
+                $obsCont = $this->infAdic->getElementsByTagName("obsCont");
+                if (isset($obsCont)) {
+                    foreach ($obsCont as $obs) {
+                        $campo           = $obsCont->item($i)->getAttribute("xCampo");
+                        $xTexto          = ! empty($obsCont->item($i)->getElementsByTagName("xTexto")->item(0)->nodeValue)
+                            ? $obsCont->item($i)->getElementsByTagName("xTexto")->item(0)->nodeValue
+                            : '';
+                        $this->textoAdic .= "\n" . $campo . ':  ' . trim($xTexto);
+                        $i ++;
+                    }
                 }
             }
         }
