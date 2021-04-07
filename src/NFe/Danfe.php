@@ -359,8 +359,8 @@ class Danfe extends DaCommon
                 $obsCont = $this->infAdic->getElementsByTagName("obsCont");
                 if (isset($obsCont)) {
                     foreach ($obsCont as $obs) {
-                        $campo           = $obsCont->item($i)->getAttribute("xCampo");
-                        $xTexto          = ! empty($obsCont->item($i)->getElementsByTagName("xTexto")->item(0)->nodeValue)
+                        $campo = $obsCont->item($i)->getAttribute("xCampo");
+                        $xTexto = ! empty($obsCont->item($i)->getElementsByTagName("xTexto")->item(0)->nodeValue)
                             ? $obsCont->item($i)->getElementsByTagName("xTexto")->item(0)->nodeValue
                             : '';
                         $this->textoAdic .= "\n" . $campo . ':  ' . trim($xTexto);
@@ -900,7 +900,7 @@ class Danfe extends DaCommon
                 $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
                 $cStat = $this->getTagValue($infEvento, "cStat");
                 $tpEvento= $this->getTagValue($infEvento, "tpEvento");
-                $dhEvento = $this->toDateTime($this->getTagValue($infEvento, "dhRegEvento"))->format("d/m/Y H:i:s"));
+                $dhEvento = $this->toDateTime($this->getTagValue($infEvento, "dhRegEvento"))->format("d/m/Y H:i:s");
                 $nProt = $this->getTagValue($infEvento, "nProt");
                 if ($tpEvento == '110111' &&
                     ($cStat == '101' ||

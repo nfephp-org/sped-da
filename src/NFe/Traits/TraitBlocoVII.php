@@ -124,7 +124,6 @@ trait TraitBlocoVII
                 true
             );
         } elseif ($this->tpEmis == 4) {
-            
             $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
             $y1 = $this->pdf->textBox(
                 $this->margem,
@@ -192,7 +191,7 @@ trait TraitBlocoVII
             if (!empty($this->dom->getElementsByTagName('dhCont'))) {
                 $dhCont = $this->dom->getElementsByTagName('dhCont')->item(0)->nodeValue;
                 $dt = \DateTime::createFromFormat('Y-m-d\TH:i:sP', $dhCont);
-                $texto = "Data de entrada em contingência : " . $dt->format('d/m/Y H:i:s'); 
+                $texto = "Data de entrada em contingência : " . $dt->format('d/m/Y H:i:s');
                 $aFont = ['font'=> $this->fontePadrao, 'size' => (7-$subSize), 'style' => ''];
                 $y2 = $this->pdf->textBox(
                     $this->margem,
@@ -207,9 +206,7 @@ trait TraitBlocoVII
                     '',
                     true
                 );
-            }    
-            
-            
+            }
         } else {
             $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
             $y1 = $this->pdf->textBox(
