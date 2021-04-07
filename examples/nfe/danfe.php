@@ -15,7 +15,7 @@ try {
     $danfe->debugMode(false);
     $danfe->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webenf.com.br');
     $danfe->obsContShow(false);
-    //$danfe->epec('891180004131899', '14/08/2018 11:24:45'); marca como autorizada por EPEC
+    $danfe->epec('891180004131899', '14/08/2018 11:24:45'); //marca como autorizada por EPEC
     // Caso queira mudar a configuracao padrao de impressao
     /*  $this->printParameters( $orientacao = '', $papel = 'A4', $margSup = 2, $margEsq = 2 ); */
     //Informe o numero DPEC

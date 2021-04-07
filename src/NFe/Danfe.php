@@ -293,9 +293,6 @@ class Danfe extends DaCommon
 
     public function epec($protocolo, $data)
     {
-        if ($this->dom->getElementsByTagName("tpEmis")->item(0)->nodeValue != '4') {
-            throw new \Exception('Esta nota não foi emitida em contingência EPEC, tpEmis != 4.');
-        }
         $this->epec = [
             'protocolo' => $protocolo,
             'data' => $data
@@ -869,7 +866,7 @@ class Danfe extends DaCommon
             'message' => [],
             'submessage' => ''
         ];
-        if (!empty($this->epec)) {
+        if (!empty($this->epec) && $this->tpEmis == '4') {
             return $resp;
         }
         if (!isset($this->nfeProc)) {
@@ -1122,12 +1119,12 @@ class Danfe extends DaCommon
         $y1                = $y + 12 + $bH;
         $aFont             = ['font' => $this->fontePadrao, 'size' => 8, 'style' => ''];
         $chaveContingencia = "";
-        if (!empty($this->epec)) {
+        if (!empty($this->epec) && $this->tpEmis == '4') {
             $cabecalhoProtoAutorizacao = 'NÚMERO DE REGISTRO EPEC';
         } else {
             $cabecalhoProtoAutorizacao = 'PROTOCOLO DE AUTORIZAÇÃO DE USO';
         }
-        if (($this->tpEmis == 2 || $this->tpEmis == 5) && empty($this->epec)) {
+        if (($this->tpEmis == 2 || $this->tpEmis == 5)) {
             $cabecalhoProtoAutorizacao = "DADOS DA NF-E";
             $chaveContingencia         = $this->geraChaveAdicionalDeContingencia();
             $this->pdf->setFillColor(0, 0, 0);
@@ -1294,7 +1291,7 @@ class Danfe extends DaCommon
             $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $this->pdf->settextcolor(0, 0, 0);
         }
-        if (!empty($this->epec) || $this->tpEmis == 4) {
+        if (!empty($this->epec) && $this->tpEmis == 4) {
             //EPEC
             $x = 10;
             $y = $this->hPrint - 130;
