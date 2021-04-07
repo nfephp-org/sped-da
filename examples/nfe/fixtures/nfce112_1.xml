@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<nfeProc xmlns="http://www.portalfiscal.inf.br/nfe" versao="4.00">
 <NFe xmlns="http://www.portalfiscal.inf.br/nfe">
 <infNFe Id="NFe41200323285089000185650010000013051817822496" versao="4.00">
 <ide>
@@ -12,8 +13,8 @@
 <tpNF>1</tpNF>
 <idDest>1</idDest>
 <cMunFG>4108809</cMunFG>
-<tpImp>4</tpImp>
-<tpEmis>4</tpEmis>
+<tpImp>1</tpImp>
+<tpEmis>1</tpEmis>
 <cDV>6</cDV>
 <tpAmb>1</tpAmb>
 <finNFe>1</finNFe>
@@ -21,8 +22,6 @@
 <indPres>1</indPres>
 <procEmi>0</procEmi>
 <verProc>1.0.0</verProc>
-<dhCont>2020-03-11T15:32:17-03:00</dhCont>
-<xJust>SEFAZ FORA DO AR</xJust>
 </ide>
 <emit>
 <CNPJ>23285089000185</CNPJ>
@@ -326,3 +325,31 @@
 </KeyInfo>
 </Signature>
 </NFe>
+<protNFe versao="4.00">
+<infProt Id="ID141200000160021">
+<tpAmb>2</tpAmb>
+<verAplic>PR-v4_4_0</verAplic>
+<chNFe>41200323285089000185650010000013051817822496</chNFe>
+<dhRecbto>2020-03-11T15:32:20-03:00</dhRecbto>
+<nProt>141200000160021</nProt>
+<digVal>OZImXzkhvK2D0ABoXkChyiO2KxQ=</digVal>
+<cStat>100</cStat>
+<xMotivo>Autorizado o uso da NF-e</xMotivo>
+</infProt>
+</protNFe>
+<retEvento versao="1.00">
+    <infEvento>
+        <tpAmb>1</tpAmb>
+        <verAplic>SP_EVENTOS_PL_100</verAplic>
+        <cOrgao>35</cOrgao>
+        <cStat>135</cStat>
+        <xMotivo>Evento registrado e vinculado a NF-e</xMotivo>
+        <chNFe>41200323285089000185650010000013051817822496</chNFe>
+        <tpEvento>110111</tpEvento>
+        <xEvento>Cancelamento registrado</xEvento>
+        <nSeqEvento>1</nSeqEvento>
+        <dhRegEvento>2020-03-11T15:34:20-03:00</dhRegEvento>
+        <nProt>135210128997350</nProt>
+    </infEvento>
+</retEvento>
+</nfeProc>

@@ -260,20 +260,17 @@ class Danfe extends DaCommon
      * @var integer
      */
     protected $qComCasasDec = 4;
-
     /**
      * Número de casas decimais para o valor da unidade comercial.
      *
      * @var integer
      */
     protected $vUnComCasasDec = 4;
-
     /**
      * @var int
      */
     protected $hdadosadic = 10;
     /**
-     *
      * @var array
      */
     protected $epec = [];
@@ -2664,10 +2661,17 @@ class Danfe extends DaCommon
             $rastro = $prod->getElementsByTagName("rastro");
             $i      = 0;
             while ($i < $rastro->length) {
+                $dFab = $this->getTagDate($rastro->item($i), 'dFab');
+                $dt = \DateTime::createFromFormat('Y-m-d', $dFab);
+                $datafab = " Fab: " . $dt->format('d/m/Y');
+                $dVal = $this->getTagDate($rastro->item($i), 'dVal');
+                $dt = \DateTime::createFromFormat('Y-m-d', $dVal);
+                $dataval = " Val: " . $dt->format('m/Y');
+                
                 $loteTxt .= $this->getTagValue($rastro->item($i), 'nLote', ' Lote: ');
                 $loteTxt .= $this->getTagValue($rastro->item($i), 'qLote', ' Quant: ');
-                $loteTxt .= $this->getTagDate($rastro->item($i), 'dFab', ' Fab: ');
-                $loteTxt .= $this->getTagDate($rastro->item($i), 'dVal', ' Val: ');
+                $loteTxt .= $datafab; //$this->getTagDate($rastro->item($i), 'dFab', ' Fab: ');
+                $loteTxt .= $dataval; //$this->getTagDate($rastro->item($i), 'dVal', ' Val: ');
                 $loteTxt .= $this->getTagValue($rastro->item($i), 'vPMC', ' PMC: ');
                 $i ++;
             }
