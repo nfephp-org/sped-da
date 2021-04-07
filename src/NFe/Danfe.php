@@ -290,7 +290,7 @@ class Danfe extends DaCommon
     {
         $this->loadDoc($xml);
     }
-    
+
     public function epec($protocolo, $data)
     {
         if ($this->dom->getElementsByTagName("tpEmis")->item(0)->nodeValue != '4') {
@@ -900,7 +900,7 @@ class Danfe extends DaCommon
                 $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
                 $cStat = $this->getTagValue($infEvento, "cStat");
                 $tpEvento= $this->getTagValue($infEvento, "tpEvento");
-                $dhEvento = date("d/m/Y H:i:s", $this->toTimestamp($this->getTagValue($infEvento, "dhRegEvento")));
+                $dhEvento = $this->toDateTime($this->getTagValue($infEvento, "dhRegEvento"))->format("d/m/Y H:i:s"));
                 $nProt = $this->getTagValue($infEvento, "nProt");
                 if ($tpEvento == '110111' &&
                     ($cStat == '101' ||
@@ -1193,11 +1193,11 @@ class Danfe extends DaCommon
                     $texto  = ! empty($this->nfeProc->getElementsByTagName("nProt")->item(0)->nodeValue)
                         ? $this->nfeProc->getElementsByTagName("nProt")->item(0)->nodeValue
                         : '';
-                    $tsHora = $this->toTimestamp(
+                    $dtHora = $this->toDateTime(
                         $this->nfeProc->getElementsByTagName("dhRecbto")->item(0)->nodeValue
                     );
                     if ($texto != '') {
-                        $texto .= "  -  " . date('d/m/Y H:i:s', $tsHora);
+                        $texto .= "  -  " . $dtHora->format('d/m/Y H:i:s');
                     }
                     $cStat = $this->nfeProc->getElementsByTagName("cStat")->item(0)->nodeValue;
                 } else {
@@ -1273,7 +1273,7 @@ class Danfe extends DaCommon
             $h = 15;
             $w = $maxW - (2 * $x);
             $this->pdf->settextcolor(90, 90, 90);
-            
+
             foreach ($resp['message'] as $msg) {
                 $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
                 $this->pdf->textBox($x, $y, $w, $h, $msg, $aFont, 'C', 'C', 0, '');
@@ -1515,9 +1515,9 @@ class Danfe extends DaCommon
             $dhSaiEnt   = ! empty($this->ide->getElementsByTagName("dhSaiEnt")->item(0)->nodeValue)
                 ? $this->ide->getElementsByTagName("dhSaiEnt")->item(0)->nodeValue
                 : '';
-            $tsDhSaiEnt = $this->toTimestamp($dhSaiEnt);
-            if ($tsDhSaiEnt != '') {
-                $hSaiEnt = date('H:i:s', $tsDhSaiEnt);
+            $tsDhSaiEnt = $this->toDateTime($dhSaiEnt);
+            if ($tsDhSaiEnt) {
+                $hSaiEnt = $tsDhSaiEnt->format('H:i:s');
             }
         }
         $texto = $hSaiEnt;
@@ -2858,7 +2858,7 @@ class Danfe extends DaCommon
                 $ICMS         = $imposto->getElementsByTagName("ICMS")->item(0);
                 $IPI          = $imposto->getElementsByTagName("IPI")->item(0);
                 $textoProduto = $this->descricaoProduto($thisItem);
-                
+
 
                 // Posição y dos dados das unidades tributaveis.
                 $yTrib = $this->pdf->fontSize + .5;
