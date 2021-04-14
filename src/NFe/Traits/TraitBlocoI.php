@@ -72,7 +72,7 @@ trait TraitBlocoI
         $y += $this->pdf->textBox($xRs+2, $y, $wRs-2, 3, $texto, $aFont, 'T', $alignH, false, '', true);
         $texto = $emitMun . "-" . $emitUF;
         $y += $this->pdf->textBox($xRs+2, $y, $wRs-2, 3, $texto, $aFont, 'T', $alignH, false, '', true);
-        $this->pdf->dashedHLine($this->margem, $this->bloco1H, $this->wPrint, 0.1, 30);
+        $this->pdf->dashedHLine($this->margem, $this->bloco1H + ($this->fontePadrao == 'arial' ? 1 : 0), $this->wPrint, 0.1, 30);
         return $this->bloco1H;
     }
 }
