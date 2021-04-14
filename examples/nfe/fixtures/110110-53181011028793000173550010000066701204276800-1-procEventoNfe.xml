@@ -37,4 +37,20 @@ wvThaiFkmLRdtRR2ydrR4DmlHGeZtt32c669hff9hAcPnvh43VkaOAjAPrXkOGcxCxvkQqjKgudi
 VkxpuP/4gnC0Bt6Agn1QPylRSe8uAHHaG/7SqE4mTBmqD0J7sdBVldPS0qlSzuSSnVnotsC18DGU
 mja9sTostxEUMvtLzA6V/u5TAElf5JrYOTDMbpzYozoD+zcbTiX2rC1g+ItkdTXJyK5x+FbdYMDG
 ctMiGSRDUJR0URScmBw3Nmh39m/9ar1o3xMVDJggQdVIcYAdquD4Mbuf/hMP6Iyhnrlm9Lzpj6Qi
-7jvHOQCmKcVcbyX5ilw97my0EQ==</X509Certificate></X509Data></KeyInfo></Signature></evento><retEvento versao="1.00"><infEvento><tpAmb>1</tpAmb><verAplic>SVRS201808211044</verAplic><cOrgao>53</cOrgao><cStat>135</cStat><xMotivo>Evento registrado e vinculado a NF-e</xMotivo><chNFe>53181011028793000173550010000066701204276800</chNFe><tpEvento>110110</tpEvento><nSeqEvento>1</nSeqEvento><CNPJDest>45453214002448</CNPJDest><dhRegEvento>2018-10-05T17:34:57-03:00</dhRegEvento><nProt>353180043800804</nProt></infEvento></retEvento></procEventoNFe>
+7jvHOQCmKcVcbyX5ilw97my0EQ==</X509Certificate></X509Data></KeyInfo></Signature></evento>
+<retEvento versao="1.00">
+    <infEvento>
+        <tpAmb>1</tpAmb>
+        <verAplic>SVRS201808211044</verAplic>
+        <cOrgao>53</cOrgao>
+        <cStat>135</cStat>
+        <xMotivo>Evento registrado e vinculado a NF-e</xMotivo>
+        <chNFe>53181011028793000173550010000066701204276800</chNFe>
+        <tpEvento>110110</tpEvento>
+        <nSeqEvento>1</nSeqEvento>
+        <CNPJDest>45453214002448</CNPJDest>
+        <dhRegEvento>2018-10-05T17:34:57-03:00</dhRegEvento>
+        <nProt>353180043800804</nProt>
+    </infEvento>
+</retEvento>
+</procEventoNFe>

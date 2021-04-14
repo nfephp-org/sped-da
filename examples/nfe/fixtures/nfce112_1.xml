@@ -13,8 +13,8 @@
 <tpNF>1</tpNF>
 <idDest>1</idDest>
 <cMunFG>4108809</cMunFG>
-<tpImp>4</tpImp>
-<tpEmis>9</tpEmis>
+<tpImp>1</tpImp>
+<tpEmis>1</tpEmis>
 <cDV>6</cDV>
 <tpAmb>1</tpAmb>
 <finNFe>1</finNFe>
@@ -286,11 +286,13 @@
 <pag>
 <detPag>
 <indPag>0</indPag>
-<tPag>04</tPag>
+<tPag>19</tPag>
 <vPag>30.00</vPag>
 </detPag>
 </pag>
-<infAdic/>
+<infAdic>
+<infCpl>DOCUMENTO EMITIDO; POR EMPRESA OPTANTE; PELO SIMPLES; NACIONAL NOTA FISCAL;EMITIDA EM AMBIENTE DE HOMOLOGACAO;SEM VALOR FISCAL</infCpl>
+</infAdic>
 <infRespTec>
 <CNPJ>25447784000121</CNPJ>
 <xContato>MARKE SISTEMAS LTDA</xContato>

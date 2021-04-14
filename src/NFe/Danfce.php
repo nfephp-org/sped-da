@@ -27,6 +27,7 @@ class Danfce extends DaCommon
     protected $paperwidth = 80;
     protected $descPercent = 0.38;
     protected $xml; // string XML NFe
+    protected $dom;
     protected $logomarca=''; // path para logomarca em jpg
     protected $formatoChave="#### #### #### #### #### #### #### #### #### #### ####";
     protected $nfeProc;
@@ -42,6 +43,7 @@ class Danfce extends DaCommon
     protected $urlChave;
     protected $det;
     protected $infAdic;
+    protected $infCpl;
     protected $textoAdic;
     protected $tpEmis;
     protected $tpAmb;
@@ -60,17 +62,19 @@ class Danfce extends DaCommon
     protected $aFontTit = ['font' => 'times', 'size' => 9, 'style' => 'B'];
     protected $aFontTex = ['font' => 'times', 'size' => 8, 'style' => ''];
     protected $via = "Via Consumidor";
+    protected $offline_double = true;
     protected $canceled = false;
+    protected $submessage = null;
 
     protected $bloco1H = 18.0; //cabecalho
     protected $bloco2H = 12.0; //informação fiscal
     
     protected $bloco3H = 0.0; //itens
-    protected $bloco4H = 13.0; //totais
+    protected $bloco4H = 16.0; //totais
     protected $bloco5H = 0.0; //formas de pagamento
     
     protected $bloco6H = 10.0; //informação para consulta
-    protected $bloco7H = 20.0; //informações do consumidor
+    protected $bloco7H = 25.0; //informações do consumidor
     protected $bloco8H = 50.0; //informações do consumidor
     protected $bloco9H = 4.0; //informações sobre tributos
     protected $bloco10H = 5.0; //informações do integrador
@@ -162,16 +166,26 @@ class Danfce extends DaCommon
     }
     
     /**
-     * Registra via do estabelecimento quando a impressção for offline 
+     * Registra via do estabelecimento quando a impressção for offline
      */
-    public function viaEstabelecimento()
+    public function setViaEstabelecimento()
     {
         $this->via = "Via Estabelecimento";
+    }
+    
+    /**
+     * Habilita a impressão de duas vias quando NFCe for OFFLINE
+     *
+     * @param bool $flag
+     */
+    public function setOffLineDoublePrint($flag = true)
+    {
+        $this->offline_double = $flag;
     }
 
     /**
      * Renderiza o pdf
-     * 
+     *
      * @param string $logo
      * @return string
      */
@@ -232,7 +246,7 @@ class Danfce extends DaCommon
         $y = $this->blocoVI($y); //informações sobre consulta pela chave
         $y = $this->blocoVII($y); //informações sobre o consumidor e dados da NFCe
         $y = $this->blocoVIII($y); //QRCODE
-        $y = $this->blocoIX($y); //informações sobre tributos
+        $y = $this->blocoIX($y); //informações complementares e sobre tributos
         $y = $this->blocoX($y); //creditos
         
         $ymark = $maxH/4;
@@ -272,6 +286,58 @@ class Danfce extends DaCommon
                 '',
                 false
             );
+            $aFont = ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'B'];
+            $this->pdf->textBox(
+                $this->margem,
+                $ymark+14,
+                $this->wPrint,
+                $maxH/2,
+                $this->submessage,
+                $aFont,
+                'T',
+                'C',
+                false,
+                '',
+                false
+            );
+            $this->pdf->setTextColor(0, 0, 0);
+        }
+        
+        if (!$this->canceled && $this->tpEmis == 9 && $this->offline_double) {
+            $this->setViaEstabelecimento();
+            //não está cancelada e foi emitida OFFLINE e está ativada a dupla impressão
+            $this->pdf->addPage($this->orientacao, $this->papel); // adiciona a primeira página
+            $this->pdf->setLineWidth(0.1); // define a largura da linha
+            $this->pdf->setTextColor(0, 0, 0);
+            $y = $this->blocoI(); //cabecalho
+            $y = $this->blocoII($y); //informação cabeçalho fiscal e contingência
+            $y = $this->blocoIII($y); //informação dos itens
+            $y = $this->blocoIV($y); //informação sobre os totais
+            $y = $this->blocoV($y); //informação sobre pagamento
+            $y = $this->blocoVI($y); //informações sobre consulta pela chave
+            $y = $this->blocoVII($y); //informações sobre o consumidor e dados da NFCe
+            $y = $this->blocoVIII($y); //QRCODE
+            $y = $this->blocoIX($y); //informações sobre tributos
+            $y = $this->blocoX($y); //creditos
+            $ymark = $maxH/4;
+            if ($this->tpAmb == 2) {
+                $this->pdf->setTextColor(120, 120, 120);
+                $texto = "SEM VALOR FISCAL\nEmitida em ambiente de homologacao";
+                $aFont = ['font' => $this->fontePadrao, 'size' => 14, 'style' => 'B'];
+                $ymark += $this->pdf->textBox(
+                    $this->margem,
+                    $ymark,
+                    $this->wPrint,
+                    $maxH/2,
+                    $texto,
+                    $aFont,
+                    'T',
+                    'C',
+                    false,
+                    '',
+                    false
+                );
+            }
             $this->pdf->setTextColor(0, 0, 0);
         }
     }
@@ -282,6 +348,7 @@ class Danfce extends DaCommon
         $wprint = $this->paperwidth - (2 * $this->margem);
         $this->bloco3H = $this->calculateHeightItens($wprint * $this->descPercent);
         $this->bloco5H = $this->calculateHeightPag();
+        $this->bloco9H = $this->calculateHeighBlokIX();
         
         $length = $this->bloco1H //cabecalho
             + $this->bloco2H //informação fiscal
@@ -326,6 +393,7 @@ class Danfce extends DaCommon
         $this->tpImp = $this->ide->getElementsByTagName("tpImp")->item(0)->nodeValue;
         $this->infAdic = $this->dom->getElementsByTagName("infAdic")->item(0);
         $this->tpEmis = $this->dom->getValue($this->ide, "tpEmis");
+        $this->infCpl = $this->infAdic->getElementsByTagName("infCpl")->item(0)->nodeValue;
         //se for o layout 4.0 busca pelas tags de detalhe do pagamento
         //senão, busca pelas tags de pagamento principal
         if ($this->infNFe->getAttribute("versao") == "4.00") {
@@ -343,6 +411,27 @@ class Danfce extends DaCommon
             $cStat = $this->getTagValue($this->infProt, 'cStat');
             if ($cStat != 100) {
                 $this->canceled = true;
+            } elseif (!empty($retEvento = $this->nfeProc->getElementsByTagName('retEvento')->item(0))) {
+                $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
+                $cStat = $this->getTagValue($infEvento, "cStat");
+                $tpEvento= $this->getTagValue($infEvento, "tpEvento");
+                $dhEvento = date(
+                    "d/m/Y H:i:s",
+                    $this->toTimestamp(
+                        $this->getTagValue($infEvento, "dhRegEvento")
+                    )
+                );
+                $nProt = $this->getTagValue($infEvento, "nProt");
+                if (($tpEvento == '110111' || $tpEvento == '110112')
+                    && (
+                        $cStat == '101'
+                        || $cStat == '151'
+                        || $cStat == '135'
+                        || $cStat == '155')
+                ) {
+                    $this->canceled = true;
+                    $this->submessage = "Data: {$dhEvento}\nProtocolo: {$nProt}";
+                }
             }
         }
     }

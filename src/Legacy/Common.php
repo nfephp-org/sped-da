@@ -109,13 +109,29 @@ class Common
         $regex = '^(2[0-9][0-9][0-9])[-](0?[1-9]'
             . '|1[0-2])[-](0?[1-9]'
             . '|[12][0-9]'
-            . '|3[01])T([0-9]|0[0-9]'
-            . '|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]-(00|01|02|03|04):00$';
-        
+            . '|3[01])T(0[0-9]'
+            . '|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]-(01|02|03|04|05):00$';
+
         if (!preg_match("/$regex/", $input)) {
-            return '';
+            return 0;
         }
         return \DateTime::createFromFormat("Y-m-d\TH:i:sP", $input)->getTimestamp();
+    }
+
+    /**
+     * Converte data da NFe YYYY-mm-ddThh:mm:ss-03:00 para \DateTime
+     *
+     * @param string $input
+     *
+     * @return \DateTime
+     */
+    public function toDateTime($input)
+    {
+        try {
+            return \DateTime::createFromFormat("Y-m-d\TH:i:sP", $input);
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     /**
@@ -241,6 +257,18 @@ class Common
                 break;
             case '15':
                 $tPagNome = 'Boleto Bancário';
+                break;
+            case '16':
+                $tPagNome = 'Depósito Bancário';
+                break;
+            case '17':
+                $tPagNome = 'Pagamento Instantâneo (PIX)';
+                break;
+            case '18':
+                $tPagNome = 'Transferência bancária, Carteira Digital';
+                break;
+            case '19':
+                $tPagNome = 'Programa de fidelidade, Cashback, Crédito Virtual';
                 break;
             case '90':
                 $tPagNome = 'Sem Pagamento';

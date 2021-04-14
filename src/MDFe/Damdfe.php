@@ -32,13 +32,13 @@ class Damdfe extends DaCommon
     protected $id;
     protected $chMDFe;
     protected $tpAmb;
-    protected $cOrgao;
+    protected $ide;
     protected $xCondUso;
     protected $dhEvento;
     protected $cStat;
     protected $xMotivo;
     protected $CNPJDest = '';
-    protected $dhRegEvento;
+    protected $mdfeProc;
     protected $nProt;
     protected $tpEmis;
     protected $qrCodMDFe;
@@ -376,6 +376,79 @@ class Damdfe extends DaCommon
     }
 
     /**
+     * Verifica o status da MDFe
+     *
+     * @return array
+     */
+    protected function statusMDFe()
+    {
+        $resp = [
+            'status' => true,
+            'valida' => true,
+            'message' => [],
+            'submessage' => ''
+        ];
+        if (!isset($this->mdfeProc)) {
+            $resp['status'] = false;
+            $resp['message'][] = 'MDFe NÃO PROTOCOLADA';
+        } else {
+            if ($this->getTagValue($this->ide, "tpAmb") == '2') {
+                $resp['status'] = false;
+                $resp['valida'] = false;
+                $resp['message'][] = "MDFe EMITIDA EM HOMOLOGAÇÃO";
+            }
+            $retEvento = $this->mdfeProc->getElementsByTagName('retEventoMDFe')->item(0);
+            $cStat = $this->getTagValue($this->mdfeProc, "cStat");
+            $tpEvento = $this->getTagValue($this->mdfeProc, "tpEvento");
+            if ($cStat == '101'
+                || $cStat == '151'
+                || $cStat == '135'
+                || $cStat == '155'
+                || $this->cancelFlag === true
+            ) {
+                $resp['status'] = false;
+                $resp['valida'] = false;
+                $resp['message'][] = "MDFe CANCELADA";
+            } elseif (($cStat == '103'
+                    || $cStat == '136'
+                    || $cStat == '135'
+                    || $cStat == '155'
+                    || $tpEvento === '110112')
+                and empty($retEvento)
+            ) {
+                $resp['status'] = false;
+                $resp['message'][] = "MDFe ENCERRADA";
+            } elseif (!empty($retEvento)) {
+                $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
+                $cStat = $this->getTagValue($infEvento, "cStat");
+                $tpEvento = $this->getTagValue($infEvento, "tpEvento");
+                $dhEvento = date("d/m/Y H:i:s", $this->toTimestamp($this->getTagValue($infEvento, "dhRegEvento")));
+                $nProt = $this->getTagValue($infEvento, "nProt");
+                if ($tpEvento == '110111'
+                    && ($cStat == '101'
+                    || $cStat == '151'
+                    || $cStat == '135'
+                    || $cStat == '155'
+                )) {
+                    $resp['status'] = false;
+                    $resp['valida'] = false;
+                    $resp['message'][] = "MDFe CANCELADA";
+                    $resp['submessage'] = "{$dhEvento} - {$nProt}";
+                } elseif ($tpEvento == '110112' && ($cStat == '136' || $cStat == '135' || $cStat == '155')) {
+                    $resp['status'] = false;
+                    $resp['message'][] = "MDFe ENCERRADA";
+                    $resp['submessage'] = "{$dhEvento} - {$nProt}";
+                }
+            } elseif (($this->tpEmis == 2 || $this->tpEmis == 5) and empty($this->nProt)) {
+                $resp['status'] = false;
+                $resp['message'][] = "MDFE Emitido em Contingência";
+                $resp['message'][] = "devido à problemas técnicos";
+            }
+        }
+        return $resp;
+    }
+
+    /**
      * headerMDFeRetrato
      *
      * @param  float $x
@@ -484,65 +557,38 @@ class Damdfe extends DaCommon
             0,
             ''
         );
-        $cStat = $this->dom->getElementsByTagName("cStat");
-        if ($this->tpAmb != 1) {
+        $resp = $this->statusMDFe();
+        if (!$resp['status']) {
+            $n = count($resp['message']);
+            $alttot = $n * 15;
             $x = 10;
-            if ($this->orientacao == 'P') {
-                $yy = round($this->hPrint * 2 / 3, 0);
-            } else {
-                $yy = round($this->hPrint / 2, 0);
-            }
-            $h = 5;
+            $y = $this->hPrint/2 - $alttot/2;
+            $h = 15;
             $w = $maxW - (2 * $x);
-            $this->pdf->setTextColor(90, 90, 90);
-            $texto = "SEM VALOR FISCAL";
-            $aFont = array('font' => $this->fontePadrao, 'size' => 48, 'style' => 'B');
-            $this->pdf->textBox($x, $yy, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            $aFont = array('font' => $this->fontePadrao, 'size' => 30, 'style' => 'B');
-            $texto = "AMBIENTE DE HOMOLOGAÇÃO";
-            $this->pdf->textBox($x, $yy + 14, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            $this->pdf->setTextColor(0, 0, 0);
-        } elseif ($cStat->item(0)->nodeValue == '101' || $this->cancelFlag === true) {
-            $x = 10;
-            if ($this->orientacao == 'P') {
-                $yy = round($this->hPrint * 2 / 3, 0);
-            } else {
-                $yy = round($this->hPrint / 2, 0);
+            $this->pdf->settextcolor(90, 90, 90);
+            foreach ($resp['message'] as $msg) {
+                $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
+                $this->pdf->textBox($x, $y, $w, $h, $msg, $aFont, 'C', 'C', 0, '');
+                $y += $h;
             }
-            $h = 5;
-            $w = $maxW - (2 * $x);
-            $this->pdf->setTextColor(90, 90, 90);
-            $texto = "MDFe CANCELADO";
-            $aFont = array('font' => $this->fontePadrao, 'size' => 48, 'style' => 'B');
-            $this->pdf->textBox($x, $yy, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            $this->pdf->setTextColor(0, 0, 0);
-        } else {
-            $x = 10;
-            if ($this->orientacao == 'P') {
-                $yy = round($this->hPrint * 2 / 3, 0);
-            } else {
-                $yy = round($this->hPrint / 2, 0);
+            $texto = $resp['submessage'];
+            if (!empty($texto)) {
+                $y += 3;
+                $h = 5;
+                $aFont = ['font' => $this->fontePadrao, 'size' => 20, 'style' => 'B'];
+                $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+                $y += $h;
             }
-            $h = 5;
-            $w = $maxW - (2 * $x);
-            $this->pdf->setTextColor(90, 90, 90);
-            //indicar FALTA DO PROTOCOLO se MDFe não for em contingência
-            if (($this->tpEmis == 2 || $this->tpEmis == 5) and empty($this->nProt)) {
-                //Contingência
-                $texto = "DAMDFE Emitido em Contingência";
-                $aFont = array('font' => $this->fontePadrao, 'size' => 48, 'style' => 'B');
-                $this->pdf->textBox($x, $yy, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-                $aFont = array('font' => $this->fontePadrao, 'size' => 30, 'style' => 'B');
-                $texto = "devido à problemas técnicos";
-                $this->pdf->textBox($x, $yy + 12, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            } elseif (empty($this->nProt)) {
-                $texto = "FALTA PROTOCOLO DE APROVAÇÃO DA SEFAZ";
-                $aFont = array('font' => $this->fontePadrao, 'size' => 48, 'style' => 'B');
-                $this->pdf->textBox($x, $yy, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+            if (!$resp['valida']) {
+                $y += 5;
+                $w = $maxW - (2 * $x);
+                $texto = "SEM VALOR FISCAL";
+                $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
+                $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+                $this->pdf->settextcolor(0, 0, 0);
             }
-            $this->pdf->setTextColor(0, 0, 0);
         }
-        return $y + 8;
+        return $oldY + 8;
     }
 
     /**
@@ -811,35 +857,36 @@ class Damdfe extends DaCommon
             $texto = 'RNTRC';
             $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
             $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $prop = $this->veicTracao->getElementsByTagName("prop")->item(0);
+            if (!empty($prop)) {
+                $texto = $prop->getElementsByTagName("RNTRC")->item(0)->nodeValue ?? '';
+                $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+                $this->pdf->textBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+                $altura = $y + 4;
+            }
+            /*
             // RNTRC Não informado
             if ($this->rodo->getElementsByTagName("RNTRC")->length > 0) {
                 $texto = $this->rodo->getElementsByTagName("RNTRC")->item(0)->nodeValue;
             } else {
                 $texto = "";
-            }
-            $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
-            $this->pdf->textBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
-            $altura = $y + 4;
+            }*/
+            //$aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+            //$this->pdf->textBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+            //$altura = $y + 4;
             /**
              * @var \DOMNodeList $veicTracao
              */
+            /*
             $veicTracao = $this->veicTracao->getElementsByTagName('prop');
             foreach ($veicTracao as $item) {
-                /**
-                 * @var \DOMElement $item
-                 */
                 $DOMNodeList = $item->getElementsByTagName('RNTRC');
                 if ($DOMNodeList->length > 0) {
-                    $altura += 4;
                     $texto = $DOMNodeList->item(0)->nodeValue;
                     $this->pdf->textBox($x1, $altura, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
+                    $altura += 4;
                 }
-            }
-            /**
-             *
-             *
-             * @var \DOMNodeList $veicReboque
-             */
+            }*/
             $veicReboque = $this->veicReboque;
             foreach ($veicReboque as $item) {
                 /**
@@ -850,7 +897,7 @@ class Damdfe extends DaCommon
                 $DOMNodeList = $item->getElementsByTagName('RNTRC');
                 if ($DOMNodeList->length > 0) {
                     $altura += 4;
-                    $texto = $DOMNodeList->item(0)->nodeValue;
+                    $texto = $DOMNodeList->item(0)->nodeValue ?? '';
                     $this->pdf->textBox($x1, $altura, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
                 }
             }

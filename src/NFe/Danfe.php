@@ -260,18 +260,24 @@ class Danfe extends DaCommon
      * @var integer
      */
     protected $qComCasasDec = 4;
-
     /**
      * Número de casas decimais para o valor da unidade comercial.
      *
      * @var integer
      */
     protected $vUnComCasasDec = 4;
-
     /**
      * @var int
      */
     protected $hdadosadic = 10;
+    /**
+     * @var array
+     */
+    protected $epec = [];
+    /**
+     * @var bool
+     */
+    protected $obsshow = true;
 
     /**
      * __construct
@@ -285,6 +291,18 @@ class Danfe extends DaCommon
         $this->loadDoc($xml);
     }
 
+    public function epec($protocolo, $data)
+    {
+        $this->epec = [
+            'protocolo' => $protocolo,
+            'data' => $data
+        ];
+    }
+
+    public function obsContShow($flag = true)
+    {
+        $this->obsshow = $flag;
+    }
 
     /**
      * Define a quantidade de casas decimais para unidade comercial.
@@ -334,15 +352,17 @@ class Danfe extends DaCommon
             $this->textoAdic .= ! empty($this->getTagValue($this->infAdic, "infAdFisco"))
                 ? "\n Inf. fisco: " . $this->getTagValue($this->infAdic, "infAdFisco")
                 : '';
-            $obsCont         = $this->infAdic->getElementsByTagName("obsCont");
-            if (isset($obsCont)) {
-                foreach ($obsCont as $obs) {
-                    $campo           = $obsCont->item($i)->getAttribute("xCampo");
-                    $xTexto          = ! empty($obsCont->item($i)->getElementsByTagName("xTexto")->item(0)->nodeValue)
-                        ? $obsCont->item($i)->getElementsByTagName("xTexto")->item(0)->nodeValue
-                        : '';
-                    $this->textoAdic .= "\n" . $campo . ':  ' . trim($xTexto);
-                    $i ++;
+            if ($this->obsshow) {
+                $obsCont = $this->infAdic->getElementsByTagName("obsCont");
+                if (isset($obsCont)) {
+                    foreach ($obsCont as $obs) {
+                        $campo = $obsCont->item($i)->getAttribute("xCampo");
+                        $xTexto = ! empty($obsCont->item($i)->getElementsByTagName("xTexto")->item(0)->nodeValue)
+                            ? $obsCont->item($i)->getElementsByTagName("xTexto")->item(0)->nodeValue
+                            : '';
+                        $this->textoAdic .= "\n" . $campo . ':  ' . trim($xTexto);
+                        $i ++;
+                    }
                 }
             }
         }
@@ -389,10 +409,6 @@ class Danfe extends DaCommon
         }
 
         return $hdadosadic;
-    }
-
-    protected function calculoItensPorPagina()
-    {
     }
 
     /**
@@ -560,11 +576,19 @@ class Danfe extends DaCommon
 
             $prod = $itemProd->getElementsByTagName('prod')->item(0);
             $uCom = $prod->getElementsByTagName("uCom")->item(0)->nodeValue;
+            $vUnCom = $prod->getElementsByTagName("vUnCom")->item(0)->nodeValue;
             $uTrib = $prod->getElementsByTagName("uTrib")->item(0);
-            if (! empty($uTrib) && strcmp($uCom, $uTrib->nodeValue) != 0) {
-                $mostrarUnidadeTributavel = true;
-            }
-
+            $qTrib = $prod->getElementsByTagName("qTrib")->item(0);
+            $vUnTrib = !empty($prod->getElementsByTagName("vUnTrib")->item(0)->nodeValue)
+                ? $prod->getElementsByTagName("vUnTrib")->item(0)->nodeValue
+                : 0;
+            //se as unidades forem diferentes e q qtda de qTrib for maior que 0
+            //mostrat as unidades
+            $mostrarUnidadeTributavel = (
+                !empty($uTrib)
+                && !empty($qTrib)
+                && number_format($vUnCom, 2, ',', '') !== number_format($vUnTrib, 2, ',', '')
+            );
             $hUsado += $this->calculeHeight($itemProd, $mostrarUnidadeTributavel);
             if ($hUsado > $hDispo) {
                 $totPag ++;
@@ -707,6 +731,9 @@ class Danfe extends DaCommon
                 break;
             }
         }
+        if ($x === 0) {
+            return $cdata;
+        }
         if ($startPos > 0) {
             $parte1 = substr($cdata, 0, $startPos);
         } else {
@@ -834,36 +861,57 @@ class Danfe extends DaCommon
      */
     protected function statusNFe()
     {
-        if (! isset($this->nfeProc)) {
-            return ['status' => false, 'message' => 'NFe NÃO PROTOCOLADA'];
+        $resp = [
+            'status' => true,
+            'message' => [],
+            'submessage' => ''
+        ];
+        if (!empty($this->epec) && $this->tpEmis == '4') {
+            return $resp;
         }
-        if ($this->getTagValue($this->ide, "tpAmb") == '2') {
-            return ['status' => false, 'message' => 'NFe EMITIDA EM HOMOLOGAÇÃO'];
+        if (!isset($this->nfeProc)) {
+            $resp['status'] = false;
+            $resp['message'][] = 'NFe NÃO PROTOCOLADA';
+        } else {
+            if ($this->getTagValue($this->ide, "tpAmb") == '2') {
+                $resp['status'] = false;
+                $resp['message'][] =  "NFe EMITIDA EM HOMOLOGAÇÃO";
+            }
+            $retEvento = $this->nfeProc->getElementsByTagName('retEvento')->item(0);
+            $cStat = $this->getTagValue($this->nfeProc, "cStat");
+            if ($cStat == '110' ||
+                $cStat == '301' ||
+                $cStat == '302'
+            ) {
+                $resp['status'] = false;
+                $resp['message'][] = "NFe DENEGADA";
+            } elseif ($cStat == '101'
+                || $cStat == '151'
+                || $cStat == '135'
+                || $cStat == '155'
+                || $this->cancelFlag === true
+            ) {
+                $resp['status'] = false;
+                $resp['message'][] = "NFe CANCELADA";
+            } elseif (!empty($retEvento)) {
+                $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
+                $cStat = $this->getTagValue($infEvento, "cStat");
+                $tpEvento= $this->getTagValue($infEvento, "tpEvento");
+                $dhEvento = $this->toDateTime($this->getTagValue($infEvento, "dhRegEvento"))->format("d/m/Y H:i:s");
+                $nProt = $this->getTagValue($infEvento, "nProt");
+                if ($tpEvento == '110111' &&
+                    ($cStat == '101' ||
+                     $cStat == '151' ||
+                     $cStat == '135' ||
+                     $cStat == '155')
+                ) {
+                    $resp['status'] = false;
+                    $resp['message'][] = "NFe CANCELADA";
+                    $resp['submessage'] = "{$dhEvento} - {$nProt}";
+                }
+            }
         }
-        $cStat = $this->getTagValue($this->nfeProc, "cStat");
-        if ($cStat == '101'
-            || $cStat == '151'
-            || $cStat == '135'
-            || $cStat == '155'
-            || $this->cancelFlag === true
-        ) {
-            return ['status' => false, 'message' => 'NFe CANCELADA'];
-        }
-
-        if ($cStat == '110' ||
-            $cStat == '301' ||
-            $cStat == '302'
-
-        ) {
-            return ['status' => false, 'message' => 'NFe DENEGADA'];
-        }
-
-        return ['status' => true, 'message' => ''];
-    }
-
-    protected function notaDPEC()
-    {
-        return ! empty($this->numdepec);
+        return $resp;
     }
 
     /**
@@ -1071,12 +1119,12 @@ class Danfe extends DaCommon
         $y1                = $y + 12 + $bH;
         $aFont             = ['font' => $this->fontePadrao, 'size' => 8, 'style' => ''];
         $chaveContingencia = "";
-        if ($this->notaDpec()) {
-            $cabecalhoProtoAutorizacao = 'NÚMERO DE REGISTRO DPEC';
+        if (!empty($this->epec) && $this->tpEmis == '4') {
+            $cabecalhoProtoAutorizacao = 'NÚMERO DE REGISTRO EPEC';
         } else {
             $cabecalhoProtoAutorizacao = 'PROTOCOLO DE AUTORIZAÇÃO DE USO';
         }
-        if (($this->tpEmis == 2 || $this->tpEmis == 5) && ! $this->notaDpec()) {
+        if (($this->tpEmis == 2 || $this->tpEmis == 5)) {
             $cabecalhoProtoAutorizacao = "DADOS DA NF-E";
             $chaveContingencia         = $this->geraChaveAdicionalDeContingencia();
             $this->pdf->setFillColor(0, 0, 0);
@@ -1125,7 +1173,7 @@ class Danfe extends DaCommon
         // NOTA : DANFE sem protocolo deve existir somente no caso de contingência !!!
         // Além disso, existem várias NFes em contingência que eu recebo com protocolo de autorização.
         // Na minha opinião, deveríamos mostra-lo, mas o  manual  da NFe v4.01 diz outra coisa...
-        if (($this->tpEmis == 2 || $this->tpEmis == 5) && ! $this->notaDpec()) {
+        if (($this->tpEmis == 2 || $this->tpEmis == 5) && empty($this->epec)) {
             $aFont = ['font' => $this->fontePadrao, 'size' => 8, 'style' => 'B'];
             $texto = $this->formatField(
                 $chaveContingencia,
@@ -1134,19 +1182,19 @@ class Danfe extends DaCommon
             $cStat = '';
         } else {
             $aFont = ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'B'];
-            if ($this->notaDpec()) {
-                $texto = $this->numdepec;
+            if (!empty($this->epec)) {
+                $texto = $this->epec['protocolo'] . ' - ' . $this->epec['data'];
                 $cStat = '';
             } else {
                 if (isset($this->nfeProc)) {
                     $texto  = ! empty($this->nfeProc->getElementsByTagName("nProt")->item(0)->nodeValue)
                         ? $this->nfeProc->getElementsByTagName("nProt")->item(0)->nodeValue
                         : '';
-                    $tsHora = $this->toTimestamp(
+                    $dtHora = $this->toDateTime(
                         $this->nfeProc->getElementsByTagName("dhRecbto")->item(0)->nodeValue
                     );
                     if ($texto != '') {
-                        $texto .= "  -  " . date('d/m/Y H:i:s', $tsHora);
+                        $texto .= "  -  " . $dtHora->format('d/m/Y H:i:s');
                     }
                     $cStat = $this->nfeProc->getElementsByTagName("cStat")->item(0)->nodeValue;
                 } else {
@@ -1189,7 +1237,7 @@ class Danfe extends DaCommon
         //CNPJ
         $x     += $w;
         $w     = ($maxW - (3 * $w));
-        $texto = 'CNPJ';
+        $texto = 'CNPJ / CPF';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         //Pegando valor do CPF/CNPJ
@@ -1214,37 +1262,44 @@ class Danfe extends DaCommon
         $tpAmb = $this->ide->getElementsByTagName('tpAmb')->item(0)->nodeValue;
         //indicar cancelamento
         $resp = $this->statusNFe();
-        if (! $resp['status']) {
+        if (!$resp['status']) {
+            $n = count($resp['message']);
+            $alttot = $n * 15;
             $x = 10;
-            $y = $this->hPrint - 130;
-            $h = 25;
+            $y = $this->hPrint/2 - $alttot/2;
+            $h = 15;
             $w = $maxW - (2 * $x);
             $this->pdf->settextcolor(90, 90, 90);
-            $texto = $resp['message'];
-            $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
-            $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            $y += $h;
-            $h = 5;
-            $w = $maxW - (2 * $x);
-            if (isset($this->infProt) && $resp['status']) {
-                $xMotivo = $this->infProt->getElementsByTagName("xMotivo")->item(0)->nodeValue;
-            } else {
-                $xMotivo = '';
+
+            foreach ($resp['message'] as $msg) {
+                $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
+                $this->pdf->textBox($x, $y, $w, $h, $msg, $aFont, 'C', 'C', 0, '');
+                $y += $h;
             }
-            $texto = "SEM VALOR FISCAL\n" . $xMotivo;
+            $texto = $resp['submessage'];
+            if (!empty($texto)) {
+                $y += 3;
+                $h = 5;
+                $aFont = ['font' => $this->fontePadrao, 'size' => 20, 'style' => 'B'];
+                $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+                $y += $h;
+            }
+            $y += 5;
+            $w = $maxW - (2 * $x);
+            $texto = "SEM VALOR FISCAL";
             $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
             $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
             $this->pdf->settextcolor(0, 0, 0);
         }
-        if ($this->notaDpec() || $this->tpEmis == 4) {
-            //DPEC
+        if (!empty($this->epec) && $this->tpEmis == 4) {
+            //EPEC
             $x = 10;
             $y = $this->hPrint - 130;
             $h = 25;
             $w = $maxW - (2 * $x);
             $this->pdf->SetTextColor(200, 200, 200);
             $texto = "DANFE impresso em contingência -\n" .
-                "DPEC regularmente recebido pela Receita\n" .
+                "EPEC regularmente recebido pela Receita\n" .
                 "Federal do Brasil";
             $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
             $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
@@ -1457,9 +1512,9 @@ class Danfe extends DaCommon
             $dhSaiEnt   = ! empty($this->ide->getElementsByTagName("dhSaiEnt")->item(0)->nodeValue)
                 ? $this->ide->getElementsByTagName("dhSaiEnt")->item(0)->nodeValue
                 : '';
-            $tsDhSaiEnt = $this->toTimestamp($dhSaiEnt);
-            if ($tsDhSaiEnt != '') {
-                $hSaiEnt = date('H:i:s', $tsDhSaiEnt);
+            $tsDhSaiEnt = $this->toDateTime($dhSaiEnt);
+            if ($tsDhSaiEnt) {
+                $hSaiEnt = $tsDhSaiEnt->format('H:i:s');
             }
         }
         $texto = $hSaiEnt;
@@ -1810,7 +1865,6 @@ class Danfe extends DaCommon
                 }
             }
         }
-
         return "";
     }
 
@@ -1853,7 +1907,7 @@ class Danfe extends DaCommon
         if ($this->dup->length > 0 || $textoFatura !== "") {
             //#####################################################################
             //FATURA / DUPLICATA
-            $texto = $y . " - FATURA / DUPLICATA";
+            $texto = "FATURA / DUPLICATA";
             if ($this->orientacao == 'P') {
                 $w = $this->wPrint;
             } else {
@@ -2015,6 +2069,10 @@ class Danfe extends DaCommon
                 '13' => 'Vale Combustível',
                 '14' => 'Duplicata Mercantil',
                 '15' => 'Boleto',
+                '16' => 'Depósito Bancário',
+                '17' => 'Pagamento Instantâneo (PIX)',
+                '18' => 'Transferência bancária, Carteira Digital',
+                '19' => 'Programa de fidelidade, Cashback, Crédito Virtual',
                 '90' => 'Sem pagamento',
                 '99' => 'Outros'
             ];
@@ -2600,10 +2658,17 @@ class Danfe extends DaCommon
             $rastro = $prod->getElementsByTagName("rastro");
             $i      = 0;
             while ($i < $rastro->length) {
+                $dFab = $this->getTagDate($rastro->item($i), 'dFab');
+                $dt = \DateTime::createFromFormat('Y-m-d', $dFab);
+                $datafab = " Fab: " . $dt->format('d/m/Y');
+                $dVal = $this->getTagDate($rastro->item($i), 'dVal');
+                $dt = \DateTime::createFromFormat('Y-m-d', $dVal);
+                $dataval = " Val: " . $dt->format('m/Y');
+                
                 $loteTxt .= $this->getTagValue($rastro->item($i), 'nLote', ' Lote: ');
                 $loteTxt .= $this->getTagValue($rastro->item($i), 'qLote', ' Quant: ');
-                $loteTxt .= $this->getTagDate($rastro->item($i), 'dFab', ' Fab: ');
-                $loteTxt .= $this->getTagDate($rastro->item($i), 'dVal', ' Val: ');
+                $loteTxt .= $datafab; //$this->getTagDate($rastro->item($i), 'dFab', ' Fab: ');
+                $loteTxt .= $dataval; //$this->getTagDate($rastro->item($i), 'dVal', ' Val: ');
                 $loteTxt .= $this->getTagValue($rastro->item($i), 'vPMC', ' PMC: ');
                 $i ++;
             }
@@ -2691,9 +2756,9 @@ class Danfe extends DaCommon
         //O/CST ou O/CSOSN
         $x     += $w3;
         $w4    = round($w * 0.05, 0);
-        $texto = 'O/CSOSN';//Regime do Simples CRT = 1 ou CRT = 2
-        if ($this->getTagValue($this->emit, 'CRT') == '3') {
-            $texto = 'O/CST';//Regime Normal
+        $texto = 'O/CST'; // CRT = 2 ou CRT = 3
+        if ($this->getTagValue($this->emit, 'CRT') == '1') {
+            $texto = 'O/CSOSN';//Regime do Simples CRT = 1
         }
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w4, $h, $texto, $aFont, 'C', 'C', 0, '', false);
@@ -2791,11 +2856,18 @@ class Danfe extends DaCommon
                 $IPI          = $imposto->getElementsByTagName("IPI")->item(0);
                 $textoProduto = $this->descricaoProduto($thisItem);
 
+
                 // Posição y dos dados das unidades tributaveis.
                 $yTrib = $this->pdf->fontSize + .5;
 
                 $uCom = $prod->getElementsByTagName("uCom")->item(0)->nodeValue;
+                $vUnCom = $prod->getElementsByTagName("vUnCom")->item(0)->nodeValue;
                 $uTrib = $prod->getElementsByTagName("uTrib")->item(0);
+                $qTrib = $prod->getElementsByTagName("qTrib")->item(0);
+                $cfop = $prod->getElementsByTagName("CFOP")->item(0)->nodeValue;
+                $vUnTrib = !empty($prod->getElementsByTagName("vUnTrib")->item(0)->nodeValue)
+                    ? $prod->getElementsByTagName("vUnTrib")->item(0)->nodeValue
+                    : 0;
                 // A Configuração serve para informar se irá exibir
                 //   de forma obrigatória, estando diferente ou não,
                 //   a unidade de medida tributária.
@@ -2806,7 +2878,11 @@ class Danfe extends DaCommon
                 //   ambas as informações deverão estar expressas e identificadas no DANFE, podendo ser
                 //   utilizada uma das linhas adicionais previstas, ou o campo de informações adicionais."
                 // > Manual Integração - Contribuinte 4.01 - NT2009.006, Item 7.1.5, página 91.
-                $mostrarUnidadeTributavel = (! empty($uTrib) && strcmp($uCom, $uTrib->nodeValue));
+                $mostrarUnidadeTributavel = (
+                    !empty($uTrib)
+                    && !empty($qTrib)
+                    && number_format($vUnCom, 2, ',', '') !== number_format($vUnTrib, 2, ',', '')
+                );
 
                 // Informação sobre unidade de medida tributavel.
                 // Se não for para exibir a unidade de medida tributavel, então
@@ -2814,7 +2890,7 @@ class Danfe extends DaCommon
                 if (! $mostrarUnidadeTributavel) {
                     $yTrib = 0;
                 }
-                $h      = $this->calculeHeight($thisItem, $mostrarUnidadeTributavel);
+                $h = $this->calculeHeight($thisItem, $mostrarUnidadeTributavel);
                 $hUsado += $h;
 
                 $yTrib += $y;
@@ -2867,7 +2943,8 @@ class Danfe extends DaCommon
                 $texto = $uCom;
                 $this->pdf->textBox($x, $y, $w6, $h, $texto, $aFont, 'T', 'C', 0, '');
                 //Unidade de medida tributável
-                if ($mostrarUnidadeTributavel && !empty($uTrib)) {
+                $qTrib = $prod->getElementsByTagName("qTrib")->item(0)->nodeValue;
+                if ($mostrarUnidadeTributavel) {
                     $texto = $uTrib->nodeValue;
                     $this->pdf->textBox($x, $yTrib, $w6, $h, $texto, $aFont, 'T', 'C', 0, '');
                 }
@@ -3328,7 +3405,7 @@ class Danfe extends DaCommon
         // 1 - Normal - emissão normal;
         // 2 - Contingência FS - emissão em contingência com impressão do DANFE em Formulário de Segurança;
         // 3 - Contingência SCAN - emissão em contingência no Sistema de Contingência do Ambiente Nacional;
-        // 4 - Contingência DPEC - emissão em contingência com envio da Declaração
+        // 4 - Contingência EPEC - emissão em contingência com envio da Evento
         //     Prévia de Emissão em Contingência;
         // 5 - Contingência FS-DA - emissão em contingência com impressão do DANFE em Formulário de
         //     Segurança para Impressão de Documento Auxiliar de Documento Fiscal Eletrônico (FS-DA);
@@ -3338,23 +3415,17 @@ class Danfe extends DaCommon
         $dhCont = $this->getTagValue($this->ide, 'dhCont', ' Entrada em contingência : ');
         $texto  = '';
         switch ($this->tpEmis) {
-            case 2:
-                $texto = 'CONTINGÊNCIA FS' . $dhCont . $xJust;
-                break;
-            case 3:
-                $texto = 'CONTINGÊNCIA SCAN' . $dhCont . $xJust;
-                break;
             case 4:
-                $texto = 'CONTINGÊNCIA DPEC' . $dhCont . $xJust;
+                $texto = "CONTINGÊNCIA EPEC\n" . $dhCont . "\n" . $xJust;
                 break;
             case 5:
-                $texto = 'CONTINGÊNCIA FSDA' . $dhCont . $xJust;
+                $texto = "CONTINGÊNCIA FSDA\n" . $dhCont . "\n" . $xJust;
                 break;
             case 6:
-                $texto = 'CONTINGÊNCIA SVC-AN' . $dhCont . $xJust;
+                $texto = "CONTINGÊNCIA SVC-AN\n" . $dhCont . "\n" . $xJust;
                 break;
             case 7:
-                $texto = 'CONTINGÊNCIA SVC-RS' . $dhCont . $xJust;
+                $texto = "CONTINGÊNCIA SVC-RS\n" . $dhCont . "\n" . $xJust;
                 break;
         }
         $y     += 2;

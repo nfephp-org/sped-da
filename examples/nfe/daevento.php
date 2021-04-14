@@ -7,9 +7,9 @@ require_once '../../bootstrap.php';
 use NFePHP\DA\NFe\Daevento;
 
 $xml = file_get_contents(__DIR__ . '/fixtures/proccce.xml');
-$logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(realpath(__DIR__ . '/../images/tulipas.png')));
+//$logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(realpath(__DIR__ . '/../images/tulipas.png')));
 //$logo = realpath(__DIR__ . '/../images/tulipas.png');
-
+$logo = null;
 $dadosEmitente = [
     'razao' => 'QQ Comercio e Ind. Ltda',
     'logradouro' => 'Rua vinte e um de março',

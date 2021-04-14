@@ -5,14 +5,17 @@ require_once '../../bootstrap.php';
 
 use NFePHP\DA\NFe\Danfe;
 
-$xml = file_get_contents(__DIR__ . '/fixtures/mod55-nfe.xml');
+$xml = file_get_contents(__DIR__ . '/fixtures/mod55-nfe_3.xml');
 $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(realpath(__DIR__ . '/../images/tulipas.png')));
 //$logo = realpath(__DIR__ . '/../images/tulipas.png');
 
 try {
+    
     $danfe = new Danfe($xml);
     $danfe->debugMode(false);
     $danfe->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webenf.com.br');
+    $danfe->obsContShow(false);
+    $danfe->epec('891180004131899', '14/08/2018 11:24:45'); //marca como autorizada por EPEC
     // Caso queira mudar a configuracao padrao de impressao
     /*  $this->printParameters( $orientacao = '', $papel = 'A4', $margSup = 2, $margEsq = 2 ); */
     //Informe o numero DPEC
