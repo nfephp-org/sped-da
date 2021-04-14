@@ -459,9 +459,11 @@ class DanfeSimples extends DaCommon
                              . " - CEP {$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['CEP']}";
         }
 
-        // LINHA 13
         $this->pdf->setFont('Arial', '', $pequeno ? 9 : 10);
         $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$enderecoLinha1}", 1, 1, 'C', 1);
+
+        $this->pdf->setFont('Arial', '', $pequeno ? 9 : 10);
+        $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$enderecoLinha2}", 1, 1, 'C', 1);
 
         $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
         $this->pdf->cell(($c1 * 4), $pequeno ? 5 : 6, "TRANSPORTADORA", 1, 1, 'C', 1);
