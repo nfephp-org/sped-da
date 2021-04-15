@@ -64,6 +64,12 @@ class Danfe extends DaCommon
      * @var boolean
      */
     protected $descProdQuebraLinha = true;
+     /**
+     * Parâmetro para ocultar a unidade tributável nos itens
+     *
+     * @var boolean
+     */
+    protected $ocultarUnidadeTributavel = false;
     /**
      * XML NFe
      *
@@ -322,6 +328,15 @@ class Danfe extends DaCommon
     public function setQComCasasDec($qComCasasDec)
     {
         $this->qComCasasDec = $qComCasasDec;
+    }
+    
+    /**
+     * Atribui se a unidade tributável deve sempre ocultada nos itens.
+     * @param bool $ocultarUnidadeTributavel
+     */
+    public function setOcultarUnidadeTributavel($ocultarUnidadeTributavel = false)
+    {
+        $this->ocultarUnidadeTributavel = filter_var($ocultarUnidadeTributavel, FILTER_VALIDATE_BOOLEAN);
     }
 
     protected function calculoEspacoVericalDadosAdicionais()
@@ -585,7 +600,8 @@ class Danfe extends DaCommon
             //se as unidades forem diferentes e q qtda de qTrib for maior que 0
             //mostrat as unidades
             $mostrarUnidadeTributavel = (
-                !empty($uTrib)
+                !$this->ocultarUnidadeTributavel
+                && !empty($uTrib)
                 && !empty($qTrib)
                 && number_format($vUnCom, 2, ',', '') !== number_format($vUnTrib, 2, ',', '')
             );
@@ -2659,11 +2675,9 @@ class Danfe extends DaCommon
             $i      = 0;
             while ($i < $rastro->length) {
                 $dFab = $this->getTagDate($rastro->item($i), 'dFab');
-                $dt = \DateTime::createFromFormat('Y-m-d', $dFab);
-                $datafab = " Fab: " . $dt->format('d/m/Y');
+                $datafab = " Fab: " . $dFab;
                 $dVal = $this->getTagDate($rastro->item($i), 'dVal');
-                $dt = \DateTime::createFromFormat('Y-m-d', $dVal);
-                $dataval = " Val: " . $dt->format('m/Y');
+                $dataval = " Val: " . $dVal;
                 
                 $loteTxt .= $this->getTagValue($rastro->item($i), 'nLote', ' Lote: ');
                 $loteTxt .= $this->getTagValue($rastro->item($i), 'qLote', ' Quant: ');
@@ -2879,7 +2893,8 @@ class Danfe extends DaCommon
                 //   utilizada uma das linhas adicionais previstas, ou o campo de informações adicionais."
                 // > Manual Integração - Contribuinte 4.01 - NT2009.006, Item 7.1.5, página 91.
                 $mostrarUnidadeTributavel = (
-                    !empty($uTrib)
+                    !$this->ocultarUnidadeTributavel
+                    && !empty($uTrib)
                     && !empty($qTrib)
                     && number_format($vUnCom, 2, ',', '') !== number_format($vUnTrib, 2, ',', '')
                 );
