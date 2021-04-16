@@ -269,14 +269,16 @@ class DanfeSimples extends DaCommon
         $totalVolumes = 0;
         
         // Normalizar o array de volumes quando tem apenas 1 volumes
-        if (!isset($this->nfeArray['NFe']['infNFe']['transp']['vol'][0])){
+        if (!isset($this->nfeArray['NFe']['infNFe']['transp']['vol'][0])) {
             $this->nfeArray['NFe']['infNFe']['transp']['vol'] = [
                 $this->nfeArray['NFe']['infNFe']['transp']['vol']
             ];
         }
         
         foreach ($this->nfeArray['NFe']['infNFe']['transp']['vol'] as $vol) {
-            if (!isset($volumes[$vol['esp']])) $volumes[$vol['esp']] = 0;
+            if (!isset($volumes[$vol['esp']])) {
+                $volumes[$vol['esp']] = 0;
+            }
             $volumes[$vol['esp']] += $vol['qVol'];
             $totalVolumes += $vol['qVol'];
             $pesoB += $vol['pesoB'];
@@ -478,8 +480,8 @@ class DanfeSimples extends DaCommon
             1
         );
         
-        if ($totalVolumes > 0){
-            foreach ($volumes as $esp => $qVol){
+        if ($totalVolumes > 0) {
+            foreach ($volumes as $esp => $qVol) {
                 $this->pdf->cell(
                     ($c1 * 4),
                     $pequeno ? 5 : 6,
