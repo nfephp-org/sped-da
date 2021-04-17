@@ -393,7 +393,10 @@ class Danfce extends DaCommon
         $this->tpImp = $this->ide->getElementsByTagName("tpImp")->item(0)->nodeValue;
         $this->infAdic = $this->dom->getElementsByTagName("infAdic")->item(0);
         $this->tpEmis = $this->dom->getValue($this->ide, "tpEmis");
-        $this->infCpl = $this->infAdic->getElementsByTagName("infCpl")->item(0)->nodeValue;
+        $this->infCpl = '';
+        if (!empty($this->infAdic->getElementsByTagName("infCpl")->item(0))) {
+            $this->infCpl = $this->infAdic->getElementsByTagName("infCpl")->item(0)->nodeValue;
+        }    
         //se for o layout 4.0 busca pelas tags de detalhe do pagamento
         //senão, busca pelas tags de pagamento principal
         if ($this->infNFe->getAttribute("versao") == "4.00") {
