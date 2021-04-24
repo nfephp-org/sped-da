@@ -263,7 +263,28 @@ class DanfeSimples extends DaCommon
         //Configura o pagebreak para não quebrar com 2cm do bottom.
         $this->pdf->setAutoPageBreak(true, $this->margsup);
 
-
+        $volumes = [];
+        $pesoL = 0.000;
+        $pesoB = 0.000;
+        $totalVolumes = 0;
+        
+        // Normalizar o array de volumes quando tem apenas 1 volumes
+        if (!isset($this->nfeArray['NFe']['infNFe']['transp']['vol'][0])) {
+            $this->nfeArray['NFe']['infNFe']['transp']['vol'] = [
+                $this->nfeArray['NFe']['infNFe']['transp']['vol']
+            ];
+        }
+        
+        foreach ($this->nfeArray['NFe']['infNFe']['transp']['vol'] as $vol) {
+            if (!isset($volumes[$vol['esp']])) {
+                $volumes[$vol['esp']] = 0;
+            }
+            $volumes[$vol['esp']] += $vol['qVol'];
+            $totalVolumes += $vol['qVol'];
+            $pesoB += $vol['pesoB'];
+            $pesoL += $vol['pesoL'];
+        }
+        
         // LINHA 1
         $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
         $this->pdf->cell(
@@ -440,26 +461,61 @@ class DanfeSimples extends DaCommon
                              . " - CEP {$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['CEP']}";
         }
 
-        // LINHA 13
         $this->pdf->setFont('Arial', '', $pequeno ? 9 : 10);
         $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$enderecoLinha1}", 1, 1, 'C', 1);
 
-        // LINHA 14
         $this->pdf->setFont('Arial', '', $pequeno ? 9 : 10);
         $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$enderecoLinha2}", 1, 1, 'C', 1);
 
-        // LINHA 15
+        $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
+        $this->pdf->cell(($c1 * 4), $pequeno ? 5 : 6, "TRANSPORTADORA", 1, 1, 'C', 1);
+        $this->pdf->setFont('Arial', '', $pequeno ? 9 : 10);
+        $this->pdf->cell(
+            ($c1 * 4),
+            $pequeno ? 5 : 6,
+            "{$this->nfeArray['NFe']['infNFe']['transp']['transporta']['xNome']}",
+            1,
+            1,
+            'C',
+            1
+        );
+        
+        if ($totalVolumes > 0) {
+            foreach ($volumes as $esp => $qVol) {
+                $this->pdf->cell(
+                    ($c1 * 4),
+                    $pequeno ? 5 : 6,
+                    "{$esp}x {$qVol}",
+                    1,
+                    1,
+                    'C',
+                    1
+                );
+            }
+        }
+        
+        $pesoL = number_format($pesoL, 3, ',', '.');
+        $pesoB = number_format($pesoB, 3, ',', '.');
+        
+        $this->pdf->cell(
+            ($c1 * 4),
+            $pequeno ? 5 : 6,
+            "PESO LIQ {$pesoL} / PESO BRT {$pesoB}",
+            1,
+            1,
+            'C',
+            1
+        );
+
         $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
         $this->pdf->cell(($c1 * 2), $pequeno ? 5 : 6, "TOTAL DA NF-e", 1, 0, 'C', 1);
-        $this->pdf->setFont('Arial', '', $pequeno ? 9 : 10);
+        $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
         $vNF = number_format($this->nfeArray['NFe']['infNFe']['total']['ICMSTot']['vNF'], 2, ',', '.');
         $this->pdf->cell(($c1 * 2), $pequeno ? 5 : 6, "R$ {$vNF}", 1, 1, 'C', 1);
 
-        // LINHA 16
         $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
         $this->pdf->cell(($c1 * 4), $pequeno ? 5 : 6, "DADOS ADICIONAIS", 1, 1, 'C', 1);
 
-        // LINHA 11
         $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
         $this->pdf->multiCell(
             ($c1 * 4),
