@@ -68,7 +68,7 @@ trait TraitBlocoIX
         }
         $linhas = str_replace(';', "\n", $this->infCpl);
         $hfont = (imagefontheight($fsize)/72)*13;
-        $numlinhas = $pdf->getNumLines($linhas, $wprint, $aFont);
+        $numlinhas = $pdf->getNumLines($linhas, $wprint, $aFont)+2;
         return (int) ($numlinhas * $hfont) + 2;
     }
 }
