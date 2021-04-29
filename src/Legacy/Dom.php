@@ -13,7 +13,6 @@ namespace NFePHP\DA\Legacy;
  */
 
 use \DOMDocument;
-use NFePHP\DA\Legacy\FilesFolders;
 use InvalidArgumentException;
 
 class Dom extends DOMDocument
@@ -38,12 +37,6 @@ class Dom extends DOMDocument
         if (! $this->loadXML($xmlString, LIBXML_NOBLANKS | LIBXML_NOEMPTYTAG)) {
             throw new InvalidArgumentException($msg);
         }
-    }
-    
-    public function loadXMLFile($pathXmlFile = '')
-    {
-        $data = FilesFolders::readFile($pathXmlFile);
-        $this->loadXMLString($data);
     }
             
     /**
