@@ -412,7 +412,6 @@ class Danfe extends DaCommon
                 $numlinhasdados         = $this->pdf->getNumLines($this->textoAdic, $this->wAdic, $fontProduto) + 3;
                 $this->textadicfontsize = $this->pdf->fontSize;
                 $hdadosadic             = ceil($numlinhasdados * $this->textadicfontsize);
-                echo $hdadosadic;
                 if ($hdadosadic <= 90) {
                     $hdadosadic = ceil($hdadosadic);
                     break;
