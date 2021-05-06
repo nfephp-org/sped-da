@@ -125,6 +125,10 @@ class Damdfe extends DaCommon
             $this->aereo = $this->dom->getElementsByTagName("aereo")->item(0);
             $this->aquav = $this->dom->getElementsByTagName("aquav")->item(0);
             $this->ferrov = $this->dom->getElementsByTagName("ferrov")->item(0);
+            if (!empty($this->rodo)) {
+                $infANTT = $this->rodo->getElementsByTagName("infANTT")->item(0);
+                $this->RNTRC = empty($infANTT) ? null : $infANTT->getElementsByTagName("RNTRC")->item(0)->nodeValue;
+            }
             $this->ciot = "";
             if ($this->dom->getElementsByTagName('CIOT')->item(0) != "") {
                 $this->ciot = $this->dom->getElementsByTagName('CIOT')->item(0)->nodeValue;
@@ -298,9 +302,10 @@ class Damdfe extends DaCommon
         } else {
             $cpfcnpj = 'CNPJ: ' . $this->formatField($this->CNPJ, "###.###.###/####-##");
         }
-        $ie = 'IE: ' . strlen($this->IE) == 9
+        $ie = 'IE: ' . (strlen($this->IE) == 9
             ? $this->formatField($this->IE, '###/#######')
-            : $this->formatField($this->IE, '###.###.###.###');
+            : $this->formatField($this->IE, '###.###.###.###'));
+        $rntrc = empty($this->RNTRC) ? '' : ' - RNTRC: ' . $this->RNTRC;
         $lgr = 'Logradouro: ' . $this->xLgr;
         $nro = 'Nº: ' . $this->nro;
         $bairro = 'Bairro: ' . $this->xBairro;
@@ -309,7 +314,7 @@ class Damdfe extends DaCommon
         $UF = 'UF: ' . $this->UF;
         $mun = 'Municipio: ' . $this->xMun;
 
-        $texto = $cpfcnpj . ' - ' . $ie . "\n";
+        $texto = $cpfcnpj . ' - ' . $ie . $rntrc ."\n";
         $texto .= $lgr . ' - ' . $nro . "\n";
         $texto .= $bairro . "\n";
         $texto .= $UF . ' - ' . $mun . ' - ' . $CEP;
@@ -524,9 +529,10 @@ class Damdfe extends DaCommon
         } else {
             $cpfcnpj = 'CNPJ: ' . $this->formatField($this->CNPJ, "###.###.###/####-##");
         }
-        $ie = 'IE: ' . strlen($this->IE) == 9
+        $ie = 'IE: ' . (strlen($this->IE) == 9
             ? $this->formatField($this->IE, '###/#######')
-            : $this->formatField($this->IE, '###.###.###.###');
+            : $this->formatField($this->IE, '###.###.###.###'));
+        $rntrc = empty($this->RNTRC) ? '' : ' - RNTRC: ' . $this->RNTRC;    
         $lgr = 'Logradouro: ' . $this->xLgr;
         $nro = 'Nº: ' . $this->nro;
         $bairro = 'Bairro: ' . $this->xBairro;
@@ -534,7 +540,7 @@ class Damdfe extends DaCommon
         $CEP = 'CEP: ' . $this->formatField($CEP, "##.###-###");
         $mun = 'Municipio: ' . $this->xMun;
         $UF = 'UF: ' . $this->UF;
-        $texto = $cpfcnpj . ' - ' . $ie . "\n";
+        $texto = $cpfcnpj . ' - ' . $ie . $rntrc . "\n";
         $texto .= $lgr . ' - ' . $nro . "\n";
         $texto .= $bairro . "\n";
         $texto .= $UF . ' - ' . $mun . ' - ' . $CEP;
