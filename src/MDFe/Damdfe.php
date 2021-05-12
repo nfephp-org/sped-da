@@ -532,7 +532,7 @@ class Damdfe extends DaCommon
         $ie = 'IE: ' . (strlen($this->IE) == 9
             ? $this->formatField($this->IE, '###/#######')
             : $this->formatField($this->IE, '###.###.###.###'));
-        $rntrc = empty($this->RNTRC) ? '' : ' - RNTRC: ' . $this->RNTRC;    
+        $rntrc = empty($this->RNTRC) ? '' : ' - RNTRC: ' . $this->RNTRC;
         $lgr = 'Logradouro: ' . $this->xLgr;
         $nro = 'Nº: ' . $this->nro;
         $bairro = 'Bairro: ' . $this->xBairro;
