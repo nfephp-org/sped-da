@@ -18,7 +18,7 @@ trait TraitBlocoIV
         $valor = $this->getTagValue($this->ICMSTot, 'vNF');
         $desconto = $this->getTagValue($this->ICMSTot, 'vDesc');
         $frete = $this->getTagValue($this->ICMSTot, 'vFrete');
-        $bruto = $valor + $desconto;
+        $bruto = $valor + $desconto - $frete;
 
         $aFont = ['font' => $this->fontePadrao, 'size' => 8, 'style' => ''];
         $texto = "Qtde total de itens";
