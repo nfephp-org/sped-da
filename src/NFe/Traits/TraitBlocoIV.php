@@ -23,7 +23,7 @@ trait TraitBlocoIV
         $aFont = ['font' => $this->fontePadrao, 'size' => 8, 'style' => ''];
         $texto = "Qtde total de itens";
         $this->pdf->textBox(
-            $this->plansmargem,
+            $this->margem,
             $y,
             $this->wPrint / 2,
             3,
