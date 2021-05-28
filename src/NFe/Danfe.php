@@ -3209,7 +3209,7 @@ class Danfe extends DaCommon
         $veiculoTipo       = $veicProd->getElementsByTagName("tpVeic")->item(0)->nodeValue;
 
         $veiculoMotor       = $veicProd->getElementsByTagName("nMotor")->item(0)->nodeValue;
-        $veiculoRenavam     = $veicProd->getElementsByTagName("cMod")->item(0)->nodeValue;
+        $veiculoCodigoModelo     = $veicProd->getElementsByTagName("cMod")->item(0)->nodeValue;
         $veiculoHp          = $veicProd->getElementsByTagName("pot")->item(0)->nodeValue;
         $veiculoPlaca       = ''; //$veiculo->getElementsByTagName("CMT")->item(0)->nodeValue;
         $veiculoTipoPintura = $veicProd->getElementsByTagName("tpPint")->item(0)->nodeValue;
@@ -3243,7 +3243,7 @@ class Danfe extends DaCommon
         $texto = 'Nº Motor: .........: ' . $veiculoMotor;
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Renavam...........: ' . $veiculoRenavam;
+        $texto = 'Código Modelo ....: ' . $veiculoCodigoModelo;
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
         $texto = 'HP.....................: ' . $veiculoHp;
