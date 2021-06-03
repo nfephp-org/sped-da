@@ -2138,7 +2138,7 @@ class Dacte extends DaCommon
         }
         $qtdeNFe = 1;
         $qtdDocs = count($this->arrayNFe) + $totalNF;
-        if ($qtdDocs >= 7) {
+        if ($qtdDocs > 7) {
             $this->flagDetContContinuacao = 1;
         }
 
