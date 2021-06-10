@@ -22,14 +22,15 @@ trait TraitBlocoVII
         if (!empty($cnpj)) {
             $texto = "CONSUMIDOR - CNPJ "
                 . $this->formatField($cnpj, "##.###.###/####-##") . " - " . $nome;
-            $texto .= "\n {$rua}, {$numero} {$complemento} {$bairro} {$mun}-{$uf}";
         } elseif (!empty($cpf)) {
             $texto = "CONSUMIDOR - CPF "
                 . $this->formatField($cpf, "###.###.###-##") . " = " . $nome;
-            $texto .= "\n {$rua}, {$numero} {$complemento} {$bairro} {$mun}-{$uf}";
         } else {
             $texto = 'CONSUMIDOR NÃO IDENTIFICADO';
             $yPlus = 1;
+        }
+        if(!empty($rua)) {
+            $texto .= "\n {$rua}, {$numero} {$complemento} {$bairro} {$mun}-{$uf}";
         }
         if ($this->getTagValue($this->nfeProc, "xMsg")) {
             $texto .= "\n {$this->getTagValue($this->nfeProc, "xMsg")}";
