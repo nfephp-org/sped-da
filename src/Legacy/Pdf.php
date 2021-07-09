@@ -858,6 +858,8 @@ class Pdf extends Fpdf
      * se falso mantem o tamanho do fonte e usa quantas linhas forem necessárias
      * @param  number  $hmax
      * @param  number  $vOffSet incremento forçado na na posição Y
+     * @param  boolean $fill  Cria um quadrado e preenche o mesmo com a cor determinada no PDF.
+     * Se ativo junto com $border colore o quadrado criado pelo memso.
      * @return number $height Qual a altura necessária para desenhar esta textBox
      */
     public function textBox(
@@ -873,7 +875,8 @@ class Pdf extends Fpdf
         $link = '',
         $force = true,
         $hmax = 0,
-        $vOffSet = 0
+        $vOffSet = 0,
+        $fill = false
     ) {
         $oldY = $y;
         $temObs = false;
@@ -895,8 +898,12 @@ class Pdf extends Fpdf
             $text = (string) $text;
         }
         //desenhar a borda da caixa
-        if ($border) {
+        if ($border && $fill) {
+            $this->roundedRect($x, $y, $w, $h, 0.8, '1234', 'DF');
+        } elseif ($border) {
             $this->roundedRect($x, $y, $w, $h, 0.8, '1234', 'D');
+        } elseif ($fill) {
+            $this->rect($x, $y, $w, $h, 'F');
         }
         //estabelecer o fonte
         $this->setFont($aFont['font'], $aFont['style'], $aFont['size']);
