@@ -989,7 +989,7 @@ class Damdfe extends DaCommon
             for ($i = 0; $i < $this->condutor->length; $i++) {
                 $y += 4;
                 $texto = $this->condutor->item($i)->getElementsByTagName('CPF')->item(0)->nodeValue;
-                $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
                 $this->pdf->textBox($x1, $y, $x2 - 1, 10, $texto, $aFont, 'T', 'L', 0, '', false);
             }
             $y = $yold;
