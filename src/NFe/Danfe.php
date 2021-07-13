@@ -3083,7 +3083,7 @@ class Danfe extends DaCommon
                 // Tag somente é gerada para veiculo 0k, e só é permitido um veiculo por NF-e por conta do detran
                 // Verifica se a Tag existe
                 if (! empty($veicProd)) {
-                    $this->dadosItenVeiculoDANFE($oldX, $y, $nInicio, $h, $prod);
+                    $this->dadosItenVeiculoDANFE($oldX + 3, $y + 40, $nInicio, 3, $prod);
                 }
 
 
