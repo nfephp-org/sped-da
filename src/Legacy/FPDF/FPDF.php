@@ -8,7 +8,7 @@ class Fpdf
 {
     const FPDF_VERSION = '1.6';
     const FPDF_FONTPATH = '/font/';
-    
+
     public $page;               //current page number
     public $n;                  //current object number
     public $offsets;            //array of object offsets
@@ -67,7 +67,7 @@ class Fpdf
     public $creator;            //creator
     public $aliasNbPages;       //alias for total number of pages
     public $pdfVersion;         //PDF version number
-    
+
     public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4')
     {
         //Some checks
@@ -170,7 +170,7 @@ class Fpdf
         //Set default PDF version number
         $this->pdfVersion='1.3';
     }
-    
+
     public function setMargins($left, $top, $right = null)
     {
         //Set left, top and right margins
@@ -181,7 +181,7 @@ class Fpdf
         }
         $this->rMargin=$right;
     }
-    
+
     public function setLeftMargin($margin)
     {
         //Set left margin
@@ -190,19 +190,19 @@ class Fpdf
             $this->x = $margin;
         }
     }
-    
+
     public function setTopMargin($margin)
     {
         //Set top margin
         $this->tMargin = $margin;
     }
-    
+
     public function setRightMargin($margin)
     {
         //Set right margin
         $this->rMargin = $margin;
     }
-    
+
     public function setAutoPageBreak($auto, $margin = 0)
     {
         //Set auto page break mode and triggering margin
@@ -210,7 +210,7 @@ class Fpdf
         $this->bMargin = $margin;
         $this->pageBreakTrigger = $this->h-$margin;
     }
-    
+
     public function setDisplayMode($zoom, $layout = 'continuous')
     {
         //Set display mode in viewer
@@ -225,7 +225,7 @@ class Fpdf
             $this->error('Incorrect layout display mode: '.$layout);
         }
     }
-    
+
     public function setCompression($compress)
     {
         //Set page compression
@@ -235,7 +235,7 @@ class Fpdf
             $this->compress = false;
         }
     }
-    
+
     public function setTitle($title, $isUTF8 = false)
     {
         //Title of document
@@ -244,7 +244,7 @@ class Fpdf
         }
         $this->title = $title;
     }
-    
+
     public function setSubject($subject, $isUTF8 = false)
     {
         //Subject of document
@@ -253,7 +253,7 @@ class Fpdf
         }
         $this->subject = $subject;
     }
-    
+
     public function setAuthor($author, $isUTF8 = false)
     {
         //Author of document
@@ -262,7 +262,7 @@ class Fpdf
         }
         $this->author=$author;
     }
-    
+
     public function setKeywords($keywords, $isUTF8 = false)
     {
         //Keywords of document
@@ -271,7 +271,7 @@ class Fpdf
         }
         $this->keywords = $keywords;
     }
-    
+
     public function setCreator($creator, $isUTF8 = false)
     {
         //Creator of document
@@ -280,23 +280,23 @@ class Fpdf
         }
         $this->creator = $creator;
     }
-    
+
     public function aliasNbPages($alias = '{nb}')
     {
         //Define an alias for total number of pages
         $this->aliasNbPages=$alias;
     }
-    
+
     public function error($msg)
     {
         throw new Exception($msg);
     }
-    
+
     public function open()
     {
         $this->state = 1;
     }
-    
+
     public function close()
     {
         //Terminate document
@@ -315,7 +315,7 @@ class Fpdf
         //Close document
         $this->endDoc();
     }
-    
+
     public function addPage($orientation = '', $format = '')
     {
         //Start a new page
@@ -385,23 +385,23 @@ class Fpdf
         $this->textColor = $tc;
         $this->colorFlag = $cf;
     }
-    
+
     public function header()
     {
         //To be implemented in your own inherited class
     }
-    
+
     public function footer()
     {
         //To be implemented in your own inherited class
     }
-    
+
     public function pageNo()
     {
         //Get current page number
         return $this->page;
     }
-    
+
     public function setDrawColor($r, $g = null, $b = null)
     {
         //Set color for all stroking operations
@@ -414,7 +414,7 @@ class Fpdf
             $this->out($this->drawColor);
         }
     }
-    
+
     public function setFillColor($r, $g = null, $b = null)
     {
         //Set color for all filling operations
@@ -428,7 +428,7 @@ class Fpdf
             $this->out($this->fillColor);
         }
     }
-    
+
     public function settextColor($r, $g = null, $b = null)
     {
         //Set color for text
@@ -439,7 +439,7 @@ class Fpdf
         }
         $this->colorFlag = ($this->fillColor != $this->textColor);
     }
-    
+
     public function getStringWidth($s)
     {
         //Get width of a string in the current font
@@ -452,7 +452,7 @@ class Fpdf
         }
         return $w*$this->fontSize/1000;
     }
-    
+
     public function setLineWidth($width)
     {
         //Set line width
@@ -461,7 +461,7 @@ class Fpdf
             $this->out(sprintf('%.2F w', $width*$this->k));
         }
     }
-    
+
     public function line($x1, $y1, $x2, $y2)
     {
         //Draw a line
@@ -475,7 +475,7 @@ class Fpdf
             )
         );
     }
-    
+
     public function rect($x, $y, $w, $h, $style = '')
     {
         //Draw a rectangle
@@ -497,7 +497,7 @@ class Fpdf
             )
         );
     }
-    
+
     public function addFont($family, $style = '', $file = '')
     {
         //Add a TrueType or Type1 font
@@ -556,7 +556,7 @@ class Fpdf
             }
         }
     }
-    
+
     public function setFont($family, $style = '', $size = 0)
     {
         //Select a font; size given in points
@@ -621,7 +621,7 @@ class Fpdf
             $this->out(sprintf('BT /F%d %.2F Tf ET', $this->currentFont['i'], $this->fontSizePt));
         }
     }
-    
+
     public function setFontSize($size)
     {
         //Set font size in points
@@ -634,7 +634,7 @@ class Fpdf
             $this->out(sprintf('BT /F%d %.2F Tf ET', $this->currentFont['i'], $this->fontSizePt));
         }
     }
-    
+
     public function addlink()
     {
         //Create a new internal link
@@ -642,7 +642,7 @@ class Fpdf
         $this->links[$n] = [0, 0];
         return $n;
     }
-    
+
     public function setlink($link, $y = 0, $page = -1)
     {
         //Set destination of internal link
@@ -654,7 +654,7 @@ class Fpdf
         }
         $this->links[$link] = [$page, $y];
     }
-    
+
     public function link($x, $y, $w, $h, $link)
     {
         //Put a link on the page
@@ -666,7 +666,7 @@ class Fpdf
             $link
         ];
     }
-    
+
     public function text($x, $y, $txt)
     {
         //Output a string
@@ -679,13 +679,13 @@ class Fpdf
         }
         $this->out($s);
     }
-    
+
     public function acceptPageBreak()
     {
         //Accept automatic page break or not
         return $this->autoPageBreak;
     }
-    
+
     public function cell($w, $h = 0, $txt = '', $border = 0, $ln = 0, $align = '', $fill = false, $link = '')
     {
         //Output a cell
@@ -797,7 +797,7 @@ class Fpdf
             $this->x += $w;
         }
     }
-    
+
     public function multicell($w, $h, $txt, $border = 0, $align = 'J', $fill = false)
     {
         //Output text with automatic or explicit line breaks
@@ -903,8 +903,8 @@ class Fpdf
         $this->cell($w, $h, substr($s, $j, $i-$j), $b, 2, $align, $fill);
         $this->x = $this->lMargin;
     }
-    
-    
+
+
     public function write($h, $txt, $link = '')
     {
         //Output text in flowing mode
@@ -979,7 +979,7 @@ class Fpdf
             $this->cell($l/1000*$this->fontSize, $h, substr($s, $j), 0, 0, '', 0, $link);
         }
     }
-    
+
     public function ln($h = null)
     {
         //Line feed; default value is last cell height
@@ -990,7 +990,7 @@ class Fpdf
             $this->y += $h;
         }
     }
-    
+
     public function image($file, $x = null, $y = null, $w = 0, $h = 0, $type = '', $link = '')
     {
         //Put an image on the page
@@ -1059,15 +1059,15 @@ class Fpdf
             $this->link($x, $y, $w, $h, $link);
         }
     }
-    
-    
+
+
     public function getX()
     {
         //Get x position
         return $this->x;
     }
-    
-    
+
+
     public function setX($x)
     {
         //Set x position
@@ -1077,15 +1077,15 @@ class Fpdf
             $this->x = $this->w+$x;
         }
     }
-    
-    
+
+
     public function getY()
     {
         //Get y position
         return $this->y;
     }
-    
-    
+
+
     public function setY($y)
     {
         //Set y position and reset x
@@ -1096,15 +1096,15 @@ class Fpdf
             $this->y = $this->h+$y;
         }
     }
-    
-    
+
+
     public function setXY($x, $y)
     {
         //Set x and y positions
         $this->setY($y);
         $this->setX($x);
     }
-    
+
     public function getPdf()
     {
         if ($this->state < 3) {
@@ -1112,7 +1112,7 @@ class Fpdf
         }
         return $this->buffer;
     }
-    
+
     public function output($name = '', $dest = '')
     {
         //Output PDF to some destination
@@ -1181,8 +1181,8 @@ class Fpdf
         }
         return '';
     }
-    
-    
+
+
     protected function dochecks()
     {
         //Check availability of %F
@@ -1194,8 +1194,8 @@ class Fpdf
             $this->error('mbstring overloading must be disabled');
         }
     }
-    
-    
+
+
     protected function getpageformat($format)
     {
         $format=strtolower($format);
@@ -1205,14 +1205,14 @@ class Fpdf
         $a=$this->pageFormats[$format];
         return [$a[0]/$this->k, $a[1]/$this->k];
     }
-    
-    
+
+
     protected function getFontPath()
     {
         return __DIR__ . self::FPDF_FONTPATH;
     }
-    
-    
+
+
     protected function beginPage($orientation, $format)
     {
         $this->page++;
@@ -1259,14 +1259,14 @@ class Fpdf
             $this->PageSizes[$this->page] = [$this->wPt, $this->hPt];
         }
     }
-    
-    
+
+
     protected function endPage()
     {
         $this->state = 1;
     }
-    
-    
+
+
     protected function escape($s)
     {
         //Escape special characters in strings
@@ -1276,15 +1276,15 @@ class Fpdf
         $s = str_replace("\r", '\\r', $s);
         return $s;
     }
-    
-    
+
+
     protected function textString($s)
     {
         //Format a text string
         return '('.$this->escape($s).')';
     }
-    
-    
+
+
     protected function utf8Toutf16($s)
     {
         //Convert UTF-8 to UTF-16BE with BOM
@@ -1311,8 +1311,8 @@ class Fpdf
         }
         return $res;
     }
-    
-    
+
+
     protected function doUnderLine($x, $y, $txt)
     {
         //Underline text
@@ -1327,8 +1327,8 @@ class Fpdf
             -$ut/1000*$this->fontSizePt
         );
     }
-    
-    
+
+
     protected function parseJPG($file)
     {
         //Extract info from a JPEG file
@@ -1356,8 +1356,8 @@ class Fpdf
         fclose($f);
         return ['w'=>$a[0], 'h'=>$a[1], 'cs'=>$colspace, 'bpc'=>$bpc, 'f'=>'DCTDecode', 'data'=>$data];
     }
-    
-    
+
+
     protected function parsePNG($file)
     {
         //Extract info from a PNG file
@@ -1458,8 +1458,8 @@ class Fpdf
             'data'=>$data
         ];
     }
-    
-    
+
+
     protected function readstream($f, $n)
     {
         //Read n bytes from stream
@@ -1477,16 +1477,16 @@ class Fpdf
         }
         return $res;
     }
-    
-    
+
+
     protected function readint($f)
     {
         //Read a 4-byte integer from stream
         $a = unpack('Ni', $this->readstream($f, 4));
         return $a['i'];
     }
-    
-    
+
+
     protected function parseGIF($file)
     {
         //Extract info from a GIF file (via PNG conversion)
@@ -1513,8 +1513,8 @@ class Fpdf
         unlink($tmp);
         return $info;
     }
-    
-    
+
+
     protected function newObj()
     {
         //Begin a new object
@@ -1522,16 +1522,16 @@ class Fpdf
         $this->offsets[$this->n] = strlen($this->buffer);
         $this->out($this->n.' 0 obj');
     }
-    
-    
+
+
     protected function putStream($s)
     {
         $this->out('stream');
         $this->out($s);
         $this->out('endstream');
     }
-    
-    
+
+
     protected function out($s)
     {
         //Add a line to the document
@@ -1541,8 +1541,8 @@ class Fpdf
             $this->buffer .= $s."\n";
         }
     }
-    
-    
+
+
     protected function putPages()
     {
         $nb = $this->page;
@@ -1608,8 +1608,8 @@ class Fpdf
         $this->out('>>');
         $this->out('endobj');
     }
-    
-    
+
+
     protected function putFonts()
     {
         $nf = $this->n;
@@ -1721,13 +1721,13 @@ class Fpdf
             }
         }
     }
-    
-    
+
+
     protected function putImages()
     {
         $filter = ($this->compress) ? '/Filter /FlateDecode ' : '';
         reset($this->images);
-       
+
         foreach ($this->images as $file => $info) {
             $this->newObj();
             $this->images[$file]['n'] = $this->n;
@@ -1771,14 +1771,14 @@ class Fpdf
             }
         }
     }
-    
+
     protected function putXobjectDict()
     {
         foreach ($this->images as $image) {
             $this->out('/I'.$image['i'].' '.$image['n'].' 0 R');
         }
     }
-    
+
     protected function putResourceDict()
     {
         $this->out('/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]');
@@ -1791,7 +1791,7 @@ class Fpdf
         $this->putXobjectDict();
         $this->out('>>');
     }
-    
+
     protected function putResources()
     {
         $this->putFonts();
@@ -1804,7 +1804,7 @@ class Fpdf
         $this->out('>>');
         $this->out('endobj');
     }
-    
+
     protected function putInfo()
     {
         $this->out('/Producer '.$this->textString('FPDF '. self::FPDF_VERSION));
@@ -1825,7 +1825,7 @@ class Fpdf
         }
         $this->out('/CreationDate '.$this->textString('D:'.@date('YmdHis')));
     }
-    
+
     protected function putCatalog()
     {
         $this->out('/Type /Catalog');
@@ -1847,19 +1847,19 @@ class Fpdf
             $this->out('/PageLayout /TwoColumnLeft');
         }
     }
-    
+
     protected function putHeader()
     {
         $this->out('%PDF-'.$this->pdfVersion);
     }
-    
+
     protected function putTrailer()
     {
         $this->out('/Size '.($this->n+1));
         $this->out('/Root '.$this->n.' 0 R');
         $this->out('/Info '.($this->n-1).' 0 R');
     }
-    
+
     protected function endDoc()
     {
         $this->putHeader();
