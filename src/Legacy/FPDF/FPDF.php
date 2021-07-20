@@ -9,7 +9,7 @@ class Fpdf
     const FPDF_VERSION = '1.6';
     const FPDF_FONTPATH = '/font/';
 
-    public $page;               //current page number
+    public $page;               //current page numbers
     public $n;                  //current object number
     public $offsets;            //array of object offsets
     public $buffer;             //buffer holding in-memory PDF
