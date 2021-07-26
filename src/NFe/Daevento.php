@@ -127,6 +127,7 @@ class Daevento extends DaCommon
         $this->cOrgao = $this->infEvento->getElementsByTagName("cOrgao")->item(0)->nodeValue;
         $this->xCorrecao = $this->infEvento->getElementsByTagName("xCorrecao")->item(0);
         $this->xCorrecao = (empty($this->xCorrecao) ? '' : $this->xCorrecao->nodeValue);
+        $this->xCorrecao = str_replace(';', ";\n", $this->xCorrecao);
         $this->xCondUso = $this->infEvento->getElementsByTagName("xCondUso")->item(0);
         $this->xCondUso = (empty($this->xCondUso) ? '' : $this->xCondUso->nodeValue);
         $this->xJust = $this->infEvento->getElementsByTagName("xJust")->item(0);
