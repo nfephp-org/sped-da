@@ -128,7 +128,7 @@ class Damdfe extends DaCommon
             $this->ferrov = $this->dom->getElementsByTagName("ferrov")->item(0);
             if (!empty($this->rodo)) {
                 $infANTT = $this->rodo->getElementsByTagName("infANTT")->item(0);
-                $this->RNTRC = $infANTT->getElementsByTagName("RNTRC") ? null : $infANTT->getElementsByTagName("RNTRC")->item(0)->nodeValue;
+                $this->RNTRC = $infANTT->getElementsByTagName("RNTRC") ? $infANTT->getElementsByTagName("RNTRC")->item(0)->nodeValue : null;
             }
             $this->ciot = "";
             if ($this->dom->getElementsByTagName('CIOT')->item(0) != "") {
@@ -872,10 +872,12 @@ class Damdfe extends DaCommon
             $prop = $this->veicTracao->getElementsByTagName("prop")->item(0);
             if (!empty($prop)) {
                 $texto = $prop->getElementsByTagName("RNTRC")->item(0)->nodeValue ?? '';
-                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
-                $this->pdf->textBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'C', 0, '', false);
-                $altura = $y + 4;
+            } else {
+                $texto = $this->RNTRC ?? '';
             }
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
+            $this->pdf->textBox($x1, $y + 4, $x2, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+            $altura = $y + 4;
             /*
             // RNTRC Não informado
             if ($this->rodo->getElementsByTagName("RNTRC")->length > 0) {
