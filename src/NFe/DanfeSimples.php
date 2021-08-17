@@ -267,14 +267,14 @@ class DanfeSimples extends DaCommon
         $pesoL = 0.000;
         $pesoB = 0.000;
         $totalVolumes = 0;
-        
+
         // Normalizar o array de volumes quando tem apenas 1 volumes
         if (!isset($this->nfeArray['NFe']['infNFe']['transp']['vol'][0])) {
             $this->nfeArray['NFe']['infNFe']['transp']['vol'] = [
                 $this->nfeArray['NFe']['infNFe']['transp']['vol']
             ];
         }
-        
+
         foreach ($this->nfeArray['NFe']['infNFe']['transp']['vol'] as $vol) {
             if (!isset($volumes[$vol['esp']])) {
                 $volumes[$vol['esp']] = 0;
@@ -284,7 +284,7 @@ class DanfeSimples extends DaCommon
             $pesoB += $vol['pesoB'];
             $pesoL += $vol['pesoL'];
         }
-        
+
         // LINHA 1
         $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
         $this->pdf->cell(
@@ -467,19 +467,21 @@ class DanfeSimples extends DaCommon
         $this->pdf->setFont('Arial', '', $pequeno ? 9 : 10);
         $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$enderecoLinha2}", 1, 1, 'C', 1);
 
-        $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
-        $this->pdf->cell(($c1 * 4), $pequeno ? 5 : 6, "TRANSPORTADORA", 1, 1, 'C', 1);
-        $this->pdf->setFont('Arial', '', $pequeno ? 9 : 10);
-        $this->pdf->cell(
-            ($c1 * 4),
-            $pequeno ? 5 : 6,
-            "{$this->nfeArray['NFe']['infNFe']['transp']['transporta']['xNome']}",
-            1,
-            1,
-            'C',
-            1
-        );
-        
+        if($this->nfeArray['NFe']['infNFe']['transp']['modFrete'] != 9){
+            $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
+            $this->pdf->cell(($c1 * 4), $pequeno ? 5 : 6, "TRANSPORTADORA", 1, 1, 'C', 1);
+            $this->pdf->setFont('Arial', '', $pequeno ? 9 : 10);
+            $this->pdf->cell(
+                ($c1 * 4),
+                $pequeno ? 5 : 6,
+                "{$this->nfeArray['NFe']['infNFe']['transp']['transporta']['xNome']}",
+                1,
+                1,
+                'C',
+                1
+            );
+        }
+
         if ($totalVolumes > 0) {
             foreach ($volumes as $esp => $qVol) {
                 $this->pdf->cell(
@@ -493,10 +495,10 @@ class DanfeSimples extends DaCommon
                 );
             }
         }
-        
+
         $pesoL = number_format($pesoL, 3, ',', '.');
         $pesoB = number_format($pesoB, 3, ',', '.');
-        
+
         $this->pdf->cell(
             ($c1 * 4),
             $pequeno ? 5 : 6,
