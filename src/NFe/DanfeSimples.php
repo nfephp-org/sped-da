@@ -276,6 +276,9 @@ class DanfeSimples extends DaCommon
         }
 
         foreach ($this->nfeArray['NFe']['infNFe']['transp']['vol'] as $vol) {
+            if(!isset($vol['esp'])){ // Espécie não especificada na transportadora (por erro de preenchimento do XML)
+                continue;
+            }
             if (!isset($volumes[$vol['esp']])) {
                 $volumes[$vol['esp']] = 0;
             }
