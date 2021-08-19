@@ -282,10 +282,10 @@ class DanfeSimples extends DaCommon
             if (!isset($volumes[$vol['esp']])) {
                 $volumes[$vol['esp']] = 0;
             }
-            $volumes[$vol['esp']] += $vol['qVol'];
-            $totalVolumes += $vol['qVol'];
-            $pesoB += $vol['pesoB'];
-            $pesoL += $vol['pesoL'];
+            $volumes[$vol['esp']] += @$vol['qVol']; // Caso a quantidade de volumes não esteja presente no XML, soma-se zero
+            $totalVolumes += @$vol['qVol'] ?: 0; // Caso a quantidade de volumes não esteja presente no XML, soma-se zero
+            $pesoB += @$vol['pesoB'] ?: 0; // Caso o peso bruto não esteja presente no XML, soma-se zero
+            $pesoL += @$vol['pesoL'] ?: 0; // Caso o peso liquido não esteja presente no XML, soma-se zero
         }
 
         // LINHA 1
@@ -520,7 +520,6 @@ class DanfeSimples extends DaCommon
 
         $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
         $this->pdf->cell(($c1 * 4), $pequeno ? 5 : 6, "DADOS ADICIONAIS", 1, 1, 'C', 1);
-
         $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
         $this->pdf->multiCell(
             ($c1 * 4),
