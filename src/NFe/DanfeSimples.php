@@ -518,17 +518,19 @@ class DanfeSimples extends DaCommon
         $vNF = number_format($this->nfeArray['NFe']['infNFe']['total']['ICMSTot']['vNF'], 2, ',', '.');
         $this->pdf->cell(($c1 * 2), $pequeno ? 5 : 6, "R$ {$vNF}", 1, 1, 'C', 1);
 
-        $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
-        $this->pdf->cell(($c1 * 4), $pequeno ? 5 : 6, "DADOS ADICIONAIS", 1, 1, 'C', 1);
-        $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
-        $this->pdf->multiCell(
-            ($c1 * 4),
-            $pequeno ? 3 : 5,
-            "{$this->nfeArray['NFe']['infNFe']['infAdic']['infCpl']}",
-            1,
-            1,
-            'J',
-            1
-        );
+        if(isset($this->nfeArray['NFe']['infNFe']['infAdic'])){
+            $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
+            $this->pdf->cell(($c1 * 4), $pequeno ? 5 : 6, "DADOS ADICIONAIS", 1, 1, 'C', 1);
+            $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);
+            $this->pdf->multiCell(
+                ($c1 * 4),
+                $pequeno ? 3 : 5,
+                "{$this->nfeArray['NFe']['infNFe']['infAdic']['infCpl']}",
+                1,
+                1,
+                'J',
+                1
+            );
+        }
     }
 }
