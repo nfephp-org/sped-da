@@ -29,7 +29,7 @@ trait TraitBlocoVII
             $texto = 'CONSUMIDOR NÃO IDENTIFICADO';
             $yPlus = 1;
         }
-        if(!empty($rua)) {
+        if (!empty($rua)) {
             $texto .= "\n {$rua}, {$numero} {$complemento} {$bairro} {$mun}-{$uf}";
         }
         if ($this->getTagValue($this->nfeProc, "xMsg")) {

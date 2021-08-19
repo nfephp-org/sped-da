@@ -348,9 +348,9 @@ class Danfe extends DaCommon
             'size'  => 8,
             'style' => ''
         ];
-        $k                      = $this->pdf->k;
+        $k = $this->pdf->k;
         $this->textadicfontsize = $fontProduto['size'] / $k;
-        $this->textoAdic        .= $this->geraInformacoesDasNotasReferenciadas();
+        $this->textoAdic .= $this->geraInformacoesDasNotasReferenciadas();
         if (isset($this->infAdic)) {
             $i = 0;
             if ($this->textoAdic != '') {
@@ -385,10 +385,10 @@ class Danfe extends DaCommon
         //verificar se a informação sobre o valor aproximado dos tributos
         //já se encontra no campo de informações adicionais
         if ($this->exibirValorTributos) {
-            $flagVTT  = strpos(strtolower(trim($this->textoAdic)), 'valor');
-            $flagVTT  = $flagVTT || strpos(strtolower(trim($this->textoAdic)), 'vl');
-            $flagVTT  = $flagVTT && strpos(strtolower(trim($this->textoAdic)), 'aprox');
-            $flagVTT  = $flagVTT && (strpos(strtolower(trim($this->textoAdic)), 'trib') ||
+            $flagVTT = strpos(strtolower(trim($this->textoAdic)), 'valor');
+            $flagVTT = $flagVTT || strpos(strtolower(trim($this->textoAdic)), 'vl');
+            $flagVTT = $flagVTT && strpos(strtolower(trim($this->textoAdic)), 'aprox');
+            $flagVTT = $flagVTT && (strpos(strtolower(trim($this->textoAdic)), 'trib') ||
                     strpos(strtolower(trim($this->textoAdic)), 'imp'));
             $vTotTrib = $this->getTagValue($this->ICMSTot, 'vTotTrib');
             if ($vTotTrib != '' && ! $flagVTT) {
@@ -397,10 +397,10 @@ class Danfe extends DaCommon
             }
         }
         //fim da alteração NT 2013.003 Lei da Transparência
-        $this->textoAdic        = str_replace(";", "\n", $this->textoAdic);
-        $numlinhasdados         = $this->pdf->getNumLines($this->textoAdic, $this->wAdic, $fontProduto) + 1.5;
+        $this->textoAdic = str_replace(";", "\n", $this->textoAdic);
+        $numlinhasdados = $this->pdf->getNumLines($this->textoAdic, $this->wAdic, $fontProduto) + 1.5;
         $this->textadicfontsize = $this->pdf->fontSize;
-        $hdadosadic             = ceil($numlinhasdados * ($this->textadicfontsize));
+        $hdadosadic = ceil($numlinhasdados * ($this->textadicfontsize));
         if ($hdadosadic > 70) {
             for ($f = 8; $f > 3; $f --) {
                 $this->pdf->setFont($this->fontePadrao, '', $f);
@@ -1284,7 +1284,7 @@ class Danfe extends DaCommon
             $y = $this->hPrint/2 - $alttot/2;
             $h = 15;
             $w = $maxW - (2 * $x);
-            $this->pdf->settextcolor(90, 90, 90);
+            $this->pdf->settextcolor(170, 170, 170);
 
             foreach ($resp['message'] as $msg) {
                 $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
