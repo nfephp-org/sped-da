@@ -22,6 +22,16 @@ trait TraitBlocoI
         $emitBairro = $this->getTagValue($this->enderEmit, "xBairro");
         $emitMun = $this->getTagValue($this->enderEmit, "xMun");
         $emitUF = $this->getTagValue($this->enderEmit, "UF");
+        
+        $emitFone = $this->getTagValue($this->enderEmit, "fone");
+        if (strlen($emitFone)>0) {
+            if (strlen($emitFone) == 11) {
+                $emitFone = $this->formatField($emitFone, "(##)#####-####");
+            } else {
+                $emitFone = $this->formatField($emitFone, "(##) ####-####");
+            }
+        }
+        
         $h = 0;
         $maxHimg = $this->bloco1H - 4;
         if (!empty($this->logomarca)) {
@@ -70,7 +80,7 @@ trait TraitBlocoI
         $y += $this->pdf->textBox($xRs+2, $y, $wRs-2, 3, $texto, $aFont, 'T', $alignH, false, '', true);
         $texto = $emitBairro;
         $y += $this->pdf->textBox($xRs+2, $y, $wRs-2, 3, $texto, $aFont, 'T', $alignH, false, '', true);
-        $texto = $emitMun . "-" . $emitUF;
+        $texto = $emitMun . "-" . $emitUF . ($emitFone ? "  Fone: ".$emitFone : ""); 
         $y += $this->pdf->textBox($xRs+2, $y, $wRs-2, 3, $texto, $aFont, 'T', $alignH, false, '', true);
         $this->pdf->dashedHLine($this->margem, $this->bloco1H, $this->wPrint, 0.1, 30);
         return $this->bloco1H;
