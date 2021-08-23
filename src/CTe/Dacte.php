@@ -1566,8 +1566,8 @@ class Dacte extends DaCommon
         $texto = 'VALOR TOTAL DA CARGA';
         $this->pdf->textBox($x + 1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $texto = $this->getTagValue($this->infCarga, "vCarga") == "" ?
-            $this->getTagValue($this->infCarga, "vMerc") : $this->getTagValue($this->infCarga, "vCarga");
-        $texto = number_format($texto, 2, ",", ".");
+        $this->getTagValue($this->infCarga, "vMerc") : $this->getTagValue($this->infCarga, "vCarga");
+        $texto = !empty($texto) ? number_format($texto, 2, ",", ".") : '';
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x + 1, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $y += 8;
