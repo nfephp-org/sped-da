@@ -2062,12 +2062,12 @@ class Danfe extends DaCommon
             $dups    = "";
             $dupcont = 0;
             if ($this->orientacao == 'P') {
-                $w = round($this->wPrint / 7.018, 0) - 1;
+                $w = round($this->wPrint / 3.968, 0) - 1;
             } else {
                 $w = 28;
             }
             if ($this->orientacao == 'P') {
-                $maxDupCont = 6;
+                $maxDupCont = 3;
             } else {
                 $maxDupCont = 8;
             }
@@ -2086,8 +2086,8 @@ class Danfe extends DaCommon
                 '15' => 'Boleto',
                 '16' => 'Depósito Bancário',
                 '17' => 'Pagamento Instantâneo (PIX)',
-                '18' => 'Transferência bancária, Carteira Digital',
-                '19' => 'Programa de fidelidade, Cashback, Crédito Virtual',
+                '18' => 'Transferência Bancária, Carteira Digit.',
+                '19' => 'Fidelidade, Cashback, Crédito Virtual',
                 '90' => 'Sem pagamento',
                 '99' => 'Outros'
             ];
