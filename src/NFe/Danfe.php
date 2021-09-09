@@ -2945,7 +2945,7 @@ class Danfe extends DaCommon
                     $origem = $this->getTagValue($ICMS, "orig");
                     $cst    = $this->getTagValue($ICMS, "CST");
                     $csosn  = $this->getTagValue($ICMS, "CSOSN");
-                    $texto  = $origem . $cst . $csosn;
+                    $texto  = $origem . "/" . $cst . $csosn;
                     $this->pdf->textBox($x, $y, $w4, $h, $texto, $aFont, 'T', 'C', 0, '');
                 }
                 //CFOP
