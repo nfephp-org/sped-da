@@ -934,6 +934,10 @@ class Damdfe extends DaCommon
             for ($i = 0; $i < $valesPedagios; $i++) {
                 $altura += 4;
                 $pgNode = $this->valePed->item($i)->getElementsByTagName('CNPJPg');
+                if (!$pgNode->length) {
+                    $pgNode = $this->valePed->item($i)->getElementsByTagName('CPFPg');
+                }
+
                 $texto = $pgNode->length == 0 ? '' : $pgNode->item(0)->nodeValue;
                 $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
                 $this->pdf->textBox($x1 + 1, $altura, $x2 - 5, 10, $texto, $aFont, 'T', 'L', 0, '', false);
