@@ -414,7 +414,7 @@ class Danfce extends DaCommon
             ? $this->dom->getElementsByTagName('urlChave')->item(0)->nodeValue : null;
         if (!empty($this->infProt)) {
             $cStat = $this->getTagValue($this->infProt, 'cStat');
-            if ($cStat != 100) {
+            if ($this->isCanceledByProt()) {
                 $this->canceled = true;
             } elseif (!empty($retEvento = $this->nfeProc->getElementsByTagName('retEvento')->item(0))) {
                 $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
@@ -440,4 +440,18 @@ class Danfce extends DaCommon
             }
         }
     }
+
+    /**
+     * Retorna se está cancelada baseado no protocolo (infProt)
+     * 
+     * @return bool
+     */
+    protected function isCanceledByProt() {
+        $cStat = $this->getTagValue($this->infProt, 'cStat');
+        return !in_array($cStat, [
+            100, // cStat = 100 - uso autorizado
+            150  // cStat = 150 - uso autorizado fora de prazo
+        ]);
+    }
+
 }
