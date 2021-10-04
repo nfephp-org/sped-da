@@ -895,16 +895,10 @@ class Danfe extends DaCommon
             }
             $retEvento = $this->nfeProc->getElementsByTagName('retEvento')->item(0);
             $cStat = $this->getTagValue($this->nfeProc, "cStat");
-            if ($cStat == '110' ||
-                $cStat == '301' ||
-                $cStat == '302'
-            ) {
+            if (in_array($cStat, ['110','205','301','302','303'])) {
                 $resp['status'] = false;
                 $resp['message'][] = "NFe DENEGADA";
-            } elseif ($cStat == '101'
-                || $cStat == '151'
-                || $cStat == '135'
-                || $cStat == '155'
+            } elseif (in_array($cStat, ['101','151','135','155'])
                 || $this->cancelFlag === true
             ) {
                 $resp['status'] = false;
