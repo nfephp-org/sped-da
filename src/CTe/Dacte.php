@@ -795,8 +795,8 @@ class Dacte extends DaCommon
             'size' => 8,
             'style' => '');
         $this->pdf->textBox($xa, $y + 1, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
-        $texto = !empty($this->ide->getElementsByTagName("dhEmi")->item(0)->nodeValue) ?
-            date('d/m/Y H:i:s', strtotime($this->getTagValue($this->ide, "dhEmi"))) : '';
+        $dhEmi = $this->toDateTime($this->getTagValue($this->ide, "dhEmi"));
+        $texto = $dhEmi ? $dhEmi->format('d/m/Y H:i:s') : '';
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($xa, $y + 5, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
         $this->pdf->line($xa + $wa, $y, $xa + $wa, $y + $h + 1);
@@ -879,10 +879,8 @@ class Dacte extends DaCommon
             if (!empty($this->protCTe)
                 && !empty($this->protCTe->getElementsByTagName("dhRecbto")->item(0)->nodeValue)
             ) {
-                $texto .= date(
-                    'd/m/Y   H:i:s',
-                    strtotime($this->getTagValue($this->protCTe, "dhRecbto"))
-                );
+                $dhRecbto = $this->toDateTime($this->getTagValue($this->protCTe, "dhRecbto"));
+                $texto .= $dhRecbto ? $dhRecbto->format('d/m/Y H:i:s') : '';
             }
             $texto = $this->getTagValue($this->protCTe, "nProt") == '' ? '' : $texto;
         }
@@ -1015,14 +1013,15 @@ class Dacte extends DaCommon
                 $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
                 $cStat = $this->getTagValue($infEvento, "cStat");
                 $tpEvento = $this->getTagValue($infEvento, "tpEvento");
-                $dhEvento = date("d/m/Y H:i:s", $this->toTimestamp($this->getTagValue($infEvento, "dhRegEvento")));
+                $dhEvento = $this->toDateTime($this->getTagValue($infEvento, "dhRegEvento"));
+                $dhEvento = $dhEvento ? $dhEvento->format('d/m/Y H:i:s') : '';
                 $nProt = $this->getTagValue($infEvento, "nProt");
                 if ($tpEvento == '110111'
                     && ($cStat == '101'
-                    || $cStat == '151'
-                    || $cStat == '135'
-                    || $cStat == '155'
-                )) {
+                        || $cStat == '151'
+                        || $cStat == '135'
+                        || $cStat == '155'
+                    )) {
                     $resp['status'] = false;
                     $resp['message'][] = "CTe CANCELADO";
                     $resp['submessage'] = "{$dhEvento} - {$nProt}";
@@ -2558,11 +2557,15 @@ class Dacte extends DaCommon
             $nDoc = $this->getTagValue($temp, "nDoc");
             $dEmi = $this->getTagValue($temp, "dEmi");
             if (!empty($dEmi)) {
-                $dEmi = "Emissão: " . date('d/m/Y', strtotime($this->getTagValue($temp, "dEmi")));
+                $tempEmi = $this->toDateTime($this->getTagValue($temp, "dEmi"));
+                $tempEmi = $tempEmi ? $tempEmi->format('d/m/Y') : '';
+                $dEmi = "Emissão: " . $tempEmi;
             }
             $vDocFisc = $this->getTagValue($temp, "vDocFisc", "Valor: ");
             $dPrev = $this->getTagValue($temp, "dPrev");
-            $dPrev = !empty($dPrev) ? ("Entrega: " . date('d/m/Y', strtotime($this->getTagValue($temp, "dPrev")))) : '';
+            $datePrev = $this->toDateTime($dPrev);
+            $datePrev = $datePrev ? $datePrev->format('d/m/Y') : '';
+            $dPrev = !empty($dPrev) ? ("Entrega: " . $datePrev) : '';
             switch ($tpDoc) {
                 case "00":
                     $tpDoc = "00 - Declaração";
@@ -3836,3 +3839,4 @@ class Dacte extends DaCommon
         $this->pdf->image($pic, $xQr - 3, $yQr, $wQr, $hQr, 'PNG');
     }
 }
+

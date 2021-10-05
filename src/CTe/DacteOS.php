@@ -624,8 +624,8 @@ class DacteOS extends DaCommon
             'style' => '');
         $this->pdf->textBox($xa, $y + 1, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
         $this->pdf->line($xa + $wa, $y, $xa + $wa, $y + $h + 1);
-        $texto = !empty($this->ide->getElementsByTagName("dhEmi")->item(0)->nodeValue) ?
-            date('d/m/Y H:i:s', $this->toTimestamp($this->getTagValue($this->ide, "dhEmi"))) : '';
+        $dhEmi = $this->toDateTime($this->getTagValue($this->ide, "dhEmi"));
+        $texto = $dhEmi ? $dhEmi->format('d/m/Y H:i:s') : '';
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($xa, $y + 5, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
         $this->pdf->line($xa + $wa, $y, $xa + $wa, $y + $h + 1);
@@ -699,10 +699,8 @@ class DacteOS extends DaCommon
             if (!empty($this->protCTe)
                 && !empty($this->protCTe->getElementsByTagName("dhRecbto")->item(0)->nodeValue)
             ) {
-                $texto .= date(
-                    'd/m/Y   H:i:s',
-                    $this->toTimestamp($this->getTagValue($this->protCTe, "dhRecbto"))
-                );
+                $dhRecbto = $this->toDateTime($this->getTagValue($this->protCTe, "dhRecbto"));
+                $texto .= $dhRecbto ? $dhRecbto->format('d/m/Y H:i:s') : '';
             }
             $texto = $this->getTagValue($this->protCTe, "nProt") == '' ? '' : $texto;
         }
@@ -859,14 +857,15 @@ class DacteOS extends DaCommon
                 $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
                 $cStat = $this->getTagValue($infEvento, "cStat");
                 $tpEvento = $this->getTagValue($infEvento, "tpEvento");
-                $dhEvento = date("d/m/Y H:i:s", $this->toTimestamp($this->getTagValue($infEvento, "dhRegEvento")));
+                $dhEvento = $this->toDateTime($this->getTagValue($infEvento, "dhRegEvento"));
+                $dhEvento = $dhEvento ? $dhEvento->format('d/m/Y H:i:s') : '';
                 $nProt = $this->getTagValue($infEvento, "nProt");
                 if ($tpEvento == '110111'
                     && ($cStat == '101'
-                    || $cStat == '151'
-                    || $cStat == '135'
-                    || $cStat == '155'
-                )) {
+                        || $cStat == '151'
+                        || $cStat == '135'
+                        || $cStat == '155'
+                    )) {
                     $resp['status'] = false;
                     $resp['message'][] = "CTe CANCELADO";
                     $resp['submessage'] = "{$dhEvento} - {$nProt}";
@@ -1581,7 +1580,7 @@ class DacteOS extends DaCommon
         $texto = !empty($this->getTagValue($this->veic->item(0), "CPF")) ?
             $this->getTagValue($this->veic->item(0), "CPF") :
             (!empty($this->getTagValue($this->veic->item(0), "CNPJ")) ?
-            $this->getTagValue($this->veic->item(0), "CNPJ") : '');
+                $this->getTagValue($this->veic->item(0), "CNPJ") : '');
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x, $y, $w * $wCol02, $h, $texto, $aFont, 'T', 'L', 0, '');
 
@@ -2240,7 +2239,7 @@ class DacteOS extends DaCommon
     {
         try {
             $fone = !empty($field->getElementsByTagName("fone")->item(0)->nodeValue) ?
-            $field->getElementsByTagName("fone")->item(0)->nodeValue : '';
+                $field->getElementsByTagName("fone")->item(0)->nodeValue : '';
             $foneLen = strlen($fone);
             if ($foneLen > 0) {
                 $fone2 = substr($fone, 0, $foneLen - 4);
