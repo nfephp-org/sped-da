@@ -93,7 +93,8 @@ class Dacte extends DaCommon
      */
     public function __construct(
         $xml = ''
-    ) {
+    )
+    {
         $this->loadDoc($xml);
     }
 
@@ -219,7 +220,8 @@ class Dacte extends DaCommon
      */
     protected function monta(
         $logo = ''
-    ) {
+    )
+    {
         if (!empty($logo)) {
             $this->logomarca = $this->adjustImage($logo);
         }
@@ -795,8 +797,8 @@ class Dacte extends DaCommon
             'size' => 8,
             'style' => '');
         $this->pdf->textBox($xa, $y + 1, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
-        $dhEmi = $this->toDateTime($this->getTagValue($this->ide, "dhEmi"));
-        $texto = $dhEmi ? $dhEmi->format('d/m/Y H:i:s') : '';
+        $texto = !empty($this->ide->getElementsByTagName("dhEmi")->item(0)->nodeValue) ?
+            date('d/m/Y H:i:s', strtotime($this->getTagValue($this->ide, "dhEmi"))) : '';
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($xa, $y + 5, $wa, $h, $texto, $aFont, 'T', 'C', 0, '');
         $this->pdf->line($xa + $wa, $y, $xa + $wa, $y + $h + 1);
@@ -879,8 +881,10 @@ class Dacte extends DaCommon
             if (!empty($this->protCTe)
                 && !empty($this->protCTe->getElementsByTagName("dhRecbto")->item(0)->nodeValue)
             ) {
-                $dhRecbto = $this->toDateTime($this->getTagValue($this->protCTe, "dhRecbto"));
-                $texto .= $dhRecbto ? $dhRecbto->format('d/m/Y H:i:s') : '';
+                $texto .= date(
+                    'd/m/Y   H:i:s',
+                    strtotime($this->getTagValue($this->protCTe, "dhRecbto"))
+                );
             }
             $texto = $this->getTagValue($this->protCTe, "nProt") == '' ? '' : $texto;
         }
@@ -943,7 +947,7 @@ class Dacte extends DaCommon
             $n = count($resp['message']);
             $alttot = $n * 15;
             $x = 10;
-            $y = $this->hPrint/2 - $alttot/2;
+            $y = $this->hPrint / 2 - $alttot / 2;
             $h = 15;
             $w = $maxW - (2 * $x);
             $this->pdf->settextcolor(90, 90, 90);
@@ -1013,8 +1017,7 @@ class Dacte extends DaCommon
                 $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
                 $cStat = $this->getTagValue($infEvento, "cStat");
                 $tpEvento = $this->getTagValue($infEvento, "tpEvento");
-                $dhEvento = $this->toDateTime($this->getTagValue($infEvento, "dhRegEvento"));
-                $dhEvento = $dhEvento ? $dhEvento->format('d/m/Y H:i:s') : '';
+                $dhEvento = date("d/m/Y H:i:s", $this->toTimestamp($this->getTagValue($infEvento, "dhRegEvento")));
                 $nProt = $this->getTagValue($infEvento, "nProt");
                 if ($tpEvento == '110111'
                     && ($cStat == '101'
@@ -1565,8 +1568,8 @@ class Dacte extends DaCommon
         $texto = 'VALOR TOTAL DA CARGA';
         $this->pdf->textBox($x + 1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $texto = $this->getTagValue($this->infCarga, "vCarga") == "" ?
-        $this->getTagValue($this->infCarga, "vMerc") : $this->getTagValue($this->infCarga, "vCarga");
-        $texto = !empty($texto) ? number_format($texto, 2, ",", ".") : '';
+            $this->getTagValue($this->infCarga, "vMerc") : $this->getTagValue($this->infCarga, "vCarga");
+        $texto = number_format($texto, 2, ",", ".");
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x + 1, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $y += 8;
@@ -2557,15 +2560,11 @@ class Dacte extends DaCommon
             $nDoc = $this->getTagValue($temp, "nDoc");
             $dEmi = $this->getTagValue($temp, "dEmi");
             if (!empty($dEmi)) {
-                $tempEmi = $this->toDateTime($this->getTagValue($temp, "dEmi"));
-                $tempEmi = $tempEmi ? $tempEmi->format('d/m/Y') : '';
-                $dEmi = "Emissão: " . $tempEmi;
+                $dEmi = "Emissão: " . date('d/m/Y', strtotime($this->getTagValue($temp, "dEmi")));
             }
             $vDocFisc = $this->getTagValue($temp, "vDocFisc", "Valor: ");
             $dPrev = $this->getTagValue($temp, "dPrev");
-            $datePrev = $this->toDateTime($dPrev);
-            $datePrev = $datePrev ? $datePrev->format('d/m/Y') : '';
-            $dPrev = !empty($dPrev) ? ("Entrega: " . $datePrev) : '';
+            $dPrev = !empty($dPrev) ? ("Entrega: " . date('d/m/Y', strtotime($this->getTagValue($temp, "dPrev")))) : '';
             switch ($tpDoc) {
                 case "00":
                     $tpDoc = "00 - Declaração";
@@ -3580,7 +3579,7 @@ class Dacte extends DaCommon
         $y = $y + 5;
         $this->pdf->line($x, $y + 3, $w * 0.255, $y + 3); // LINHA HORIZONTAL ACIMA DO RG ABAIXO DO NOME
         $texto = 'RG';
-        $aFont = ['font' => $this->fontePadrao,'size' => 6,'style' => ''];
+        $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y + 3, $w * 0.33, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x += $w * 0.85;
         $this->pdf->line($x, $y + 11.5, $x, $y - 5); // LINHA VERTICAL PROXIMO AO CT-E
@@ -3722,7 +3721,7 @@ class Dacte extends DaCommon
                 $field->getElementsByTagName("fone")->item(0)->nodeValue : '';
             $foneLen = strlen($fone);
             if ($foneLen == 11 && $fone[0] != 0) {
-                $fone = '('.substr($fone, 0, 2).') '.substr($fone, 2, 5). '-' . substr($fone, 7);
+                $fone = '(' . substr($fone, 0, 2) . ') ' . substr($fone, 2, 5) . '-' . substr($fone, 7);
             } else if ($foneLen > 0) {
                 $fone2 = substr($fone, 0, $foneLen - 4);
                 $fone1 = substr($fone, 0, $foneLen - 8);
