@@ -996,9 +996,9 @@ class Damdfe extends DaCommon
                 $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
                 $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
                 $y = $y + 2;
-                $chavesNFe = $this->dom->getElementsByTagName('chNFe');
-                $chavesCTe = $this->dom->getElementsByTagName('chCTe');
-                $chavesMDFe = $this->dom->getElementsByTagName('chMDFe');
+                $chavesNFe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chNFe');
+                $chavesCTe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chCTe');
+                $chavesMDFe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chMDFe');
                 $contadorChaves = 0;
                 for ($i = 0; $i < $chavesNFe->length; $i++) {
                     $y += 4;
