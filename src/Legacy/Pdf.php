@@ -884,7 +884,7 @@ class Pdf extends Fpdf
         if ($w < 0) {
             return $y;
         }
-        if (is_object($text) || is_array($text) {
+        if (is_object($text) || is_array($text)) {
             $text = '';
         }
         if (is_string($text)) {
