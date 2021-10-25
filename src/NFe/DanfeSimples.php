@@ -494,7 +494,7 @@ class DanfeSimples extends DaCommon
                 $this->pdf->cell(
                     ($c1 * 4),
                     $pequeno ? 5 : 6,
-                    "{$esp}x {$qVol}",
+                    "{$esp} x {$qVol}",
                     1,
                     1,
                     'C',
