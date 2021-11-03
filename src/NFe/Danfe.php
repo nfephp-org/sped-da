@@ -2915,7 +2915,7 @@ class Danfe extends DaCommon
                     }
                 }
                 $y_linha = $y + $h;
-                
+
                 //corrige o x
                 $x = $oldX;
                 //codigo do produto
@@ -3225,7 +3225,7 @@ class Danfe extends DaCommon
 
         $x = $oldX;
 
-        $yVeic = $y + $h;
+        $yVeic = $y + $h + 8;
         $texto = 'Chassi: ............: ' . $veiculoChassi;
         $this->pdf->textBox($x, $yVeic, $w1 + 40, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
@@ -3240,7 +3240,7 @@ class Danfe extends DaCommon
         $yVeic += $h;
         $texto = 'Tipo.................: ' . ($renavamTiposVeiculos[intval($veiculoTipo)] ?? $veiculoTipo);
         $this->pdf->textBox($x, $yVeic, $w1 + 40, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $yVeic = $y + $h;
+        $yVeic = $y + $h + 8;
         $xVeic = $x + 65;
         $texto = 'Nº Motor: .........: ' . $veiculoMotor;
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
@@ -3256,7 +3256,7 @@ class Danfe extends DaCommon
         $yVeic += $h;
         $texto = 'Tipo Pintura......: ' . ($renavamEspecie[intval($veiculoTipoPintura)] ?? $veiculoTipoPintura);
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $yVeic = $y + $h;
+        $yVeic = $y + $h + 8;
         $xVeic = $xVeic + 55;
         $texto = 'Marca / Modelo.....: ' . $veiculoMarcaModelo;
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
