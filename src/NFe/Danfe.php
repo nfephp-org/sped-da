@@ -57,7 +57,7 @@ class Danfe extends DaCommon
      *
      * @var boolean
      */
-    public $gerarInformacoesAutomaticas = true;
+    public $gerarInformacoesAutomaticas = false;
     /**
      * Parâmetro do controle se deve gerar quebras de linha com "\n" a partir de ";" na descrição do produto.
      *
