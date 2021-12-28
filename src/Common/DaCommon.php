@@ -206,14 +206,21 @@ class DaCommon extends Common
     /**
      * Renderiza o pdf e retorna como raw
      * @param string $logo
+     * @param string $title
      * @return string
      */
     public function render(
-        $logo = ''
+        $logo  = '',
+        $title = '' 
     ) {
         if (empty($this->pdf)) {
             $this->monta($logo);
         }
+        
+        if (!empty($title)) {
+            $this->pdf->setTitle($title);
+        }
+
         return $this->pdf->getPdf();
     }
 
