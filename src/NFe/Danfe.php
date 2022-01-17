@@ -25,26 +25,26 @@ class Danfe extends DaCommon
      *
      * @var bool
      */
-    protected $exibirPIS = true;
+    public $exibirPIS = true;
     /**
      * Parâmetro para exibir ou ocultar os valores do ICMS Interestadual e Valor Total dos Impostos.
      *
      * @var boolean
      */
-    protected $exibirIcmsInterestadual = true;
+    public $exibirIcmsInterestadual = true;
     /**
      * Parâmetro para exibir ou ocultar o texto sobre valor aproximado dos tributos.
      *
      * @var boolean
      */
-    protected $exibirValorTributos = true;
+    public $exibirValorTributos = true;
     /**
      * Parâmetro para exibir ou ocultar o texto adicional sobre a forma de pagamento
      * e as informações de fatura/duplicata.
      *
      * @var boolean
      */
-    protected $exibirTextoFatura = false;
+    public $exibirTextoFatura = false;
     /**
      * Parâmetro do controle se deve concatenar automaticamente informações complementares
      * na descrição do produto, como por exemplo, informações sobre impostos.
@@ -64,12 +64,12 @@ class Danfe extends DaCommon
      * @var boolean
      */
     protected $descProdQuebraLinha = true;
-     /**
+    /**
      * Parâmetro para ocultar a unidade tributável nos itens
      *
      * @var boolean
      */
-    protected $ocultarUnidadeTributavel = false;
+    protected $ocultarUnidadeTributavel = true;
     /**
      * XML NFe
      *
@@ -653,7 +653,7 @@ class Danfe extends DaCommon
         //caso tenha boleto imprimir fatura
         if ($this->dup->length > 0) {
             $y = $this->fatura($x, $y + 1);
-        } else {
+        } elseif ($this->exibirTextoFatura) {
             //Se somente tiver a forma de pagamento sem pagamento não imprimir nada
             if (count($formaPag) == '1' && isset($formaPag[90])) {
                 $y = $y;
@@ -1849,6 +1849,9 @@ class Danfe extends DaCommon
      */
     protected function getTextoFatura()
     {
+        if (!$this->exibirTextoFatura) {
+            return '';
+        }
         if (isset($this->cobr)) {
             $fat = $this->cobr->getElementsByTagName("fat")->item(0);
             if (isset($fat)) {

@@ -117,7 +117,7 @@ trait TraitBlocoVII
                 true
             );
 
-            if( empty($protocolo) ) {
+            if (empty($protocolo)) {
                 $texto = "Pendente de autorização";
                 $aFont = ['font'=> $this->fontePadrao, 'size' => 8, 'style' => 'I'];
                 $y5 = $this->pdf->textBox(
@@ -137,7 +137,7 @@ trait TraitBlocoVII
                 $this->blocoVII_prot(
                     $y+$y1+$y2+$y3+$y4,
                     $subSize,
-                    $protocolo, 
+                    $protocolo,
                     $dhRecbto
                 );
             }
@@ -260,10 +260,10 @@ trait TraitBlocoVII
                 true
             );
 
-            $this->blocoVII_prot(
+            $this->blocoVIIProt(
                 $y+1+$y1+$y2,
                 $subSize,
-                $protocolo, 
+                $protocolo,
                 $dhRecbto
             );
         }
@@ -271,7 +271,8 @@ trait TraitBlocoVII
         return $this->bloco7H + $y;
     }
 
-    protected function blocoVII_prot($y, $subSize, $protocolo, $dhRecbto) {
+    protected function blocoVIIProt($y, $subSize, $protocolo, $dhRecbto)
+    {
         $texto = "Protocolo de Autorização:  {$protocolo}";
         $aFont = ['font'=> $this->fontePadrao, 'size' => (8-$subSize), 'style' => ''];
         $y1 = $this->pdf->textBox(
