@@ -210,17 +210,13 @@ class DanfeSimples extends DaCommon
         }
     }
 
-    protected function monta(
-        $logo = ''
-    ) {
-        $this->pdf       = '';
-        $this->logomarca = $this->adjustImage($logo);
+    protected function monta()
+    {
+        $this->pdf = '';
         //se a orientação estiver em branco utilizar o padrão estabelecido na NF
         if (empty($this->orientacao)) {
             $this->orientacao = 'L';
         }
-
-
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         if ($this->orientacao == 'L') {
             if ($this->papel == 'A5') {
@@ -239,7 +235,6 @@ class DanfeSimples extends DaCommon
                 $this->maxH = $this->papel[1];
             }
         }
-
         //Caso a largura da etiqueta seja pequena <=110mm,
         //Definimos como pequeno, para diminuir as fontes e tamanhos das células
         if ($this->maxW <= 130) {

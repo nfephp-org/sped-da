@@ -25,7 +25,7 @@ class Danfe extends DaCommon
      *
      * @var bool
      */
-    public $exibirPIS = true;
+    public $exibirPIS = false;
     /**
      * Parâmetro para exibir ou ocultar os valores do ICMS Interestadual e Valor Total dos Impostos.
      *
@@ -69,7 +69,7 @@ class Danfe extends DaCommon
      *
      * @var boolean
      */
-    protected $ocultarUnidadeTributavel = true;
+    protected $ocultarUnidadeTributavel = false;
     /**
      * XML NFe
      *

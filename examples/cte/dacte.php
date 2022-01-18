@@ -18,6 +18,7 @@ try {
     //$da->printParameters('P', 'A4', 2, 2);
     $da->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webenf.com.br');
     $da->setDefaultFont('times');
+    $da->printParameters('P','A4');
     $da->logoParameters($logo, 'C', false);
     $da->setDefaultDecimalPlaces(2);
     //$da->depecNumber('12345678');

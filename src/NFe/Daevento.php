@@ -93,14 +93,10 @@ class Daevento extends DaCommon
      * Dados brutos do PDF
      * @return string
      */
-    public function render(
-        $logo = null,
-        $orientacao = 'P',
-        $papel = 'A4',
-        $logoAlign = 'C'
-    ) {
+    public function render($logo = null)
+    {
         if (empty($this->pdf)) {
-            $this->monta($logo, $orientacao, $papel, $logoAlign);
+            $this->monta($logo);
         }
         return $this->pdf->getPdf();
     }
