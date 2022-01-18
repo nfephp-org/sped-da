@@ -12,17 +12,25 @@ $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(realpath(__
 try {
     
     $danfe = new Danfe($xml);
-    $danfe->exibirTextoFatura = false;
-    $danfe->exibirPIS = false;
-    $danfe->exibirIcmsInterestadual = false;
-    $danfe->exibirValorTributos = false;
+    $danfe->exibirTextoFatura = true;
+    $danfe->exibirPIS = true;
+    $danfe->exibirIcmsInterestadual = true;
+    $danfe->exibirValorTributos = true;
     $danfe->setOcultarUnidadeTributavel(true);
-    $danfe->obsContShow(false);
-    
+    $danfe->obsContShow(true);
+    $danfe->printParameters(
+        $orientacao = 'P',
+        $papel = 'A4',
+        $margSup = 2,
+        $margEsq = 2
+    );
+    $danfe->logoParameters($logo, $logoAlign = 'C', $mode_bw = true);
+    $danfe->setDefaultFont($font = 'times');
+    $danfe->setDefaultDecimalPlaces(4);
     $danfe->debugMode(false);
     $danfe->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webenf.com.br');
+    //$danfe->epec('891180004131899', '14/08/2018 11:24:45'); //marca como autorizada por EPEC
     
-    $danfe->epec('891180004131899', '14/08/2018 11:24:45'); //marca como autorizada por EPEC
     // Caso queira mudar a configuracao padrao de impressao
     /*  $this->printParameters( $orientacao = '', $papel = 'A4', $margSup = 2, $margEsq = 2 ); */
     // Caso queira sempre ocultar a unidade tributável
