@@ -24,7 +24,7 @@ try {
         $margSup = 2,
         $margEsq = 2
     );
-    $danfe->logoParameters($logo, $logoAlign = 'C', $mode_bw = true);
+    $danfe->logoParameters($logo, $logoAlign = 'C', $mode_bw = false);
     $danfe->setDefaultFont($font = 'times');
     $danfe->setDefaultDecimalPlaces(4);
     $danfe->debugMode(false);
