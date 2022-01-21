@@ -19,7 +19,7 @@
     ],
     "require": {
         "php" : ">= 7.0",
-        "tecnickcom/tc-lib-barcode": "^1.15",
+        "tecnickcom/tc-lib-barcode": "^1",
         "nfephp-org/sped-common": "^5.0"
     },
     "require-dev": {
