@@ -64,7 +64,7 @@ trait TraitBlocoVII
                 '',
                 false
             );
-        
+
             $y1 += 2*$yPlus;
             $num = str_pad($this->getTagValue($this->ide, "nNF"), 9, '0', STR_PAD_LEFT);
             $serie = str_pad($this->getTagValue($this->ide, "serie"), 3, '0', STR_PAD_LEFT);
@@ -99,7 +99,7 @@ trait TraitBlocoVII
                 '',
                 true
             );
-            
+
             //contingencia offline
             $texto = "EMITIDA EM CONTINGÊNCIA";
             $aFont = ['font'=> $this->fontePadrao, 'size' => 10, 'style' => 'B'];
@@ -134,7 +134,7 @@ trait TraitBlocoVII
                     true
                 );
             } else {
-                $this->blocoVII_prot(
+                $this->blocoVIIProt(
                     $y+$y1+$y2+$y3+$y4,
                     $subSize,
                     $protocolo,
@@ -156,7 +156,7 @@ trait TraitBlocoVII
                 '',
                 false
             );
-        
+
             $num = str_pad($this->getTagValue($this->ide, "nNF"), 9, '0', STR_PAD_LEFT);
             $serie = str_pad($this->getTagValue($this->ide, "serie"), 3, '0', STR_PAD_LEFT);
             $data = (new \DateTime($this->getTagValue($this->ide, "dhEmi")))->format('d/m/Y H:i:s');
@@ -190,7 +190,7 @@ trait TraitBlocoVII
                 '',
                 true
             );
-            
+
             $texto = "Regularmente recebido pela administração tributária autorizadora";
             $aFont = ['font'=> $this->fontePadrao, 'size' => (8-$subSize), 'style' => ''];
             $y2 = $this->pdf->textBox(
@@ -240,7 +240,7 @@ trait TraitBlocoVII
                 '',
                 false
             );
-        
+
             $num = str_pad($this->getTagValue($this->ide, "nNF"), 9, '0', STR_PAD_LEFT);
             $serie = str_pad($this->getTagValue($this->ide, "serie"), 3, '0', STR_PAD_LEFT);
             $data = (new \DateTime($this->getTagValue($this->ide, "dhEmi")))->format('d/m/Y H:i:s');
@@ -288,7 +288,7 @@ trait TraitBlocoVII
             '',
             true
         );
-        
+
         $texto = "Data de Autorização:  {$dhRecbto}";
         $aFont = ['font'=> $this->fontePadrao, 'size' => (8-$subSize), 'style' => ''];
         return $this->pdf->textBox(
