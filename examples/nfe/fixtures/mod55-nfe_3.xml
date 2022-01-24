@@ -340,6 +340,10 @@
                         <tpIntegra>2</tpIntegra>
                     </card>
                 </detPag>
+                <detPag>
+                    <tPag>01</tPag>
+                    <vPag>120.00</vPag>
+                </detPag>
             </pag>
             <infAdic>
                 <infCpl>"DOCUMENTO EMITIDO POR EMPRESA OPTANTE PELO SIMPLES NACIONAL;NAO GERA DIREITO A CREDITO FISCAL DE IPI";"PERMITE O APROVEITAMENTO DE CREDITO DE ICMS NO VALOR DE: R$17,66 CORRESPONDENTE A ALIQUOTA DE 2.56%";Vendedor:1 - Guilherme Kavedikado;Valor Aproximado dos Tributos : R$ 206,97. Fonte IBPT (Instituto Brasileiro de Planejamento Tributario)</infCpl>

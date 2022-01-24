@@ -51,7 +51,7 @@ class Danfe extends DaCommon
      *
      * @var boolean
      */
-    public $descProdInfoComplemento = true;
+    public $descProdInfoComplemento = false;
     /**
      *`Parâmetro que habilita a geração de automatica de informações
      *
@@ -2113,7 +2113,7 @@ class Danfe extends DaCommon
                         "."
                     )
                     : '';
-                $h     = 6;
+                $h = 6;
                 $texto = '';
                 if (isset($formaPagamento[$fPag])) {
                     /*Exibir Item sem pagamento*/

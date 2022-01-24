@@ -12,12 +12,13 @@ $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(realpath(__
 try {
     
     $danfe = new Danfe($xml);
-    $danfe->exibirTextoFatura = true;
-    $danfe->exibirPIS = true;
-    $danfe->exibirIcmsInterestadual = true;
-    $danfe->exibirValorTributos = true;
+    $danfe->exibirTextoFatura = false;
+    $danfe->exibirPIS = false;
+    $danfe->exibirIcmsInterestadual = false;
+    $danfe->exibirValorTributos = false;
+    $danfe->descProdInfoComplemento = false;
     $danfe->setOcultarUnidadeTributavel(true);
-    $danfe->obsContShow(true);
+    $danfe->obsContShow(false);
     $danfe->printParameters(
         $orientacao = 'P',
         $papel = 'A4',
