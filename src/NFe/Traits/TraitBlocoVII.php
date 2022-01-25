@@ -8,13 +8,6 @@ trait TraitBlocoVII
 {
     protected function blocoVII($y)
     {
-        //$this->bloco7H = 20;
-        
-        /*
-        $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
-        $this->pdf->textBox($this->margem, $y, $this->wPrint, $this->bloco7H, '', $aFont, 'T', 'C', false, '', false);
-        */
-        
         $nome = $this->getTagValue($this->dest, "xNome");
         $cnpj = $this->getTagValue($this->dest, "CNPJ");
         $cpf = $this->getTagValue($this->dest, "CPF");
@@ -29,14 +22,15 @@ trait TraitBlocoVII
         if (!empty($cnpj)) {
             $texto = "CONSUMIDOR - CNPJ "
                 . $this->formatField($cnpj, "##.###.###/####-##") . " - " . $nome;
-            $texto .= "\n {$rua}, {$numero} {$complemento} {$bairro} {$mun}-{$uf}";
         } elseif (!empty($cpf)) {
             $texto = "CONSUMIDOR - CPF "
                 . $this->formatField($cpf, "###.###.###-##") . " = " . $nome;
-            $texto .= "\n {$rua}, {$numero} {$complemento} {$bairro} {$mun}-{$uf}";
         } else {
             $texto = 'CONSUMIDOR NÃO IDENTIFICADO';
             $yPlus = 1;
+        }
+        if (!empty($rua)) {
+            $texto .= "\n {$rua}, {$numero} {$complemento} {$bairro} {$mun}-{$uf}";
         }
         if ($this->getTagValue($this->nfeProc, "xMsg")) {
             $texto .= "\n {$this->getTagValue($this->nfeProc, "xMsg")}";
@@ -46,6 +40,14 @@ trait TraitBlocoVII
         if ($this->paperwidth < 70) {
             $subSize = 1.5;
         }
+
+        $protocolo = '';
+        $dhRecbto = '';
+        if (!empty($this->nfeProc)) {
+            $protocolo = $this->formatField($this->getTagValue($this->nfeProc, 'nProt'), '### ########## ##');
+            $dhRecbto = (new \DateTime($this->getTagValue($this->nfeProc, "dhRecbto")))->format('d/m/Y H:i:s');
+        }
+
         if ($this->tpEmis == 9) {
             $aFont = ['font'=> $this->fontePadrao, 'size' => (7-$subSize), 'style' => ''];
             $y += 2*$yPlus;
@@ -62,7 +64,7 @@ trait TraitBlocoVII
                 '',
                 false
             );
-        
+
             $y1 += 2*$yPlus;
             $num = str_pad($this->getTagValue($this->ide, "nNF"), 9, '0', STR_PAD_LEFT);
             $serie = str_pad($this->getTagValue($this->ide, "serie"), 3, '0', STR_PAD_LEFT);
@@ -97,7 +99,7 @@ trait TraitBlocoVII
                 '',
                 true
             );
-            
+
             //contingencia offline
             $texto = "EMITIDA EM CONTINGÊNCIA";
             $aFont = ['font'=> $this->fontePadrao, 'size' => 10, 'style' => 'B'];
@@ -114,22 +116,115 @@ trait TraitBlocoVII
                 '',
                 true
             );
-            
-            $texto = "Pendente de autorização";
-            $aFont = ['font'=> $this->fontePadrao, 'size' => 8, 'style' => 'I'];
-            $y5 = $this->pdf->textBox(
+
+            if (empty($protocolo)) {
+                $texto = "Pendente de autorização";
+                $aFont = ['font'=> $this->fontePadrao, 'size' => 8, 'style' => 'I'];
+                $y5 = $this->pdf->textBox(
+                    $this->margem,
+                    $y+$y1+$y2+$y3+$y4,
+                    $this->wPrint,
+                    3,
+                    $texto,
+                    $aFont,
+                    'B',
+                    'C',
+                    false,
+                    '',
+                    true
+                );
+            } else {
+                $this->blocoVIIProt(
+                    $y+$y1+$y2+$y3+$y4,
+                    $subSize,
+                    $protocolo,
+                    $dhRecbto
+                );
+            }
+        } elseif ($this->tpEmis == 4) {
+            $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
+            $y1 = $this->pdf->textBox(
                 $this->margem,
-                $y+$y1+$y2+$y3+$y4,
+                $y+1,
                 $this->wPrint,
-                3,
+                $this->bloco7H,
                 $texto,
                 $aFont,
-                'B',
+                'T',
+                'C',
+                false,
+                '',
+                false
+            );
+
+            $num = str_pad($this->getTagValue($this->ide, "nNF"), 9, '0', STR_PAD_LEFT);
+            $serie = str_pad($this->getTagValue($this->ide, "serie"), 3, '0', STR_PAD_LEFT);
+            $data = (new \DateTime($this->getTagValue($this->ide, "dhEmi")))->format('d/m/Y H:i:s');
+            $texto = "NFCe n. {$num} Série {$serie} {$data}";
+            $aFont = ['font'=> $this->fontePadrao, 'size' => (8-$subSize), 'style' => ''];
+            $y2 = $this->pdf->textBox(
+                $this->margem,
+                $y+1+$y1,
+                $this->wPrint,
+                4,
+                $texto,
+                $aFont,
+                'T',
                 'C',
                 false,
                 '',
                 true
             );
+            $texto = "DANFE-NFC-e Impresso em contingência - EPEC";
+            $aFont = ['font'=> $this->fontePadrao, 'size' => (10-$subSize), 'style' => 'B'];
+            $y2 = $this->pdf->textBox(
+                $this->margem,
+                $y+1+$y1+3,
+                $this->wPrint,
+                4,
+                $texto,
+                $aFont,
+                'T',
+                'C',
+                false,
+                '',
+                true
+            );
+
+            $texto = "Regularmente recebido pela administração tributária autorizadora";
+            $aFont = ['font'=> $this->fontePadrao, 'size' => (8-$subSize), 'style' => ''];
+            $y2 = $this->pdf->textBox(
+                $this->margem,
+                $y+1+$y1+$y2+3,
+                $this->wPrint,
+                4,
+                $texto,
+                $aFont,
+                'T',
+                'C',
+                false,
+                '',
+                true
+            );
+            if (!empty($this->dom->getElementsByTagName('dhCont'))) {
+                $dhCont = $this->dom->getElementsByTagName('dhCont')->item(0)->nodeValue;
+                $dt = \DateTime::createFromFormat('Y-m-d\TH:i:sP', $dhCont);
+                $texto = "Data de entrada em contingência : " . $dt->format('d/m/Y H:i:s');
+                $aFont = ['font'=> $this->fontePadrao, 'size' => (7-$subSize), 'style' => ''];
+                $y2 = $this->pdf->textBox(
+                    $this->margem,
+                    $y+1+$y1+$y2+6,
+                    $this->wPrint,
+                    4,
+                    $texto,
+                    $aFont,
+                    'B',
+                    'C',
+                    false,
+                    '',
+                    true
+                );
+            }
         } else {
             $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
             $y1 = $this->pdf->textBox(
@@ -145,7 +240,7 @@ trait TraitBlocoVII
                 '',
                 false
             );
-        
+
             $num = str_pad($this->getTagValue($this->ide, "nNF"), 9, '0', STR_PAD_LEFT);
             $serie = str_pad($this->getTagValue($this->ide, "serie"), 3, '0', STR_PAD_LEFT);
             $data = (new \DateTime($this->getTagValue($this->ide, "dhEmi")))->format('d/m/Y H:i:s');
@@ -165,46 +260,49 @@ trait TraitBlocoVII
                 true
             );
 
-            $protocolo = '';
-            $data = '';
-            if (!empty($this->nfeProc)) {
-                $protocolo = $this->formatField($this->getTagValue($this->nfeProc, 'nProt'), '### ########## ##');
-                $data = (new \DateTime($this->getTagValue($this->nfeProc, "dhRecbto")))->format('d/m/Y H:i:s');
-            }
-            
-            $texto = "Protocolo de Autorização:  {$protocolo}";
-            $aFont = ['font'=> $this->fontePadrao, 'size' => (8-$subSize), 'style' => ''];
-            $y3 = $this->pdf->textBox(
-                $this->margem,
+            $this->blocoVIIProt(
                 $y+1+$y1+$y2,
-                $this->wPrint,
-                4,
-                $texto,
-                $aFont,
-                'T',
-                'C',
-                false,
-                '',
-                true
-            );
-            
-            $texto = "Data de Autorização:  {$data}";
-            $aFont = ['font'=> $this->fontePadrao, 'size' => (8-$subSize), 'style' => ''];
-            $y4 = $this->pdf->textBox(
-                $this->margem,
-                $y+1+$y1+$y2+$y3,
-                $this->wPrint,
-                4,
-                $texto,
-                $aFont,
-                'T',
-                'C',
-                false,
-                '',
-                true
+                $subSize,
+                $protocolo,
+                $dhRecbto
             );
         }
         $this->pdf->dashedHLine($this->margem, $this->bloco7H+$y, $this->wPrint, 0.1, 30);
         return $this->bloco7H + $y;
+    }
+
+    protected function blocoVIIProt($y, $subSize, $protocolo, $dhRecbto)
+    {
+        $texto = "Protocolo de Autorização:  {$protocolo}";
+        $aFont = ['font'=> $this->fontePadrao, 'size' => (8-$subSize), 'style' => ''];
+        $y1 = $this->pdf->textBox(
+            $this->margem,
+            $y,
+            $this->wPrint,
+            4,
+            $texto,
+            $aFont,
+            'T',
+            'C',
+            false,
+            '',
+            true
+        );
+
+        $texto = "Data de Autorização:  {$dhRecbto}";
+        $aFont = ['font'=> $this->fontePadrao, 'size' => (8-$subSize), 'style' => ''];
+        return $this->pdf->textBox(
+            $this->margem,
+            $y+$y1,
+            $this->wPrint,
+            4,
+            $texto,
+            $aFont,
+            'T',
+            'C',
+            false,
+            '',
+            true
+        );
     }
 }

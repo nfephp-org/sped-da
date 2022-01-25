@@ -1,0 +1,324 @@
+<?xml version="1.0"?>
+<nfeProc xmlns="http://www.portalfiscal.inf.br/nfe" versao="4.00">
+    <NFe xmlns="http://www.portalfiscal.inf.br/nfe">
+        <infNFe Id="NFe35210258716523000119550000000573661346317847" versao="4.00">
+            <ide>
+                <cUF>35</cUF>
+                <cNF>34631784</cNF>
+                <natOp>VENDA DE PRODUTO</natOp>
+                <mod>55</mod>
+                <serie>0</serie>
+                <nNF>57366</nNF>
+                <dhEmi>2021-02-04T13:31:00-03:00</dhEmi>
+                <tpNF>1</tpNF>
+                <idDest>1</idDest>
+                <cMunFG>3550308</cMunFG>
+                <tpImp>1</tpImp>
+                <tpEmis>1</tpEmis>
+                <cDV>7</cDV>
+                <tpAmb>1</tpAmb>
+                <finNFe>1</finNFe>
+                <indFinal>0</indFinal>
+                <indPres>9</indPres>
+                <procEmi>3</procEmi>
+                <verProc>4.01_b030</verProc>
+            </ide>
+            <emit>
+                <CNPJ>58716523000119</CNPJ>
+                <xNome>FIMATEC TEXTIL LTDA</xNome>
+                <xFant>FIMATEC</xFant>
+                <enderEmit>
+                    <xLgr>RUA DOS PATRIOTAS</xLgr>
+                    <nro>897</nro>
+                    <xCpl>ARMAZEM 42</xCpl>
+                    <xBairro>IPIRANGA</xBairro>
+                    <cMun>3550308</cMun>
+                    <xMun>Sao Paulo</xMun>
+                    <UF>SP</UF>
+                    <CEP>04207040</CEP>
+                    <cPais>1058</cPais>
+                    <xPais>BRASIL</xPais>
+                    <fone>1120677300</fone>
+                </enderEmit>
+                <IE>112006603110</IE>
+                <IM>95095870</IM>
+                <CNAE>0131380</CNAE>
+                <CRT>3</CRT>
+            </emit>
+            <dest>
+                <CNPJ>10702368000155</CNPJ>
+                <xNome>M R SANTOS DE PAULA TECIDOS ME</xNome>
+                <enderDest>
+                    <xLgr>RUA LUZITANIA</xLgr>
+                    <nro>1163</nro>
+                    <xBairro>CENTRO</xBairro>
+                    <cMun>3509502</cMun>
+                    <xMun>Campinas</xMun>
+                    <UF>SP</UF>
+                    <CEP>13015121</CEP>
+                    <cPais>1058</cPais>
+                    <xPais>BRASIL</xPais>
+                    <fone>1932353459</fone>
+                </enderDest>
+                <indIEDest>1</indIEDest>
+                <IE>244827055110</IE>
+                <email>financeiro@mr39.com.br</email>
+            </dest>
+            <det nItem="1">
+                <prod>
+                    <cProd>2420BCB93</cProd>
+                    <cEAN>SEM GTIN</cEAN>
+                    <xProd>MULTICREPE ICE SND TINTO COM AMAC. S.T 1,64M</xProd>
+                    <NCM>60063210</NCM>
+                    <CFOP>5101</CFOP>
+                    <uCom>KG</uCom>
+                    <qCom>76.5500</qCom>
+                    <vUnCom>5.4200000000</vUnCom>
+                    <vProd>414.90</vProd>
+                    <cEANTrib>SEM GTIN</cEANTrib>
+                    <uTrib>KG</uTrib>
+                    <qTrib>76.5500</qTrib>
+                    <vUnTrib>5.4200000000</vUnTrib>
+                    <indTot>1</indTot>
+                </prod>
+                <imposto>
+                    <ICMS>
+                        <ICMS00>
+                            <orig>0</orig>
+                            <CST>00</CST>
+                            <modBC>3</modBC>
+                            <vBC>414.90</vBC>
+                            <pICMS>18.00</pICMS>
+                            <vICMS>74.68</vICMS>
+                        </ICMS00>
+                    </ICMS>
+                    <IPI>
+                        <cEnq>122</cEnq>
+                        <IPINT>
+                            <CST>55</CST>
+                        </IPINT>
+                    </IPI>
+                    <PIS>
+                        <PISAliq>
+                            <CST>01</CST>
+                            <vBC>414.90</vBC>
+                            <pPIS>1.65</pPIS>
+                            <vPIS>6.85</vPIS>
+                        </PISAliq>
+                    </PIS>
+                    <COFINS>
+                        <COFINSAliq>
+                            <CST>01</CST>
+                            <vBC>414.90</vBC>
+                            <pCOFINS>7.60</pCOFINS>
+                            <vCOFINS>31.53</vCOFINS>
+                        </COFINSAliq>
+                    </COFINS>
+                </imposto>
+                <infAdProd>PRETO F04293    11888/FF</infAdProd>
+            </det>
+            <det nItem="2">
+                <prod>
+                    <cProd>2644BCB90</cProd>
+                    <cEAN>SEM GTIN</cEAN>
+                    <xProd>MICRO SOLUTIO SND TINTO C/ AMAC. S.T 1,63M</xProd>
+                    <NCM>60063210</NCM>
+                    <CFOP>5101</CFOP>
+                    <uCom>KG</uCom>
+                    <qCom>30.3000</qCom>
+                    <vUnCom>5.5000000000</vUnCom>
+                    <vProd>166.65</vProd>
+                    <cEANTrib>SEM GTIN</cEANTrib>
+                    <uTrib>KG</uTrib>
+                    <qTrib>30.3000</qTrib>
+                    <vUnTrib>5.5000000000</vUnTrib>
+                    <indTot>1</indTot>
+                </prod>
+                <imposto>
+                    <ICMS>
+                        <ICMS00>
+                            <orig>0</orig>
+                            <CST>00</CST>
+                            <modBC>3</modBC>
+                            <vBC>166.65</vBC>
+                            <pICMS>18.00</pICMS>
+                            <vICMS>30.00</vICMS>
+                        </ICMS00>
+                    </ICMS>
+                    <IPI>
+                        <cEnq>122</cEnq>
+                        <IPINT>
+                            <CST>55</CST>
+                        </IPINT>
+                    </IPI>
+                    <PIS>
+                        <PISAliq>
+                            <CST>01</CST>
+                            <vBC>166.65</vBC>
+                            <pPIS>1.65</pPIS>
+                            <vPIS>2.75</vPIS>
+                        </PISAliq>
+                    </PIS>
+                    <COFINS>
+                        <COFINSAliq>
+                            <CST>01</CST>
+                            <vBC>166.65</vBC>
+                            <pCOFINS>7.60</pCOFINS>
+                            <vCOFINS>12.67</vCOFINS>
+                        </COFINSAliq>
+                    </COFINS>
+                </imposto>
+                <infAdProd>MIDNIGHT F00840    11875/FF</infAdProd>
+            </det>
+            <total>
+                <ICMSTot>
+                    <vBC>581.55</vBC>
+                    <vICMS>104.68</vICMS>
+                    <vICMSDeson>0.00</vICMSDeson>
+                    <vFCPUFDest>0.00</vFCPUFDest>
+                    <vICMSUFDest>0.00</vICMSUFDest>
+                    <vICMSUFRemet>0.00</vICMSUFRemet>
+                    <vFCP>0.00</vFCP>
+                    <vBCST>0.00</vBCST>
+                    <vST>0.00</vST>
+                    <vFCPST>0.00</vFCPST>
+                    <vFCPSTRet>0.00</vFCPSTRet>
+                    <vProd>581.55</vProd>
+                    <vFrete>0.00</vFrete>
+                    <vSeg>0.00</vSeg>
+                    <vDesc>0.00</vDesc>
+                    <vII>0.00</vII>
+                    <vIPI>0.00</vIPI>
+                    <vIPIDevol>0.00</vIPIDevol>
+                    <vPIS>9.60</vPIS>
+                    <vCOFINS>44.20</vCOFINS>
+                    <vOutro>0.00</vOutro>
+                    <vNF>581.55</vNF>
+                    <vTotTrib>0.00</vTotTrib>
+                </ICMSTot>
+            </total>
+            <transp>
+                <modFrete>1</modFrete>
+                <transporta>
+                    <xNome>RETIRA</xNome>
+                    <UF>SP</UF>
+                </transporta>
+                <vol>
+                    <qVol>7</qVol>
+                    <esp>VOLUMES</esp>
+                    <pesoL>106.850</pesoL>
+                    <pesoB>109.650</pesoB>
+                </vol>
+            </transp>
+            <cobr>
+                <fat>
+                    <nFat>000057366</nFat>
+                    <vOrig>581.55</vOrig>
+                    <vLiq>581.55</vLiq>
+                </fat>
+                <dup>
+                    <nDup>001</nDup>
+                    <dVenc>2021-02-04</dVenc>
+                    <vDup>581.55</vDup>
+                </dup>
+            </cobr>
+            <pag>
+                <detPag>
+                    <indPag>0</indPag>
+                    <tPag>99</tPag>
+                    <vPag>581.55</vPag>
+                </detPag>
+            </pag>
+            <infAdic>
+                <infAdFisco>SAIDA COM SUSPENSAO DO IPI CONFORME ART 29 DA LEI 10.637</infAdFisco>
+            </infAdic>
+            <infRespTec>
+                <CNPJ>43728245000142</CNPJ>
+                <xContato>suporte</xContato>
+                <email>suporteemissores@sebraesp.com.br</email>
+                <fone>08005700800</fone>
+            </infRespTec>
+        </infNFe>
+        <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+            <SignedInfo>
+                <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+                <Reference URI="#NFe35210258716523000119550000000573661346317847">
+                    <Transforms>
+                        <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                        <Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                    </Transforms>
+                    <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                    <DigestValue>+wGokaHJPdvsc1Bwsq8tcJ4zRMI=</DigestValue>
+                </Reference>
+            </SignedInfo>
+            <SignatureValue>EGzq5V/iPyYayZTFpqX1FzWsqRtVXJBzb0vqifOgl5juz2Jmb49T4o8r7OF7C/vj9g81CzD/A/xk
+IfaiNipHDNql6nLoSywzpeqEyoDfs6UybGSH5qZs2jL7NWuI2IfQGdnR4gOKOq0s0EjRp2zZF+x3
+RwfLeYe/VanvZkxurssut8BP0miBd0NdsTmpFBv8W7gvMMW9+IMb0ejn65xLEhBsjdc3kQK4QjzX
+oovZZmxXF4BFnsOo3bAoib75NuN2iiaKkEX04qRiH8jYZvbt87OwU/vDUdP3+lz0vO/HXsWDzd/g
+vwp0U4rvIG3LRH9aTlr1Ve+8cNkFmyIyYmGoxw==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIH6zCCBdOgAwIBAgIQFLaucwjVJOk9mru92pB/NDANBgkqhkiG9w0BAQsFADB4MQswCQYDVQQG
+EwJCUjETMBEGA1UEChMKSUNQLUJyYXNpbDE2MDQGA1UECxMtU2VjcmV0YXJpYSBkYSBSZWNlaXRh
+IEZlZGVyYWwgZG8gQnJhc2lsIC0gUkZCMRwwGgYDVQQDExNBQyBDZXJ0aXNpZ24gUkZCIEc1MB4X
+DTIwMDIyNzEzMTcxOFoXDTIxMDIyNjEzMTcxOFowgdkxCzAJBgNVBAYTAkJSMRMwEQYDVQQKDApJ
+Q1AtQnJhc2lsMQswCQYDVQQIDAJTUDESMBAGA1UEBwwJU2FvIFBhdWxvMTYwNAYDVQQLDC1TZWNy
+ZXRhcmlhIGRhIFJlY2VpdGEgRmVkZXJhbCBkbyBCcmFzaWwgLSBSRkIxFjAUBgNVBAsMDVJGQiBl
+LUNOUEogQTExFzAVBgNVBAsMDjU2ODE3OTQzMDAwMTY2MSswKQYDVQQDDCJGSU1BVEVDIFRFWFRJ
+TCBMVERBOjU4NzE2NTIzMDAwMTE5MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq001
+uqPo10rUF5WT1QyNtEKrYyiISHmt3MzuNgesxT9jMbWr4sQ8+chzoPksxUN87nx43WUBFHl1eyjL
+WdV6+Geo4K2vfOP0Z+sQGXYstHrIeYFfcA2npvDtpbk+BFkAo4vES6SkyMB6aSrr86tWdh1uGIXh
+kj5aK+2bR+Jxa3x68gryzII/+1C8NmG/5f5FaIbHJSdEgJj0fOcdOf4d0/XnDAhcNy1I8X1xBP9e
+yXQYOsM5Hn/wRZN6nzFp/2NS3/7vDUlXtIdfoQBTgjud1JrGkm1tATvCrh8NW+WuVIsuAD7OnjG1
+rzKmq11T5eMbukQm5j76LLXYfje3+ItnfQIDAQABo4IDDTCCAwkwgbwGA1UdEQSBtDCBsaA9BgVg
+TAEDBKA0BDIyMDEwMTk1OTA1MjI1NTM3ODgwMDAwMDAwMDAwMDAwMDAwMDAwMDg4NzQzNzJTU1BT
+UKAhBgVgTAEDAqAYBBZGRVJOQU5ETyBKT1NFIEtBSVJBTExBoBkGBWBMAQMDoBAEDjU4NzE2NTIz
+MDAwMTE5oBcGBWBMAQMHoA4EDDAwMDAwMDAwMDAwMIEZZmluYW5jZWlyb0BmaW1hdGVjLmNvbS5i
+cjAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFFN9f52+0WHQILran+OJpxNzWM1CMH8GA1UdIAR4MHYw
+dAYGYEwBAgEMMGowaAYIKwYBBQUHAgEWXGh0dHA6Ly9pY3AtYnJhc2lsLmNlcnRpc2lnbi5jb20u
+YnIvcmVwb3NpdG9yaW8vZHBjL0FDX0NlcnRpc2lnbl9SRkIvRFBDX0FDX0NlcnRpc2lnbl9SRkIu
+cGRmMIG8BgNVHR8EgbQwgbEwV6BVoFOGUWh0dHA6Ly9pY3AtYnJhc2lsLmNlcnRpc2lnbi5jb20u
+YnIvcmVwb3NpdG9yaW8vbGNyL0FDQ2VydGlzaWduUkZCRzUvTGF0ZXN0Q1JMLmNybDBWoFSgUoZQ
+aHR0cDovL2ljcC1icmFzaWwub3V0cmFsY3IuY29tLmJyL3JlcG9zaXRvcmlvL2xjci9BQ0NlcnRp
+c2lnblJGQkc1L0xhdGVzdENSTC5jcmwwDgYDVR0PAQH/BAQDAgXgMB0GA1UdJQQWMBQGCCsGAQUF
+BwMCBggrBgEFBQcDBDCBrAYIKwYBBQUHAQEEgZ8wgZwwXwYIKwYBBQUHMAKGU2h0dHA6Ly9pY3At
+YnJhc2lsLmNlcnRpc2lnbi5jb20uYnIvcmVwb3NpdG9yaW8vY2VydGlmaWNhZG9zL0FDX0NlcnRp
+c2lnbl9SRkJfRzUucDdjMDkGCCsGAQUFBzABhi1odHRwOi8vb2NzcC1hYy1jZXJ0aXNpZ24tcmZi
+LmNlcnRpc2lnbi5jb20uYnIwDQYJKoZIhvcNAQELBQADggIBAHSdjsgypY7OgqQQwAHqlayuSoqh
+5WW9jgVWM4tuLbJmmPhEzgDT09UIqHbOKv3RRW3fVzbJHk9vDRdAfvuIEPRI1RbPafX1Z0nYSWQE
+fnzd5w0GU0nq8ToNi/V8RuzXXH+iZyZudsoYkYBiSWGvYlKkzBanQajYcYkSJYyR9KNJPev0tdUH
+eEuu9ylFWeuk3zxHeVovkaG9jkRX5BMRO1AEqesb3V19xc/OcDev+r7pIq78W+kuaVy9JS+5o3g+
+IYNPMpomVzGWHHzgPJ7y0s5O9pSx7tSzk9ROsb0FPEbxo/mquzo1TJI0cm4NkinaHT4Z2VQDBoCb
+ApQx3GIvkqnnjSeNd6/1KmkUL2sBqzbfEIHLwwFFfzpRi+/Ja7dhrWS9PlL6XYQZcTKhQVgs3hoA
+EIZe0qhQb2jp7fp09bXwndoZSXCnZJ8ENjWywLEX+Xw+SyMD3JPO62ey8GyG5mUrgcRPZhhGL4MX
+wFZNN0wtkOvrX9i0Vanf9ZTRH/yk4/r2bwgZHLHcm5pg++MOLqD4FXpgIEYjPvjQp9VxE7Xkpls2
+Qxv4fDfoNuCFNYoMrmeR0rSKuKd93lMOLOrdznPF/UG8Z9zTCnlieCkHiK7AUgkTDRU4ARbgYoz/
+pHdIdUuy2Tn5oE+OBkG21X/v0VbExh700I8Wlp1EgS1tYYnt</X509Certificate></X509Data></KeyInfo></Signature></NFe>
+<protNFe versao="4.00">
+    <infProt Id="Id135210128765156">
+        <tpAmb>1</tpAmb>
+        <verAplic>SP_NFE_PL009_V4</verAplic>
+        <chNFe>35210258716523000119550000000573661346317847</chNFe>
+        <dhRecbto>2021-02-04T14:36:36-03:00</dhRecbto>
+        <nProt>135210128765156</nProt>
+        <digVal>+wGokaHJPdvsc1Bwsq8tcJ4zRMI=</digVal>
+        <cStat>100</cStat>
+        <xMotivo>Autorizado o uso da NF-e</xMotivo>
+    </infProt>
+</protNFe>
+<retEvento versao="1.00">
+    <infEvento>
+        <tpAmb>1</tpAmb>
+        <verAplic>SP_EVENTOS_PL_100</verAplic>
+        <cOrgao>35</cOrgao>
+        <cStat>135</cStat>
+        <xMotivo>Evento registrado e vinculado a NF-e</xMotivo>
+        <chNFe>35210258716523000119550000000573661346317847</chNFe>
+        <tpEvento>110111</tpEvento>
+        <xEvento>Cancelamento registrado</xEvento>
+        <nSeqEvento>1</nSeqEvento>
+        <CNPJDest>10702368000155</CNPJDest>
+        <emailDest>financeiro@mr39.com.br</emailDest>
+        <dhRegEvento>2021-02-04T15:15:09-03:00</dhRegEvento>
+        <nProt>135210128997350</nProt>
+    </infEvento>
+</retEvento>
+</nfeProc>

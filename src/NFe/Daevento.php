@@ -93,14 +93,10 @@ class Daevento extends DaCommon
      * Dados brutos do PDF
      * @return string
      */
-    public function render(
-        $logo = null,
-        $orientacao = 'P',
-        $papel = 'A4',
-        $logoAlign = 'C'
-    ) {
+    public function render($logo = null)
+    {
         if (empty($this->pdf)) {
-            $this->monta($logo, $orientacao, $papel, $logoAlign);
+            $this->monta($logo);
         }
         return $this->pdf->getPdf();
     }
@@ -127,6 +123,7 @@ class Daevento extends DaCommon
         $this->cOrgao = $this->infEvento->getElementsByTagName("cOrgao")->item(0)->nodeValue;
         $this->xCorrecao = $this->infEvento->getElementsByTagName("xCorrecao")->item(0);
         $this->xCorrecao = (empty($this->xCorrecao) ? '' : $this->xCorrecao->nodeValue);
+        $this->xCorrecao = str_replace(';', ";\n", $this->xCorrecao);
         $this->xCondUso = $this->infEvento->getElementsByTagName("xCondUso")->item(0);
         $this->xCondUso = (empty($this->xCondUso) ? '' : $this->xCondUso->nodeValue);
         $this->xJust = $this->infEvento->getElementsByTagName("xJust")->item(0);

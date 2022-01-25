@@ -1,0 +1,126 @@
+<mdfeProc xmlns="http://www.portalfiscal.inf.br/mdfe" versao="3.00">
+    <MDFe xmlns="http://www.portalfiscal.inf.br/mdfe">
+        <infMDFe Id="MDFe24210240783110000191580010000004681217759322" versao="3.00">
+            <ide>
+                <cUF>24</cUF>
+                <tpAmb>1</tpAmb>
+                <tpEmit>2</tpEmit>
+                <tpTransp>2</tpTransp>
+                <mod>58</mod>
+                <serie>1</serie>
+                <nMDF>468</nMDF>
+                <cMDF>21775932</cMDF>
+                <cDV>2</cDV>
+                <modal>1</modal>
+                <dhEmi>2021-02-05T08:29:36-00:00</dhEmi>
+                <tpEmis>1</tpEmis>
+                <procEmi>0</procEmi>
+                <verProc>1.0.0</verProc>
+                <UFIni>RN</UFIni>
+                <UFFim>CE</UFFim>
+                <infMunCarrega>
+                    <cMunCarrega>2404408</cMunCarrega>
+                    <xMunCarrega>Grossos</xMunCarrega>
+                </infMunCarrega>
+            </ide>
+            <emit>
+                <CNPJ>40783110000191</CNPJ>
+                <IE>200358375</IE>
+                <xNome>JOAO BATISTA DO NASCIMENTO - ME - MATRIZ</xNome>
+                <xFant>JOAO BATISTA DO NASCIMENTO - ME - MATRIZ</xFant>
+                <enderEmit>
+                    <xLgr>LG VARZEA DO BOI MORTO</xLgr>
+                    <nro>150</nro>
+                    <xBairro>ZONA RURAL</xBairro>
+                    <cMun>2404408</cMun>
+                    <xMun>GROSSOS</xMun>
+                    <CEP>59675000</CEP>
+                    <UF>RN</UF>
+                    <fone>8430646424</fone>
+                    <email>victorsal.faturamento@gmail.com</email>
+                </enderEmit>
+            </emit>
+            <infModal versaoModal="3.00">
+                <rodo>
+                    <infANTT/>
+                    <veicTracao>
+                        <cInt>000000001</cInt>
+                        <placa>NDY6F13</placa>
+                        <RENAVAM>968820077</RENAVAM>
+                        <tara>0</tara>
+                        <prop>
+                            <CNPJ>40783110000191</CNPJ>
+                            <RNTRC>51439022</RNTRC>
+                            <xNome>JOAO BATISTA DO NASCIMENTO - ME</xNome>
+                            <IE>200358375</IE>
+                            <UF>RN</UF>
+                            <tpProp>0</tpProp>
+                        </prop>
+                        <condutor>
+                            <xNome>RAIMUNDO DUARTE DE LIMA JUNIOR</xNome>
+                            <CPF>77793897404</CPF>
+                        </condutor>
+                        <tpRod>04</tpRod>
+                        <tpCar>00</tpCar>
+                        <UF>RN</UF>
+                    </veicTracao>
+                </rodo>
+            </infModal>
+            <infDoc>
+                <infMunDescarga>
+                    <cMunDescarga>2311801</cMunDescarga>
+                    <xMunDescarga>Russas</xMunDescarga>
+                    <infNFe>
+                        <chNFe>24210240783110000191550010000008581295220627</chNFe>
+                    </infNFe>
+                </infMunDescarga>
+            </infDoc>
+            <tot>
+                <qNFe>1</qNFe>
+                <vCarga>909.00</vCarga>
+                <cUnid>01</cUnid>
+                <qCarga>30300.0000</qCarga>
+            </tot>
+            <infAdic>
+                <infCpl>CONTR SUBST OPT BENEF PREV NO DEC. 28.768 DE 02/04/2019 - ART 154-B, INCISO IV - RICMS-RN</infCpl>
+            </infAdic>
+        </infMDFe>
+        <infMDFeSupl>
+            <qrCodMDFe>
+                <![CDATA[ https://dfe-portal.svrs.rs.gov.br/mdfe/qrCode?chMDFe=24210240783110000191580010000004681217759322&tpAmb=1 ]]>
+            </qrCodMDFe>
+        </infMDFeSupl>
+        <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+            <SignedInfo>
+                <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+                <Reference URI="#MDFe24210240783110000191580010000004681217759322">
+                    <Transforms>
+                        <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                        <Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                    </Transforms>
+                    <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                    <DigestValue>TzV8/iuwaqptS++3p/Fq3aW3Sqs=</DigestValue>
+                </Reference>
+            </SignedInfo>
+            <SignatureValue>dJLKYT0+vHKS3QTQGfK4IUaadH7C11S2D/0fepqYJj/LqTcXuZqDl+2avchGKQo9OO2966iymYefbonES+V5or/F/Z+ud6FTAoUd9nqBSSc99LRQ/HL0wtDDMFBNGi4SiSlSl8ymJoQKX22ZBeZxY2LrxWEC47I3i3buNqyhufX8L1Pz3mV3G7+aMb+Rmi9BFuols/UqmjJZtz/U48CVB5V8SgXsQyI6hSkKbXx6devm5AhrRoCpolF2NlQB5gQI5J4TLLzz+MeCMBIVmKesE6YUgBsq79ae6M2r/Fr8ZHLKZrSKFKoLQavANm/ZtH8rEwQYvaW9WsHhKalUgkKDQw==</SignatureValue>
+            <KeyInfo>
+                <X509Data>
+                    <X509Certificate>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</X509Certificate>
+                </X509Data>
+            </KeyInfo>
+        </Signature>
+    </MDFe>
+    <protMDFe xmlns="http://www.portalfiscal.inf.br/mdfe" versao="3.00">
+        <infProt Id="MDFe924210000176938">
+            <tpAmb>1</tpAmb>
+            <verAplic>RS20200915181459</verAplic>
+            <chMDFe>24210240783110000191580010000004681217759322</chMDFe>
+            <dhRecbto>2021-02-05T08:29:36-03:00</dhRecbto>
+            <nProt>924210000188873</nProt>
+            <digVal>TzV8/iuwaqptS++3p/Fq3aW3Sqs=</digVal>
+            <cStat>103</cStat>
+            <xMotivo>Encerramento de MDF-e homologado</xMotivo>
+        </infProt>
+    </protMDFe>
+</mdfeProc>

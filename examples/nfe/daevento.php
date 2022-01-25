@@ -9,7 +9,7 @@ use NFePHP\DA\NFe\Daevento;
 $xml = file_get_contents(__DIR__ . '/fixtures/proccce.xml');
 $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(realpath(__DIR__ . '/../images/tulipas.png')));
 //$logo = realpath(__DIR__ . '/../images/tulipas.png');
-
+//$logo = null;
 $dadosEmitente = [
     'razao' => 'QQ Comercio e Ind. Ltda',
     'logradouro' => 'Rua vinte e um de março',
@@ -27,7 +27,9 @@ try {
     $daevento = new Daevento($xml, $dadosEmitente);
     $daevento->debugMode(true);
     $daevento->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webenf.com.br');
-    $pdf = $daevento->render($logo);
+    $daevento->printParameters('P','A4');
+    $daevento->logoParameters($logo, 'R');
+    $pdf = $daevento->render();
     header('Content-Type: application/pdf');
     echo $pdf;
 } catch (\Exception $e) {

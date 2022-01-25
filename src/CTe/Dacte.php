@@ -594,7 +594,7 @@ class Dacte extends DaCommon
                 $texto = 'Substituto';
                 break;
             default:
-                $texto = 'ERRO' . $tpCTe . $tpServ;
+                $texto = 'ERRO' . $tpCTe;
         }
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x, $y1 + 3, $w * 0.5, $h1, $texto, $aFont, 'T', 'C', 0, '', false);
@@ -940,170 +940,105 @@ class Dacte extends DaCommon
         $this->pdf->textBox($x, $y + 3.5, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         //#########################################################################
         //Indicação de CTe Homologação, cancelamento e falta de protocolo
-        $tpAmb = $this->ide->getElementsByTagName('tpAmb')->item(0)->nodeValue;
-        //indicar cancelamento
-        $cStat = $this->getTagValue($this->cteProc, "cStat");
-        if ($cStat == '101' || $cStat == '135' || $this->cancelFlag === true) {
-            //101 Cancelamento
+        $resp = $this->statusCTe();
+        if (!$resp['status']) {
+            $n = count($resp['message']);
+            $alttot = $n * 15;
             $x = 10;
-            $y = $this->hPrint - 130;
-            $h = 25;
+            $y = $this->hPrint / 2 - $alttot / 2;
+            $h = 15;
             $w = $maxW - (2 * $x);
-            $this->pdf->setTextColor(90, 90, 90);
-            $texto = "CTe CANCELADO";
-            $aFont = array(
-                'font' => $this->fontePadrao,
-                'size' => 48,
-                'style' => 'B');
-            $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            $this->pdf->setTextColor(0, 0, 0);
-        }
-        $cStat = $this->getTagValue($this->cteProc, "cStat");
-        if ($cStat == '110' ||
-            $cStat == '301' ||
-            $cStat == '302'
-        ) {
-            //110 Denegada
-            $x = 10;
-            $y = $this->hPrint - 130;
-            $h = 25;
-            $w = $maxW - (2 * $x);
-            $this->pdf->setTextColor(90, 90, 90);
-            $texto = "CTe USO DENEGADO";
-            $aFont = array(
-                'font' => $this->fontePadrao,
-                'size' => 48,
-                'style' => 'B');
-            $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            $y += $h;
-            $h = 5;
-            $w = $maxW - (2 * $x);
-            $texto = "SEM VALOR FISCAL";
-            $aFont = array(
-                'font' => $this->fontePadrao,
-                'size' => 48,
-                'style' => 'B');
-            $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            $this->pdf->setTextColor(0, 0, 0);
-        }
-        //indicar sem valor
-        if ($tpAmb != 1 && $this->preVisualizar == '0') { // caso não seja uma DA de produção
-            $x = 10;
-            if ($this->orientacao == 'P') {
-                $y = round($this->hPrint * 2 / 3, 0);
-            } else {
-                $y = round($this->hPrint / 2, 0);
+            $this->pdf->settextcolor(90, 90, 90);
+            foreach ($resp['message'] as $msg) {
+                $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
+                $this->pdf->textBox($x, $y, $w, $h, $msg, $aFont, 'C', 'C', 0, '');
+                $y += $h;
             }
-            $h = 5;
-            $w = $maxW - (2 * $x);
-            $this->pdf->setTextColor(90, 90, 90);
-            $texto = "SEM VALOR FISCAL";
-            $aFont = array(
-                'font' => $this->fontePadrao,
-                'size' => 48,
-                'style' => 'B');
-            $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            $aFont = array(
-                'font' => $this->fontePadrao,
-                'size' => 30,
-                'style' => 'B');
-            $texto = "AMBIENTE DE HOMOLOGAÇÃO";
-            $this->pdf->textBox($x, $y + 14, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            $this->pdf->setTextColor(0, 0, 0);
-        } elseif ($this->preVisualizar == '1') { // caso seja uma DA de Pré-Visualização
-            $h = 5;
-            $w = $maxW - (2 * 10);
-            $x = 55;
-            $y = 240;
-            $this->pdf->setTextColor(255, 100, 100);
-            $aFont = array(
-                'font' => $this->fontePadrao,
-                'size' => 40,
-                'style' => 'B');
-            $texto = "Pré-visualização";
-            $this->pTextBox90($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            $this->pdf->setTextColor(255, 100, 100);
-            $aFont = array(
-                'font' => $this->fontePadrao,
-                'size' => 41,
-                'style' => 'B');
-            $texto = "Sem Validade Jurídica";
-            $this->pTextBox90($x + 20, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            $this->pdf->setTextColor(90, 90, 90);
-            $texto = "SEM VALOR FISCAL";
-            $aFont = array(
-                'font' => $this->fontePadrao,
-                'size' => 48,
-                'style' => 'B');
-            $this->pTextBox90($x + 40, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            $this->pdf->setTextColor(0, 0, 0); // voltar a cor default
-        } else {
-            $x = 10;
-            if ($this->orientacao == 'P') {
-                $y = round($this->hPrint * 2 / 3, 0);
-            } else {
-                $y = round($this->hPrint / 2, 0);
-            } //fim orientacao
-            $h = 5;
-            $w = $maxW - (2 * $x);
-            $this->pdf->setTextColor(90, 90, 90);
-            //indicar FALTA DO PROTOCOLO se NFe não for em contingência
-            if (($this->tpEmis == 5 || $this->tpEmis == 7 || $this->tpEmis == 8) && !empty($this->numdepec)) {
-                //Contingência
-                $texto = "DACTE Emitido em Contingência";
-                $aFont = array(
-                    'font' => $this->fontePadrao,
-                    'size' => 48,
-                    'style' => 'B');
+            $texto = $resp['submessage'];
+            if (!empty($texto)) {
+                $y += 3;
+                $h = 5;
+                $aFont = ['font' => $this->fontePadrao, 'size' => 20, 'style' => 'B'];
                 $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-                $aFont = array(
-                    'font' => $this->fontePadrao,
-                    'size' => 30,
-                    'style' => 'B');
-                $texto = "devido à problemas técnicos";
-                $this->pdf->textBox($x, $y + 12, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            } else {
-                if (!isset($this->protCTe)) {
-                    if (!empty($this->numdepec)) {
-                        $texto = "SEM VALOR FISCAL";
-                        $aFont = array(
-                            'font' => $this->fontePadrao,
-                            'size' => 48,
-                            'style' => 'B');
-                        $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-                    }
-                    $aFont = array(
-                        'font' => $this->fontePadrao,
-                        'size' => 30,
-                        'style' => 'B');
-                    $texto = "FALTA PROTOCOLO DE APROVAÇÃO DA SEFAZ";
-                    if (!empty($this->numdepec)) {
-                        $this->pdf->textBox($x, $y + 12, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-                    } else {
-                        $this->pdf->textBox($x, $y + 25, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-                    }
-                } //fim cteProc
-                if ($this->tpEmis == 4) {
-                    //DPEC
-                    $x = 10;
-                    $y = $this->hPrint - 130;
-                    $h = 25;
-                    $w = $maxW - (2 * $x);
-                    $this->pdf->setTextColor(200, 200, 200); // 90,90,90 é muito escuro
-                    $texto = "DACTE impresso em contingência -\n"
-                        . "DPEC regularmente recebido pela Receita\n"
-                        . "Federal do Brasil";
-                    $aFont = array(
-                        'font' => $this->fontePadrao,
-                        'size' => 48,
-                        'style' => 'B');
-                    $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-                    $this->pdf->setTextColor(0, 0, 0);
-                }
-            } //fim tpEmis
-            $this->pdf->setTextColor(0, 0, 0);
+                $y += $h;
+            }
+            $y += 5;
+            $w = $maxW - (2 * $x);
+            $texto = "SEM VALOR FISCAL";
+            $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
+            $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+            $this->pdf->settextcolor(0, 0, 0);
         }
-        return $oldY;
+        return $oldY + 8;
+    }
+
+    /**
+     * Verifica o status da CTe
+     *
+     * @return array
+     */
+    protected function statusCTe()
+    {
+        $resp = [
+            'status' => true,
+            'message' => [],
+            'submessage' => ''
+        ];
+        if (!isset($this->cteProc)) {
+            $resp['status'] = false;
+            $resp['message'][] = 'CTe NÃO PROTOCOLADO';
+        } else {
+            if ($this->getTagValue($this->ide, "tpAmb") == '2' && $this->preVisualizar == '0') {
+                $resp['status'] = false;
+                $resp['message'][] = "CTe EMITIDO EM HOMOLOGAÇÃO";
+            } elseif ($this->preVisualizar == '1') {
+                $resp['status'] = false;
+                $resp['message'][] = "PRÉ-VISUALIZAÇÃO";
+            }
+            $retEvento = $this->cteProc->getElementsByTagName('retEventoCTe')->item(0);
+            $cStat = $this->getTagValue($this->cteProc, "cStat");
+            if ($cStat == '110' ||
+                $cStat == '301' ||
+                $cStat == '302'
+            ) {
+                $resp['status'] = false;
+                $resp['message'][] = "CTe DENEGADO";
+            } elseif ($cStat == '101'
+                || $cStat == '151'
+                || $cStat == '135'
+                || $cStat == '155'
+                || $this->cancelFlag === true
+            ) {
+                $resp['status'] = false;
+                $resp['message'][] = "CTe CANCELADO";
+            } elseif (!empty($retEvento)) {
+                $infEvento = $retEvento->getElementsByTagName('infEvento')->item(0);
+                $cStat = $this->getTagValue($infEvento, "cStat");
+                $tpEvento = $this->getTagValue($infEvento, "tpEvento");
+                $dhEvento = date("d/m/Y H:i:s", $this->toTimestamp($this->getTagValue($infEvento, "dhRegEvento")));
+                $nProt = $this->getTagValue($infEvento, "nProt");
+                if ($tpEvento == '110111'
+                    && ($cStat == '101'
+                        || $cStat == '151'
+                        || $cStat == '135'
+                        || $cStat == '155'
+                    )) {
+                    $resp['status'] = false;
+                    $resp['message'][] = "CTe CANCELADO";
+                    $resp['submessage'] = "{$dhEvento} - {$nProt}";
+                }
+            } elseif (($this->tpEmis == 5 || $this->tpEmis == 7 || $this->tpEmis == 8) && !empty($this->numdepec)) {
+                $resp['status'] = true;
+                $resp['message'][] = "CTe Emitido em Contingência";
+                $resp['message'][] = "devido à problemas técnicos";
+            } elseif ($this->tpEmis == 4) {
+                $resp['status'] = true;
+                $resp['message'][] = "CTe impresso em contingência -";
+                $resp['message'][] = "DPEC regularmente recebido pela Receita";
+                $resp['message'][] = "Federal do Brasil";
+            }
+        }
+        return $resp;
     }
 
     /**
@@ -1162,13 +1097,13 @@ class Dacte extends DaCommon
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $aFont = $this->formatNegrito;
-        $texto = $this->getTagValue($this->enderReme, "xLgr") . ',';
+        $texto = $this->getTagValue($this->enderReme, "xLgr") . ', ';
         $texto .= $this->getTagValue($this->enderReme, "nro");
-        $texto .= ($this->getTagValue($this->enderReme, "xCpl") != "") ?
-            ' - ' . $this->getTagValue($this->enderReme, "xCpl") : '';
         $this->pdf->textBox($x1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $y += 3;
-        $texto = $this->getTagValue($this->enderReme, "xBairro");
+        $texto = ($this->getTagValue($this->enderReme, "xCpl") != "") ?
+            $this->getTagValue($this->enderReme, "xCpl") . ' - ' : '';
+        $texto .= $this->getTagValue($this->enderReme, "xBairro");
         $this->pdf->textBox($x1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $y += 3;
         $texto = 'MUNICÍPIO';
@@ -1250,13 +1185,13 @@ class Dacte extends DaCommon
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $aFont = $this->formatNegrito;
-        $texto = $this->getTagValue($this->enderDest, "xLgr") . ',';
+        $texto = $this->getTagValue($this->enderDest, "xLgr") . ', ';
         $texto .= $this->getTagValue($this->enderDest, "nro");
-        $texto .= $this->getTagValue($this->enderDest, "xCpl") != "" ?
-            ' - ' . $this->getTagValue($this->enderDest, "xCpl") : '';
         $this->pdf->textBox($x1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $y += 3;
-        $texto = $this->getTagValue($this->enderDest, "xBairro");
+        $texto = $this->getTagValue($this->enderDest, "xCpl") != "" ?
+            $this->getTagValue($this->enderDest, "xCpl") . ' - ' : '';
+        $texto .= $this->getTagValue($this->enderDest, "xBairro");
         $this->pdf->textBox($x1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $y += 3;
         $texto = 'MUNICÍPIO';
@@ -1337,29 +1272,20 @@ class Dacte extends DaCommon
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $aFont = $this->formatNegrito;
-        if (isset($this->enderExped)) {
-            $texto = $this->getTagValue($this->enderExped, "xLgr") . ', ';
-            $texto .= $this->getTagValue($this->enderExped, "nro");
-            $texto .= $this->getTagValue($this->enderExped, "xCpl") != "" ?
-                ' - ' . $this->getTagValue($this->enderExped, "xCpl") :
-                '';
-        } else {
-            $texto = '';
-        }
+        $texto = $this->getTagValue($this->enderExped, "xLgr") . ', ';
+        $texto .= $this->getTagValue($this->enderExped, "nro");
         $this->pdf->textBox($x1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $y += 3;
-        $texto = $this->getTagValue($this->enderExped, "xBairro");
+        $texto = $this->getTagValue($this->enderExped, "xCpl") != "" ?
+        $this->getTagValue($this->enderExped, "xCpl") . ' - ' : '';
+        $texto .= $this->getTagValue($this->enderExped, "xBairro");
         $this->pdf->textBox($x1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $y += 3;
         $texto = 'MUNICÍPIO';
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        if (isset($this->enderExped)) {
-            $texto = $this->getTagValue($this->enderExped, "xMun") . ' - ';
-            $texto .= $this->getTagValue($this->enderExped, "UF");
-        } else {
-            $texto = '';
-        }
+        $texto = $this->getTagValue($this->enderExped, "xMun") . ' - ';
+        $texto .= $this->getTagValue($this->enderExped, "UF");
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x = $w - 18;
@@ -1396,11 +1322,9 @@ class Dacte extends DaCommon
         $texto = 'FONE';
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        if (isset($this->exped)) {
-            $texto = $this->getTagValue($this->exped, "fone") != "" ? $this->formatFone($this->exped) : '';
-            $aFont = $this->formatNegrito;
-            $this->pdf->textBox($x + 8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        }
+        $texto = $this->getTagValue($this->exped, "fone") != "" ? $this->formatFone($this->exped) : '';
+        $aFont = $this->formatNegrito;
+        $this->pdf->textBox($x + 8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
     }
 
     /**
@@ -1434,29 +1358,20 @@ class Dacte extends DaCommon
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $aFont = $this->formatNegrito;
-        if (isset($this->enderReceb)) {
-            $texto = $this->getTagValue($this->enderReceb, "xLgr") . ', ';
-            $texto .= $this->getTagValue($this->enderReceb, "nro");
-            $texto .= ($this->getTagValue($this->enderReceb, "xCpl") != "") ?
-                ' - ' . $this->getTagValue($this->enderReceb, "xCpl") :
-                '';
-        } else {
-            $texto = '';
-        }
+        $texto = $this->getTagValue($this->enderReceb, "xLgr") . ', ';
+        $texto .= $this->getTagValue($this->enderReceb, "nro");
         $this->pdf->textBox($x1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $y += 3;
-        $texto = $this->getTagValue($this->enderReceb, "xBairro");
+        $texto = ($this->getTagValue($this->enderReceb, "xCpl") != "") ?
+            $this->getTagValue($this->enderReceb, "xCpl") . ' - ' : '';
+        $texto .= $this->getTagValue($this->enderReceb, "xBairro");
         $this->pdf->textBox($x1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $y += 3;
         $texto = 'MUNICÍPIO';
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        if (isset($this->enderReceb)) {
-            $texto = $this->getTagValue($this->enderReceb, "xMun") . ' - ';
-            $texto .= $this->getTagValue($this->enderReceb, "UF");
-        } else {
-            $texto = '';
-        }
+        $texto = $this->getTagValue($this->enderReceb, "xMun") . ' - ';
+        $texto .= $this->getTagValue($this->enderReceb, "UF");
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x = $w - 19 + $oldX;
@@ -1493,11 +1408,9 @@ class Dacte extends DaCommon
         $texto = 'FONE';
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        if (isset($this->receb)) {
-            $texto = $this->getTagValue($this->receb, "fone") != "" ? $this->formatFone($this->receb) : '';
-            $aFont = $this->formatNegrito;
-            $this->pdf->textBox($x + 8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        }
+        $texto = $this->getTagValue($this->receb, "fone") != "" ? $this->formatFone($this->receb) : '';
+        $aFont = $this->formatNegrito;
+        $this->pdf->textBox($x + 8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
     }
 
     /**
@@ -1643,7 +1556,8 @@ class Dacte extends DaCommon
         $qCarga = 0;
         foreach ($this->infQ as $infQ) {
             if (in_array($this->getTagValue($infQ, "cUnid"), array('01', '02'))) {
-                $qCarga += (float)$this->getTagValue($infQ, "qCarga");
+                $qCarga += $this->getTagValue($infQ, "cUnid") == '01' ?
+                    $this->getTagValue($infQ, "qCarga") : $this->getTagValue($infQ, "qCarga") * 1000;
             }
         }
         $texto = 'PESO BRUTO (KG)';
@@ -3641,21 +3555,22 @@ class Dacte extends DaCommon
         $y = $y + 5;
         $this->pdf->line($x, $y + 3, $w * 0.255, $y + 3); // LINHA HORIZONTAL ACIMA DO RG ABAIXO DO NOME
         $texto = 'RG';
-        $aFont = array(
-            'font' => $this->fontePadrao,
-            'size' => 6,
-            'style' => '');
+        $aFont = ['font' => $this->fontePadrao,'size' => 6,'style' => ''];
         $this->pdf->textBox($x, $y + 3, $w * 0.33, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x += $w * 0.85;
         $this->pdf->line($x, $y + 11.5, $x, $y - 5); // LINHA VERTICAL PROXIMO AO CT-E
         $texto = "CT-E";
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x, $y - 5, $w * 0.15, $h, $texto, $aFont, 'T', 'C', 0, '');
-        $texto = "\r\n Nº. DOCUMENTO  " . $this->getTagValue($this->ide, "nCT") . " \n";
-        $texto .= "\r\n SÉRIE  " . $this->getTagValue($this->ide, "serie");
+        $numCTe = str_pad($this->getTagValue($this->ide, "nCT"), 9, '0', STR_PAD_LEFT);
+        $texto = "Nº. " . $this->formatField($numCTe, "###.###.###") . "\n";
+        //$texto = "\r\n Nº. DOCUMENTO  " . $this->getTagValue($this->ide, "nCT") . " \n";
+        $numSerie = str_pad($this->getTagValue($this->ide, "serie"), 3, '0', STR_PAD_LEFT);
+        $texto .= "Série {$numSerie}";
+        //$texto .= "\r\n SÉRIE  " . $this->getTagValue($this->ide, "serie");
         $aFont = array(
             'font' => $this->fontePadrao,
-            'size' => 6,
+            'size' => 10,
             'style' => '');
         $this->pdf->textBox($x, $y - 8, $w * 0.15, $h, $texto, $aFont, 'C', 'C', 0, '');
         $x = $oldX;
@@ -3781,7 +3696,9 @@ class Dacte extends DaCommon
             $fone = !empty($field->getElementsByTagName("fone")->item(0)->nodeValue) ?
                 $field->getElementsByTagName("fone")->item(0)->nodeValue : '';
             $foneLen = strlen($fone);
-            if ($foneLen > 0) {
+            if ($foneLen == 11 && $fone[0] != 0) {
+                $fone = '(' . substr($fone, 0, 2) . ') ' . substr($fone, 2, 5) . '-' . substr($fone, 7);
+            } elseif ($foneLen > 0) {
                 $fone2 = substr($fone, 0, $foneLen - 4);
                 $fone1 = substr($fone, 0, $foneLen - 8);
                 $fone = '(' . $fone1 . ') ' . substr($fone2, -4) . '-' . substr($fone, -4);
