@@ -469,7 +469,7 @@ class DanfeSimples extends DaCommon
         $this->pdf->setFont('Arial', '', $pequeno ? 9 : 10);
         $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$enderecoLinha2}", 1, 1, 'C', 1);
 
-        if ($this->nfeArray['NFe']['infNFe']['transp']['modFrete'] != 9) {
+        if ($this->nfeArray['NFe']['infNFe']['transp']['modFrete'] != 9 && isset($this->nfeArray['NFe']['infNFe']['transp']['transporta']) ) {
             $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
             $this->pdf->cell(($c1 * 4), $pequeno ? 5 : 6, "TRANSPORTADORA", 1, 1, 'C', 1);
             $this->pdf->setFont('Arial', '', $pequeno ? 9 : 10);
