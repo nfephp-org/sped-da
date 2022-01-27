@@ -706,7 +706,7 @@ class Danfe extends DaCommon
             $y = $this->margsup;
             //coloca o cabeçalho na página adicional
             $y = $this->header($x, $y, $n, $totPag);
-            //coloca os itens na página adicional        
+            //coloca os itens na página adicional
             $y = $this->itens($x, $y + 1, $nInicial, $hDispo2, $n, $totPag, $hCabecItens);
             //coloca o rodapé da página
             if ($this->orientacao == 'P') {
@@ -902,8 +902,7 @@ class Danfe extends DaCommon
             if (in_array($cStat, ['110', '205', '301', '302', '303'])) {
                 $resp['status'] = false;
                 $resp['message'][] = "NFe DENEGADA";
-            } elseif (
-                in_array($cStat, ['101', '151', '135', '155'])
+            } elseif (in_array($cStat, ['101', '151', '135', '155'])
                 || $this->cancelFlag === true
             ) {
                 $resp['status'] = false;
@@ -914,8 +913,7 @@ class Danfe extends DaCommon
                 $tpEvento = $this->getTagValue($infEvento, "tpEvento");
                 $dhEvento = $this->toDateTime($this->getTagValue($infEvento, "dhRegEvento"))->format("d/m/Y H:i:s");
                 $nProt = $this->getTagValue($infEvento, "nProt");
-                if (
-                    $tpEvento == '110111' &&
+                if ($tpEvento == '110111' &&
                     ($cStat == '101' ||
                         $cStat == '151' ||
                         $cStat == '135' ||
@@ -1477,8 +1475,7 @@ class Danfe extends DaCommon
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         $texto = $this->dest->getElementsByTagName("xMun")->item(0)->nodeValue;
-        if (
-            strtoupper(trim($texto)) == "EXTERIOR"
+        if (strtoupper(trim($texto)) == "EXTERIOR"
             && $this->dest->getElementsByTagName("xPais")->length > 0
         ) {
             $texto .= " - " . $this->dest->getElementsByTagName("xPais")->item(0)->nodeValue;
@@ -3266,10 +3263,12 @@ class Danfe extends DaCommon
         $yVeic += $h;
         $yVeic = $y + $h + 8;
         $xVeic = $xVeic + 55;
-        $texto = 'Especie.................................: ' . ($renavamEspecie[intval($veiculoEspecie)] ?? $veiculoEspecie);
+        $texto = 'Especie.................................: '
+            . ($renavamEspecie[intval($veiculoEspecie)] ?? $veiculoEspecie);
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Combustivel.........................: ' . ($renavamCombustivel[intval($veiculoCombustivel)] ?? $veiculoCombustivel);
+        $texto = 'Combustivel.........................: '
+            . ($renavamCombustivel[intval($veiculoCombustivel)] ?? $veiculoCombustivel);
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
         $texto = 'Serial....................................: ' . $veiculoSerial;
