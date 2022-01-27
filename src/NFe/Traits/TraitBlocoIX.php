@@ -10,7 +10,7 @@ trait TraitBlocoIX
     protected function blocoIX($y)
     {
         $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
-        $valor = $this->getTagValue($this->ICMSTot, 'vTotTrib');
+        $valor = $this->getTagValue($this->imposto, 'vTotTrib');
         $trib = !empty($valor) ? number_format((float) $valor, 2, ',', '.') : '-----';
         $texto = "Tributos totais Incidentes (Lei Federal 12.741/2012): R$ {$trib}";
         $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
