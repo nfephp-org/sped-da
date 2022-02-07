@@ -889,6 +889,9 @@ class Danfe extends DaCommon
         if (!empty($this->epec) && $this->tpEmis == '4') {
             return $resp;
         }
+        if ($this->tpEmis == '5') {
+            return $resp;
+        }
         if (!isset($this->nfeProc)) {
             $resp['status'] = false;
             $resp['message'][] = 'NFe NÃO PROTOCOLADA';
