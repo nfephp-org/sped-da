@@ -210,7 +210,7 @@ class DanfeSimples extends DaCommon
         }
     }
 
-    protected function monta()
+    protected function monta($logo = null)
     {
         $this->pdf = '';
         //se a orientação estiver em branco utilizar o padrão estabelecido na NF
