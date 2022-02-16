@@ -31,14 +31,8 @@
     "require": {
         "php": ">= 7.4",
         "tecnickcom/tc-lib-barcode": "^1",
-        "nfephp-org/sped-common": "dev-php8.0-support"
+        "nfephp-org/sped-common": "^5.1.0"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@github.com:smallsoft-desenvolvimento3/sped-common.git"
-        }
-    ],
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.6",
         "phpunit/phpunit": "^9.3",
