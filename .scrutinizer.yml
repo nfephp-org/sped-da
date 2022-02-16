@@ -31,7 +31,7 @@ tools:
 build:
     environment:
         php:
-            version: 7.3
+            version: 7.4
         mysql: false
         postgresql: false
         redis: false
