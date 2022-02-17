@@ -271,14 +271,15 @@ class DanfeSimples extends DaCommon
         }
 
         foreach ($this->nfeArray['NFe']['infNFe']['transp']['vol'] as $vol) {
-            if (!isset($vol['esp'])) { // Espécie não especificada na transportadora (por erro de preenchimento do XML)
-                continue;
+
+            $espVolume = isset($vol['esp']) ? $vol['esp'] : 'VOLUME';  //Caso não esteja especificado no xml, irá ser mostrado no danfe a palavra VOLUME
+
+            if (!isset($volumes[$espVolume])) {
+                $volumes[$espVolume] = 0;
             }
-            if (!isset($volumes[$vol['esp']])) {
-                $volumes[$vol['esp']] = 0;
-            }
+            
             // Caso a quantidade de volumes não esteja presente no XML, soma-se zero
-            $volumes[$vol['esp']] += @$vol['qVol'];
+            $volumes[$espVolume] += @$vol['qVol'];
             // Caso a quantidade de volumes não esteja presente no XML, soma-se zero
             $totalVolumes += @$vol['qVol'] ?: 0;
             // Caso o peso bruto não esteja presente no XML, soma-se zero
