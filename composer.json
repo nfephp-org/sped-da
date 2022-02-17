@@ -37,7 +37,7 @@
         "squizlabs/php_codesniffer": "^3.6",
         "phpunit/phpunit": "^9.3",
         "scrutinizer/ocular": "^1.8",
-        "phpstan/phpstan": "^1.4",
+        "phpstan/stan": "^1.4",
         "sebastian/phpcpd": "^6.0"
     },
     "suggest": {
