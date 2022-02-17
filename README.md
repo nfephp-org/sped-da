@@ -11,6 +11,7 @@ Classes para geração dos documentos auxiliares usados pelos padrões Sped
 > Estas classes devem ser e permanecer tão genéricas e simples quanto possivel.
 > Se você necessita que o DANFE ou qualquer outro documento seja diferente em termos de recursos que esses disponíveis, CRIE o seu próprio gerador de PDF.
 
+![PHP Supported Version][ico-php]
 ![Actions](https://github.com/nfephp-org/sped-da/actions/workflows/ci.yml/badge.svg)
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![License][ico-license]][link-packagist]
@@ -105,7 +106,7 @@ Newton Pasqualini Filho (DANFE Simplificado)
 
 Este pacote está diponibilizado sob LGPLv3 ou MIT License (MIT). Leia  [Arquivo de Licença](LICENSE) para maiores informações.
 
-
+[ico-php]: https://img.shields.io/packagist/php-v/nfephp-org/sped-da
 [ico-stars]: https://img.shields.io/github/stars/nfephp-org/sped-nfe.svg?style=flat-square
 [ico-forks]: https://img.shields.io/github/forks/nfephp-org/sped-da.svg?style=flat-square
 [ico-issues]: https://img.shields.io/github/issues/nfephp-org/sped-da.svg?style=flat-square
