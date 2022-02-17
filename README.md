@@ -11,7 +11,7 @@ Classes para geração dos documentos auxiliares usados pelos padrões Sped
 > Estas classes devem ser e permanecer tão genéricas e simples quanto possivel.
 > Se você necessita que o DANFE ou qualquer outro documento seja diferente em termos de recursos que esses disponíveis, CRIE o seu próprio gerador de PDF.
 
-
+![Actions](https://github.com/nfephp-org/sped-da/actions/workflows/ci.yml/badge.svg)
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![License][ico-license]][link-packagist]
 [![Total Downloads][ico-downloads]][link-downloads]
