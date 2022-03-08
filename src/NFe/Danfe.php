@@ -2696,6 +2696,8 @@ class Danfe extends DaCommon
                 $loteTxt .= ' ';
             }
         }
+        $infAdProd .= $this->itemVeiculoNovo($prod);
+        
         //NT2013.006 FCI
         $nFCI   = (!empty($itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue)) ?
             ' FCI:' . $itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue : '';
@@ -2710,6 +2712,173 @@ class Danfe extends DaCommon
 
         return $texto;
     }
+    
+    /**
+     * Inclui dados dos veiculos novos a descriçã do produto
+     * @param \DOMElement $prod
+     * @return string
+     */
+    protected function itemVeiculoNovo($prod)
+    {
+        $veicProd = !empty($prod->getElementsByTagName("veicProd")->item(0))
+            ? $prod->getElementsByTagName("veicProd")->item(0)
+            : null;
+        if (empty($veicProd)) {
+            return '';
+        }
+        $operacao = [
+            0 => 'OUTROS',
+            1 => 'VENDA CONCESSIONÁRIA',
+            2 => 'FATURAMENTO DIRETO CONSUMIDOR',
+            3 => 'VENDA DIRETA GDE CONSUMIDORES'
+        ];
+        $combustivel = [
+            1  => 'ALCOOL',
+            2  => 'GASOLINA',
+            3  => 'DIESEL',
+            4  => 'GASOGENIO',
+            5  => 'GAS METANO',
+            6  => 'ELETRICO/INTERNA',
+            7  => 'ELETRICO/EXTERNA',
+            8  => 'GASOL/GNC',
+            9  => 'ALCOOL/GNC',
+            10 => 'DIESEL/GNC',
+            11 => 'OBSERVACAO',
+            12 => 'ALCOOL/GNV',
+            13 => 'GASOLINA/GNV',
+            14 => 'DIESEL/GNV',
+            15 => 'GNV',
+            16 => 'ALCOOL/GASOLINA',
+            17 => 'GASOLINA/ALCOOL/GNV',
+            18 => 'GASOLINA/ELETRICO'
+        ];
+        $especie = [
+            1 => 'PASSAGEIRO',
+            2 => 'CARGA',
+            3 => 'MISTO',
+            4 => 'CORRIDA',
+            5 => 'TRACAO',
+            6 => 'ESPECIAL',
+            7 => 'COLECAO'
+        ];
+        $veiculo = [
+            2 => 'CICLOMOTO',
+            3 => 'MOTONETA',
+            4 => 'MOTOCICLO',
+            5 => 'TRICICLO',
+            6 => 'AUTOMÓVEL',
+            7 => 'MICRO-ÔNIBUS',
+            8 => 'ÔNIBUS',
+            10 => 'REBOQUE',
+            11 => 'SEMIRREBOQUE',
+            13 => 'CAMIONETA',
+            14 => 'CAMINHÃO',
+            17 => 'CAMINHÃO TRATOR',
+            18 => 'TRATOR RODAS',
+            19 => 'TRATOR ESTEIRAS',
+            20 => 'TRATOR MISTO',
+            21 => 'QUADRICICLO',
+            22 => 'ESP/ÔNIBUS',
+            23 => 'CAMINHONETE',
+            24 => 'CARGA/CAM',
+            25 => 'UTILITÁRIO',
+            26 => 'MOTOR-CASA',
+        ];
+        $pintura = [
+            'F' => 'FOSCA',
+            'S' => 'SÓLIDA',
+            'P' => 'PEROLIZADA',
+            'M' => 'METALICA',
+        ];
+        $cor = [
+            1 => 'AMARELO',
+            2 => 'AZUL',
+            3 => 'BEGE',
+            4 => 'BRANCA',
+            5 => 'CINZA',
+            6 => 'DOURADA',
+            7 => 'GRENA',
+            8 => 'LARANJA',
+            9 => 'MARROM',
+            10 => 'PRATA',
+            11 => 'PRETA',
+            12 => 'ROSA',
+            13 => 'ROXA',
+            14 => 'VERDE',
+            15 => 'VERMELHA',
+            16 => 'FANTASIA',
+        ];
+        $condicao = [
+            1 => 'ACABADO',
+            2 => 'INACABADO',
+            3 => 'SEMI-ACABADO'
+        ];
+        $restricao = [
+            0 => 'NÃO HÁ',
+            1 => 'ALIENAÇÃO FIDUCIÁRIA',
+            2 => 'ARRENDAMENTO MERCANTIL',
+            3 => 'RESERVA DE DOMÍNIO',
+            4 => 'PENHOR DE VEÍCULOS',
+            9 => 'OUTRAS',
+        ];
+        $content = "";
+        
+        $tpOp = $veicProd->getElementsByTagName("tpOp")->item(0)->nodeValue;
+        $op = $operacao[$tpOp];
+        $content .= "TIPO DE OPERAÇÃO: {$tpOp} - {$op}\n";
+        $chassi = $veicProd->getElementsByTagName("chassi")->item(0)->nodeValue;
+        $content .= "CHASSI: {$chassi}\n";
+        $cCor = $veicProd->getElementsByTagName("cCor")->item(0)->nodeValue;
+        $xCor = $veicProd->getElementsByTagName("xCor")->item(0)->nodeValue;
+        $content .= "COR: {$cCor} - {$xCor}\n";
+        $pot = $veicProd->getElementsByTagName("pot")->item(0)->nodeValue;
+        $content .= "POTENCIA: {$pot} CV\n";
+        $cilin = $veicProd->getElementsByTagName("cilin")->item(0)->nodeValue;
+        $content .= "CILINDRADAS: {$cilin} CC\n";
+        $pesoL = $veicProd->getElementsByTagName("pesoL")->item(0)->nodeValue;
+        $content .= "PESO LIQ: {$pot} kg\n";
+        $pesoB = $veicProd->getElementsByTagName("pesoB")->item(0)->nodeValue;
+        $content .= "PESO BRUTO: {$pot} kg\n";
+        $nserie = $veicProd->getElementsByTagName("nSerie")->item(0)->nodeValue;
+        $content .= "SERIE: {$nserie}\n";
+        $tpComb = $veicProd->getElementsByTagName("tpComb")->item(0)->nodeValue;
+        $content .= "COMBUSTIVEL: {$tpComb} - " .  $combustivel[$tpComb] . "\n";
+        $nMotor = $veicProd->getElementsByTagName("nMotor")->item(0)->nodeValue;
+        $content .= "MOTOR n.: {$nMotor}\n";
+        $cmt = $veicProd->getElementsByTagName("CMT")->item(0)->nodeValue;
+        $content .= "CAPACIDADE MAX TRAÇÃO: {$cmt}\n";
+        $dist = $veicProd->getElementsByTagName("dist")->item(0)->nodeValue;
+        $content .= "DIST. ENTRE EIXOS: {$dist}\n";
+        $anoMod = $veicProd->getElementsByTagName("anoMod")->item(0)->nodeValue;
+        $content .= "ANO DO MODELO: {$anoMod}\n";
+        $anoFab = $veicProd->getElementsByTagName("anoMod")->item(0)->nodeValue;
+        $content .= "ANO FABRICAÇÃO: {$anoFab}\n";
+        $tpPint = $veicProd->getElementsByTagName("tpPint")->item(0)->nodeValue;
+        $content .= "TIPO PINTURA: {$tpPint}\n";
+        $tpVeic = $veicProd->getElementsByTagName("tpVeic")->item(0)->nodeValue;
+        $content .= "TIPO DE VEÌCULO: {$tpVeic} - " . $veiculo[$tpVeic] . "\n";
+        $espVeic = $veicProd->getElementsByTagName("espVeic")->item(0)->nodeValue;
+        $content .= "ESPÉCIE DO VEÍCULO: {$espVeic} - " . $especie[$espVeic] . "\n";
+        $vin = $veicProd->getElementsByTagName("VIN")->item(0)->nodeValue;
+        if ($vin == 'N') {
+            $content .= "VIN (CHASSI): N - NORMAL\n";
+        } else {
+            $content .= "VIN (CHASSI): R - REMARCADO\n";
+        }
+        $condVeic = $veicProd->getElementsByTagName("condVeic")->item(0)->nodeValue;
+        $content .= "CONDIÇÃO DO VEÍCULO: {$condVeic}" . $condicao[$condVeic] . "\n";
+        $cMod = $veicProd->getElementsByTagName("cMod")->item(0)->nodeValue;
+        $content .= "CÓDIGO MARCA/MODELO: {$cMod}\n";
+        $corDen = $veicProd->getElementsByTagName("cCorDENATRAN")->item(0)->nodeValue;
+        $content .= "COR DENATRAN: {$corDen} - " . $cor[$corDen] . "\n";
+        $lota = $veicProd->getElementsByTagName("lota")->item(0)->nodeValue;
+        $content .= "LOTAÇÃO MAX.: {$lota}\n";
+        $tpRest = $veicProd->getElementsByTagName("tpRest")->item(0)->nodeValue;
+        $content .= "RESTRIÇÃO: {$tpRest} - " . $restricao[$tpRest];
+        
+        return $content;
+    }
+    
 
     /**
      * itens
@@ -3126,6 +3295,8 @@ class Danfe extends DaCommon
 
     protected function dadosItenVeiculoDANFE($x, $y, &$nInicio, $h, $prod)
     {
+        return;
+        
         $oldX = $x;
         $oldY = $y;
 

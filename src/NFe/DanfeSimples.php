@@ -271,8 +271,8 @@ class DanfeSimples extends DaCommon
         }
 
         foreach ($this->nfeArray['NFe']['infNFe']['transp']['vol'] as $vol) {
-
-            $espVolume = isset($vol['esp']) ? $vol['esp'] : 'VOLUME';  //Caso não esteja especificado no xml, irá ser mostrado no danfe a palavra VOLUME
+            $espVolume = isset($vol['esp']) ? $vol['esp'] : 'VOLUME';
+            //Caso não esteja especificado no xml, irá ser mostrado no danfe a palavra VOLUME
 
             if (!isset($volumes[$espVolume])) {
                 $volumes[$espVolume] = 0;
