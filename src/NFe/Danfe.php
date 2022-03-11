@@ -1210,7 +1210,7 @@ class Danfe extends DaCommon
                     $dtHora = $this->toDateTime(
                         $this->nfeProc->getElementsByTagName("dhRecbto")->item(0)->nodeValue
                     );
-                    if ($texto != '') {
+                    if ($texto != '' && $dtHora) {
                         $texto .= "  -  " . $dtHora->format('d/m/Y H:i:s');
                     }
                     $cStat = $this->nfeProc->getElementsByTagName("cStat")->item(0)->nodeValue;
