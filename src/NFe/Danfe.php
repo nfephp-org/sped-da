@@ -2836,9 +2836,9 @@ class Danfe extends DaCommon
         $cilin = $veicProd->getElementsByTagName("cilin")->item(0)->nodeValue;
         $content .= "CILINDRADAS: {$cilin} CC\n";
         $pesoL = $veicProd->getElementsByTagName("pesoL")->item(0)->nodeValue;
-        $content .= "PESO LIQ: {$pot} kg\n";
+        $content .= "PESO LIQ: {$pesoL} kg\n";
         $pesoB = $veicProd->getElementsByTagName("pesoB")->item(0)->nodeValue;
-        $content .= "PESO BRUTO: {$pot} kg\n";
+        $content .= "PESO BRUTO: {$pesoB} kg\n";
         $nserie = $veicProd->getElementsByTagName("nSerie")->item(0)->nodeValue;
         $content .= "SERIE: {$nserie}\n";
         $tpComb = $veicProd->getElementsByTagName("tpComb")->item(0)->nodeValue;
@@ -2866,7 +2866,7 @@ class Danfe extends DaCommon
             $content .= "VIN (CHASSI): R - REMARCADO\n";
         }
         $condVeic = $veicProd->getElementsByTagName("condVeic")->item(0)->nodeValue;
-        $content .= "CONDIÇÃO DO VEÍCULO: {$condVeic}" . $condicao[$condVeic] . "\n";
+        $content .= "CONDIÇÃO DO VEÍCULO: {$condVeic} - " . $condicao[$condVeic] . "\n";
         $cMod = $veicProd->getElementsByTagName("cMod")->item(0)->nodeValue;
         $content .= "CÓDIGO MARCA/MODELO: {$cMod}\n";
         $corDen = $veicProd->getElementsByTagName("cCorDENATRAN")->item(0)->nodeValue;
