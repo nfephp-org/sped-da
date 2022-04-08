@@ -11,10 +11,10 @@ class Pdf extends Fpdf
     private $aSet="";                                          // grupo A do conjunto de de caracteres legiveis
     private $bSet="";                                          // grupo B do conjunto de caracteres legiveis
     private $cSet="";                                          // grupo C do conjunto de caracteres legiveis
-    private $setFrom;                                          // converter de
-    private $setTo;                                            // converter para
-    private $jStart = ["A"=>103, "B"=>104, "C"=>105];     // Caracteres de seleção do grupo 128
-    private $jSwap = ["A"=>101, "B"=>100, "C"=>99];       // Caracteres de troca de grupo
+    private $setFrom = ["A" => 0, "B" => 0, "C" => 0];         // converter de
+    private $setTo = ["A" => 0, "B" => 0, "C" => 0];           // converter para
+    private $jStart = ["A"=> 103, "B"=> 104, "C" => 105];      // Caracteres de seleção do grupo 128
+    private $jSwap = ["A" => 101, "B" => 100, "C" => 99];      // Caracteres de troca de grupo
 
     public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4')
     {
