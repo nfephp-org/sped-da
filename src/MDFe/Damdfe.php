@@ -16,9 +16,9 @@ namespace NFePHP\DA\MDFe;
  */
 
 use Com\Tecnick\Barcode\Barcode;
+use NFePHP\DA\Common\DaCommon;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
-use NFePHP\DA\Common\DaCommon;
 
 class Damdfe extends DaCommon
 {
@@ -56,7 +56,8 @@ class Damdfe extends DaCommon
      */
     public function __construct(
         $xml
-    ) {
+    )
+    {
         $this->loadDoc($xml);
     }
 
@@ -127,11 +128,10 @@ class Damdfe extends DaCommon
             $this->aquav = $this->dom->getElementsByTagName("aquav")->item(0);
             $this->ferrov = $this->dom->getElementsByTagName("ferrov")->item(0);
             if (!empty($this->rodo)) {
+                $this->RNTRC = "";
                 $infANTT = $this->rodo->getElementsByTagName("infANTT")->item(0);
-                try {
+                if (!empty($infANTT)) {
                     $this->RNTRC = $infANTT->getElementsByTagName("RNTRC")->item(0)->nodeValue;
-                } catch (\Exception $e) {
-                    $this->RNTRC = "";
                 }
             }
             $this->ciot = "";
@@ -162,7 +162,8 @@ class Damdfe extends DaCommon
 
     protected function monta(
         $logo = ''
-    ) {
+    )
+    {
         $this->pdf = '';
         if (!empty($logo)) {
             $this->logomarca = $this->adjustImage($logo);
