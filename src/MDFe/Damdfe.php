@@ -260,19 +260,20 @@ class Damdfe extends DaCommon
         $h = 30;
         $oldY += $h;
         $this->pdf->textBox($x, $y, $w, $h, '', $this->baseFont, 'T', 'L', 0);
-        if (is_file($this->logomarca)) {
+        if (!empty($this->logomarca)) {
             $logoInfo = getimagesize($this->logomarca);
             //largura da imagem em mm
             $logoWmm = ($logoInfo[0] / 72) * 25.4;
             //altura da imagem em mm
             $logoHmm = ($logoInfo[1] / 72) * 25.4;
             if ($this->logoAlign == 'L') {
-                $nImgW = round($w / 3, 0);
-                $nImgH = round($logoHmm * ($nImgW / $logoWmm), 0);
+                // ajusta a dimensão do logo
+                $nImgW = round((round($maxW * 0.50, 0)) / 3, 0);
+                $nImgH = round(($h - $y) - 2, 0) + $y;
                 $xImg = $x + 1;
                 $yImg = round(($h - $nImgH) / 2, 0) + $y;
                 //estabelecer posições do texto
-                $x1 = round($xImg + $nImgW + 1, 0);
+                $x1 = round($xImg + $nImgW + 4, 0);
                 $y1 = round($y + 2, 0);
                 $tw = round(2 * $w / 3, 0);
             }
@@ -300,8 +301,14 @@ class Damdfe extends DaCommon
             $y1 = round($h / 3 + $y, 0);
             $tw = $w;
         }
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $razao = $this->xNome;
+
+        if ($this->qrCodMDFe !== null) {
+            $this->qrCodeDamdfe($y - 3);
+        }
+
+        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
+        $texto = $this->xNome;
+        $this->pdf->textBox($x1, $y1, $tw, 8, $texto, $aFont, 'T', 'L', 0, '');
         if (isset($this->CPF)) {
             $cpfcnpj = 'CPF: ' . $this->formatField($this->CPF, "###.###.###-##");
         } else {
