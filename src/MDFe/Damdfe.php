@@ -349,47 +349,38 @@ class Damdfe extends DaCommon
             0,
             ''
         );
-
-        if ($this->tpAmb != 1) {
+        $resp = $this->statusMDFe();
+        if (!$resp['status']) {
+            $n = count($resp['message']);
+            $alttot = $n * 15;
             $x = 10;
-            if ($this->orientacao == 'P') {
-                $yy = round($this->hPrint * 2 / 3, 0);
-            } else {
-                $yy = round($this->hPrint / 2, 0);
-            }
-            $h = 5;
+            $y = $this->hPrint / 2 - $alttot / 2;
+            $h = 15;
             $w = $maxW - (2 * $x);
-            $this->pdf->setTextColor(90, 90, 90);
-            $texto = "SEM VALOR FISCAL";
-            $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
-            $this->pdf->textBox($x, $yy, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            $aFont = ['font' => $this->fontePadrao, 'size' => 30, 'style' => 'B'];
-            $texto = "AMBIENTE DE HOMOLOGAÇÃO";
-            $this->pdf->textBox($x, $yy + 14, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-            $this->pdf->setTextColor(0, 0, 0);
-        } else {
-            $x = 10;
-            if ($this->orientacao == 'P') {
-                $yy = round($this->hPrint * 2 / 3, 0);
-            } else {
-                $yy = round($this->hPrint / 2, 0);
-            }
-            $h = 5;
-            $w = $maxW - (2 * $x);
-            $this->pdf->setTextColor(90, 90, 90);
-            //indicar FALTA DO PROTOCOLO se MDFe não for em contingência
-            if (($this->tpEmis == 2 || $this->tpEmis == 5)) {
-                //Contingência
-                $texto = "DAMDFE Emitido em Contingência";
+            $this->pdf->settextcolor(90, 90, 90);
+            foreach ($resp['message'] as $msg) {
                 $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
-                $this->pdf->textBox($x, $yy, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-                $aFont = ['font' => $this->fontePadrao, 'size' => 30, 'style' => 'B'];
-                $texto = "devido à problemas técnicos";
-                $this->pdf->textBox($x, $yy + 12, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+                $this->pdf->textBox($x, $y, $w, $h, $msg, $aFont, 'C', 'C', 0, '');
+                $y += $h;
             }
-            $this->pdf->setTextColor(0, 0, 0);
+            $texto = $resp['submessage'];
+            if (!empty($texto)) {
+                $y += 3;
+                $h = 5;
+                $aFont = ['font' => $this->fontePadrao, 'size' => 20, 'style' => 'B'];
+                $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+                $y += $h;
+            }
+            if (!$resp['valida']) {
+                $y += 5;
+                $w = $maxW - (2 * $x);
+                $texto = "SEM VALOR FISCAL";
+                $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
+                $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
+                $this->pdf->settextcolor(0, 0, 0);
+            }
         }
-        return $y + 8;
+        return $oldY + 8;
     }
 
     /**
@@ -982,6 +973,9 @@ class Damdfe extends DaCommon
             }
             $y = $yold;
             $x1 += $x2;
+            if ($this->orientacao == 'L') {
+                $x1 -= 25;
+            }
             $x2 = $x2 * 2;
             $this->pdf->textBox($x1, $y, $x2, 33 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
             $texto = 'Nome';
@@ -990,51 +984,67 @@ class Damdfe extends DaCommon
             for ($i = 0; $i < $this->condutor->length; $i++) {
                 $y += 4;
                 $texto = $this->condutor->item($i)->getElementsByTagName('xNome')->item(0)->nodeValue;
+                if ($this->orientacao == 'L') {
+                    $texto = substr($texto, 0, 20);
+                }
                 $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
                 $this->pdf->textBox($x1, $y, $x2 - 1, 8, $texto, $aFont, 'T', 'L', 0, '', false);
             }
-            if ($this->orientacao == 'P') {
-                $x1 = round($maxW / 2, 0) + 7;
-                //$x2 = round($maxW / 2, 0);
-                $x2 = ($maxW / 6);
-                $y = $yCabecalhoLinha;
-                $texto = 'Chaves de acesso';
+            $x1 = round($maxW / 2, 0) + 7;
+            $x2 = ($maxW / 6);
+            $y = $yCabecalhoLinha;
+            if ($this->orientacao == 'L') {
+                $x1 = 225;
+                $y = $yold - 5;
+            }
+            $texto = 'Chaves de acesso';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $y = $y + 2;
+            $chavesNFe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chNFe');
+            $chavesCTe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chCTe');
+            $chavesMDFe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chMDFe');
+            $contadorChaves = 0;
+            for ($i = 0; $i < $chavesNFe->length; $i++) {
+                $y += 4;
+                $texto = $chavesNFe->item($i)->nodeValue;
                 $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-                $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-                $y = $y + 2;
-                $chavesNFe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chNFe');
-                $chavesCTe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chCTe');
-                $chavesMDFe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chMDFe');
-                $contadorChaves = 0;
-                for ($i = 0; $i < $chavesNFe->length; $i++) {
-                    $y += 4;
-                    $texto = $chavesNFe->item($i)->nodeValue;
-                    $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-                    $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-                    $contadorChaves++;
+                $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+                $contadorChaves++;
+                if ($this->orientacao == 'P') {
                     if ($contadorChaves > 25) {
                         break;
                     }
+                } else if ($contadorChaves > 16) {
+                    break;
                 }
-                for ($i = 0; $i < $chavesCTe->length; $i++) {
-                    $y += 4;
-                    $texto = $chavesCTe->item($i)->nodeValue;
-                    $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-                    $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-                    $contadorChaves++;
+            }
+            for ($i = 0; $i < $chavesCTe->length; $i++) {
+                $y += 4;
+                $texto = $chavesCTe->item($i)->nodeValue;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+                $contadorChaves++;
+                if ($this->orientacao == 'P') {
                     if ($contadorChaves > 25) {
                         break;
                     }
+                } else if ($contadorChaves > 16) {
+                    break;
                 }
-                for ($i = 0; $i < $chavesMDFe->length; $i++) {
-                    $y += 4;
-                    $texto = $chavesMDFe->item($i)->nodeValue;
-                    $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-                    $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-                    $contadorChaves++;
+            }
+            for ($i = 0; $i < $chavesMDFe->length; $i++) {
+                $y += 4;
+                $texto = $chavesMDFe->item($i)->nodeValue;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+                $contadorChaves++;
+                if ($this->orientacao == 'P') {
                     if ($contadorChaves > 25) {
                         break;
                     }
+                } else if ($contadorChaves > 16) {
+                    break;
                 }
             }
         }
