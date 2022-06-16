@@ -985,7 +985,7 @@ class Damdfe extends DaCommon
                 $y += 4;
                 $texto = $this->condutor->item($i)->getElementsByTagName('xNome')->item(0)->nodeValue;
                 if ($this->orientacao == 'L') {
-                    $texto = substr($texto, 0, 20);
+                    $texto = substr($texto, 0, 40);
                 }
                 $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
                 $this->pdf->textBox($x1, $y, $x2 - 1, 8, $texto, $aFont, 'T', 'L', 0, '', false);
