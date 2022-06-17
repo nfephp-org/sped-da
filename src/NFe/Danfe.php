@@ -3085,14 +3085,16 @@ class Danfe extends DaCommon
                 $yTrib += $y;
                 $diffH = $hmax - $hUsado;
 
-                if ($pag != $totpag) {
-                    if (1 > $diffH && $i < $totItens) {
+                if (1 > $diffH && $i < $totItens) {
+                    if ($pag == $totpag) {
+                        $totpag++;
+                    }
                         //ultrapassa a capacidade para uma única página
                         //o restante dos dados serão usados nas proximas paginas
                         $nInicio = $i;
                         break;
-                    }
                 }
+                
                 $y_linha = $y + $h;
 
                 //corrige o x
