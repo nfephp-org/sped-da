@@ -400,7 +400,7 @@ class Danfe extends DaCommon
         }
         //fim da alteração NT 2013.003 Lei da Transparência
         $this->textoAdic = str_replace(";", "\n", $this->textoAdic);
-        $numlinhasdados = $this->pdf->getNumLines($this->textoAdic, $this->wAdic, $fontProduto) + 1.5;
+        $numlinhasdados = $this->pdf->getNumLines($this->textoAdic, $this->wAdic, $fontProduto) + 2;
         $this->textadicfontsize = $this->pdf->fontSize;
         $hdadosadic = ceil($numlinhasdados * ($this->textadicfontsize));
         if ($hdadosadic > 70) {
@@ -2697,7 +2697,7 @@ class Danfe extends DaCommon
             }
         }
         $infAdProd .= $this->itemVeiculoNovo($prod);
-        
+
         //NT2013.006 FCI
         $nFCI   = (!empty($itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue)) ?
             ' FCI:' . $itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue : '';
@@ -2712,7 +2712,7 @@ class Danfe extends DaCommon
 
         return $texto;
     }
-    
+
     /**
      * Inclui dados dos veiculos novos a descriçã do produto
      * @param \DOMElement $prod
@@ -2822,7 +2822,7 @@ class Danfe extends DaCommon
             9 => 'OUTRAS',
         ];
         $content = "";
-        
+
         $tpOp = $veicProd->getElementsByTagName("tpOp")->item(0)->nodeValue;
         $op = $operacao[$tpOp];
         $content .= "TIPO DE OPERAÇÃO: {$tpOp} - {$op}\n";
@@ -2875,10 +2875,10 @@ class Danfe extends DaCommon
         $content .= "LOTAÇÃO MAX.: {$lota}\n";
         $tpRest = $veicProd->getElementsByTagName("tpRest")->item(0)->nodeValue;
         $content .= "RESTRIÇÃO: {$tpRest} - " . $restricao[$tpRest];
-        
+
         return $content;
     }
-    
+
 
     /**
      * itens
@@ -3296,7 +3296,7 @@ class Danfe extends DaCommon
     protected function dadosItenVeiculoDANFE($x, $y, &$nInicio, $h, $prod)
     {
         return;
-        
+
         $oldX = $x;
         $oldY = $y;
 
