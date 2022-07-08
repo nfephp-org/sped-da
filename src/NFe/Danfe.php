@@ -2241,18 +2241,13 @@ class Danfe extends DaCommon
         $x = $this->impostoHelper($x, $y, $w, $h, "VALOR DO ICMS SUBST.", "vST");
         $x = $this->impostoHelper($x, $y, $w, $h, "V. IMP. IMPORTAÇÃO", "vII");
         $x = $this->impostoHelper($x, $y, $w, $h, "V. ICMS DESON.", "vICMSDeson");
-
-        if ($this->exibirIcmsInterestadual) {
-            $x = $this->impostoHelper($x, $y, $w, $h, "V. FCP UF DEST.", "vFCPUFDest");
-        }
+        $x = $this->impostoHelper($x, $y, $w, $h, "VALOR FCP ST", "vFCPST");
 
         if ($this->exibirPIS) {
             $x = $this->impostoHelper($x, $y, $w, $h, "VALOR DO PIS", "vPIS");
         }
 
         $x = $this->impostoHelper($x, $y, $w, $h, "V. TOTAL PRODUTOS", "vProd");
-
-        //
 
         $y += $h;
         $x = $x_inicial;
@@ -2753,14 +2748,14 @@ class Danfe extends DaCommon
         // cabecalho LOOP COM OS DADOS DOS PRODUTOS
         //CÓDIGO PRODUTO
         $texto = "CÓDIGO PRODUTO";
-        $w1    = round($w * 0.09, 0);
+        $w1    = round($w * 0.07, 0);
         $h     = 4;
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w1, $h, $texto, $aFont, 'C', 'C', 0, '', false);
         $this->pdf->line($x + $w1, $y, $x + $w1, $y + $hmax);
         //DESCRIÇÃO DO PRODUTO / SERVIÇO
         $x     += $w1;
-        $w2    = round($w * 0.25, 0);
+        $w2    = round($w * 0.24, 0);
         $texto = 'DESCRIÇÃO DO PRODUTO / SERVIÇO';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w2, $h, $texto, $aFont, 'C', 'C', 0, '', false);
@@ -3377,7 +3372,7 @@ class Danfe extends DaCommon
      */
     protected function dadosAdicionais($x, $y, $h)
     {
-        $y = $this->maxH - (7 + $h);
+        $y = $this->maxH - (13 + $h);
         //$y = $this->maxH - 20;
         //##################################################################################
         //DADOS ADICIONAIS
@@ -3461,7 +3456,7 @@ class Danfe extends DaCommon
      */
     protected function rodape($x)
     {
-        $y = $this->maxH - 4;
+        $y = $this->maxH - 9;
         if ($this->orientacao == 'P') {
             $w = $this->wPrint;
         } else {
