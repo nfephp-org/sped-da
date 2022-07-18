@@ -849,7 +849,13 @@ class Danfe extends DaCommon
             $resp['status'] = false;
             $resp['message'][] =  "NFe EMITIDA EM HOMOLOGAÇÃO";
         }
-        $retEvento = $this->nfeProc->getElementsByTagName('retEvento')->item(0);
+
+        if (isset($this->nfeProc)) {
+            $retEvento = $this->nfeProc->getElementsByTagName('retEvento')->item(0);
+        } else {
+            $retEvento = null;
+        }
+
         $cStat = $this->getTagValue($this->nfeProc, "cStat");
         if ($cStat == '110' ||
             $cStat == '301' ||
