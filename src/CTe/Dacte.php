@@ -33,6 +33,7 @@ class Dacte extends DaCommon
     protected $infCte;
     protected $infCteComp;
     protected $infCteAnu;
+    protected $infCteSub;
     protected $chaveCTeRef;
     protected $tpCTe;
     protected $ide;
@@ -135,10 +136,14 @@ class Dacte extends DaCommon
             // adicionar outros modais
             $this->infCteComp = $this->dom->getElementsByTagName("infCteComp")->item(0);
             $this->infCteAnu = $this->dom->getElementsByTagName("infCteAnu")->item(0);
+            $this->infCteSub = $this->dom->getElementsByTagName("infCteSub")->item(0);
+            // 0 - CT-e Normal; 1 - CT-e de Complemento de Valores; 2 - CT-e de Anulação; 3 - CT-e Substituto
             if ($this->tpCTe == 1) {
                 $this->chaveCTeRef = $this->getTagValue($this->infCteComp, "chCTe");
-            } else {
+            } else if ($this->tpCTe == 2) {
                 $this->chaveCTeRef = $this->getTagValue($this->infCteAnu, "chCte");
+            } else if ($this->tpCTe == 3) {
+                $this->chaveCTeRef = $this->getTagValue($this->infCteSub, "chCTe");
             }
             $this->vPrest = $this->dom->getElementsByTagName("vPrest")->item(0);
             $this->Comp = $this->dom->getElementsByTagName("Comp");
