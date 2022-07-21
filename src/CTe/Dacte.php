@@ -143,7 +143,7 @@ class Dacte extends DaCommon
             } else if ($this->tpCTe == 2) {
                 $this->chaveCTeRef = $this->getTagValue($this->infCteAnu, "chCte");
             } else if ($this->tpCTe == 3) {
-                $this->chaveCTeRef = $this->getTagValue($this->infCteSub, "chCTe");
+                $this->chaveCTeRef = $this->getTagValue($this->infCteSub, "chCte");
             }
             $this->vPrest = $this->dom->getElementsByTagName("vPrest")->item(0);
             $this->Comp = $this->dom->getElementsByTagName("Comp");
@@ -200,7 +200,6 @@ class Dacte extends DaCommon
             $this->tpEmis = $this->getTagValue($this->ide, "tpEmis");
             $this->tpImp = $this->getTagValue($this->ide, "tpImp");
             $this->tpAmb = $this->getTagValue($this->ide, "tpAmb");
-            $this->tpCTe = $this->getTagValue($this->ide, "tpCTe");
             $this->qrCodCTe = $this->dom->getElementsByTagName('qrCodCTe')->item(0) ?
                 $this->dom->getElementsByTagName('qrCodCTe')->item(0)->nodeValue : 'SEM INFORMAÇÃO DE QRCODE';
             $this->protCTe = $this->dom->getElementsByTagName("protCTe")->item(0);
