@@ -1899,7 +1899,7 @@ class Danfe extends DaCommon
     {
         $textoFatura = $this->getTextoFatura();
         //verificar se existem duplicatas
-        if ($this->dup->length == 0 && $textoFatura !== "") {
+        if ($this->dup->length == 0 && $textoFatura !== "" && strtolower($textoFatura) !== 'sem pagamento') {
             return 10;
         }
 
@@ -3094,7 +3094,7 @@ class Danfe extends DaCommon
                         $nInicio = $i;
                         break;
                 }
-                
+
                 $y_linha = $y + $h;
 
                 //corrige o x
