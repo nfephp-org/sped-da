@@ -323,6 +323,26 @@ class DaCommon extends Common
         return 'data://text/plain;base64,'.base64_encode($logo);
     }
 
+    public function setWhiteBackgroundNfeLogo(string $logoImage, string $imageUrl): void
+    {
+        $logoInfo = getimagesize($logoImage);
+        $fileExtension = substr($logoInfo['mime'], -3);
+        if ($fileExtension !== 'png') return;
+
+        ob_start();
+        $gdImage = imagecreatefrompng($imageUrl);
+        $bg = imagecreatetruecolor(imagesx($gdImage), imagesy($gdImage));
+        imagefill($bg, 0, 0, imagecolorallocate($bg, 255, 255, 255));
+        imagealphablending($bg, TRUE);
+        imagecopy($bg, $gdImage, 0, 0, 0, 0, imagesx($gdImage), imagesy($gdImage));
+        imagejpeg($bg, null, 100);
+        imagedestroy($gdImage);
+        $logo = ob_get_contents();
+        ob_end_clean();
+
+        $this->logomarca = 'data://text/plain;base64,'.base64_encode($logo);
+    }
+
     /**
      * Atribui uma sinalização de cancelamento externa
      * @param bool $cancelFlag
