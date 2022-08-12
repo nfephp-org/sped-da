@@ -2,7 +2,7 @@
 
 namespace NFePHP\DA\Legacy\FPDF;
 
-class FPDF
+class Fpdf181
 {
     const FPDF_VERSION = '1.81';
     const FPDF_FONTPATH = 'font/';
