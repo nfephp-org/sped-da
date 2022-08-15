@@ -12,6 +12,12 @@ $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(realpath(__
 try {
     
     $danfe = new Danfe($xml);
+
+    // se informado será impresso no cabecalho ao lado do Fone/Fax
+    $danfe->setSiteEmitente('www.site.com.br');  
+    // Se informado, exibira o box Fatura/Duplicata somente para os tPags desejados, ex: 02 - cheque, 14 - duplicata mercantil, 15 - boleto, 16 - dep. bancario
+    $danfe->tPagPermitidasExibirFaturaDuplicata = ['02', '14', '15', '16'];  
+   
     $danfe->exibirTextoFatura = false;
     $danfe->exibirPIS = false;
     $danfe->exibirIcmsInterestadual = false;

@@ -47,6 +47,14 @@ class Danfe extends DaCommon
      */
     public $exibirTextoFatura = false;
     /**
+     * Array com codigos tPag permitidas para exibição do box Fatura/Duplicata.
+     * (Existem emitentes que nao querem que seja impresso o box todo da fatura/duplicata.
+     * Sera impresso default se o array for vazio ou se existir nele os tPag desejados. 
+     *
+     * @var array
+     */
+    public $tPagPermitidasExibirFaturaDuplicata = [];    
+    /**
      * Parâmetro do controle se deve concatenar automaticamente informações complementares
      * na descrição do produto, como por exemplo, informações sobre impostos.
      *
@@ -71,6 +79,12 @@ class Danfe extends DaCommon
      * @var boolean
      */
     protected $ocultarUnidadeTributavel = false;
+    /**
+     * Site do emitente para aparecer no cabecalho ao lado do Fone/Fax
+     *
+     * @var string
+     */
+    protected $siteEmitente = '';    
     /**
      * XML NFe
      *
@@ -338,6 +352,15 @@ class Danfe extends DaCommon
     public function setOcultarUnidadeTributavel($ocultarUnidadeTributavel = false)
     {
         $this->ocultarUnidadeTributavel = filter_var($ocultarUnidadeTributavel, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    /**
+     * Atribui o Site do Emitente que será impresso no cabecalho, ao lado do Fone/Fax.
+     * @param string $siteEmitente
+     */
+    public function setSiteEmitente($siteEmitente = '')
+    {
+        $this->siteEmitente = $siteEmitente;
     }
 
     protected function calculoEspacoVericalDadosAdicionais()
@@ -656,7 +679,9 @@ class Danfe extends DaCommon
         }
         //caso tenha boleto imprimir fatura
         if ($this->dup->length > 0) {
-            $y = $this->fatura($x, $y + 1);
+            if( empty($this->tPagPermitidasExibirFaturaDuplicata) || in_array($fPag, $this->tPagPermitidasExibirFaturaDuplicata) ) {
+               $y = $this->fatura($x, $y + 1);
+            }
         } elseif ($this->exibirTextoFatura) {
             //Se somente tiver a forma de pagamento sem pagamento não imprimir nada
             if (count($formaPag) == '1' && isset($formaPag[90])) {
@@ -1046,7 +1071,7 @@ class Danfe extends DaCommon
             $UF     = $this->getTagValue($this->enderEmit, "UF");
             $texto  = $lgr . ", " . $nro . $cpl . "\n" . $bairro . " - "
                 . $CEP . "\n" . $mun . " - " . $UF . " "
-                . "Fone/Fax: " . $fone;
+                . "Fone/Fax: " . $fone . (trim($this->siteEmitente) != '' ? ' ' . $this->siteEmitente : '');
             $this->pdf->textBox($x1, $y1, $tw, 8, $texto, $aFont, 'T', 'C', 0, '');
         }
 
