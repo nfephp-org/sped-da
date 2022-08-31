@@ -2835,7 +2835,7 @@ class Danfe extends DaCommon
         $content = "";
 
         $tpOp = $veicProd->getElementsByTagName("tpOp")->item(0)->nodeValue;
-        $op = $operacao[$tpOp] ?? null;
+        $op = ($operacao[$tpOp] ?? null);
         $content .= "TIPO DE OPERAÇÃO: {$tpOp} - {$op}\n";
         $chassi = $veicProd->getElementsByTagName("chassi")->item(0)->nodeValue;
         $content .= "CHASSI: {$chassi}\n";
@@ -2853,7 +2853,7 @@ class Danfe extends DaCommon
         $nserie = $veicProd->getElementsByTagName("nSerie")->item(0)->nodeValue;
         $content .= "SERIE: {$nserie}\n";
         $tpComb = $veicProd->getElementsByTagName("tpComb")->item(0)->nodeValue;
-        $content .= "COMBUSTIVEL: {$tpComb} - " .  $combustivel[ltrim($tpComb, 0)] ?? null . "\n";
+        $content .= "COMBUSTIVEL: {$tpComb} - " .  ($combustivel[ltrim($tpComb, 0)] ?? null) . "\n";
         $nMotor = $veicProd->getElementsByTagName("nMotor")->item(0)->nodeValue;
         $content .= "MOTOR n.: {$nMotor}\n";
         $cmt = $veicProd->getElementsByTagName("CMT")->item(0)->nodeValue;
@@ -2867,9 +2867,9 @@ class Danfe extends DaCommon
         $tpPint = $veicProd->getElementsByTagName("tpPint")->item(0)->nodeValue;
         $content .= "TIPO PINTURA: {$tpPint}\n";
         $tpVeic = $veicProd->getElementsByTagName("tpVeic")->item(0)->nodeValue;
-        $content .= "TIPO DE VEÌCULO: {$tpVeic} - " . $veiculo[ltrim($tpVeic, 0)] ?? null . "\n";
+        $content .= "TIPO DE VEÌCULO: {$tpVeic} - " . ($veiculo[ltrim($tpVeic, 0)] ?? null) . "\n";
         $espVeic = $veicProd->getElementsByTagName("espVeic")->item(0)->nodeValue;
-        $content .= "ESPÉCIE DO VEÍCULO: {$espVeic} - " . $especie[ltrim($espVeic, 0)] ?? null . "\n";
+        $content .= "ESPÉCIE DO VEÍCULO: {$espVeic} - " . ($especie[ltrim($espVeic, 0)] ?? null) . "\n";
         $vin = $veicProd->getElementsByTagName("VIN")->item(0)->nodeValue;
         if ($vin == 'N') {
             $content .= "VIN (CHASSI): N - NORMAL\n";
@@ -2877,15 +2877,15 @@ class Danfe extends DaCommon
             $content .= "VIN (CHASSI): R - REMARCADO\n";
         }
         $condVeic = $veicProd->getElementsByTagName("condVeic")->item(0)->nodeValue;
-        $content .= "CONDIÇÃO DO VEÍCULO: {$condVeic} - " . $condicao[ltrim($condVeic, 0)] ?? null . "\n";
+        $content .= "CONDIÇÃO DO VEÍCULO: {$condVeic} - " . ($condicao[ltrim($condVeic, 0)] ?? null) . "\n";
         $cMod = $veicProd->getElementsByTagName("cMod")->item(0)->nodeValue;
         $content .= "CÓDIGO MARCA/MODELO: {$cMod}\n";
         $corDen = $veicProd->getElementsByTagName("cCorDENATRAN")->item(0)->nodeValue;
-        $content .= "COR DENATRAN: {$corDen} - " . $cor[ltrim($corDen, 0)] ?? null . "\n";
+        $content .= "COR DENATRAN: {$corDen} - " . ($cor[ltrim($corDen, 0)] ?? null) . "\n";
         $lota = $veicProd->getElementsByTagName("lota")->item(0)->nodeValue;
         $content .= "LOTAÇÃO MAX.: {$lota}\n";
         $tpRest = $veicProd->getElementsByTagName("tpRest")->item(0)->nodeValue;
-        $content .= "RESTRIÇÃO: {$tpRest} - " . $restricao[$tpRest] ?? null;
+        $content .= "RESTRIÇÃO: {$tpRest} - " . ($restricao[$tpRest] ?? null);
 
         return $content;
     }
