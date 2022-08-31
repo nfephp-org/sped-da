@@ -2853,7 +2853,7 @@ class Danfe extends DaCommon
         $nserie = $veicProd->getElementsByTagName("nSerie")->item(0)->nodeValue;
         $content .= "SERIE: {$nserie}\n";
         $tpComb = $veicProd->getElementsByTagName("tpComb")->item(0)->nodeValue;
-        $content .= "COMBUSTIVEL: {$tpComb} - " .  $combustivel[$tpComb] . "\n";
+        $content .= "COMBUSTIVEL: {$tpComb} - " .  (isset($combustivel[$tpComb])? $combustivel[$tpComb] : null) . "\n";
         $nMotor = $veicProd->getElementsByTagName("nMotor")->item(0)->nodeValue;
         $content .= "MOTOR n.: {$nMotor}\n";
         $cmt = $veicProd->getElementsByTagName("CMT")->item(0)->nodeValue;
@@ -2867,7 +2867,7 @@ class Danfe extends DaCommon
         $tpPint = $veicProd->getElementsByTagName("tpPint")->item(0)->nodeValue;
         $content .= "TIPO PINTURA: {$tpPint}\n";
         $tpVeic = $veicProd->getElementsByTagName("tpVeic")->item(0)->nodeValue;
-        $content .= "TIPO DE VEÌCULO: {$tpVeic} - " . $veiculo[$tpVeic] . "\n";
+        $content .= "TIPO DE VEÌCULO: {$tpVeic} - " . (isset($veiculo[$tpVeic])? $veiculo[$tpVeic] : null) . "\n";
         $espVeic = $veicProd->getElementsByTagName("espVeic")->item(0)->nodeValue;
         $content .= "ESPÉCIE DO VEÍCULO: {$espVeic} - " . $especie[$espVeic] . "\n";
         $vin = $veicProd->getElementsByTagName("VIN")->item(0)->nodeValue;
@@ -2881,7 +2881,7 @@ class Danfe extends DaCommon
         $cMod = $veicProd->getElementsByTagName("cMod")->item(0)->nodeValue;
         $content .= "CÓDIGO MARCA/MODELO: {$cMod}\n";
         $corDen = $veicProd->getElementsByTagName("cCorDENATRAN")->item(0)->nodeValue;
-        $content .= "COR DENATRAN: {$corDen} - " . $cor[$corDen] . "\n";
+        $content .= "COR DENATRAN: {$corDen} - " . (isset($cor[$corDen])? $cor[$corDen] : null) . "\n";
         $lota = $veicProd->getElementsByTagName("lota")->item(0)->nodeValue;
         $content .= "LOTAÇÃO MAX.: {$lota}\n";
         $tpRest = $veicProd->getElementsByTagName("tpRest")->item(0)->nodeValue;
