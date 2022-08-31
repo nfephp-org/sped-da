@@ -1,3 +1,25 @@
+# Modificações (fork) MASTERTAX
+Clone do repositório:
+
+```bash
+mkdir nfephp-org
+git clone git@dev.atmtecnologia.com.br:nfephp-org/sped-da.git
+```
+
+Configuração dos remotes:
+
+```bash
+git remote rename origin mastertax
+git remote add nfephp-org https://github.com/nfephp-org/sped-da
+```
+
+Para trazer as atualizaçõess da comunidade:
+
+```bash
+git pull nfephp-org master
+git push mastertax master
+```
+
 # sped-da
 
 Classes para geração dos documentos auxiliares usados pelos padrões Sped
