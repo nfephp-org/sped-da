@@ -67,6 +67,13 @@ class Danfe extends DaCommon
      */
     public $gerarInformacoesAutomaticas = false;
     /**
+     * Parâmetro do controle se deve concatenar automaticamente informações sobre rastro e medicamento 
+     * na descrição do produto, como por exemplo, lote, validade, fabricacao
+     *
+     * @var boolean
+     */
+    public $descProdInfoLoteTxt = true;
+    /**
      * Parâmetro do controle se deve gerar quebras de linha com "\n" a partir de ";" na descrição do produto.
      *
      * @var boolean
@@ -2682,25 +2689,27 @@ class Danfe extends DaCommon
             $infAdProd .= ' ';
         }
         $loteTxt = '';
-        $rastro  = $prod->getElementsByTagName("med");
-        if (!empty($prod->getElementsByTagName("rastro"))) {
-            $rastro = $prod->getElementsByTagName("rastro");
-            $i      = 0;
-            while ($i < $rastro->length) {
-                $dFab = $this->getTagDate($rastro->item($i), 'dFab');
-                $datafab = " Fab: " . $dFab;
-                $dVal = $this->getTagDate($rastro->item($i), 'dVal');
-                $dataval = " Val: " . $dVal;
+        if ($this->descProdInfoLoteTxt) {
+            $rastro  = $prod->getElementsByTagName("med");
+            if (!empty($prod->getElementsByTagName("rastro"))) {
+                $rastro = $prod->getElementsByTagName("rastro");
+                $i      = 0;
+                while ($i < $rastro->length) {
+                    $dFab = $this->getTagDate($rastro->item($i), 'dFab');
+                    $datafab = " Fab: " . $dFab;
+                    $dVal = $this->getTagDate($rastro->item($i), 'dVal');
+                    $dataval = " Val: " . $dVal;
 
-                $loteTxt .= $this->getTagValue($rastro->item($i), 'nLote', ' Lote: ');
-                $loteTxt .= $this->getTagValue($rastro->item($i), 'qLote', ' Quant: ');
-                $loteTxt .= $datafab; //$this->getTagDate($rastro->item($i), 'dFab', ' Fab: ');
-                $loteTxt .= $dataval; //$this->getTagDate($rastro->item($i), 'dVal', ' Val: ');
-                $loteTxt .= $this->getTagValue($rastro->item($i), 'vPMC', ' PMC: ');
-                $i++;
-            }
-            if ($loteTxt != '') {
-                $loteTxt .= ' ';
+                    $loteTxt .= $this->getTagValue($rastro->item($i), 'nLote', ' Lote: ');
+                    $loteTxt .= $this->getTagValue($rastro->item($i), 'qLote', ' Quant: ');
+                    $loteTxt .= $datafab; //$this->getTagDate($rastro->item($i), 'dFab', ' Fab: ');
+                    $loteTxt .= $dataval; //$this->getTagDate($rastro->item($i), 'dVal', ' Val: ');
+                    $loteTxt .= $this->getTagValue($rastro->item($i), 'vPMC', ' PMC: ');
+                    $i++;
+                }
+                if ($loteTxt != '') {
+                    $loteTxt .= ' ';
+                }
             }
         }
         $infAdProd .= $this->itemVeiculoNovo($prod);
