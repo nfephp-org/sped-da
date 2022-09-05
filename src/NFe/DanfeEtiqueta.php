@@ -143,8 +143,7 @@ class DanfeEtiqueta extends DaCommon
 
     protected function monta(
         $logo = ''
-    )
-    {
+    ) {
         if (!empty($logo)) {
             $this->logomarca = $this->adjustImage($logo, true);
         }
@@ -175,7 +174,17 @@ class DanfeEtiqueta extends DaCommon
         $this->pdf->setLineWidth(0.1); // define a largura da linha
         $this->pdf->setTextColor(0, 0, 0);
 
-        $this->pdf->textBox($this->margem, $this->margem, $this->wPrint, $this->hPrint, '', $this->aFont, 'T', 'L', true);
+        $this->pdf->textBox(
+            $this->margem,
+            $this->margem,
+            $this->wPrint,
+            $this->hPrint,
+            '',
+            $this->aFont,
+            'T',
+            'L',
+            true
+        );
 
         $y = $this->bloco1($yInic);
         $y = $this->bloco2($y);
@@ -317,19 +326,20 @@ class DanfeEtiqueta extends DaCommon
             throw new \Exception('Apenas NFe autorizadas podem ser impressas em formato de etiqueta');
         }
         if ($this->canceled) {
-            throw new \Exception('Esta NFe está cancelada, e apenas NFe autorizadas podem ser impressas em formato de etiqueta');
+            throw new \Exception('Esta NFe está cancelada, e apenas NFe autorizadas podem ser '
+                .'impressas em formato de etiqueta');
         }
         $protocolo  = !empty($this->nfeProc->getElementsByTagName("nProt")->item(0)->nodeValue)
             ? $this->nfeProc->getElementsByTagName("nProt")->item(0)->nodeValue
             : '';
-       $dtHora = $this->toDateTime($this->nfeProc->getElementsByTagName("dhRecbto")->item(0)->nodeValue);
-       $aFont = ['font' => $this->fontePadrao, 'size' => 8, 'style' => ''];
-       $texto = "PROTOCOLO: {$protocolo} - ";
-       $texto .= $dtHora->format('d/m/Y H:i:s');
-       $this->pdf->textBox($x, $y, $this->wPrint, 7, $texto, $aFont, 'B', 'C', 0, '');
+        $dtHora = $this->toDateTime($this->nfeProc->getElementsByTagName("dhRecbto")->item(0)->nodeValue);
+        $aFont = ['font' => $this->fontePadrao, 'size' => 8, 'style' => ''];
+        $texto = "PROTOCOLO: {$protocolo} - ";
+        $texto .= $dtHora->format('d/m/Y H:i:s');
+        $this->pdf->textBox($x, $y, $this->wPrint, 7, $texto, $aFont, 'B', 'C', 0, '');
 
-       $this->pdf->line($this->margem, $y+8, $this->wPrint+$this->margem, $y+8);
-       return $y+8;
+        $this->pdf->line($this->margem, $y+8, $this->wPrint+$this->margem, $y+8);
+        return $y+8;
     }
 
     protected function bloco4($y)
@@ -397,14 +407,38 @@ class DanfeEtiqueta extends DaCommon
             $pedido = $this->getTagValue($this->compra, 'xPed');
             $texto = "PEDIDO: $pedido";
             $aFont = ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'B'];
-            $y += $this->pdf->textBox($this->margem+1, $y+2, $this->wPrint, 6, $texto, $aFont, 'T', 'L', false, '', false);
+            $y += $this->pdf->textBox(
+                $this->margem+1,
+                $y+2,
+                $this->wPrint,
+                6,
+                $texto,
+                $aFont,
+                'T',
+                'L',
+                false,
+                '',
+                false
+            );
         }
         $texto = "Informações Complementares:";
         $aFont = ['font' => $this->fontePadrao, 'size' => 8, 'style' => 'I'];
         $y += $this->pdf->textBox($this->margem+1, $y+4, $this->wPrint, 6, $texto, $aFont, 'T', 'L', false, '', false);
         $texto = $this->infCpl . "\n" . $this->infAdFisco;
         $aFont = ['font' => $this->fontePadrao, 'size' => 9, 'style' => ''];
-        $y += $this->pdf->textBox($this->margem+1, $y+5, $this->wPrint-2, 6, $texto, $aFont, 'T', 'L', false, '', false);
+        $y += $this->pdf->textBox(
+            $this->margem+1,
+            $y+5,
+            $this->wPrint-2,
+            6,
+            $texto,
+            $aFont,
+            'T',
+            'L',
+            false,
+            '',
+            false
+        );
     }
 
     /**
@@ -484,5 +518,4 @@ class DanfeEtiqueta extends DaCommon
             }
         }
     }
-
 }

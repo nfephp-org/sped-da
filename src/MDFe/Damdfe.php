@@ -56,8 +56,7 @@ class Damdfe extends DaCommon
      */
     public function __construct(
         $xml
-    )
-    {
+    ) {
         $this->loadDoc($xml);
     }
 
@@ -162,8 +161,7 @@ class Damdfe extends DaCommon
 
     protected function monta(
         $logo = ''
-    )
-    {
+    ) {
         $this->pdf = '';
         if (!empty($logo)) {
             $this->logomarca = $this->adjustImage($logo);
@@ -1015,7 +1013,7 @@ class Damdfe extends DaCommon
                     if ($contadorChaves > 25) {
                         break;
                     }
-                } else if ($contadorChaves > 16) {
+                } elseif ($contadorChaves > 16) {
                     break;
                 }
             }
@@ -1029,7 +1027,7 @@ class Damdfe extends DaCommon
                     if ($contadorChaves > 25) {
                         break;
                     }
-                } else if ($contadorChaves > 16) {
+                } elseif ($contadorChaves > 16) {
                     break;
                 }
             }
@@ -1043,7 +1041,7 @@ class Damdfe extends DaCommon
                     if ($contadorChaves > 25) {
                         break;
                     }
-                } else if ($contadorChaves > 16) {
+                } elseif ($contadorChaves > 16) {
                     break;
                 }
             }

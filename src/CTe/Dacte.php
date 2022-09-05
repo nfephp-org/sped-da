@@ -140,9 +140,9 @@ class Dacte extends DaCommon
             // 0 - CT-e Normal; 1 - CT-e de Complemento de Valores; 2 - CT-e de Anulação; 3 - CT-e Substituto
             if ($this->tpCTe == 1) {
                 $this->chaveCTeRef = $this->getTagValue($this->infCteComp, "chCTe");
-            } else if ($this->tpCTe == 2) {
+            } elseif ($this->tpCTe == 2) {
                 $this->chaveCTeRef = $this->getTagValue($this->infCteAnu, "chCte");
-            } else if ($this->tpCTe == 3) {
+            } elseif ($this->tpCTe == 3) {
                 $this->chaveCTeRef = $this->getTagValue($this->infCteSub, "chCte");
             }
             $this->vPrest = $this->dom->getElementsByTagName("vPrest")->item(0);
