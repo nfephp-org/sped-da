@@ -13,7 +13,7 @@ $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(realpath(__
 try {
     $danfe = new DanfeEtiqueta($xml);
     $danfe->setEmitEmail('linux.rlm@gmail.com');
-    $danfe->setMargins(1);
+    $danfe->setMargins(3);
     $pdf = $danfe->render($logo);
     header('Content-Type: application/pdf');
     echo $pdf;

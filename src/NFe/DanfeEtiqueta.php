@@ -42,7 +42,7 @@ class DanfeEtiqueta extends DaCommon
     protected $dest;
     protected $urlQR = '';
     protected $pdf;
-    protected $margem = 1;
+    protected $margem = 3;
     protected $hMaxLinha = 5;
     protected $hBoxLinha = 6;
     protected $hLinha = 3;
