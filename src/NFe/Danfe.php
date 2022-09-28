@@ -2871,7 +2871,7 @@ class Danfe extends DaCommon
         $content .= "DIST. ENTRE EIXOS: {$dist}\n";
         $anoMod = $veicProd->getElementsByTagName("anoMod")->item(0)->nodeValue;
         $content .= "ANO DO MODELO: {$anoMod}\n";
-        $anoFab = $veicProd->getElementsByTagName("anoMod")->item(0)->nodeValue;
+        $anoFab = $veicProd->getElementsByTagName("anoFab")->item(0)->nodeValue;
         $content .= "ANO FABRICAÇÃO: {$anoFab}\n";
         $tpPint = $veicProd->getElementsByTagName("tpPint")->item(0)->nodeValue;
         $content .= "TIPO PINTURA: {$tpPint}\n";
