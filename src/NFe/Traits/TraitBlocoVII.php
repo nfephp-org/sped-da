@@ -43,9 +43,9 @@ trait TraitBlocoVII
 
         $protocolo = '';
         $dhRecbto = '';
-        if (!empty($this->nfeProc)) {
-            $protocolo = $this->formatField($this->getTagValue($this->nfeProc, 'nProt'), '### ########## ##');
-            $dhRecbto = (new \DateTime($this->getTagValue($this->nfeProc, "dhRecbto")))->format('d/m/Y H:i:s');
+        if (!empty($this->infProt)) {
+            $protocolo = $this->formatField($this->getTagValue($this->infProt, 'nProt'), '### ########## ##');
+            $dhRecbto = (new \DateTime($this->getTagValue($this->infProt, "dhRecbto")))->format('d/m/Y H:i:s');
         }
 
         if ($this->tpEmis == 9) {
