@@ -14,7 +14,7 @@ trait TraitBlocoII
         //$this->pdf->textBox($this->margem, $y, $this->wPrint, $this->bloco2H, '', $aFont, 'T', 'C', true, '', false);
         if ($this->tpEmis == 9) {
             $texto = "Documento Auxiliar da Nota Fiscal de Consumidor Eletronica";
-            $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
+            $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
             $y1 = $this->pdf->textBox(
                 $this->margem,
                 $y,
@@ -29,10 +29,10 @@ trait TraitBlocoII
                 true
             );
             $texto = "Não permite aproveitamento de crédito de ICMS";
-            $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
+            $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
             $y1 += $this->pdf->textBox(
                 $this->margem,
-                $y+$y1,
+                $y + $y1,
                 $this->wPrint,
                 2,
                 $texto,
@@ -45,10 +45,10 @@ trait TraitBlocoII
             );
             //contingencia offline
             $texto = "EMITIDA EM CONTINGÊNCIA";
-            $aFont = ['font'=> $this->fontePadrao, 'size' => 10, 'style' => 'B'];
+            $aFont = ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'B'];
             $y2 = $this->pdf->textBox(
                 $this->margem,
-                $y+$y1,
+                $y + $y1,
                 $this->wPrint,
                 4,
                 $texto,
@@ -59,7 +59,7 @@ trait TraitBlocoII
                 '',
                 true
             );
-            
+
             if (!$this->infProt) {
                 $texto = "Pendente de autorização";
                 $aFont = ['font' => $this->fontePadrao, 'size' => 8, 'style' => 'I'];
@@ -76,13 +76,14 @@ trait TraitBlocoII
                     '',
                     true
                 );
+            }
         } else {
             $texto = "Documento Auxiliar da Nota Fiscal de Consumidor Eletronica\n"
                 . "Não permite aproveitamento de crédito de ICMS";
-            $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
+            $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
             $y1 = $this->pdf->textBox(
                 $this->margem,
-                $this->bloco1H-2,
+                $this->bloco1H - 2,
                 $this->wPrint,
                 $this->bloco2H,
                 $texto,
@@ -94,7 +95,7 @@ trait TraitBlocoII
                 true
             );
         }
-        $this->pdf->dashedHLine($this->margem, $this->bloco2H+$y, $this->wPrint, 0.1, 30);
+        $this->pdf->dashedHLine($this->margem, $this->bloco2H + $y, $this->wPrint, 0.1, 30);
         return $this->bloco2H + $y;
     }
 }
