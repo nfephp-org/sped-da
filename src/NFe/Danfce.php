@@ -303,7 +303,7 @@ class Danfce extends DaCommon
             $this->pdf->setTextColor(0, 0, 0);
         }
         
-        if (!$this->canceled && $this->tpEmis == 9 && $this->offline_double) {
+        if (!$this->canceled && $this->tpEmis == 9 && !$this->infProt && $this->offline_double) {
             $this->setViaEstabelecimento();
             //não está cancelada e foi emitida OFFLINE e está ativada a dupla impressão
             $this->pdf->addPage($this->orientacao, $this->papel); // adiciona a primeira página
