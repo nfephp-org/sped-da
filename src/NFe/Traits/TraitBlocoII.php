@@ -60,21 +60,22 @@ trait TraitBlocoII
                 true
             );
             
-            $texto = "Pendente de autorização";
-            $aFont = ['font'=> $this->fontePadrao, 'size' => 8, 'style' => 'I'];
-            $this->pdf->textBox(
-                $this->margem,
-                $y+$y1+$y2,
-                $this->wPrint,
-                3,
-                $texto,
-                $aFont,
-                'B',
-                'C',
-                false,
-                '',
-                true
-            );
+            if (!$this->infProt) {
+                $texto = "Pendente de autorização";
+                $aFont = ['font' => $this->fontePadrao, 'size' => 8, 'style' => 'I'];
+                $this->pdf->textBox(
+                    $this->margem,
+                    $y + $y1 + $y2,
+                    $this->wPrint,
+                    3,
+                    $texto,
+                    $aFont,
+                    'B',
+                    'C',
+                    false,
+                    '',
+                    true
+                );
         } else {
             $texto = "Documento Auxiliar da Nota Fiscal de Consumidor Eletronica\n"
                 . "Não permite aproveitamento de crédito de ICMS";
