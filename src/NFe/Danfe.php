@@ -2344,7 +2344,7 @@ class Danfe extends DaCommon
             : '0';
         switch ($tipoFrete) {
             case 0:
-                $texto = "0-Por conta do Rem";
+                $texto = "0-Por conta do Emit";
                 break;
             case 1:
                 $texto = "1-Por conta do Dest";
