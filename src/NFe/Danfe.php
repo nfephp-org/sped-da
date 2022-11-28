@@ -628,7 +628,7 @@ class Danfe extends DaCommon
                 $totPag++;
                 $hDispo = $hDispo2;
                 $hUsado = $hCabecItens;
-                $i--; // decrementa para readicionar o item que não coube nessa pagina na outra.
+                //$i--; // decrementa para readicionar o item que não coube nessa pagina na outra.
             }
             $i++;
         } //fim da soma das areas de itens usadas
@@ -2712,7 +2712,7 @@ class Danfe extends DaCommon
                 }
             }
         }
-        $infAdProd .= $this->itemVeiculoNovo($prod);
+        //$infAdProd .= $this->itemVeiculoNovo($prod);
 
         //NT2013.006 FCI
         $nFCI   = (!empty($itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue)) ?
@@ -2738,7 +2738,7 @@ class Danfe extends DaCommon
      * @param \DOMElement $prod
      * @return string
      */
-    protected function itemVeiculoNovo($prod)
+    protected function itemVeiculoNovo($prod): string
     {
         $veicProd = !empty($prod->getElementsByTagName("veicProd")->item(0))
             ? $prod->getElementsByTagName("veicProd")->item(0)
@@ -3124,6 +3124,7 @@ class Danfe extends DaCommon
                 $texto = $prod->getElementsByTagName("cProd")->item(0)->nodeValue;
                 $this->pdf->textBox($x, $y, $w1, $h, $texto, $aFont, 'T', 'C', 0, '');
                 $x += $w1;
+
                 //DESCRIÇÃO
                 if ($this->orientacao == 'P') {
                     $this->pdf->textBox($x, $y, $w2, $h, $textoProduto, $aFont, 'T', 'L', 0, '', false);
@@ -3136,6 +3137,10 @@ class Danfe extends DaCommon
                     $prod->getElementsByTagName("NCM")->item(0)->nodeValue : '';
                 $this->pdf->textBox($x, $y, $w3, $h, $texto, $aFont, 'T', 'C', 0, '');
                 $x += $w3;
+
+                $veicnovo = $this->itemVeiculoNovo($prod);
+                $this->pdf->textBox($x-$w3, $y+4, $this->wPrint-($w1+$w2)-2, $hmax-$x, $veicnovo, $aFont, 'T', 'L', 0, '');
+
                 //CST
                 if (isset($ICMS)) {
                     $origem = $this->getTagValue($ICMS, "orig");
