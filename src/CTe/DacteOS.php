@@ -1324,7 +1324,7 @@ class DacteOS extends DaCommon
         $x = $oldX;
         $y = $y + 4;
         $texto = $this->getTagValue($this->infQ->item(0), "qCarga");
-        if($this->infQ->item(0) != null){
+        if ($this->infQ->item(0) != null) {
             $texto = number_format($texto, 3, ",", ".");
         }
         $aFont = $this->formatNegrito;

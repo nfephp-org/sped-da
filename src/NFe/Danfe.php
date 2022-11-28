@@ -3138,8 +3138,20 @@ class Danfe extends DaCommon
                 $this->pdf->textBox($x, $y, $w3, $h, $texto, $aFont, 'T', 'C', 0, '');
                 $x += $w3;
 
+                //GRUPO DE VEICULO NOVO
                 $veicnovo = $this->itemVeiculoNovo($prod);
-                $this->pdf->textBox($x-$w3, $y+4, $this->wPrint-($w1+$w2)-2, $hmax-$x, $veicnovo, $aFont, 'T', 'L', 0, '');
+                $this->pdf->textBox(
+                    $x-$w3,
+                    $y+4,
+                    $this->wPrint-($w1+$w2)-2,
+                    $hmax-$x,
+                    $veicnovo,
+                    $aFont,
+                    'T',
+                    'L',
+                    0,
+                    ''
+                );
 
                 //CST
                 if (isset($ICMS)) {
