@@ -113,8 +113,7 @@ class Daevento extends DaCommon
      */
     protected function monta(
         $logo = ''
-    )
-    {
+    ) {
         if (!empty($logo)) {
             $this->logomarca = $this->adjustImage($logo);
         }
@@ -183,8 +182,7 @@ class Daevento extends DaCommon
         $x,
         $y,
         $pag
-    )
-    {
+    ) {
         $oldX = $x;
         $oldY = $y;
         $maxW = $this->wPrint;
