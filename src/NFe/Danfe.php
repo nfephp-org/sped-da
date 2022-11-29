@@ -2717,7 +2717,9 @@ class Danfe extends DaCommon
         //NT2013.006 FCI
         $nFCI   = (!empty($itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue)) ?
             ' FCI:' . $itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue : '';
-        $tmp_ad = $infAdProd . ($this->descProdInfoComplemento ? $loteTxt . $impostos . $nFCI : '');
+
+        //$tmp_ad = $infAdProd . ($this->descProdInfoComplemento ? $loteTxt . $impostos . $nFCI : '');
+        $tmp_ad = $infAdProd . ($this->descProdInfoComplemento ? $loteTxt . $nFCI : '');
         $texto  = $prod->getElementsByTagName("xProd")->item(0)->nodeValue
             . (strlen($tmp_ad) != 0 ? "\n    " . $tmp_ad : '');
         //decodifica os caracteres html no xml
