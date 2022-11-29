@@ -6,7 +6,7 @@ require_once '../../bootstrap.php';
 use NFePHP\DA\NFe\Danfce;
 
 try {
-    $docxml = file_get_contents(__DIR__ . "/fixtures/nfce112_2.xml");
+    $docxml = file_get_contents(__DIR__ . "/fixtures/NFCeProd1.xml");
     $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(realpath(__DIR__ . '/../images/logo.jpeg')));
     $logo = realpath(__DIR__ . '/../images/logo-nfce.png');
 
@@ -18,7 +18,7 @@ try {
     $danfce->setOffLineDoublePrint(true); //ativa ou desativa a impressão conjunta das via do consumidor e da via do estabelecimento qnado a nfce for emitida em contingência OFFLINE
     //$danfce->setPrintResume(true); //ativa ou desativa a impressao apenas do resumo
     //$danfce->setViaEstabelecimento(); //altera a via do consumidor para a via do estabelecimento, quando a NFCe for emitida em contingência OFFLINE
-    //$danfce->setAsCanceled(); //força marcar nfce como cancelada 
+    //$danfce->setAsCanceled(); //força marcar nfce como cancelada
     $danfce->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webnfe.com.br');
     $pdf = $danfce->render($logo);
     header('Content-Type: application/pdf');
