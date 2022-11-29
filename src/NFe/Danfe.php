@@ -68,7 +68,7 @@ class Danfe extends DaCommon
     public $gerarInformacoesAutomaticas = false;
     /**
      * Parâmetro do controle se deve concatenar automaticamente informações sobre rastro e medicamento
-     * na descrição do produto, como por exemplo, lote, validade, fabricacao
+     * na descrição do produto, como por exemplo, lote, validade, fabricacao, codigo ANVISA
      *
      * @var boolean
      */
@@ -2690,7 +2690,7 @@ class Danfe extends DaCommon
         }
         $loteTxt = '';
         if ($this->descProdInfoLoteTxt) {
-            $rastro  = $prod->getElementsByTagName("med");
+            $med = $prod->getElementsByTagName("med")->item(0);
             if (!empty($prod->getElementsByTagName("rastro"))) {
                 $rastro = $prod->getElementsByTagName("rastro");
                 $i      = 0;
@@ -2712,7 +2712,7 @@ class Danfe extends DaCommon
                 }
             }
         }
-        //$infAdProd .= $this->itemVeiculoNovo($prod);
+        $infAdProd .= $this->getTagValue($med, 'cProdANVISA', 'ANVISA: ');
 
         //NT2013.006 FCI
         $nFCI   = (!empty($itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue)) ?
