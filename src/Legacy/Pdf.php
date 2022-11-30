@@ -805,6 +805,7 @@ class Pdf extends Fpdf
     */
     public function dashedVLine($x, $y, $w, $yfinal, $n)
     {
+        $this->setDrawColor(150,150,150);
         $this->setLineWidth($w);
         if ($y > $yfinal) {
             $aux = $yfinal;
