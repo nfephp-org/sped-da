@@ -437,7 +437,6 @@ class Danfe extends DaCommon
         if ($hdadosadic < 10) {
             $hdadosadic = 10;
         }
-
         return $hdadosadic;
     }
 
@@ -622,7 +621,7 @@ class Danfe extends DaCommon
             // Tag somente é gerada para veiculo 0k, e só é permitido um veiculo por NF-e por conta do detran
             // Verifica se a Tag existe
             if (!empty($veicProd)) {
-                $hUsado += 30;
+                $hUsado += 22;
             }
             if ($hUsado > $hDispo) {
                 $totPag++;
@@ -2699,7 +2698,6 @@ class Danfe extends DaCommon
                     $datafab = " Fab: " . $dFab;
                     $dVal = $this->getTagDate($rastro->item($i), 'dVal');
                     $dataval = " Val: " . $dVal;
-
                     $loteTxt .= $this->getTagValue($rastro->item($i), 'nLote', ' Lote: ');
                     $loteTxt .= $this->getTagValue($rastro->item($i), 'qLote', ' Quant: ');
                     $loteTxt .= $datafab; //$this->getTagDate($rastro->item($i), 'dFab', ' Fab: ');
@@ -2847,54 +2845,54 @@ class Danfe extends DaCommon
 
         $tpOp = $veicProd->getElementsByTagName("tpOp")->item(0)->nodeValue;
         $op = ($operacao[$tpOp] ?? null);
-        $content .= "TIPO DE OPERAÇÃO: {$tpOp} - {$op}\n";
+        $content .= "TIPO DE OPERAÇÃO: {$tpOp} - {$op} ";
         $chassi = $veicProd->getElementsByTagName("chassi")->item(0)->nodeValue;
         $content .= "CHASSI: {$chassi}\n";
         $cCor = $veicProd->getElementsByTagName("cCor")->item(0)->nodeValue;
         $xCor = $veicProd->getElementsByTagName("xCor")->item(0)->nodeValue;
-        $content .= "COR: {$cCor} - {$xCor}\n";
+        $content .= "COR: {$cCor} - {$xCor} ";
         $pot = $veicProd->getElementsByTagName("pot")->item(0)->nodeValue;
-        $content .= "POTENCIA: {$pot} CV\n";
+        $content .= "POTENCIA: {$pot} CV ";
         $cilin = $veicProd->getElementsByTagName("cilin")->item(0)->nodeValue;
         $content .= "CILINDRADAS: {$cilin} CC\n";
         $pesoL = $veicProd->getElementsByTagName("pesoL")->item(0)->nodeValue;
-        $content .= "PESO LIQ: {$pesoL} kg\n";
+        $content .= "PESO LIQ: {$pesoL} kg ";
         $pesoB = $veicProd->getElementsByTagName("pesoB")->item(0)->nodeValue;
-        $content .= "PESO BRUTO: {$pesoB} kg\n";
+        $content .= "PESO BRUTO: {$pesoB} kg ";
         $nserie = $veicProd->getElementsByTagName("nSerie")->item(0)->nodeValue;
         $content .= "SERIE: {$nserie}\n";
         $tpComb = $veicProd->getElementsByTagName("tpComb")->item(0)->nodeValue;
-        $content .= "COMBUSTIVEL: {$tpComb} - " .  ($combustivel[ltrim($tpComb, 0)] ?? null) . "\n";
+        $content .= "COMBUSTIVEL: {$tpComb} - " .  ($combustivel[ltrim($tpComb, 0)] ?? null) . " ";
         $nMotor = $veicProd->getElementsByTagName("nMotor")->item(0)->nodeValue;
         $content .= "MOTOR n.: {$nMotor}\n";
         $cmt = $veicProd->getElementsByTagName("CMT")->item(0)->nodeValue;
-        $content .= "CAPACIDADE MAX TRAÇÃO: {$cmt}\n";
+        $content .= "CAPACIDADE MAX TRAÇÃO: {$cmt} ";
         $dist = $veicProd->getElementsByTagName("dist")->item(0)->nodeValue;
-        $content .= "DIST. ENTRE EIXOS: {$dist}\n";
+        $content .= "DIST. ENTRE EIXOS: {$dist} ";
         $anoMod = $veicProd->getElementsByTagName("anoMod")->item(0)->nodeValue;
-        $content .= "ANO DO MODELO: {$anoMod}\n";
+        $content .= "ANO DO MODELO: {$anoMod} ";
         $anoFab = $veicProd->getElementsByTagName("anoFab")->item(0)->nodeValue;
         $content .= "ANO FABRICAÇÃO: {$anoFab}\n";
         $tpPint = $veicProd->getElementsByTagName("tpPint")->item(0)->nodeValue;
-        $content .= "TIPO PINTURA: {$tpPint}\n";
+        $content .= "TIPO PINTURA: {$tpPint} ";
         $tpVeic = $veicProd->getElementsByTagName("tpVeic")->item(0)->nodeValue;
-        $content .= "TIPO DE VEÌCULO: {$tpVeic} - " . ($veiculo[ltrim($tpVeic, 0)] ?? null) . "\n";
+        $content .= "TIPO DE VEÌCULO: {$tpVeic} - " . ($veiculo[ltrim($tpVeic, 0)] ?? null) . " ";
         $espVeic = $veicProd->getElementsByTagName("espVeic")->item(0)->nodeValue;
         $content .= "ESPÉCIE DO VEÍCULO: {$espVeic} - " . ($especie[ltrim($espVeic, 0)] ?? null) . "\n";
         $vin = $veicProd->getElementsByTagName("VIN")->item(0)->nodeValue;
         if ($vin == 'N') {
-            $content .= "VIN (CHASSI): N - NORMAL\n";
+            $content .= "VIN (CHASSI): N - NORMAL ";
         } else {
-            $content .= "VIN (CHASSI): R - REMARCADO\n";
+            $content .= "VIN (CHASSI): R - REMARCADO ";
         }
         $condVeic = $veicProd->getElementsByTagName("condVeic")->item(0)->nodeValue;
-        $content .= "CONDIÇÃO DO VEÍCULO: {$condVeic} - " . ($condicao[ltrim($condVeic, 0)] ?? null) . "\n";
+        $content .= "CONDIÇÃO DO VEÍCULO: {$condVeic} - " . ($condicao[ltrim($condVeic, 0)] ?? null) . " ";
         $cMod = $veicProd->getElementsByTagName("cMod")->item(0)->nodeValue;
         $content .= "CÓDIGO MARCA/MODELO: {$cMod}\n";
         $corDen = $veicProd->getElementsByTagName("cCorDENATRAN")->item(0)->nodeValue;
-        $content .= "COR DENATRAN: {$corDen} - " . ($cor[ltrim($corDen, 0)] ?? null) . "\n";
+        $content .= "COR DENATRAN: {$corDen} - " . ($cor[ltrim($corDen, 0)] ?? null) . " ";
         $lota = $veicProd->getElementsByTagName("lota")->item(0)->nodeValue;
-        $content .= "LOTAÇÃO MAX.: {$lota}\n";
+        $content .= "LOTAÇÃO MAX.: {$lota} ";
         $tpRest = $veicProd->getElementsByTagName("tpRest")->item(0)->nodeValue;
         $content .= "RESTRIÇÃO: {$tpRest} - " . ($restricao[$tpRest] ?? null);
 
@@ -3066,7 +3064,7 @@ class Danfe extends DaCommon
                 $ICMS         = $imposto->getElementsByTagName("ICMS")->item(0);
                 $IPI          = $imposto->getElementsByTagName("IPI")->item(0);
                 $textoProduto = $this->descricaoProduto($thisItem);
-
+                //$veicProd     = $prod->getElementsByTagName("veicProd")->item(0);
 
                 // Posição y dos dados das unidades tributaveis.
                 $yTrib = $this->pdf->fontSize + .5;
@@ -3141,7 +3139,9 @@ class Danfe extends DaCommon
                 $x += $w3;
 
                 //GRUPO DE VEICULO NOVO
+                $oldfont = $aFont;
                 $veicnovo = $this->itemVeiculoNovo($prod);
+                $aFont = ['font' => $this->fontePadrao, 'size' => 5, 'style' => ''];
                 $this->pdf->textBox(
                     $x-$w3,
                     $y+4,
@@ -3154,7 +3154,7 @@ class Danfe extends DaCommon
                     0,
                     ''
                 );
-
+                $aFont = $oldfont;
                 //CST
                 if (isset($ICMS)) {
                     $origem = $this->getTagValue($ICMS, "orig");
