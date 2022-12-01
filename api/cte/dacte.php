@@ -27,7 +27,7 @@ try {
     //$da->printParameters('P', 'A4', 2, 2);
     $da->creditsIntegratorFooter('| Sidedoor { } - https://sidedoor.com.br');
     $da->setDefaultFont('times');
-    $da->logoParameters($logo, 'C', false);
+    $da->logoParameters(false, 'C', false);
     $da->setDefaultDecimalPlaces(2);
     //$da->depecNumber('12345678');
 
