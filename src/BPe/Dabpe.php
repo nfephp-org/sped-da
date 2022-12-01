@@ -6,7 +6,7 @@ namespace NFePHP\DA\BPe;
  * Classe para a impressão em PDF do Documento Auxiliar de Bilhete de Passagem eletronico
  * NOTA: Esta classe não é a indicada para quem faz uso de impressoras térmicas ESCPOS
  *
-* @category  Library
+ * @category  Library
  * @package   nfephp-org/sped-da
  * @copyright 2009-2020 NFePHP
  * @license   http://www.gnu.org/licenses/lesser.html LGPL v3 or MIT
@@ -379,12 +379,12 @@ class Dabpe extends DaCommon
         $this->pdf->setTextColor(0, 0, 0);
         $this->pdf->textBox(0, 0, $maxW, $maxH); // POR QUE PRECISO DESA LINHA?
 
-        $hcabecalho = 16;//para cabeçalho (dados emitente mais logomarca)  (FIXO)
+        $hcabecalho = 16; //para cabeçalho (dados emitente mais logomarca)  (FIXO)
         if (strlen($this->getTagValue($this->emit, "xNome")) > 40) {
             $hcabecalho += 2;
             $tamPapelVert += 2;
         };
-        $hcabecalhoSecundario = 18;//para cabeçalho secundário (cabeçalho sefaz) (FIXO)
+        $hcabecalhoSecundario = 18; //para cabeçalho secundário (cabeçalho sefaz) (FIXO)
         $hagencia = 0;
         if (!empty($this->agencia)) {
             if (strlen($this->getTagValue($this->agencia, "xNome")) > 39) {
@@ -394,9 +394,9 @@ class Dabpe extends DaCommon
             $hagencia += 20;
             $tamPapelVert += 18;
         }
-        $hprodutos = $hLinha + ($qtdItens * $hLinha);//box poduto
+        $hprodutos = $hLinha + ($qtdItens * $hLinha); //box poduto
         $hTotal = 12; //box total (FIXO)
-        $hpagamentos = (2 * $hLinha) + ($qtdPgto * $hLinha);//para pagamentos
+        $hpagamentos = (2 * $hLinha) + ($qtdPgto * $hLinha); //para pagamentos
         if (!empty($this->vTroco)) {
             $hpagamentos += $hLinha;
         }
@@ -446,10 +446,10 @@ class Dabpe extends DaCommon
         }
         //creditos do integrador
         $aFont = array('font' => $this->fontePadrao, 'size' => 6, 'style' => 'I');
-        $this->pdf->textBox($x, $this->hPrint-1, $this->wPrint, 3, $this->creditos, $aFont, 'T', 'L', false, '', false);
+        $this->pdf->textBox($x, $this->hPrint - 1, $this->wPrint, 3, $this->creditos, $aFont, 'T', 'L', false, '', false);
         $texto = '';
-        $texto = $this->powered ? "Powered by NFePHP®" : '';
-        $this->pdf->textBox($x, $this->hPrint-1, $this->wPrint, 0, $texto, $aFont, 'T', 'R', false, '');
+        $texto = $this->powered ? "Powered by Sidedoor®" : '';
+        $this->pdf->textBox($x, $this->hPrint - 1, $this->wPrint, 0, $texto, $aFont, 'T', 'R', false, '');
     }
 
     /**
@@ -550,13 +550,13 @@ class Dabpe extends DaCommon
         if (!empty($this->logomarca)) {
             $xImg = $margemInterna;
             $logoInfo = getimagesize($this->logomarca);
-            $logoWmm = ($logoInfo[0]/72)*25.4;
-            $logoHmm = ($logoInfo[1]/72)*25.4;
-            $nImgW = $this->paperwidth/2 - ($this->paperwidth/10 + 4);
-            $nImgH = round($logoHmm * ($nImgW/$logoWmm), 0);
+            $logoWmm = ($logoInfo[0] / 72) * 25.4;
+            $logoHmm = ($logoInfo[1] / 72) * 25.4;
+            $nImgW = $this->paperwidth / 2 - ($this->paperwidth / 10 + 4);
+            $nImgH = round($logoHmm * ($nImgW / $logoWmm), 0);
             if ($nImgH > 18) {
                 $nImgH = 18;
-                $nImgW = round($logoWmm * ($nImgH/$logoHmm), 0);
+                $nImgW = round($logoWmm * ($nImgH / $logoHmm), 0);
             }
             $yImg = $y;
             $this->pdf->image($this->logomarca, $xImg, $yImg, $nImgW, $nImgH, 'jpeg');
@@ -1071,7 +1071,7 @@ class Dabpe extends DaCommon
                 $w - 4,
                 $hBoxLinha,
                 "Tributos Totais Incidentes(Lei Federal 12.741/2012): R$"
-                . $vTotTrib,
+                    . $vTotTrib,
                 $aFontTex,
                 'T',
                 'C',

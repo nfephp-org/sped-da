@@ -1,5 +1,6 @@
 <?php
 
+
 namespace NFePHP\DA\NFe;
 
 use NFePHP\DA\Legacy\Dom;
@@ -918,7 +919,8 @@ class Danfe extends DaCommon
             if (in_array($cStat, ['110', '205', '301', '302', '303'])) {
                 $resp['status'] = false;
                 $resp['message'][] = "NFe DENEGADA";
-            } elseif (in_array($cStat, ['101', '151', '135', '155'])
+            } elseif (
+                in_array($cStat, ['101', '151', '135', '155'])
                 || $this->cancelFlag === true
             ) {
                 $resp['status'] = false;
@@ -929,7 +931,8 @@ class Danfe extends DaCommon
                 $tpEvento = $this->getTagValue($infEvento, "tpEvento");
                 $dhEvento = $this->toDateTime($this->getTagValue($infEvento, "dhRegEvento"))->format("d/m/Y H:i:s");
                 $nProt = $this->getTagValue($infEvento, "nProt");
-                if ($tpEvento == '110111' &&
+                if (
+                    $tpEvento == '110111' &&
                     ($cStat == '101' ||
                         $cStat == '151' ||
                         $cStat == '135' ||
@@ -1491,7 +1494,8 @@ class Danfe extends DaCommon
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         $texto = $this->dest->getElementsByTagName("xMun")->item(0)->nodeValue;
-        if (strtoupper(trim($texto)) == "EXTERIOR"
+        if (
+            strtoupper(trim($texto)) == "EXTERIOR"
             && $this->dest->getElementsByTagName("xPais")->length > 0
         ) {
             $texto .= " - " . $this->dest->getElementsByTagName("xPais")->item(0)->nodeValue;
@@ -3124,10 +3128,10 @@ class Danfe extends DaCommon
                     if ($pag == $totpag) {
                         $totpag++;
                     }
-                        //ultrapassa a capacidade para uma única página
-                        //o restante dos dados serão usados nas proximas paginas
-                        $nInicio = $i;
-                        break;
+                    //ultrapassa a capacidade para uma única página
+                    //o restante dos dados serão usados nas proximas paginas
+                    $nInicio = $i;
+                    break;
                 }
 
                 $y_linha = $y + $h;
@@ -3158,9 +3162,9 @@ class Danfe extends DaCommon
                 $veicnovo = $this->itemVeiculoNovo($prod);
                 $aFont = ['font' => $this->fontePadrao, 'size' => 5, 'style' => ''];
                 $this->pdf->textBox(
-                    $x-$w3,
-                    $y+4,
-                    $this->wPrint-($w1+$w2)-2,
+                    $x - $w3,
+                    $y + 4,
+                    $this->wPrint - ($w1 + $w2) - 2,
                     22,
                     $veicnovo,
                     $aFont,
@@ -3708,7 +3712,7 @@ class Danfe extends DaCommon
         $texto = "Impresso em " . date('d/m/Y') . " as " . date('H:i:s')
             . '  ' . $this->creditos;
         $this->pdf->textBox($x, $y, $w, 0, $texto, $aFont, 'T', 'L', false);
-        $texto = $this->powered ? "Powered by NFePHP®" : '';
+        $texto = $this->powered ? "Powered by Sidedoor®" : '';
         $this->pdf->textBox($x, $y, $w, 0, $texto, $aFont, 'T', 'R', false, '');
     }
 

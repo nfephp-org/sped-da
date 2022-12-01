@@ -196,7 +196,7 @@ class Daevento extends DaCommon
         $maxW = $this->wPrint;
         //####################################################################################
         //coluna esquerda identificação do emitente
-        $w = round($maxW * 0.41, 0);// 80;
+        $w = round($maxW * 0.41, 0); // 80;
         if ($this->orientacao == 'P') {
             $aFont = array('font' => $this->fontePadrao, 'size' => 6, 'style' => 'I');
         } else {
@@ -420,7 +420,7 @@ class Daevento extends DaCommon
                 $campo = $this->infCorrecao->item($i)->getElementsByTagName('campoAlterado')->item(0)->nodeValue;
                 $numero = 1;
                 if (!empty($this->infCorrecao->item($i)->getElementsByTagName('nroItemAlterado')->item(0))) {
-                    $numero =$this->infCorrecao->item($i)->getElementsByTagName('nroItemAlterado')->item(0)->nodeValue;
+                    $numero = $this->infCorrecao->item($i)->getElementsByTagName('nroItemAlterado')->item(0)->nodeValue;
                 }
                 $valor = $this->infCorrecao->item($i)->getElementsByTagName('valorAlterado')->item(0)->nodeValue;
 
@@ -463,7 +463,7 @@ class Daevento extends DaCommon
         $w = $this->wPrint - 4;
         $aFont = array('font' => $this->fontePadrao, 'size' => 6, 'style' => 'I');
         $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = $this->powered ? "Powered by NFePHP®" : '';
+        $texto = $this->powered ? "Powered by Sidedoor®" : '';
         $aFont = array('font' => $this->fontePadrao, 'size' => 6, 'style' => 'I');
         $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'R', 0, 'http://www.nfephp.org');
     }

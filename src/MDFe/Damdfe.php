@@ -26,7 +26,7 @@ class Damdfe extends DaCommon
     protected $yDados = 0;
     protected $xml; // string XML NFe
     protected $errMsg = ''; // mesagens de erro
-    protected $errStatus = false;// status de erro TRUE um erro ocorreu false sem erros
+    protected $errStatus = false; // status de erro TRUE um erro ocorreu false sem erros
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     protected $margemInterna = 2;
     protected $id;
@@ -203,7 +203,7 @@ class Damdfe extends DaCommon
                 $maxH = 210;
                 $maxW = 297;
             }
-        }//orientação
+        } //orientação
         //largura imprimivel em mm
         $this->wPrint = $maxW - ($margEsq + $xInic);
         //comprimento imprimivel em mm
@@ -748,7 +748,8 @@ class Damdfe extends DaCommon
         $x1 += $x2;
         $this->pdf->textBox($x1, $y, $x2, 10, '', $this->baseFont, 'T', 'L', 0, '', 0, 0, 0, 1);
 
-        if ($this->rodo
+        if (
+            $this->rodo
             || $this->aereo
             || $this->ferrov
         ) {
@@ -1315,7 +1316,7 @@ class Damdfe extends DaCommon
         $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
         $texto = '';
         if ($this->powered) {
-            $texto = "Powered by NFePHP®";
+            $texto = "Powered by Sidedoor®";
         }
         $this->pdf->textBox($x, $y, $w, 0, $texto, $aFont, 'T', 'R', false, '');
     }

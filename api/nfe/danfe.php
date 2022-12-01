@@ -6,7 +6,7 @@ require_once '../../bootstrap.php';
 use NFePHP\DA\NFe\Danfe;
 
 $xml = file_get_contents(__DIR__ . '/fixtures/mod55-nfe_4.xml');
-$logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(realpath(__DIR__ . '/../images/tulipas.png')));
+$logo = 'data://text/plain;base64,' . base64_encode(file_get_contents(realpath(__DIR__ . '/../images/tulipas.png')));
 //$logo = realpath(__DIR__ . '/../images/tulipas.png');
 
 try {
@@ -43,8 +43,8 @@ try {
     /*  $danfe->logoParameters($logo, 'C', false);  */
     //Gera o PDF
     $pdf = $danfe->render($logo);
-    header('Content-Type: application/pdf');
-    echo $pdf;
+    header('Content-Type: application/pdf;base64; charset=UTF-8');
+    echo  base64_encode($pdf);
 } catch (InvalidArgumentException $e) {
     echo "Ocorreu um erro durante o processamento :" . $e->getMessage();
 }
