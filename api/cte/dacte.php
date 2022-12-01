@@ -7,7 +7,7 @@ use NFePHP\DA\CTe\Dacte;
 
 $xml = file_get_contents('php://input');
 //$logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(realpath(__DIR__ . '/../images/tulipas.png')));
-$logo = realpath(__DIR__ . '/../images/contrail.jpg');
+// $logo = realpath(__DIR__ . '/../images/contrail.jpg');
 
 try {
 
