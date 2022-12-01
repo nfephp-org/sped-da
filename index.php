@@ -9,8 +9,8 @@ Route::add('/', function () {
 
 // Simple test route that simulates static html file
 Route::add('/cte_to_pdf', function () {
-    require __DIR__ . '/api/index.php';
-});
+    require __DIR__ . '/api/cte/dacte.php';
+}, 'post');
 
 // Post route example
 Route::add('/contact-form', function () {
