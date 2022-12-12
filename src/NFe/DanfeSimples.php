@@ -202,10 +202,10 @@ class DanfeSimples extends DaCommon
             $json = json_encode($stdClass, JSON_OBJECT_AS_ARRAY);
             $this->nfeArray = json_decode($json, JSON_OBJECT_AS_ARRAY);
             if (!isset($this->nfeArray['NFe']['infNFe']['@attributes']['Id'])) {
-                throw new Exception('XML não parece ser uma NF-e!');
+                throw new \Exception('XML não parece ser uma NF-e!');
             }
             if ($this->nfeArray['protNFe']['infProt']['cStat'] != '100') {
-                throw new Exception('NF-e não autorizada!');
+                throw new \Exception('NF-e não autorizada!');
             }
         }
     }
@@ -277,7 +277,7 @@ class DanfeSimples extends DaCommon
             if (!isset($volumes[$espVolume])) {
                 $volumes[$espVolume] = 0;
             }
-            
+
             // Caso a quantidade de volumes não esteja presente no XML, soma-se zero
             $volumes[$espVolume] += @$vol['qVol'];
             // Caso a quantidade de volumes não esteja presente no XML, soma-se zero
