@@ -365,7 +365,7 @@ class Daevento extends DaCommon
             'style' => ''
         );
         $this->pdf->textBox($x, $y + 15, $w2, 8, $texto, $aFont, 'T', 'L', 0, '');
-        $tsHora = $this->toTimestamp($this->dhEvento);
+        $tsHora = (new \DateTime($this->dhEvento))->format('d/m/Y H:i:s');
         $texto = 'Criado em : ' . date('d/m/Y   H:i:s', $tsHora);
         $this->pdf->textBox($x, $y + 20, $w2, 8, $texto, $aFont, 'T', 'L', 0, '');
         $tsHora = $this->toTimestamp($this->dhRegEvento);
