@@ -367,14 +367,14 @@ class Daevento extends DaCommon
         $this->pdf->textBox($x, $y + 15, $w2, 8, $texto, $aFont, 'T', 'L', 0, '');
         //$tsHora = $this->toTimestamp($this->dhEvento);
         //$texto = 'Criado em : ' . date('d/m/Y H:i:s', $tsHora);
-        $texto = 'Criado em : ' . \DateTime::createFromFormat("Y-m-d\TH:i:sP", $this->dhEvento)->format('d/m/Y H:i:s P');
+        $texto = 'Criado em : ' . \DateTime::createFromFormat("Y-m-d\TH:i:sP", $this->dhEvento)->format('d/m/Y H:i:s');
         $this->pdf->textBox($x, $y + 20, $w2, 8, $texto, $aFont, 'T', 'L', 0, '');
         //$tsHora = $this->toTimestamp($this->dhRegEvento);
         //$texto = 'Prococolo: ' . $this->nProt . '  -  Registrado em: ' . date('d/m/Y   H:i:s', $tsHora);
         $texto = 'Prococolo: '
             . $this->nProt
             . ' - Registrado em: '
-            . \DateTime::createFromFormat("Y-m-d\TH:i:sP", $this->dhRegEvento)->format('d/m/Y H:i:s P');
+            . \DateTime::createFromFormat("Y-m-d\TH:i:sP", $this->dhRegEvento)->format('d/m/Y H:i:s');
         $this->pdf->textBox($x, $y + 25, $w2, 8, $texto, $aFont, 'T', 'L', 0, '');
         // ####################################################
         $x = $oldX;
