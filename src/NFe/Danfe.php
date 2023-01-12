@@ -364,7 +364,7 @@ class Danfe extends DaCommon
             if ($infPedido != "") {
                 $this->textoAdic .= $infPedido;
             }
-            $this->textoAdic .= $this->getTagValue($this->dest, "email", ' Email do Destinatário: ');
+            $this->textoAdic .= $this->getTagValue($this->dest, "email", "\n Email do Destinatário: ");
             $this->textoAdic .= !empty($this->getTagValue($this->infAdic, "infAdFisco"))
                 ? "\n Inf. fisco: " . $this->getTagValue($this->infAdic, "infAdFisco")
                 : '';
