@@ -353,6 +353,15 @@ class Danfe extends DaCommon
     {
         $this->ocultarUnidadeTributavel = filter_var($ocultarUnidadeTributavel, FILTER_VALIDATE_BOOLEAN);
     }
+    
+    /**
+     * Atribui se será gerado informações adicionais automatica.
+     * @param bool $gerarInformacoesAutomaticas
+     */
+    public function setGerarInformacoesAutomaticas($gerarInformacoesAutomaticas = false)
+    {
+        $this->gerarInformacoesAutomaticas = filter_var($gerarInformacoesAutomaticas, FILTER_VALIDATE_BOOLEAN);
+    }
 
     protected function calculoEspacoVericalDadosAdicionais()
     {
