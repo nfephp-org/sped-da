@@ -392,6 +392,7 @@ class Daevento extends DaCommon
         }
         $aFont = ['font' => $this->fontePadrao,'size' => 10,'style' => ''];
         $this->pdf->textBox($x + 5, $y1, $maxW - 5, 20, $texto, $aFont, 'T', 'L', 0, '', false);
+        $texto = '';
         // ############################################
         $x = $oldX;
         $y = $y1;
