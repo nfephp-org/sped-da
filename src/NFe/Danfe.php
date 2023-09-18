@@ -133,6 +133,18 @@ class Danfe extends DaCommon
      * @var integer
      */
     protected $qtdeItensProc;
+    /*
+     * NF-e processada
+     * 
+     * @var \DOMNode
+     */
+    protected $nfeProc;
+    /*
+     * Grupo de detalhamento da forma de pagamento
+     * 
+     * @var \DOMNode
+     */
+    protected $detPag;
     /**
      * Dom Document
      *
