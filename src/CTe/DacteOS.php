@@ -77,6 +77,18 @@ class DacteOS extends DaCommon
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     protected $margemInterna = 0;
 
+    protected $infOutros;
+    protected $ICMSSN;
+    protected $toma;
+    protected $enderToma;
+    protected $xSeg;
+    protected $nApol;
+    protected $respSeg;
+    protected $protCTe;
+    protected $qrCodMDFe;
+    protected $cteProc;
+    protected $wCanhoto;
+
     /**
      * __construct
      *

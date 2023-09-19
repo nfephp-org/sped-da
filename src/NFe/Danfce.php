@@ -37,6 +37,7 @@ class Danfce extends DaCommon
     protected $ide;
     protected $enderDest;
     protected $ICMSTot;
+    protected $tpImp;
     protected $imposto;
     protected $emit;
     protected $enderEmit;

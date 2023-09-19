@@ -33,9 +33,11 @@ class DanfeEtiqueta extends DaCommon
     protected $infAdic;
     protected $infCpl;
     protected $infAdFisco;
+    protected $infProt;
     protected $textoAdic;
     protected $tpEmis;
     protected $tpAmb;
+    protected $tpImp;
     protected $pag;
     protected $vTroco;
     protected $itens = [];
