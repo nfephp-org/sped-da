@@ -61,7 +61,14 @@ class Danfe extends DaCommon
      */
     public $descProdInfoComplemento = false;
     /**
-     *`Parâmetro que habilita a geração de automatica de informações
+     * Parâmetro do controle se deve exibir o email do destinatário
+     * na informações complementares
+     *
+     * @var boolean
+     */
+    public $exibirEmailDestinatario = true;
+    /**
+     * Parâmetro que habilita a geração de automatica de informações
      *
      * @var boolean
      */
@@ -365,7 +372,16 @@ class Danfe extends DaCommon
     {
         $this->ocultarUnidadeTributavel = filter_var($ocultarUnidadeTributavel, FILTER_VALIDATE_BOOLEAN);
     }
-    
+
+    /**
+     * Atribui se será exibido email do destinatário nas informações complementares.
+     * @param bool $exibirEmailDestinatario
+     */
+    public function setExibirEmailDestinatario($exibirEmailDestinatario = true)
+    {
+        $this->exibirEmailDestinatario = filter_var($exibirEmailDestinatario, FILTER_VALIDATE_BOOLEAN);
+    }
+
     /**
      * Atribui se será gerado informações adicionais automatica.
      * @param bool $gerarInformacoesAutomaticas
@@ -400,7 +416,11 @@ class Danfe extends DaCommon
             if ($infPedido != "") {
                 $this->textoAdic .= $infPedido;
             }
-            $this->textoAdic .= $this->getTagValue($this->dest, "email", ' Email do Destinatário: ');
+            // EXIBE EMAIL DO DESTINATÁRIO
+            if($this->exibirEmailDestinatario){
+                $this->textoAdic .= $this->getTagValue($this->dest, "email", ' Email do Destinatário: ');
+            }            
+
             $this->textoAdic .= !empty($this->getTagValue($this->infAdic, "infAdFisco"))
                 ? "\n Inf. fisco: " . $this->getTagValue($this->infAdic, "infAdFisco")
                 : '';
