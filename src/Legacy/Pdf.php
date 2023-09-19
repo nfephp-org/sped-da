@@ -892,7 +892,7 @@ class Pdf extends Fpdf
             //remover espaços desnecessários
             $text = trim($text);
             //converter o charset para o fpdf
-            $text = utf8_decode($text);
+            $text = mb_convert_encoding($text, 'ISO-8859-1');
             //decodifica os caracteres html no xml
             $text = html_entity_decode($text);
         } else {
@@ -1033,7 +1033,7 @@ class Pdf extends Fpdf
             //remover espaços desnecessários
             $text = trim($text);
             //converter o charset para o fpdf
-            $text = utf8_decode($text);
+            $text = mb_convert_encoding($text, 'ISO-8859-1');
             //decodifica os caracteres html no xml
             $text = html_entity_decode($text);
         } else {
