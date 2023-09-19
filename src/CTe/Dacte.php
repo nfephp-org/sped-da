@@ -87,6 +87,17 @@ class Dacte extends DaCommon
     protected $margemInterna = 0;
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
 
+    protected $cteProc;
+    protected $aereo;
+    protected $lota;
+    protected $infOutros;
+    protected $toma;
+    protected $enderToma;
+    protected $protCTe;
+    protected $formatPadrao;
+    protected $wCanhoto;
+    protected $arrayNF;
+
     /**
      * __construct
      *
