@@ -57,6 +57,7 @@ class Danfce extends DaCommon
     protected $urlQR = '';
     protected $pdf;
     protected $margem = 2;
+    protected $textoExtra = '';
     protected $flagResume = false;
     protected $hMaxLinha = 5;
     protected $hBoxLinha = 6;
@@ -183,6 +184,16 @@ class Danfce extends DaCommon
     public function setOffLineDoublePrint($flag = true)
     {
         $this->offline_double = $flag;
+    }
+
+    /**
+     * Recebe uma string com uma informação adicionadl que sera impressa no final do pdf
+     *
+     * @param string $texto
+     */
+    public function setExtraContent($texto)
+    {
+        $this->textoExtra = $texto;
     }
 
     /**
