@@ -959,6 +959,7 @@ class Danfe extends DaCommon
             if (in_array($cStat, ['110', '205', '301', '302', '303'])) {
                 $resp['status'] = false;
                 $resp['message'][] = "NFe DENEGADA";
+                $resp['submessage'] = $this->infProt->getElementsByTagName('xMotivo')->item(0)->nodeValue;
             } elseif (in_array($cStat, ['101', '151', '135', '155'])
                 || $this->cancelFlag === true
             ) {
