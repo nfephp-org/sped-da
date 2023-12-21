@@ -9,13 +9,13 @@
                 <mod>55</mod>
                 <serie>1</serie>
                 <nNF>992346</nNF>
-                <dhEmi>2015-03-27T09:40:00-05:00</dhEmi>
-                <dhSaiEnt>2015-03-27T09:40:00-05:00</dhSaiEnt>
+                <dhEmi>2015-03-27T09:40:00-03:00</dhEmi>
+                <dhSaiEnt>2015-03-27T09:40:00-03:00</dhSaiEnt>
                 <tpNF>1</tpNF>
                 <idDest>1</idDest>
                 <cMunFG>3550308</cMunFG>
                 <tpImp>1</tpImp>
-                <tpEmis>4</tpEmis>
+                <tpEmis>5</tpEmis>
                 <cDV>6</cDV>
                 <tpAmb>2</tpAmb>
                 <finNFe>1</finNFe>
@@ -75,7 +75,7 @@
                     <cEANTrib/>
                     <uTrib>RL</uTrib>
                     <qTrib>1.0000</qTrib>
-                    <vUnTrib>1.3000</vUnTrib>
+                    <vUnTrib>138.3000</vUnTrib>
                     <indTot>1</indTot>
                 </prod>
                 <imposto>
@@ -263,7 +263,7 @@
                     <cEANTrib/>
                     <uTrib>RL</uTrib>
                     <qTrib>1.0000</qTrib>
-                    <vUnTrib>1.8300</vUnTrib>
+                    <vUnTrib>149.8300</vUnTrib>
                     <indTot>1</indTot>
                 </prod>
                 <imposto>
@@ -332,25 +332,50 @@
                     <pesoB>0.000</pesoB>
                 </vol>
             </transp>
-            <pag>
-                <detPag>
-                    <tPag>16</tPag>
-                    <vPag>120.00</vPag>
-                    <card>
-                        <tpIntegra>2</tpIntegra>
-                    </card>
-                </detPag>
-                <detPag>
-                    <tPag>01</tPag>
-                    <vPag>120.00</vPag>
-                </detPag>
-            </pag>
+            <cobr>
+                <fat>
+                    <nFat>992346</nFat>
+                    <vOrig>689.91</vOrig>
+                    <vLiq>689.91</vLiq>
+                </fat>
+                <dup>
+                    <nDup>992346</nDup>
+                    <dVenc>2015-04-24</dVenc>
+                    <vDup>689.91</vDup>
+                </dup>
+                <dup>
+                    <nDup>992346</nDup>
+                    <dVenc>2015-04-24</dVenc>
+                    <vDup>689.91</vDup>
+                </dup>
+                <dup>
+                    <nDup>992346</nDup>
+                    <dVenc>2015-04-24</dVenc>
+                    <vDup>689.91</vDup>
+                </dup>
+                <dup>
+                    <nDup>992346</nDup>
+                    <dVenc>2015-04-24</dVenc>
+                    <vDup>689.91</vDup>
+                </dup>
+                <dup>
+                    <nDup>992346</nDup>
+                    <dVenc>2015-04-24</dVenc>
+                    <vDup>689.91</vDup>
+                </dup>
+                <dup>
+                    <nDup>992346</nDup>
+                    <dVenc>2015-04-24</dVenc>
+                    <vDup>689.91</vDup>
+                </dup>
+                <dup>
+                    <nDup>992346</nDup>
+                    <dVenc>2015-04-24</dVenc>
+                    <vDup>689.91</vDup>
+                </dup>
+            </cobr>
             <infAdic>
                 <infCpl>"DOCUMENTO EMITIDO POR EMPRESA OPTANTE PELO SIMPLES NACIONAL;NAO GERA DIREITO A CREDITO FISCAL DE IPI";"PERMITE O APROVEITAMENTO DE CREDITO DE ICMS NO VALOR DE: R$17,66 CORRESPONDENTE A ALIQUOTA DE 2.56%";Vendedor:1 - Guilherme Kavedikado;Valor Aproximado dos Tributos : R$ 206,97. Fonte IBPT (Instituto Brasileiro de Planejamento Tributario)</infCpl>
-                <obsCont>
-                    <xCampo>email</xCampo>
-                    <xTexto>roberto@nfephp.com.br</xTexto>
-                </obsCont>
             </infAdic>
         </infNFe>
         <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">

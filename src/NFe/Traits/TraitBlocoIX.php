@@ -9,11 +9,11 @@ trait TraitBlocoIX
 {
     protected function blocoIX($y)
     {
-        $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
+        $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
         $valor = $this->getTagValue($this->ICMSTot, 'vTotTrib');
         $trib = !empty($valor) ? number_format((float) $valor, 2, ',', '.') : '-----';
         $texto = "Tributos totais Incidentes (Lei Federal 12.741/2012): R$ {$trib}";
-        $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
+        $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
         $this->pdf->textBox(
             $this->margem,
             $y,
@@ -28,14 +28,13 @@ trait TraitBlocoIX
             true
         );
         if ($this->paperwidth < 70) {
-            $fsize = 5;
-            $aFont = ['font'=> $this->fontePadrao, 'size' => 5, 'style' => ''];
+            $aFont = ['font' => $this->fontePadrao, 'size' => 5, 'style' => ''];
         }
         $this->pdf->textBox(
             $this->margem,
-            $y+3,
+            $y + 4,
             $this->wPrint,
-            $this->bloco9H-4,
+            $this->bloco9H - 5,
             str_replace(";", "\n", $this->infCpl),
             $aFont,
             'T',
@@ -46,7 +45,7 @@ trait TraitBlocoIX
         );
         return $this->bloco9H + $y;
     }
-    
+
     /**
      * Calcula a altura do bloco IX
      * Depende do conteudo de infCpl
@@ -61,14 +60,14 @@ trait TraitBlocoIX
         $orientacao = 'P';
         $pdf = new \NFePHP\DA\Legacy\Pdf($orientacao, 'mm', $papel);
         $fsize = 7;
-        $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
+        $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
         if ($this->paperwidth < 70) {
             $fsize = 5;
-            $aFont = ['font'=> $this->fontePadrao, 'size' => 5, 'style' => ''];
+            $aFont = ['font' => $this->fontePadrao, 'size' => 5, 'style' => ''];
         }
         $linhas = str_replace(';', "\n", $this->infCpl);
-        $hfont = (imagefontheight($fsize)/72)*13;
-        $numlinhas = $pdf->getNumLines($linhas, $wprint, $aFont)+2;
-        return (int) ($numlinhas * $hfont) + 2;
+        $hfont = (imagefontheight($fsize) / 72) * 13;
+        $numlinhas = $pdf->getNumLines($linhas, $wprint, $aFont) + 2;
+        return (int) ($numlinhas * $hfont) + $this->margem;
     }
 }

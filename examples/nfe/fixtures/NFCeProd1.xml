@@ -77,7 +77,7 @@
                     <CFOP>5102</CFOP>
                     <uCom>Und</uCom>
                     <qCom>1.00</qCom>
-                    <vUnCom>9.90</vUnCom>
+                    <vUnCom>9.9011111</vUnCom>
                     <vProd>9.90</vProd>
                     <cEANTrib/>
                     <uTrib>Und</uTrib>
@@ -114,12 +114,12 @@
                     <CFOP>5102</CFOP>
                     <uCom>Und</uCom>
                     <qCom>1.00</qCom>
-                    <vUnCom>9.90</vUnCom>
+                    <vUnCom>9.90111111</vUnCom>
                     <vProd>9.90</vProd>
                     <cEANTrib/>
                     <uTrib>Und</uTrib>
                     <qTrib>1.00</qTrib>
-                    <vUnTrib>9.90</vUnTrib>
+                    <vUnTrib>9.9011111</vUnTrib>
                     <indTot>1</indTot>
                 </prod>
                 <imposto>
@@ -150,13 +150,13 @@
                     <NCM>85444200</NCM>
                     <CFOP>5102</CFOP>
                     <uCom>Und</uCom>
-                    <qCom>1.00</qCom>
-                    <vUnCom>9.90</vUnCom>
+                    <qCom>11.002</qCom>
+                    <vUnCom>9.9011111</vUnCom>
                     <vProd>9.90</vProd>
                     <cEANTrib/>
                     <uTrib>Und</uTrib>
-                    <qTrib>1.00</qTrib>
-                    <vUnTrib>9.90</vUnTrib>
+                    <qTrib>11.002</qTrib>
+                    <vUnTrib>9.9011111</vUnTrib>
                     <indTot>1</indTot>
                 </prod>
                 <imposto>

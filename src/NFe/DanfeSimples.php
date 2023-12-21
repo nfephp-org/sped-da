@@ -202,25 +202,21 @@ class DanfeSimples extends DaCommon
             $json = json_encode($stdClass, JSON_OBJECT_AS_ARRAY);
             $this->nfeArray = json_decode($json, JSON_OBJECT_AS_ARRAY);
             if (!isset($this->nfeArray['NFe']['infNFe']['@attributes']['Id'])) {
-                throw new Exception('XML não parece ser uma NF-e!');
+                throw new \Exception('XML não parece ser uma NF-e!');
             }
             if ($this->nfeArray['protNFe']['infProt']['cStat'] != '100') {
-                throw new Exception('NF-e não autorizada!');
+                throw new \Exception('NF-e não autorizada!');
             }
         }
     }
 
-    protected function monta(
-        $logo = ''
-    ) {
-        $this->pdf       = '';
-        $this->logomarca = $this->adjustImage($logo);
+    protected function monta($logo = null)
+    {
+        $this->pdf = '';
         //se a orientação estiver em branco utilizar o padrão estabelecido na NF
         if (empty($this->orientacao)) {
             $this->orientacao = 'L';
         }
-
-
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
         if ($this->orientacao == 'L') {
             if ($this->papel == 'A5') {
@@ -239,7 +235,6 @@ class DanfeSimples extends DaCommon
                 $this->maxH = $this->papel[1];
             }
         }
-
         //Caso a largura da etiqueta seja pequena <=110mm,
         //Definimos como pequeno, para diminuir as fontes e tamanhos das células
         if ($this->maxW <= 130) {
@@ -276,16 +271,21 @@ class DanfeSimples extends DaCommon
         }
 
         foreach ($this->nfeArray['NFe']['infNFe']['transp']['vol'] as $vol) {
-            if(!isset($vol['esp'])){ // Espécie não especificada na transportadora (por erro de preenchimento do XML)
-                continue;
+            $espVolume = isset($vol['esp']) ? $vol['esp'] : 'VOLUME';
+            //Caso não esteja especificado no xml, irá ser mostrado no danfe a palavra VOLUME
+
+            if (!isset($volumes[$espVolume])) {
+                $volumes[$espVolume] = 0;
             }
-            if (!isset($volumes[$vol['esp']])) {
-                $volumes[$vol['esp']] = 0;
-            }
-            $volumes[$vol['esp']] += @$vol['qVol']; // Caso a quantidade de volumes não esteja presente no XML, soma-se zero
-            $totalVolumes += @$vol['qVol'] ?: 0; // Caso a quantidade de volumes não esteja presente no XML, soma-se zero
-            $pesoB += @$vol['pesoB'] ?: 0; // Caso o peso bruto não esteja presente no XML, soma-se zero
-            $pesoL += @$vol['pesoL'] ?: 0; // Caso o peso liquido não esteja presente no XML, soma-se zero
+
+            // Caso a quantidade de volumes não esteja presente no XML, soma-se zero
+            $volumes[$espVolume] += @$vol['qVol'];
+            // Caso a quantidade de volumes não esteja presente no XML, soma-se zero
+            $totalVolumes += @$vol['qVol'] ?: 0;
+            // Caso o peso bruto não esteja presente no XML, soma-se zero
+            $pesoB += @$vol['pesoB'] ?: 0;
+            // Caso o peso liquido não esteja presente no XML, soma-se zero
+            $pesoL += @$vol['pesoL'] ?: 0;
         }
 
         // LINHA 1
@@ -470,7 +470,9 @@ class DanfeSimples extends DaCommon
         $this->pdf->setFont('Arial', '', $pequeno ? 9 : 10);
         $this->pdf->cell(($c1 * 4), $pequeno ? 4 : 5, "{$enderecoLinha2}", 1, 1, 'C', 1);
 
-        if($this->nfeArray['NFe']['infNFe']['transp']['modFrete'] != 9){
+        if ($this->nfeArray['NFe']['infNFe']['transp']['modFrete'] != 9
+            && isset($this->nfeArray['NFe']['infNFe']['transp']['transporta'])
+        ) {
             $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
             $this->pdf->cell(($c1 * 4), $pequeno ? 5 : 6, "TRANSPORTADORA", 1, 1, 'C', 1);
             $this->pdf->setFont('Arial', '', $pequeno ? 9 : 10);
@@ -490,7 +492,7 @@ class DanfeSimples extends DaCommon
                 $this->pdf->cell(
                     ($c1 * 4),
                     $pequeno ? 5 : 6,
-                    "{$esp}x {$qVol}",
+                    "{$esp} x {$qVol}",
                     1,
                     1,
                     'C',
@@ -518,7 +520,7 @@ class DanfeSimples extends DaCommon
         $vNF = number_format($this->nfeArray['NFe']['infNFe']['total']['ICMSTot']['vNF'], 2, ',', '.');
         $this->pdf->cell(($c1 * 2), $pequeno ? 5 : 6, "R$ {$vNF}", 1, 1, 'C', 1);
 
-        if(isset($this->nfeArray['NFe']['infNFe']['infAdic'])){
+        if (isset($this->nfeArray['NFe']['infNFe']['infAdic'])) {
             $this->pdf->setFont('Arial', 'B', $pequeno ? 10 : 12);
             $this->pdf->cell(($c1 * 4), $pequeno ? 5 : 6, "DADOS ADICIONAIS", 1, 1, 'C', 1);
             $this->pdf->setFont('Arial', '', $pequeno ? 8 : 10);

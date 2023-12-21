@@ -42,6 +42,7 @@ class DacteOS extends DaCommon
     protected $seg;
     protected $modal;
     protected $rodo;
+    protected $aereo;
     protected $moto;
     protected $veic;
     protected $ferrov;
@@ -76,6 +77,18 @@ class DacteOS extends DaCommon
     protected $formatoChave = "#### #### #### #### #### #### #### #### #### #### ####";
     protected $margemInterna = 0;
 
+    protected $infOutros;
+    protected $ICMSSN;
+    protected $toma;
+    protected $enderToma;
+    protected $xSeg;
+    protected $nApol;
+    protected $respSeg;
+    protected $protCTe;
+    protected $qrCodMDFe;
+    protected $cteProc;
+    protected $wCanhoto;
+
     /**
      * __construct
      *
@@ -109,6 +122,7 @@ class DacteOS extends DaCommon
             $this->infQ = $this->dom->getElementsByTagName("infQ");
             $this->seg = $this->dom->getElementsByTagName("seg")->item(0);
             $this->rodo = $this->dom->getElementsByTagName("rodoOS")->item(0);
+            $this->aereo = $this->dom->getElementsByTagName("aereo")->item(0);
             $this->veic = $this->dom->getElementsByTagName("veic");
             $this->ferrov = $this->dom->getElementsByTagName("ferrov")->item(0);
             // adicionar outros modais
@@ -1321,7 +1335,10 @@ class DacteOS extends DaCommon
 
         $x = $oldX;
         $y = $y + 4;
-        $texto = number_format($this->getTagValue($this->infQ->item(0), "qCarga"), 3, ",", ".");
+        $texto = $this->getTagValue($this->infQ->item(0), "qCarga");
+        if ($this->infQ->item(0) != null) {
+            $texto = number_format($texto, 3, ",", ".");
+        }
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x, $y, $w * 0.26, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x += $w * 0.26;
@@ -2358,5 +2375,62 @@ class DacteOS extends DaCommon
         // prepare a base64 encoded "data url"
         $pic = 'data://text/plain;base64,' . base64_encode($qrcode);
         $this->pdf->image($pic, $xQr, $yQr, $wQr, $hQr, 'PNG');
+    }
+
+    /**
+     * modalAereo
+     * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
+     *
+     * @param number $x Posição horizontal canto esquerdo
+     * @param number $y Posição vertical canto superior
+     * @return number Posição vertical final
+     */
+    protected function modalAereo($x = 0, $y = 0)
+    {
+        $oldX = $x;
+        $oldY = $y;
+        $lotacao = '';
+        if ($this->orientacao == 'P') {
+            $maxW = $this->wPrint;
+        } else {
+            $maxW = $this->wPrint - $this->wCanhoto;
+        }
+        $w = $maxW;
+        $h = 3;
+        $texto = 'DADOS ESPECÍFICOS DO MODAL AÉREO';
+        $aFont = $this->formatPadrao;
+        $this->pdf->textBox($x, $y, $w, $h * 3.2, $texto, $aFont, 'T', 'C', 1, '');
+        $y += 3.4;
+        $this->pdf->line($x, $y, $w + 1, $y); // LINHA DE CIMA
+        $texto = 'NÚMERO OPERACIONAL DO CONHECIMENTO AÉREO';
+        $aFont = $this->formatPadrao;
+        $this->pdf->textBox($x, $y, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $texto = 'CLASSE DA TARIFA';
+        $aFont = $this->formatPadrao;
+        $this->pdf->textBox($x + 50, $y, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $texto = 'CÓDIGO DA TARIFA';
+        $aFont = $this->formatPadrao;
+        $this->pdf->textBox($x + 80, $y, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $texto = 'VALOR DA TARIFA';
+        $aFont = $this->formatPadrao;
+        $this->pdf->textBox($x + 110, $y, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $texto = $this->getTagValue($this->aereo, "nOCA");
+        $aFont = $this->formatNegrito;
+        $this->pdf->textBox($x, $y + 3, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $x += $w * 0.23;
+        $this->pdf->line($x, $y, $x, $y + 6); // LINHA APÓS NÚMERO OP. DO CT-E AEREO
+        $texto = $this->getTagValue($this->aereo, "CL");
+        $aFont = $this->formatNegrito;
+        $this->pdf->textBox($x, $y + 3, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $x += 30;
+        $this->pdf->line($x, $y, $x, $y + 6); // LINHA APÓS CLASSE DA TARIFA
+        $texto = $this->getTagValue($this->aereo, "cTar");
+        $aFont = $this->formatNegrito;
+        $this->pdf->textBox($x, $y + 3, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $x += 30;
+        $this->pdf->line($x, $y, $x, $y + 6); // LINHA APÓS COD DA TARIFA
+        $texto = $this->getTagValue($this->aereo, "vTar");
+        $aFont = $this->formatNegrito;
+        $this->pdf->textBox($x, $y + 3, $w * 0.23, $h, $texto, $aFont, 'T', 'L', 0, '');
     }
 }

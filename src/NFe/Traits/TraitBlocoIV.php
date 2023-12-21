@@ -18,6 +18,7 @@ trait TraitBlocoIV
         $valor = $this->getTagValue($this->ICMSTot, 'vNF');
         $desconto = $this->getTagValue($this->ICMSTot, 'vDesc');
         $frete = $this->getTagValue($this->ICMSTot, 'vFrete');
+        $despesas = $this->getTagValue($this->ICMSTot, 'vOutro');
         $bruto = $valor + $desconto - $frete;
 
         $aFont = ['font' => $this->fontePadrao, 'size' => 8, 'style' => ''];
@@ -135,12 +136,8 @@ trait TraitBlocoIV
             '',
             false
         );
-        $fsize = 10;
-        if ($this->paperwidth < 70) {
-            $fsize = 8;
-        }
-        $aFont = ['font' => $this->fontePadrao, 'size' => $fsize, 'style' => 'B'];
-        $texto = "Valor a Pagar R$";
+
+        $texto = "Outras despesas R$";
         $this->pdf->textBox(
             $this->margem,
             $y + $y1 + $y2 + $y3 + $y4,
@@ -154,10 +151,44 @@ trait TraitBlocoIV
             '',
             false
         );
+        $texto = number_format((float) $despesas, 2, ',', '.');
+        $y5 = $this->pdf->textBox(
+            $this->margem + $this->wPrint / 2,
+            $y + $y1 + $y2 + $y3 + $y4,
+            $this->wPrint / 2,
+            3,
+            $texto,
+            $aFont,
+            'T',
+            'R',
+            false,
+            '',
+            false
+        );
+
+        $fsize = 10;
+        if ($this->paperwidth < 70) {
+            $fsize = 8;
+        }
+        $aFont = ['font' => $this->fontePadrao, 'size' => $fsize, 'style' => 'B'];
+        $texto = "Valor a Pagar R$";
+        $this->pdf->textBox(
+            $this->margem,
+            $y + $y1 + $y2 + $y3 + $y4 + $y5,
+            $this->wPrint / 2,
+            3,
+            $texto,
+            $aFont,
+            'T',
+            'L',
+            false,
+            '',
+            false
+        );
         $texto = number_format((float) $valor, 2, ',', '.');
         $y4 = $this->pdf->textBox(
             $this->margem + $this->wPrint / 2,
-            $y + $y1 + $y2 + $y3 + $y4,
+            $y + $y1 + $y2 + $y3 + $y4 + $y5,
             $this->wPrint / 2,
             3,
             $texto,

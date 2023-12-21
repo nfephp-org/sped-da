@@ -26,39 +26,60 @@ class Danfe extends DaCommon
      *
      * @var bool
      */
-    protected $exibirPIS = true;
+    public $exibirPIS = false;
     /**
      * Parâmetro para exibir ou ocultar os valores do ICMS Interestadual e Valor Total dos Impostos.
      *
      * @var boolean
      */
-    protected $exibirIcmsInterestadual = true;
+    public $exibirIcmsInterestadual = true;
     /**
      * Parâmetro para exibir ou ocultar o texto sobre valor aproximado dos tributos.
      *
      * @var boolean
      */
-    protected $exibirValorTributos = true;
+    public $exibirValorTributos = true;
     /**
      * Parâmetro para exibir ou ocultar o texto adicional sobre a forma de pagamento
      * e as informações de fatura/duplicata.
      *
      * @var boolean
      */
-    protected $exibirTextoFatura = false;
+    public $exibirTextoFatura = false;
+    /**
+     * Parâmetro do controle se deve exibir o número do item no pedido de compra
+     * na descrição do produto
+     *
+     * @var boolean
+     */
+    public $exibirNumeroItemPedido = false;
     /**
      * Parâmetro do controle se deve concatenar automaticamente informações complementares
      * na descrição do produto, como por exemplo, informações sobre impostos.
      *
      * @var boolean
      */
-    public $descProdInfoComplemento = true;
+    public $descProdInfoComplemento = false;
     /**
-     *`Parâmetro que habilita a geração de automatica de informações
+     * Parâmetro do controle se deve exibir o email do destinatário
+     * na informações complementares
      *
      * @var boolean
      */
-    public $gerarInformacoesAutomaticas = true;
+    public $exibirEmailDestinatario = true;
+    /**
+     * Parâmetro que habilita a geração de automatica de informações
+     *
+     * @var boolean
+     */
+    public $gerarInformacoesAutomaticas = false;
+    /**
+     * Parâmetro do controle se deve concatenar automaticamente informações sobre rastro e medicamento
+     * na descrição do produto, como por exemplo, lote, validade, fabricacao, codigo ANVISA
+     *
+     * @var boolean
+     */
+    public $descProdInfoLoteTxt = true;
     /**
      * Parâmetro do controle se deve gerar quebras de linha com "\n" a partir de ";" na descrição do produto.
      *
@@ -119,6 +140,18 @@ class Danfe extends DaCommon
      * @var integer
      */
     protected $qtdeItensProc;
+    /*
+     * NF-e processada
+     * 
+     * @var \DOMNode
+     */
+    protected $nfeProc;
+    /*
+     * Grupo de detalhamento da forma de pagamento
+     * 
+     * @var \DOMNode
+     */
+    protected $detPag;
     /**
      * Dom Document
      *
@@ -340,6 +373,24 @@ class Danfe extends DaCommon
         $this->ocultarUnidadeTributavel = filter_var($ocultarUnidadeTributavel, FILTER_VALIDATE_BOOLEAN);
     }
 
+    /**
+     * Atribui se será exibido email do destinatário nas informações complementares.
+     * @param bool $exibirEmailDestinatario
+     */
+    public function setExibirEmailDestinatario($exibirEmailDestinatario = true)
+    {
+        $this->exibirEmailDestinatario = filter_var($exibirEmailDestinatario, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    /**
+     * Atribui se será gerado informações adicionais automatica.
+     * @param bool $gerarInformacoesAutomaticas
+     */
+    public function setGerarInformacoesAutomaticas($gerarInformacoesAutomaticas = false)
+    {
+        $this->gerarInformacoesAutomaticas = filter_var($gerarInformacoesAutomaticas, FILTER_VALIDATE_BOOLEAN);
+    }
+
     protected function calculoEspacoVericalDadosAdicionais()
     {
         $this->textoAdic = '';
@@ -358,13 +409,18 @@ class Danfe extends DaCommon
                 $this->textoAdic .= ". \n";
             }
             $this->textoAdic .= !empty($this->getTagValue($this->infAdic, "infCpl"))
+                //? 'Inf. Contribuinte: ' . $this->anfaveaDANFE($this->getTagValue($this->infAdic, "infCpl"))
                 ? 'Inf. Contribuinte: ' . $this->getTagValue($this->infAdic, "infCpl")
                 : '';
             $infPedido       = $this->geraInformacoesDaTagCompra();
             if ($infPedido != "") {
                 $this->textoAdic .= $infPedido;
             }
-            $this->textoAdic .= $this->getTagValue($this->dest, "email", "\n Email do Destinatário: ");
+            // EXIBE EMAIL DO DESTINATÁRIO
+            if($this->exibirEmailDestinatario){
+                $this->textoAdic .= $this->getTagValue($this->dest, "email", ' Email do Destinatário: ');
+            }            
+
             $this->textoAdic .= !empty($this->getTagValue($this->infAdic, "infAdFisco"))
                 ? "\n Inf. fisco: " . $this->getTagValue($this->infAdic, "infAdFisco")
                 : '';
@@ -399,7 +455,7 @@ class Danfe extends DaCommon
         }
         //fim da alteração NT 2013.003 Lei da Transparência
         $this->textoAdic = str_replace(";", "\n", $this->textoAdic);
-        $numlinhasdados = $this->pdf->getNumLines($this->textoAdic, $this->wAdic, $fontProduto) + 1.5;
+        $numlinhasdados = $this->pdf->getNumLines($this->textoAdic, $this->wAdic, $fontProduto) + 2;
         $this->textadicfontsize = $this->pdf->fontSize;
         $hdadosadic = ceil($numlinhasdados * ($this->textadicfontsize));
         if ($hdadosadic > 70) {
@@ -422,7 +478,6 @@ class Danfe extends DaCommon
         if ($hdadosadic < 10) {
             $hdadosadic = 10;
         }
-
         return $hdadosadic;
     }
 
@@ -546,6 +601,7 @@ class Danfe extends DaCommon
         $hissqn      = 11; // para issqn
         $hfooter     = 5; // para rodape
         $hCabecItens = 4; //cabeçalho dos itens
+
         $hOCUPADA    = $hcabecalho
             + $hdestinatario
             + $hlocalentrega
@@ -586,11 +642,9 @@ class Danfe extends DaCommon
         $i         = 0;
         while ($i < $this->det->length) {
             $itemProd = $this->det->item($i);
-            $texto = $this->descricaoProduto($itemProd);
             $mostrarUnidadeTributavel = false;
-
             $prod = $itemProd->getElementsByTagName('prod')->item(0);
-            $uCom = $prod->getElementsByTagName("uCom")->item(0)->nodeValue;
+            $veicProd = $prod->getElementsByTagName("veicProd")->item(0);
             $vUnCom = $prod->getElementsByTagName("vUnCom")->item(0)->nodeValue;
             $uTrib = $prod->getElementsByTagName("uTrib")->item(0);
             $qTrib = $prod->getElementsByTagName("qTrib")->item(0);
@@ -605,11 +659,16 @@ class Danfe extends DaCommon
                 && number_format($vUnCom, 2, ',', '') !== number_format($vUnTrib, 2, ',', '')
             );
             $hUsado += $this->calculeHeight($itemProd, $mostrarUnidadeTributavel);
+            // Tag somente é gerada para veiculo 0k, e só é permitido um veiculo por NF-e por conta do detran
+            // Verifica se a Tag existe
+            if (!empty($veicProd)) {
+                $hUsado += 22;
+            }
             if ($hUsado > $hDispo) {
                 $totPag++;
                 $hDispo = $hDispo2;
                 $hUsado = $hCabecItens;
-                $i--; // decrementa para readicionar o item que não coube nessa pagina na outra.
+                //$i--; // decrementa para readicionar o item que não coube nessa pagina na outra.
             }
             $i++;
         } //fim da soma das areas de itens usadas
@@ -652,7 +711,7 @@ class Danfe extends DaCommon
         //caso tenha boleto imprimir fatura
         if ($this->dup->length > 0) {
             $y = $this->fatura($x, $y + 1);
-        } else {
+        } elseif ($this->exibirTextoFatura) {
             //Se somente tiver a forma de pagamento sem pagamento não imprimir nada
             if (count($formaPag) == '1' && isset($formaPag[90])) {
                 $y = $y;
@@ -884,6 +943,9 @@ class Danfe extends DaCommon
         if (!empty($this->epec) && $this->tpEmis == '4') {
             return $resp;
         }
+        if ($this->tpEmis == '5') {
+            return $resp;
+        }
         if (!isset($this->nfeProc)) {
             $resp['status'] = false;
             $resp['message'][] = 'NFe NÃO PROTOCOLADA';
@@ -894,18 +956,10 @@ class Danfe extends DaCommon
             }
             $retEvento = $this->nfeProc->getElementsByTagName('retEvento')->item(0);
             $cStat = $this->getTagValue($this->nfeProc, "cStat");
-            if (
-                $cStat == '110' ||
-                $cStat == '301' ||
-                $cStat == '302'
-            ) {
+            if (in_array($cStat, ['110', '205', '301', '302', '303'])) {
                 $resp['status'] = false;
                 $resp['message'][] = "NFe DENEGADA";
-            } elseif (
-                $cStat == '101'
-                || $cStat == '151'
-                || $cStat == '135'
-                || $cStat == '155'
+            } elseif (in_array($cStat, ['101', '151', '135', '155'])
                 || $this->cancelFlag === true
             ) {
                 $resp['status'] = false;
@@ -916,8 +970,7 @@ class Danfe extends DaCommon
                 $tpEvento = $this->getTagValue($infEvento, "tpEvento");
                 $dhEvento = $this->toDateTime($this->getTagValue($infEvento, "dhRegEvento"))->format("d/m/Y H:i:s");
                 $nProt = $this->getTagValue($infEvento, "nProt");
-                if (
-                    $tpEvento == '110111' &&
+                if ($tpEvento == '110111' &&
                     ($cStat == '101' ||
                         $cStat == '151' ||
                         $cStat == '135' ||
@@ -968,6 +1021,8 @@ class Danfe extends DaCommon
         $h    = 32;
         $oldY += $h;
         $this->pdf->textBox($x, $y, $w, $h);
+        $texto = 'IDENTIFICAÇÃO DO EMITENTE';
+        $this->pdf->textBox($x, $y, $w, 5, $texto, $aFont, 'T', 'C', 0, '');
         //estabelecer o alinhamento
         //pode ser left L, center C, right R, full logo L
         //se for left separar 1/3 da largura para o tamanho da imagem
@@ -1035,7 +1090,6 @@ class Danfe extends DaCommon
             $fone   = !empty($this->enderEmit->getElementsByTagName("fone")->item(0)->nodeValue)
                 ? $this->enderEmit->getElementsByTagName("fone")->item(0)->nodeValue
                 : '';
-            $fone  = $this->formatPhone($fone);
             $lgr    = $this->getTagValue($this->enderEmit, "xLgr");
             $nro    = $this->getTagValue($this->enderEmit, "nro");
             $cpl    = $this->getTagValue($this->enderEmit, "xCpl", " - ");
@@ -1210,7 +1264,7 @@ class Danfe extends DaCommon
                     $dtHora = $this->toDateTime(
                         $this->nfeProc->getElementsByTagName("dhRecbto")->item(0)->nodeValue
                     );
-                    if ($texto != '') {
+                    if ($texto != '' && $dtHora) {
                         $texto .= "  -  " . $dtHora->format('d/m/Y H:i:s');
                     }
                     $cStat = $this->nfeProc->getElementsByTagName("cStat")->item(0)->nodeValue;
@@ -1478,8 +1532,7 @@ class Danfe extends DaCommon
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         $texto = $this->dest->getElementsByTagName("xMun")->item(0)->nodeValue;
-        if (
-            strtoupper(trim($texto)) == "EXTERIOR"
+        if (strtoupper(trim($texto)) == "EXTERIOR"
             && $this->dest->getElementsByTagName("xPais")->length > 0
         ) {
             $texto .= " - " . $this->dest->getElementsByTagName("xPais")->item(0)->nodeValue;
@@ -1857,6 +1910,9 @@ class Danfe extends DaCommon
      */
     protected function getTextoFatura()
     {
+        if (!$this->exibirTextoFatura) {
+            return '';
+        }
         if (isset($this->cobr)) {
             $fat = $this->cobr->getElementsByTagName("fat")->item(0);
             if (isset($fat)) {
@@ -2118,7 +2174,7 @@ class Danfe extends DaCommon
                         "."
                     )
                     : '';
-                $h     = 6;
+                $h = 6;
                 $texto = '';
                 if (isset($formaPagamento[$fPag])) {
                     /*Exibir Item sem pagamento*/
@@ -2241,14 +2297,19 @@ class Danfe extends DaCommon
         $x = $this->impostoHelper($x, $y, $w, $h, "BASE DE CÁLC. ICMS S.T.", "vBCST");
         $x = $this->impostoHelper($x, $y, $w, $h, "VALOR DO ICMS SUBST.", "vST");
         $x = $this->impostoHelper($x, $y, $w, $h, "V. IMP. IMPORTAÇÃO", "vII");
-        $x = $this->impostoHelper($x, $y, $w, $h, "V. ICMS DESON.", "vICMSDeson");
-        $x = $this->impostoHelper($x, $y, $w, $h, "VALOR FCP ST", "vFCPST");
+
+        if ($this->exibirIcmsInterestadual) {
+            $x = $this->impostoHelper($x, $y, $w, $h, "V. ICMS UF REMET.", "vICMSUFRemet");
+            $x = $this->impostoHelper($x, $y, $w, $h, "V. FCP UF DEST.", "vFCPUFDest");
+        }
 
         if ($this->exibirPIS) {
             $x = $this->impostoHelper($x, $y, $w, $h, "VALOR DO PIS", "vPIS");
         }
 
         $x = $this->impostoHelper($x, $y, $w, $h, "V. TOTAL PRODUTOS", "vProd");
+
+        //
 
         $y += $h;
         $x = $x_inicial;
@@ -2323,7 +2384,7 @@ class Danfe extends DaCommon
             : '0';
         switch ($tipoFrete) {
             case 0:
-                $texto = "0-Por conta do Rem";
+                $texto = "0-Por conta do Emit";
                 break;
             case 1:
                 $texto = "1-Por conta do Dest";
@@ -2630,33 +2691,31 @@ class Danfe extends DaCommon
         $ICMSUFDest = $itemProd->getElementsByTagName("ICMSUFDest")->item(0);
         $impostos   = '';
 
-        if (false) {
-            if (!empty($ICMS)) {
-                $impostos .= $this->descricaoProdutoHelper($ICMS, "vBCFCP", " BcFcp=%s");
-                $impostos .= $this->descricaoProdutoHelper($ICMS, "pFCP", " pFcp=%s%%");
-                $impostos .= $this->descricaoProdutoHelper($ICMS, "vFCP", " vFcp=%s");
-                $impostos .= $this->descricaoProdutoHelper($ICMS, "pRedBC", " pRedBC=%s%%");
-                $impostos .= $this->descricaoProdutoHelper($ICMS, "pMVAST", " IVA/MVA=%s%%");
-                $impostos .= $this->descricaoProdutoHelper($ICMS, "pICMSST", " pIcmsSt=%s%%");
-                $impostos .= $this->descricaoProdutoHelper($ICMS, "vBCST", " BcIcmsSt=%s");
-                $impostos .= $this->descricaoProdutoHelper($ICMS, "vICMSST", " vIcmsSt=%s");
-                $impostos .= $this->descricaoProdutoHelper($ICMS, "vBCFCPST", " BcFcpSt=%s");
-                $impostos .= $this->descricaoProdutoHelper($ICMS, "pFCPST", " pFcpSt=%s%%");
-                $impostos .= $this->descricaoProdutoHelper($ICMS, "vFCPST", " vFcpSt=%s");
-                $impostos .= $this->descricaoProdutoHelper($ICMS, "vBCSTRet", " Retido na compra: BASE ICMS ST=%s");
-                $impostos .= $this->descricaoProdutoHelper($ICMS, "pST", " pSt=%s");
-                $impostos .= $this->descricaoProdutoHelper($ICMS, "vICMSSTRet", " VALOR ICMS ST=%s");
-            }
-            if (!empty($ICMSUFDest)) {
-                $impostos .= $this->descricaoProdutoHelper($ICMSUFDest, "pFCPUFDest", " pFCPUFDest=%s%%");
-                $impostos .= $this->descricaoProdutoHelper($ICMSUFDest, "pICMSUFDest", " pICMSUFDest=%s%%");
-                $impostos .= $this->descricaoProdutoHelper($ICMSUFDest, "pICMSInterPart", " pICMSInterPart=%s%%");
-                $impostos .= $this->descricaoProdutoHelper($ICMSUFDest, "vFCPUFDest", " vFCPUFDest=%s");
-                $impostos .= $this->descricaoProdutoHelper($ICMSUFDest, "vICMSUFDest", " vICMSUFDest=%s");
-                $impostos .= $this->descricaoProdutoHelper($ICMSUFDest, "vICMSUFRemet", " vICMSUFRemet=%s");
-            }
+        if (!empty($ICMS)) {
+            $impostos .= $this->descricaoProdutoHelper($ICMS, "vBCFCP", " BcFcp=%s");
+            $impostos .= $this->descricaoProdutoHelper($ICMS, "pFCP", " pFcp=%s%%");
+            $impostos .= $this->descricaoProdutoHelper($ICMS, "vFCP", " vFcp=%s");
+            $impostos .= $this->descricaoProdutoHelper($ICMS, "pRedBC", " pRedBC=%s%%");
+            $impostos .= $this->descricaoProdutoHelper($ICMS, "pMVAST", " IVA/MVA=%s%%");
+            $impostos .= $this->descricaoProdutoHelper($ICMS, "pICMSST", " pIcmsSt=%s%%");
+            $impostos .= $this->descricaoProdutoHelper($ICMS, "vBCST", " BcIcmsSt=%s");
+            $impostos .= $this->descricaoProdutoHelper($ICMS, "vICMSST", " vIcmsSt=%s");
+            $impostos .= $this->descricaoProdutoHelper($ICMS, "vBCFCPST", " BcFcpSt=%s");
+            $impostos .= $this->descricaoProdutoHelper($ICMS, "pFCPST", " pFcpSt=%s%%");
+            $impostos .= $this->descricaoProdutoHelper($ICMS, "vFCPST", " vFcpSt=%s");
+            $impostos .= $this->descricaoProdutoHelper($ICMS, "vBCSTRet", " Retido na compra: BASE ICMS ST=%s");
+            $impostos .= $this->descricaoProdutoHelper($ICMS, "pST", " pSt=%s");
+            $impostos .= $this->descricaoProdutoHelper($ICMS, "vICMSSubstituto", " vICMSSubstituto=%s");
+            $impostos .= $this->descricaoProdutoHelper($ICMS, "vICMSSTRet", " VALOR ICMS ST=%s");
         }
-
+        if (!empty($ICMSUFDest)) {
+            $impostos .= $this->descricaoProdutoHelper($ICMSUFDest, "pFCPUFDest", " pFCPUFDest=%s%%");
+            $impostos .= $this->descricaoProdutoHelper($ICMSUFDest, "pICMSUFDest", " pICMSUFDest=%s%%");
+            $impostos .= $this->descricaoProdutoHelper($ICMSUFDest, "pICMSInterPart", " pICMSInterPart=%s%%");
+            $impostos .= $this->descricaoProdutoHelper($ICMSUFDest, "vFCPUFDest", " vFCPUFDest=%s");
+            $impostos .= $this->descricaoProdutoHelper($ICMSUFDest, "vICMSUFDest", " vICMSUFDest=%s");
+            $impostos .= $this->descricaoProdutoHelper($ICMSUFDest, "vICMSUFRemet", " vICMSUFRemet=%s");
+        }
         $infAdProd = !empty($itemProd->getElementsByTagName('infAdProd')->item(0)->nodeValue)
             ? substr(
                 //$this->anfaveaDANFE($itemProd->getElementsByTagName('infAdProd')->item(0)->nodeValue),
@@ -2670,31 +2729,39 @@ class Danfe extends DaCommon
             $infAdProd .= ' ';
         }
         $loteTxt = '';
-        $rastro  = $prod->getElementsByTagName("med");
-        if (!empty($prod->getElementsByTagName("rastro"))) {
-            $rastro = $prod->getElementsByTagName("rastro");
-            $i      = 0;
-            while ($i < $rastro->length) {
-                $dFab = $this->getTagDate($rastro->item($i), 'dFab');
-                $datafab = " Fab: " . $dFab;
-                $dVal = $this->getTagDate($rastro->item($i), 'dVal');
-                $dataval = " Val: " . $dVal;
+        if ($this->descProdInfoLoteTxt) {
+            $med = $prod->getElementsByTagName("med")->item(0);
 
-                $loteTxt .= $this->getTagValue($rastro->item($i), 'nLote', ' Lote: ');
-                $loteTxt .= $this->getTagValue($rastro->item($i), 'qLote', ' Quant: ');
-                $loteTxt .= $datafab; //$this->getTagDate($rastro->item($i), 'dFab', ' Fab: ');
-                $loteTxt .= $dataval; //$this->getTagDate($rastro->item($i), 'dVal', ' Val: ');
-                $loteTxt .= $this->getTagValue($rastro->item($i), 'vPMC', ' PMC: ');
-                $i++;
-            }
-            if ($loteTxt != '') {
-                $loteTxt .= ' ';
+            if (!empty($prod->getElementsByTagName("rastro"))) {
+                $rastro = $prod->getElementsByTagName("rastro");
+                if ($rastro->length === 1) {
+                    $i = 0;
+                    //while ($i < $rastro->length) {
+                        $dFab = $this->getTagDate($rastro->item($i), 'dFab');
+                        $datafab = " Fab: " . $dFab;
+                        $dVal = $this->getTagDate($rastro->item($i), 'dVal');
+                        $dataval = " Val: " . $dVal;
+                        $loteTxt .= $this->getTagValue($rastro->item($i), 'nLote', ' Lote: ');
+                        $loteTxt .= $this->getTagValue($rastro->item($i), 'qLote', ' Quant: ');
+                        $loteTxt .= $datafab; //$this->getTagDate($rastro->item($i), 'dFab', ' Fab: ');
+                        $loteTxt .= $dataval; //$this->getTagDate($rastro->item($i), 'dVal', ' Val: ');
+                        $loteTxt .= $this->getTagValue($rastro->item($i), 'vPMC', ' PMC: ');
+                        //$i++;
+                    //}
+                }
+                if ($loteTxt != '') {
+                    $loteTxt .= ' ';
+                }
             }
         }
+        $infAdProd .= $this->getTagValue($med, 'cProdANVISA', 'ANVISA: ');
+
         //NT2013.006 FCI
         $nFCI   = (!empty($itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue)) ?
             ' FCI:' . $itemProd->getElementsByTagName('nFCI')->item(0)->nodeValue : '';
-        $tmp_ad = $infAdProd . ($this->descProdInfoComplemento ? $loteTxt . $impostos . $nFCI : '');
+
+        //$tmp_ad = $infAdProd . ($this->descProdInfoComplemento ? $loteTxt . $impostos . $nFCI : '');
+        $tmp_ad = $infAdProd . ($this->descProdInfoComplemento ? $loteTxt . $nFCI : '');
         $texto  = $prod->getElementsByTagName("xProd")->item(0)->nodeValue
             . (strlen($tmp_ad) != 0 ? "\n    " . $tmp_ad : '');
         //decodifica os caracteres html no xml
@@ -2703,8 +2770,179 @@ class Danfe extends DaCommon
             $texto = str_replace(";", "\n", $texto);
         }
 
+        if ($this->exibirNumeroItemPedido && !empty($itemProd->getElementsByTagName('nItemPed')->item(0)->nodeValue)) {
+            $texto .= " (ITEM " . $itemProd->getElementsByTagName('nItemPed')->item(0)->nodeValue . ")";
+        }
+
         return $texto;
     }
+
+    /**
+     * Inclui dados dos veiculos novos a descriçã do produto
+     * @param \DOMElement $prod
+     * @return string
+     */
+    protected function itemVeiculoNovo($prod): string
+    {
+        $veicProd = !empty($prod->getElementsByTagName("veicProd")->item(0))
+            ? $prod->getElementsByTagName("veicProd")->item(0)
+            : null;
+        if (empty($veicProd)) {
+            return '';
+        }
+        $operacao = [
+            0 => 'OUTROS',
+            1 => 'VENDA CONCESSIONÁRIA',
+            2 => 'FATURAMENTO DIRETO CONSUMIDOR',
+            3 => 'VENDA DIRETA GDE CONSUMIDORES'
+        ];
+        $combustivel = [
+            1  => 'ALCOOL',
+            2  => 'GASOLINA',
+            3  => 'DIESEL',
+            4  => 'GASOGENIO',
+            5  => 'GAS METANO',
+            6  => 'ELETRICO/INTERNA',
+            7  => 'ELETRICO/EXTERNA',
+            8  => 'GASOL/GNC',
+            9  => 'ALCOOL/GNC',
+            10 => 'DIESEL/GNC',
+            11 => 'OBSERVACAO',
+            12 => 'ALCOOL/GNV',
+            13 => 'GASOLINA/GNV',
+            14 => 'DIESEL/GNV',
+            15 => 'GNV',
+            16 => 'ALCOOL/GASOLINA',
+            17 => 'GASOLINA/ALCOOL/GNV',
+            18 => 'GASOLINA/ELETRICO'
+        ];
+        $especie = [
+            1 => 'PASSAGEIRO',
+            2 => 'CARGA',
+            3 => 'MISTO',
+            4 => 'CORRIDA',
+            5 => 'TRACAO',
+            6 => 'ESPECIAL',
+            7 => 'COLECAO'
+        ];
+        $veiculo = [
+            2 => 'CICLOMOTO',
+            3 => 'MOTONETA',
+            4 => 'MOTOCICLO',
+            5 => 'TRICICLO',
+            6 => 'AUTOMÓVEL',
+            7 => 'MICRO-ÔNIBUS',
+            8 => 'ÔNIBUS',
+            10 => 'REBOQUE',
+            11 => 'SEMIRREBOQUE',
+            13 => 'CAMIONETA',
+            14 => 'CAMINHÃO',
+            17 => 'CAMINHÃO TRATOR',
+            18 => 'TRATOR RODAS',
+            19 => 'TRATOR ESTEIRAS',
+            20 => 'TRATOR MISTO',
+            21 => 'QUADRICICLO',
+            22 => 'ESP/ÔNIBUS',
+            23 => 'CAMINHONETE',
+            24 => 'CARGA/CAM',
+            25 => 'UTILITÁRIO',
+            26 => 'MOTOR-CASA',
+        ];
+        $pintura = [
+            'F' => 'FOSCA',
+            'S' => 'SÓLIDA',
+            'P' => 'PEROLIZADA',
+            'M' => 'METALICA',
+        ];
+        $cor = [
+            1 => 'AMARELO',
+            2 => 'AZUL',
+            3 => 'BEGE',
+            4 => 'BRANCA',
+            5 => 'CINZA',
+            6 => 'DOURADA',
+            7 => 'GRENA',
+            8 => 'LARANJA',
+            9 => 'MARROM',
+            10 => 'PRATA',
+            11 => 'PRETA',
+            12 => 'ROSA',
+            13 => 'ROXA',
+            14 => 'VERDE',
+            15 => 'VERMELHA',
+            16 => 'FANTASIA',
+        ];
+        $condicao = [
+            1 => 'ACABADO',
+            2 => 'INACABADO',
+            3 => 'SEMI-ACABADO'
+        ];
+        $restricao = [
+            0 => 'NÃO HÁ',
+            1 => 'ALIENAÇÃO FIDUCIÁRIA',
+            2 => 'ARRENDAMENTO MERCANTIL',
+            3 => 'RESERVA DE DOMÍNIO',
+            4 => 'PENHOR DE VEÍCULOS',
+            9 => 'OUTRAS',
+        ];
+        $content = "";
+
+        $tpOp = $veicProd->getElementsByTagName("tpOp")->item(0)->nodeValue;
+        $op = ($operacao[$tpOp] ?? null);
+        $content .= "TIPO DE OPERAÇÃO: {$tpOp} - {$op} ";
+        $chassi = $veicProd->getElementsByTagName("chassi")->item(0)->nodeValue;
+        $content .= "CHASSI: {$chassi}\n";
+        $cCor = $veicProd->getElementsByTagName("cCor")->item(0)->nodeValue;
+        $xCor = $veicProd->getElementsByTagName("xCor")->item(0)->nodeValue;
+        $content .= "COR: {$cCor} - {$xCor} ";
+        $pot = $veicProd->getElementsByTagName("pot")->item(0)->nodeValue;
+        $content .= "POTENCIA: {$pot} CV ";
+        $cilin = $veicProd->getElementsByTagName("cilin")->item(0)->nodeValue;
+        $content .= "CILINDRADAS: {$cilin} CC\n";
+        $pesoL = $veicProd->getElementsByTagName("pesoL")->item(0)->nodeValue;
+        $content .= "PESO LIQ: {$pesoL} kg ";
+        $pesoB = $veicProd->getElementsByTagName("pesoB")->item(0)->nodeValue;
+        $content .= "PESO BRUTO: {$pesoB} kg ";
+        $nserie = $veicProd->getElementsByTagName("nSerie")->item(0)->nodeValue;
+        $content .= "SERIE: {$nserie}\n";
+        $tpComb = $veicProd->getElementsByTagName("tpComb")->item(0)->nodeValue;
+        $content .= "COMBUSTIVEL: {$tpComb} - " .  ($combustivel[ltrim($tpComb, 0)] ?? null) . " ";
+        $nMotor = $veicProd->getElementsByTagName("nMotor")->item(0)->nodeValue;
+        $content .= "MOTOR n.: {$nMotor}\n";
+        $cmt = $veicProd->getElementsByTagName("CMT")->item(0)->nodeValue;
+        $content .= "CAPACIDADE MAX TRAÇÃO: {$cmt} ";
+        $dist = $veicProd->getElementsByTagName("dist")->item(0)->nodeValue;
+        $content .= "DIST. ENTRE EIXOS: {$dist} ";
+        $anoMod = $veicProd->getElementsByTagName("anoMod")->item(0)->nodeValue;
+        $content .= "ANO DO MODELO: {$anoMod} ";
+        $anoFab = $veicProd->getElementsByTagName("anoFab")->item(0)->nodeValue;
+        $content .= "ANO FABRICAÇÃO: {$anoFab}\n";
+        $tpPint = $veicProd->getElementsByTagName("tpPint")->item(0)->nodeValue;
+        $content .= "TIPO PINTURA: {$tpPint} ";
+        $tpVeic = $veicProd->getElementsByTagName("tpVeic")->item(0)->nodeValue;
+        $content .= "TIPO DE VEÌCULO: {$tpVeic} - " . ($veiculo[ltrim($tpVeic, 0)] ?? null) . " ";
+        $espVeic = $veicProd->getElementsByTagName("espVeic")->item(0)->nodeValue;
+        $content .= "ESPÉCIE DO VEÍCULO: {$espVeic} - " . ($especie[ltrim($espVeic, 0)] ?? null) . "\n";
+        $vin = $veicProd->getElementsByTagName("VIN")->item(0)->nodeValue;
+        if ($vin == 'N') {
+            $content .= "VIN (CHASSI): N - NORMAL ";
+        } else {
+            $content .= "VIN (CHASSI): R - REMARCADO ";
+        }
+        $condVeic = $veicProd->getElementsByTagName("condVeic")->item(0)->nodeValue;
+        $content .= "CONDIÇÃO DO VEÍCULO: {$condVeic} - " . ($condicao[ltrim($condVeic, 0)] ?? null) . " ";
+        $cMod = $veicProd->getElementsByTagName("cMod")->item(0)->nodeValue;
+        $content .= "CÓDIGO MARCA/MODELO: {$cMod}\n";
+        $corDen = $veicProd->getElementsByTagName("cCorDENATRAN")->item(0)->nodeValue;
+        $content .= "COR DENATRAN: {$corDen} - " . ($cor[ltrim($corDen, 0)] ?? null) . " ";
+        $lota = $veicProd->getElementsByTagName("lota")->item(0)->nodeValue;
+        $content .= "LOTAÇÃO MAX.: {$lota} ";
+        $tpRest = $veicProd->getElementsByTagName("tpRest")->item(0)->nodeValue;
+        $content .= "RESTRIÇÃO: {$tpRest} - " . ($restricao[$tpRest] ?? null);
+
+        return $content;
+    }
+
 
     /**
      * itens
@@ -2749,25 +2987,29 @@ class Danfe extends DaCommon
         // cabecalho LOOP COM OS DADOS DOS PRODUTOS
         //CÓDIGO PRODUTO
         $texto = "CÓDIGO PRODUTO";
-        $w1    = round($w * 0.07, 0);
+        $w1    = round($w * 0.09, 0);
         $h     = 4;
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w1, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w1, $y, $x + $w1, $y + $hmax);
+        //$this->pdf->line($x + $w1, $y, $x + $w1, $y + $hmax);
+
+        $this->pdf->dashedVLine($x + $w1, $y, 0.1, $y + $hmax, 100);
         //DESCRIÇÃO DO PRODUTO / SERVIÇO
         $x     += $w1;
         $w2    = round($w * 0.25, 0);
         $texto = 'DESCRIÇÃO DO PRODUTO / SERVIÇO';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w2, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w2, $y, $x + $w2, $y + $hmax);
+        //$this->pdf->line($x + $w2, $y, $x + $w2, $y + $hmax);
+        $this->pdf->dashedVLine($x + $w2, $y, 0.1, $y + $hmax, 100);
         //NCM/SH
         $x     += $w2;
         $w3    = round($w * 0.06, 0);
         $texto = 'NCM/SH';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w3, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w3, $y, $x + $w3, $y + $hmax);
+        //$this->pdf->line($x + $w3, $y, $x + $w3, $y + $hmax);
+        $this->pdf->dashedVLine($x + $w3, $y, 0.1, $y + $hmax, 100);
         //O/CST ou O/CSOSN
         $x     += $w3;
         $w4    = round($w * 0.05, 0);
@@ -2777,77 +3019,88 @@ class Danfe extends DaCommon
         }
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w4, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w4, $y, $x + $w4, $y + $hmax);
+        //$this->pdf->line($x + $w4, $y, $x + $w4, $y + $hmax);
+        $this->pdf->dashedVLine($x + $w4, $y, 0.1, $y + $hmax, 100);
         //CFOP
         $x     += $w4;
         $w5    = round($w * 0.04, 0);
         $texto = 'CFOP';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w5, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w5, $y, $x + $w5, $y + $hmax);
+        //$this->pdf->line($x + $w5, $y, $x + $w5, $y + $hmax);
+        $this->pdf->dashedVLine($x + $w5, $y, 0.1, $y + $hmax, 100);
         //UN
         $x     += $w5;
         $w6    = round($w * 0.03, 0);
         $texto = 'UN';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w6, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w6, $y, $x + $w6, $y + $hmax);
+        //$this->pdf->line($x + $w6, $y, $x + $w6, $y + $hmax);
+        $this->pdf->dashedVLine($x + $w6, $y, 0.1, $y + $hmax, 100);
         //QUANT
         $x     += $w6;
-        $w7    = round($w * 0.07, 0);
+        $w7    = round($w * 0.08, 0);
         $texto = 'QUANT';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w7, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w7, $y, $x + $w7, $y + $hmax);
+        //$this->pdf->line($x + $w7, $y, $x + $w7, $y + $hmax);
+        $this->pdf->dashedVLine($x + $w7, $y, 0.1, $y + $hmax, 100);
         //VALOR UNIT
         $x     += $w7;
         $w8    = round($w * 0.06, 0);
         $texto = 'VALOR UNIT';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w8, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w8, $y, $x + $w8, $y + $hmax);
+        //$this->pdf->line($x + $w8, $y, $x + $w8, $y + $hmax);
+        $this->pdf->dashedVLine($x + $w8, $y, 0.1, $y + $hmax, 100);
         //VALOR TOTAL
         $x     += $w8;
         $w9    = round($w * 0.06, 0);
         $texto = 'VALOR TOTAL';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w9, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w9, $y, $x + $w9, $y + $hmax);
+        //$this->pdf->line($x + $w9, $y, $x + $w9, $y + $hmax);
+        $this->pdf->dashedVLine($x + $w9, $y, 0.1, $y + $hmax, 100);
         //VALOR DESCONTO
         $x     += $w9;
         $w10   = round($w * 0.05, 0);
         $texto = 'VALOR DESC';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w10, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w10, $y, $x + $w10, $y + $hmax);
+        //$this->pdf->line($x + $w10, $y, $x + $w10, $y + $hmax);
+        $this->pdf->dashedVLine($x + $w10, $y, 0.1, $y + $hmax, 100);
         //B.CÁLC ICMS
         $x     += $w10;
         $w11   = round($w * 0.06, 0);
         $texto = 'B.CÁLC ICMS';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w11, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w11, $y, $x + $w11, $y + $hmax);
+        //$this->pdf->line($x + $w11, $y, $x + $w11, $y + $hmax);
+        $this->pdf->dashedVLine($x + $w11, $y, 0.1, $y + $hmax, 100);
         //VALOR ICMS
         $x     += $w11;
         $w12   = round($w * 0.06, 0);
         $texto = 'VALOR ICMS';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w12, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w12, $y, $x + $w12, $y + $hmax);
+        //$this->pdf->line($x + $w12, $y, $x + $w12, $y + $hmax);
+        $this->pdf->dashedVLine($x + $w12, $y, 0.1, $y + $hmax, 100);
         //VALOR IPI
         $x     += $w12;
         $w13   = round($w * 0.05, 0);
         $texto = 'VALOR IPI';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w13, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w13, $y, $x + $w13, $y + $hmax);
+        //$this->pdf->line($x + $w13, $y, $x + $w13, $y + $hmax);
+        $this->pdf->dashedVLine($x + $w13, $y, 0.1, $y + $hmax, 100);
         //ALÍQ. ICMS
         $x     += $w13;
         $w14   = round($w * 0.04, 0);
         $texto = 'ALÍQ. ICMS';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w14, $h, $texto, $aFont, 'C', 'C', 0, '', false);
-        $this->pdf->line($x + $w14, $y, $x + $w14, $y + $hmax);
+        //$this->pdf->line($x + $w14, $y, $x + $w14, $y + $hmax);
+        $this->pdf->dashedVLine($x + $w14, $y, 0.1, $y + $hmax, 100);
         //ALÍQ. IPI
         $x     += $w14;
         $w15   = $w - ($w1 + $w2 + $w3 + $w4 + $w5 + $w6 + $w7 + $w8 + $w9 + $w10 + $w11 + $w12 + $w13 + $w14);
@@ -2870,7 +3123,7 @@ class Danfe extends DaCommon
                 $ICMS         = $imposto->getElementsByTagName("ICMS")->item(0);
                 $IPI          = $imposto->getElementsByTagName("IPI")->item(0);
                 $textoProduto = $this->descricaoProduto($thisItem);
-
+                //$veicProd     = $prod->getElementsByTagName("veicProd")->item(0);
 
                 // Posição y dos dados das unidades tributaveis.
                 $yTrib = $this->pdf->fontSize + .5;
@@ -2911,17 +3164,18 @@ class Danfe extends DaCommon
                 $yTrib += $y;
                 $diffH = $hmax - $hUsado;
 
-                if ($pag != $totpag) {
-                    if (1 > $diffH && $i < $totItens) {
+                if (1 > $diffH && $i < $totItens) {
+                    if ($pag == $totpag) {
+                        $totpag++;
+                    }
                         //ultrapassa a capacidade para uma única página
                         //o restante dos dados serão usados nas proximas paginas
                         $nInicio = $i;
                         break;
-                    }
                 }
+
                 $y_linha = $y + $h;
-                // linha entre itens
-                $this->pdf->dashedHLine($oldX, $y_linha, $w, 0.1, 120);
+
                 //corrige o x
                 $x = $oldX;
                 //codigo do produto
@@ -2929,6 +3183,7 @@ class Danfe extends DaCommon
                 $texto = $prod->getElementsByTagName("cProd")->item(0)->nodeValue;
                 $this->pdf->textBox($x, $y, $w1, $h, $texto, $aFont, 'T', 'C', 0, '');
                 $x += $w1;
+
                 //DESCRIÇÃO
                 if ($this->orientacao == 'P') {
                     $this->pdf->textBox($x, $y, $w2, $h, $textoProduto, $aFont, 'T', 'L', 0, '', false);
@@ -2941,6 +3196,28 @@ class Danfe extends DaCommon
                     $prod->getElementsByTagName("NCM")->item(0)->nodeValue : '';
                 $this->pdf->textBox($x, $y, $w3, $h, $texto, $aFont, 'T', 'C', 0, '');
                 $x += $w3;
+
+                //GRUPO DE VEICULO NOVO
+                $oldfont = $aFont;
+                $veicnovo = $this->itemVeiculoNovo($prod);
+                $aFont = ['font' => $this->fontePadrao, 'size' => 5, 'style' => ''];
+                $this->pdf->textBox(
+                    $x-$w3,
+                    $y+4,
+                    $this->wPrint-($w1+$w2)-2,
+                    22,
+                    $veicnovo,
+                    $aFont,
+                    'T',
+                    'L',
+                    0,
+                    '',
+                    true,
+                    0,
+                    0,
+                    false
+                );
+                $aFont = $oldfont;
                 //CST
                 if (isset($ICMS)) {
                     $origem = $this->getTagValue($ICMS, "orig");
@@ -3084,10 +3361,16 @@ class Danfe extends DaCommon
                 // Tag somente é gerada para veiculo 0k, e só é permitido um veiculo por NF-e por conta do detran
                 // Verifica se a Tag existe
                 if (!empty($veicProd)) {
-                    $this->dadosItenVeiculoDANFE($oldX + 3, $y + 40, $nInicio, 3, $prod);
+                    $y += $h - 10;
+                    $this->dadosItenVeiculoDANFE($oldX + 3, $y, $nInicio, 3, $prod);
+                    // linha entre itens
+                    $this->pdf->dashedHLine($oldX, $y + 30, $w, 0.1, 120);
+                    $y += 30;
+                    $hUsado += 30;
+                } else {
+                    // linha entre itens
+                    $this->pdf->dashedHLine($oldX, $y, $w, 0.1, 120);
                 }
-
-
                 $y += $h;
                 $i++;
                 //incrementa o controle dos itens processados.
@@ -3116,6 +3399,8 @@ class Danfe extends DaCommon
 
     protected function dadosItenVeiculoDANFE($x, $y, &$nInicio, $h, $prod)
     {
+        return;
+
         $oldX = $x;
         $oldY = $y;
 
@@ -3212,7 +3497,6 @@ class Danfe extends DaCommon
         $veiculoMotor       = $veicProd->getElementsByTagName("nMotor")->item(0)->nodeValue;
         $veiculoCodigoModelo     = $veicProd->getElementsByTagName("cMod")->item(0)->nodeValue;
         $veiculoHp          = $veicProd->getElementsByTagName("pot")->item(0)->nodeValue;
-        $veiculoPlaca       = ''; //$veiculo->getElementsByTagName("CMT")->item(0)->nodeValue;
         $veiculoTipoPintura = $veicProd->getElementsByTagName("tpPint")->item(0)->nodeValue;
         $veiculoMarcaModelo = $prod->getElementsByTagName("xProd")->item(0)->nodeValue;
         $veiculoEspecie     = $veicProd->getElementsByTagName("espVeic")->item(0)->nodeValue;
@@ -3224,7 +3508,7 @@ class Danfe extends DaCommon
 
         $x = $oldX;
 
-        $yVeic = $y + $h;
+        $yVeic = $y + $h + 8;
         $texto = 'Chassi: ............: ' . $veiculoChassi;
         $this->pdf->textBox($x, $yVeic, $w1 + 40, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
@@ -3239,37 +3523,37 @@ class Danfe extends DaCommon
         $yVeic += $h;
         $texto = 'Tipo.................: ' . ($renavamTiposVeiculos[intval($veiculoTipo)] ?? $veiculoTipo);
         $this->pdf->textBox($x, $yVeic, $w1 + 40, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $yVeic = $y + $h;
+        $yVeic = $y + $h + 8;
         $xVeic = $x + 65;
-        $texto = 'Nº Motor: .........: ' . $veiculoMotor;
+        $texto = 'Nº Motor:..............: ' . $veiculoMotor;
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
         $texto = 'Código Modelo ....: ' . $veiculoCodigoModelo;
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'HP.....................: ' . $veiculoHp;
+        $texto = 'HP.........................: ' . $veiculoHp;
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Placa.................: ' . $veiculoPlaca;
+        $texto = 'Tipo Pintura..........: ' . $veiculoTipoPintura;
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Tipo Pintura......: ' . ($renavamEspecie[intval($veiculoTipoPintura)] ?? $veiculoTipoPintura);
+        $texto = 'Marca/Modelo......: ' . $veiculoMarcaModelo;
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $yVeic = $y + $h;
+        $yVeic += $h;
+        $yVeic = $y + $h + 8;
         $xVeic = $xVeic + 55;
-        $texto = 'Marca / Modelo.....: ' . $veiculoMarcaModelo;
+        $texto = 'Especie.................................: '
+            . ($renavamEspecie[intval($veiculoEspecie)] ?? $veiculoEspecie);
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Especie..................: ' . ($renavamEspecie[intval($veiculoEspecie)] ?? $veiculoEspecie);
+        $texto = 'Combustivel.........................: '
+            . ($renavamCombustivel[intval($veiculoCombustivel)] ?? $veiculoCombustivel);
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Combustivel..........: ' . ($renavamCombustivel[intval($veiculoCombustivel)] ?? $veiculoCombustivel);
+        $texto = 'Serial....................................: ' . $veiculoSerial;
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
-        $texto = 'Serial.....................: ' . $veiculoSerial;
-        $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $yVeic += $h;
-        $texto = 'Ano Fab/Mod........: ' . $veiculoFabricacao . '/' . $veiculoModelo;
+        $texto = 'Ano Fab/Mod.......................: ' . $veiculoFabricacao . '/' . $veiculoModelo;
         $this->pdf->textBox($xVeic, $yVeic, $w1 + 50, $h, $texto, $aFont, 'T', 'L', 0, '');
         $yVeic += $h;
         $texto = 'Distancia Entre Eixos(mm)..: ' . $veiculoDistancia;
@@ -3373,7 +3657,7 @@ class Danfe extends DaCommon
      */
     protected function dadosAdicionais($x, $y, $h)
     {
-        $y = $this->maxH - (13 + $h);
+        $y = $this->maxH - (7 + $h);
         //$y = $this->maxH - 20;
         //##################################################################################
         //DADOS ADICIONAIS
@@ -3457,7 +3741,7 @@ class Danfe extends DaCommon
      */
     protected function rodape($x)
     {
-        $y = $this->maxH - 9;
+        $y = $this->maxH - 4;
         if ($this->orientacao == 'P') {
             $w = $this->wPrint;
         } else {
@@ -3468,6 +3752,8 @@ class Danfe extends DaCommon
         $texto = "Impresso em " . date('d/m/Y') . " as " . date('H:i:s')
             . '  ' . $this->creditos;
         $this->pdf->textBox($x, $y, $w, 0, $texto, $aFont, 'T', 'L', false);
+        $texto = $this->powered ? "Powered by NFePHP®" : '';
+        $this->pdf->textBox($x, $y, $w, 0, $texto, $aFont, 'T', 'R', false, '');
     }
 
     /**
@@ -3701,7 +3987,7 @@ class Danfe extends DaCommon
         if (!$this->gerarInformacoesAutomaticas) {
             return '';
         }
-        $formaNfeRef = "\r\nNFe Ref.: série:%d Núm:%d Chave: %s";
+        $formaNfeRef = "\r\nNFe Ref.: série:%d número:%d emit:%s em %s [%s]";
         $formaCTeRef = "\r\nCTe Ref.: série:%d número:%d emit:%s em %s [%s]";
         $formaNfRef  = "\r\nNF  Ref.: série:%d numero:%d emit:%s em %s modelo: %d";
         $formaECFRef = "\r\nECF Ref.: modelo: %s ECF:%d COO:%d";
@@ -3726,7 +4012,7 @@ class Danfe extends DaCommon
                 $cnpj          = $this->formatField(substr($chave_acesso, 6, 14), "##.###.###/####-##");
                 $serie         = substr($chave_acesso, 22, 3);
                 $numero        = substr($chave_acesso, 25, 9);
-                $saida         .= sprintf($formaNfeRef, $serie, $numero, $chave_acessoF);
+                $saida         .= sprintf($formaNfeRef, $serie, $numero, $cnpj, $data, $chave_acessoF);
             }
             $refNF = $nfRef->getElementsByTagName('refNF');
             foreach ($refNF as $umaRefNFe) {
@@ -3836,11 +4122,9 @@ class Danfe extends DaCommon
         $aFont        = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
         $textoProduto = $this->descricaoProduto($item);
         $numlinhas    = $this->pdf->getNumLines($textoProduto, $w2, $aFont);
-
         if ($mostrarUnidadeTributavel && $numlinhas == 1) {
             $numlinhas++;
         }
-
         return round(($numlinhas * $this->pdf->fontSize) + ($numlinhas * 0.5), 2);
     }
 }

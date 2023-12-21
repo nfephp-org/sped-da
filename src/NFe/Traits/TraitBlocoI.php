@@ -22,29 +22,29 @@ trait TraitBlocoI
         $emitBairro = $this->getTagValue($this->enderEmit, "xBairro");
         $emitMun = $this->getTagValue($this->enderEmit, "xMun");
         $emitUF = $this->getTagValue($this->enderEmit, "UF");
-        
+
         $emitFone = $this->getTagValue($this->enderEmit, "fone");
-        if (strlen($emitFone)>0) {
+        if (strlen($emitFone) > 0) {
             if (strlen($emitFone) == 11) {
                 $emitFone = $this->formatField($emitFone, "(##)#####-####");
             } else {
                 $emitFone = $this->formatField($emitFone, "(##) ####-####");
             }
         }
-        
+
         $h = 0;
-        $maxHimg = $this->bloco1H - 4;
+        $maxHimg = $this->bloco1H - 6;
         if (!empty($this->logomarca)) {
             $xImg = $this->margem;
             $yImg = $this->margem + 1;
             $logoInfo = getimagesize($this->logomarca);
-            $logoWmm = ($logoInfo[0]/72)*25.4;
-            $logoHmm = ($logoInfo[1]/72)*25.4;
-            $nImgW = $this->wPrint/4;
-            $nImgH = round($logoHmm * ($nImgW/$logoWmm), 0);
+            $logoWmm = ($logoInfo[0] / 75) * 25.4;
+            $logoHmm = ($logoInfo[1] / 75) * 25.4;
+            $nImgW = $this->wPrint / 4;
+            $nImgH = round($logoHmm * ($nImgW / $logoWmm), 0);
             if ($nImgH > $maxHimg) {
                 $nImgH = $maxHimg;
-                $nImgW = round($logoWmm * ($nImgH/$logoHmm), 0);
+                $nImgW = round($logoWmm * ($nImgH / $logoHmm), 0);
             }
             $xRs = ($nImgW) + $this->margem;
             $wRs = ($this->wPrint - $nImgW);
@@ -56,13 +56,13 @@ trait TraitBlocoI
             $alignH = 'C';
         }
         //COLOCA RAZÃO SOCIAL
-        $aFont = ['font'=>$this->fontePadrao, 'size' => 8, 'style' => ''];
+        $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => 'b'];
         $texto = "{$emitRazao}";
         $y += $this->pdf->textBox(
-            $xRs+2,
+            $xRs + 2,
             $this->margem,
-            $wRs-2,
-            $this->bloco1H-$this->margem-1,
+            $wRs - 2,
+            $this->bloco1H - $this->margem - 1,
             $texto,
             $aFont,
             'T',
@@ -71,18 +71,16 @@ trait TraitBlocoI
             '',
             true
         );
-        if ($this->pdf->fontSizePt < 8) {
-            $aFont = ['font'=>$this->fontePadrao, 'size' => $this->pdf->fontSizePt, 'style' => ''];
-        }
+        $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $texto = "CNPJ: {$emitCnpj} IE: {$emitIE}";
-        $y += $this->pdf->textBox($xRs+2, $y, $wRs-2, 3, $texto, $aFont, 'T', $alignH, false, '', true);
+        $y += $this->pdf->textBox($xRs + 2, $y + 0.7, $wRs - 2, 3, $texto, $aFont, 'T', $alignH, false, '', true);
         $texto = $emitLgr . ", " . $emitNro;
-        $y += $this->pdf->textBox($xRs+2, $y, $wRs-2, 3, $texto, $aFont, 'T', $alignH, false, '', true);
+        $y += $this->pdf->textBox($xRs + 2, $y + 0.7, $wRs - 2, 3, $texto, $aFont, 'T', $alignH, false, '', true);
         $texto = $emitBairro;
-        $y += $this->pdf->textBox($xRs+2, $y, $wRs-2, 3, $texto, $aFont, 'T', $alignH, false, '', true);
-        $texto = $emitMun . "-" . $emitUF . ($emitFone ? "  Fone: ".$emitFone : ""); 
-        $y += $this->pdf->textBox($xRs+2, $y, $wRs-2, 3, $texto, $aFont, 'T', $alignH, false, '', true);
+        $y += $this->pdf->textBox($xRs + 2, $y + 0.7, $wRs - 2, 3, $texto, $aFont, 'T', $alignH, false, '', true);
+        $texto = $emitMun . "-" . $emitUF . ($emitFone ? "  Fone: " . $emitFone : "");
+        $y += $this->pdf->textBox($xRs + 2, $y + 0.7, $wRs - 2, 3, $texto, $aFont, 'T', $alignH, false, '', true);
         $this->pdf->dashedHLine($this->margem, $this->bloco1H, $this->wPrint, 0.1, 30);
-        return $this->bloco1H;
+        return $this->bloco1H + $this->margem;
     }
 }

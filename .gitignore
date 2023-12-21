@@ -22,4 +22,5 @@ src/NFe/Bloco/Informacoes.php
 src/NFe/Bloco/Rodape.php
 tests/fixtures/pdf/*
 
-
+.phpunit.result.cache
+.DS_Store

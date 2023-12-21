@@ -10,11 +10,9 @@ Classes para geração dos documentos auxiliares usados pelos padrões Sped
 > Estas classes deverão observar o quanto possivel as orientações da SEFAZ.
 > Estas classes devem ser e permanecer tão genéricas e simples quanto possivel.
 > Se você necessita que o DANFE ou qualquer outro documento seja diferente em termos de recursos que esses disponíveis, CRIE o seu próprio gerador de PDF.
- 
 
-[![Build Status][ico-travis]][link-travis]
-[![Coverage Status][ico-scrutinizer]][link-scrutinizer]
-[![Quality Score][ico-code-quality]][link-code-quality]
+![PHP Supported Version][ico-php]
+![Actions](https://github.com/nfephp-org/sped-da/actions/workflows/ci.yml/badge.svg)
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![License][ico-license]][link-packagist]
 [![Total Downloads][ico-downloads]][link-downloads]
@@ -86,7 +84,7 @@ Ou ainda alterando o composer.json do seu aplicativo inserindo:
 ```
 
 ## Forma de uso
-[DANFE](docs/DANFE.md) 
+[DANFE](docs/DANFE.md)
 
 ## Log de mudanças e versões
 Acompanhe o [CHANGELOG](CHANGELOG.md) para maiores informações sobre as alterações recentes.
@@ -108,13 +106,10 @@ Newton Pasqualini Filho (DANFE Simplificado)
 
 Este pacote está diponibilizado sob LGPLv3 ou MIT License (MIT). Leia  [Arquivo de Licença](LICENSE) para maiores informações.
 
-
+[ico-php]: https://img.shields.io/packagist/php-v/nfephp-org/sped-da
 [ico-stars]: https://img.shields.io/github/stars/nfephp-org/sped-nfe.svg?style=flat-square
 [ico-forks]: https://img.shields.io/github/forks/nfephp-org/sped-da.svg?style=flat-square
 [ico-issues]: https://img.shields.io/github/issues/nfephp-org/sped-da.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/nfephp-org/sped-da/master.svg?style=flat-square
-[ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/nfephp-org/sped-da.svg?style=flat-square
-[ico-code-quality]: https://img.shields.io/scrutinizer/g/nfephp-org/sped-da.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/nfephp-org/sped-da.svg?style=flat-square
 [ico-version]: https://img.shields.io/packagist/v/nfephp-org/sped-da.svg?style=flat-square
 [ico-license]: https://poser.pugx.org/nfephp-org/nfephp/license.svg?style=flat-square
@@ -122,13 +117,9 @@ Este pacote está diponibilizado sob LGPLv3 ou MIT License (MIT). Leia  [Arquivo
 
 
 [link-packagist]: https://packagist.org/packages/nfephp-org/sped-da
-[link-travis]: https://travis-ci.org/nfephp-org/sped-da
-[link-scrutinizer]: https://scrutinizer-ci.com/g/nfephp-org/sped-da/code-structure
-[link-code-quality]: https://scrutinizer-ci.com/g/nfephp-org/sped-da
 [link-downloads]: https://packagist.org/packages/nfephp-org/sped-da
 [link-author]: https://github.com/nfephp-org
 [link-issues]: https://github.com/nfephp-org/sped-da/issues
 [link-forks]: https://github.com/nfephp-org/sped-da/network
 [link-stars]: https://github.com/nfephp-org/sped-da/stargazers
 [link-gitter]: https://gitter.im/nfephp-org/sped-da?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-

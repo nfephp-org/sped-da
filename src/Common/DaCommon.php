@@ -104,6 +104,15 @@ class DaCommon extends Common
     /**
      * @var bool
      */
+    protected $quantityDecimalPlaces = 2;
+    /**
+     * @var int
+     */
+    protected $priceDecimalPlaces = 2;
+    /**
+     * @var int
+     */
+
     protected $cancelFlag = false;
 
     /**
@@ -250,6 +259,47 @@ class DaCommon extends Common
             $dec = 2;
         }
         $this->decimalPlaces = $dec;
+    }
+
+    /**
+     * Seta o numero de casas decimais a serem usadas para quantidade
+     * @param int $quantityDecimalPlaces
+     */
+    public function setQuantityDecimalPlaces($quantityDecimalPlaces)
+    {
+        $this->quantityDecimalPlaces = $quantityDecimalPlaces;
+    }
+
+    /**
+     * Retorna o numero de casas decimais a serem usadas para quantidade
+     */
+    public function getQuantityDecimalPlaces()
+    {
+       return $this->quantityDecimalPlaces;
+    }
+
+    /**
+     * Seta o numero de casas decimais a serem usadas para valor
+     * @param int $priceDecimalPlaces
+     */
+    public function setPriceDecimalPlaces($priceDecimalPlaces)
+    {
+        $this->priceDecimalPlaces = $priceDecimalPlaces;
+    }
+
+    /**
+     * Retorna o numero de casas decimais a serem usadas para preço
+     */
+    public function getPriceDecimalPlaces()
+    {
+       return $this->priceDecimalPlaces;
+    }
+    
+    /**
+     * Retorna o valor formatado usando o número de casas decimais informado
+     */
+    public function formatValueWithDecimalPlaces($value, $decimalPlaces = 2) {
+        return number_format($value, $decimalPlaces, ",", ".");
     }
 
     /**
