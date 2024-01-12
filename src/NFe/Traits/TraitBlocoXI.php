@@ -27,9 +27,11 @@ trait TraitBlocoXI
         $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
 
         foreach ($bandpgto as $p) {
-            $p['bandeira'] = $this->flagDescription($p['bandeira']);
-            $texto = 'Band. ' . $p['bandeira'] . ' Nº Aut. ' . $p['autorizacao'] . ' R$: ' . $valor;
-            $this->pdf->textBox($this->margem, $y, $this->wPrint, 3, $texto, $aFont, 'T', 'C', false, '', false);
+            $p['bandeira'] = $p['bandeira'] ? $this->flagDescription($p['bandeira']) : null;
+            if ($p['bandeira']) {
+                $texto = 'Band. ' . $p['bandeira'] . ' Nº Aut. ' . $p['autorizacao'] . ' R$: ' . $valor;
+                $this->pdf->textBox($this->margem, $y, $this->wPrint, 3, $texto, $aFont, 'T', 'C', false, '', false);
+            }
         }
 
         $this->pdf->dashedHLine($this->margem, $this->bloco11H + $y, $this->wPrint, 0.1, 30);
