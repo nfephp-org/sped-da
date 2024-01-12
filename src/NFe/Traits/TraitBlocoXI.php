@@ -10,29 +10,20 @@ trait TraitBlocoXI
     protected function blocoXI($y)
     {
         $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
-        //$this->pdf->textBox($this->margem, $y, $this->wPrint, $this->bloco5H, '', $aFont, 'T', 'C', true, '', false);
+
         $bandpgto = [];
-        if ($this->pag->length > 0) {
-            foreach ($this->pag as $pgto) {
-                $bandeira = (int) $this->getTagValue($pgto, 'tBand');
-                $autorizacao = (int) $this->getTagValue($pgto, 'cAut');
-                $valor = number_format((float) $this->getTagValue($pgto, 'vPag'), 2, ',', '.');
-                $bandpgto[] = [
-                    'bandeira' => $bandeira,
-                    'autorizacao' => $autorizacao,
-                    'valor' => $valor
-                ];
-            }
-        } else {
-            $bandeira = (int) $this->getTagValue($this->pag, 'tBand');
-            $autorizacao = (int) $this->getTagValue($this->pag, 'cAut');
-            $valor = number_format((float) $this->getTagValue($this->pag, 'vPag'), 2, ',', '.');
+
+        foreach ($this->pag as $pgto) {
+            $bandeira = (int) $this->getTagValue($pgto, 'tBand');
+            $autorizacao = (int) $this->getTagValue($pgto, 'cAut');
+            $valor = number_format((float) $this->getTagValue($pgto, 'vPag'), 2, ',', '.');
             $bandpgto[] = [
                 'bandeira' => $bandeira,
                 'autorizacao' => $autorizacao,
                 'valor' => $valor
             ];
         }
+
         $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
 
         foreach ($bandpgto as $p) {
