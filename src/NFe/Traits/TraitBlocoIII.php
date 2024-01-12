@@ -12,7 +12,7 @@ trait TraitBlocoIII
         if ($this->flagResume) {
             return $y;
         }
-        $matrix = [0.13, $this->descPercent, 0.10, 0.07, 0.12, 0.12, 0.12];
+        $matrix = [0.14, $this->descPercent, 0.10, 0.07, 0.13, 0.13, 0.13];
         $fsize = 7;
         if ($this->paperwidth < 70) {
             $fsize = 5;
@@ -179,7 +179,7 @@ trait TraitBlocoIII
                 $tempPDF->setFont($this->fontePadrao, '', $fsize); // seta a font do PDF
 
                 $n = $tempPDF->wordWrap($xProd, $descriptionWidth);
-                $limit = 45;
+                $limit = 40;
                 while ($n > 2) {
                     $limit -= 1;
                     $xProd = substr($this->getTagValue($prod, "xProd"), 0, $limit);
