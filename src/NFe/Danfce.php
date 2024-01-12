@@ -13,13 +13,11 @@ namespace NFePHP\DA\NFe;
  * @link      http://github.com/nfephp-org/sped-da for the canonical source repository
  */
 
-use DateTime;
 use Exception;
 use InvalidArgumentException;
 use NFePHP\DA\Legacy\Dom;
 use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Common\DaCommon;
-use Com\Tecnick\Barcode\Barcode;
 
 class Danfce extends DaCommon
 {
@@ -75,11 +73,13 @@ class Danfce extends DaCommon
     protected $bloco4H = 19.0; //totais
     protected $bloco5H = 0.0; //formas de pagamento
 
-    protected $bloco6H = 10.0; //informação para consulta
-    protected $bloco7H = 14.0; //informações do consumidor
+    protected $bloco6H = 14.0; //informação para consulta
+    protected $bloco7H = 16.0; //informações do consumidor
     protected $bloco8H = 27.0; //informações do consumidor
-    protected $bloco9H = 4.0; //informações sobre tributos
-    protected $bloco10H = 5.0; //informações do integrador
+    protected $bloco9H = 3.0; //informações sobre tributos
+    protected $bloco10H = 0.0; //informações do integrador
+
+    protected $bloco11H = 10.0; //informações do decreto
 
     use Traits\TraitBlocoI;
     use Traits\TraitBlocoII;
@@ -91,6 +91,7 @@ class Danfce extends DaCommon
     use Traits\TraitBlocoVIII;
     use Traits\TraitBlocoIX;
     use Traits\TraitBlocoX;
+    use Traits\TraitBlocoXI;
 
     /**
      * Construtor
@@ -252,6 +253,8 @@ class Danfce extends DaCommon
         $y = $this->blocoIX($y); //informações complementares e sobre tributos
         $y = $this->blocoX($y); //creditos
 
+        $y = $this->blocoXI($y); //Decreto cartão de crédito RS 56.670
+
         $ymark = $maxH / 4;
         if ($this->tpAmb == 2) {
             $this->pdf->setTextColor(120, 120, 120);
@@ -322,6 +325,8 @@ class Danfce extends DaCommon
             $y = $this->blocoVIII($y); //QRCODE
             $y = $this->blocoIX($y); //informações sobre tributos
             $y = $this->blocoX($y); //creditos
+            $y = $this->blocoXI($y); //Decreto cartão de crédito RS 56.670
+
             $ymark = $maxH / 4;
             if ($this->tpAmb == 2) {
                 $this->pdf->setTextColor(120, 120, 120);
@@ -362,7 +367,8 @@ class Danfce extends DaCommon
             + $this->bloco7H //informações do consumidor
             + $this->bloco8H //qrcode
             + $this->bloco9H //informações sobre tributos
-            + $this->bloco10H; //informações do integrador
+            + $this->bloco10H //informações do integrador
+            + $this->bloco11H; //decreto 56.670
         return $length;
     }
 
