@@ -415,7 +415,6 @@ class Damdfe extends DaCommon
                 $texto = "SEM VALOR FISCAL";
                 $aFont = ['font' => $this->fontePadrao, 'size' => 48, 'style' => 'B'];
                 $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
-                $this->pdf->settextcolor(0, 0, 0);
             }
         }
         return $oldY + 8;
@@ -654,6 +653,7 @@ class Damdfe extends DaCommon
             $maxW = $this->wPrint * 0.9;
         }
         $this->pdf->setFillColor(188, 224, 246);
+        $this->pdf->settextcolor(0, 0, 0);
         $x2 = ($maxW / 6);
         $x1 = $x2;
         $this->pdf->textBox($x, $y, $x2 - 22, 10, '', $this->baseFont, 'T', 'L', 0, '', 0, 0, 0, 1);
@@ -857,7 +857,6 @@ class Damdfe extends DaCommon
         // chave de acesso
         $this->pdf->textBox($x + $maxW / 2, $y + 4, $maxW / 2, 17, '', $this->baseFont, 'T', 'L', 0);
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
-        $tsHora = $this->toTimestamp($this->dhEvento);
         $texto = 'Chave de Acesso';
         $this->pdf->textBox($x + $maxW / 2, $y + 4, $maxW / 2, 6, $texto, $aFont, 'T', 'L', 0, '');
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
