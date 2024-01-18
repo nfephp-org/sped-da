@@ -25,7 +25,7 @@ class Danfce extends DaCommon
 {
     protected $papel;
     protected $paperwidth = 80;
-    protected $descPercent = 0.30;
+    protected $descPercent = 0.32;
     protected $xml; // string XML NFe
     protected $dom;
     protected $logomarca = ''; // path para logomarca em jpg
