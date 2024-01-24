@@ -248,30 +248,26 @@ class Danfce extends DaCommon
 
         $y = $this->blocoVI($y); //informações sobre consulta pela chave
         $y = $this->blocoVII($y); //informações sobre o consumidor e dados da NFCe
-        $y = $this->blocoVIII($y); //QRCODE
+        if ($this->qrCode) {
+            $y = $this->blocoVIII($y); //QRCODE
+        }
         $y = $this->blocoIX($y); //informações complementares e sobre tributos
         $y = $this->blocoX($y); //creditos
 
         $ymark = $maxH / 4;
-        if ($this->tpAmb == 2) {
-            $this->pdf->setTextColor(120, 120, 120);
-            $texto = "SEM VALOR FISCAL\nEmitida em ambiente de homologação";
-            $aFont = ['font' => $this->fontePadrao, 'size' => 14, 'style' => 'B'];
-            $ymark += $this->pdf->textBox(
-                $this->margem,
-                $ymark,
-                $this->wPrint,
-                $maxH / 2,
-                $texto,
-                $aFont,
-                'T',
-                'C',
-                false,
-                '',
-                false
-            );
-            $this->pdf->setTextColor(0, 0, 0);
+
+        $messages = [];
+
+        if (!$this->infProt) {
+            $messages[] = "NFCe NÃO PROTOCOLADA";
         }
+
+        if ($this->tpAmb == 2) {
+            $messages[] = "Emitida em ambiente de homologação";
+        }
+
+        $ymark = $this->printMessages($ymark, $messages);
+
         if ($this->canceled) {
             $this->pdf->setTextColor(120, 120, 120);
             $texto = "CANCELADA";
@@ -323,24 +319,7 @@ class Danfce extends DaCommon
             $y = $this->blocoIX($y); //informações sobre tributos
             $y = $this->blocoX($y); //creditos
             $ymark = $maxH / 4;
-            if ($this->tpAmb == 2) {
-                $this->pdf->setTextColor(120, 120, 120);
-                $texto = "SEM VALOR FISCAL\nEmitida em ambiente de homologação";
-                $aFont = ['font' => $this->fontePadrao, 'size' => 14, 'style' => 'B'];
-                $ymark += $this->pdf->textBox(
-                    $this->margem,
-                    $ymark,
-                    $this->wPrint,
-                    $maxH / 2,
-                    $texto,
-                    $aFont,
-                    'T',
-                    'C',
-                    false,
-                    '',
-                    false
-                );
-            }
+            $ymark = $this->printMessages($ymark, $messages);
             $this->pdf->setTextColor(0, 0, 0);
         }
     }
@@ -364,6 +343,37 @@ class Danfce extends DaCommon
             + $this->bloco9H //informações sobre tributos
             + $this->bloco10H; //informações do integrador
         return $length;
+    }
+
+    private function printMessages($ymark, $messages = [])
+    {
+        if (!count($messages)) {
+            return $ymark;
+        }
+
+        $this->pdf->setTextColor(120, 120, 120);
+        $aFont = ['font' => $this->fontePadrao, 'size' => 14, 'style' => 'B'];
+        $messages[] = 'SEM VALOR FISCAL';
+
+        foreach ($messages as $message) {
+            $ymark += $this->pdf->textBox(
+                $this->margem,
+                $ymark,
+                $this->wPrint,
+                $this->calculatePaperLength() / 2,
+                $message,
+                $aFont,
+                'T',
+                'C',
+                false,
+                '',
+                false
+            );
+        }
+
+        $this->pdf->setTextColor(0, 0, 0);
+
+        return $ymark;
     }
 
     /**

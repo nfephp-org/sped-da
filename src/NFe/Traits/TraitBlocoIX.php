@@ -22,7 +22,7 @@ trait TraitBlocoIX
             $texto,
             $aFont,
             'T',
-            'C',
+            'L',
             false,
             '',
             true
