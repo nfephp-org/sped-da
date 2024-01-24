@@ -417,9 +417,9 @@ class Danfe extends DaCommon
                 $this->textoAdic .= $infPedido;
             }
             // EXIBE EMAIL DO DESTINATÁRIO
-            if($this->exibirEmailDestinatario){
+            if ($this->exibirEmailDestinatario) {
                 $this->textoAdic .= $this->getTagValue($this->dest, "email", ' Email do Destinatário: ');
-            }            
+            }
 
             $this->textoAdic .= !empty($this->getTagValue($this->infAdic, "infAdFisco"))
                 ? "\n Inf. fisco: " . $this->getTagValue($this->infAdic, "infAdFisco")
@@ -959,7 +959,8 @@ class Danfe extends DaCommon
             if (in_array($cStat, ['110', '205', '301', '302', '303'])) {
                 $resp['status'] = false;
                 $resp['message'][] = "NFe DENEGADA";
-            } elseif (in_array($cStat, ['101', '151', '135', '155'])
+            } elseif (
+                in_array($cStat, ['101', '151', '135', '155'])
                 || $this->cancelFlag === true
             ) {
                 $resp['status'] = false;
@@ -970,7 +971,8 @@ class Danfe extends DaCommon
                 $tpEvento = $this->getTagValue($infEvento, "tpEvento");
                 $dhEvento = $this->toDateTime($this->getTagValue($infEvento, "dhRegEvento"))->format("d/m/Y H:i:s");
                 $nProt = $this->getTagValue($infEvento, "nProt");
-                if ($tpEvento == '110111' &&
+                if (
+                    $tpEvento == '110111' &&
                     ($cStat == '101' ||
                         $cStat == '151' ||
                         $cStat == '135' ||
@@ -1532,7 +1534,8 @@ class Danfe extends DaCommon
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         $texto = $this->dest->getElementsByTagName("xMun")->item(0)->nodeValue;
-        if (strtoupper(trim($texto)) == "EXTERIOR"
+        if (
+            strtoupper(trim($texto)) == "EXTERIOR"
             && $this->dest->getElementsByTagName("xPais")->length > 0
         ) {
             $texto .= " - " . $this->dest->getElementsByTagName("xPais")->item(0)->nodeValue;
@@ -2737,16 +2740,16 @@ class Danfe extends DaCommon
                 if ($rastro->length === 1) {
                     $i = 0;
                     //while ($i < $rastro->length) {
-                        $dFab = $this->getTagDate($rastro->item($i), 'dFab');
-                        $datafab = " Fab: " . $dFab;
-                        $dVal = $this->getTagDate($rastro->item($i), 'dVal');
-                        $dataval = " Val: " . $dVal;
-                        $loteTxt .= $this->getTagValue($rastro->item($i), 'nLote', ' Lote: ');
-                        $loteTxt .= $this->getTagValue($rastro->item($i), 'qLote', ' Quant: ');
-                        $loteTxt .= $datafab; //$this->getTagDate($rastro->item($i), 'dFab', ' Fab: ');
-                        $loteTxt .= $dataval; //$this->getTagDate($rastro->item($i), 'dVal', ' Val: ');
-                        $loteTxt .= $this->getTagValue($rastro->item($i), 'vPMC', ' PMC: ');
-                        //$i++;
+                    $dFab = $this->getTagDate($rastro->item($i), 'dFab');
+                    $datafab = " Fab: " . $dFab;
+                    $dVal = $this->getTagDate($rastro->item($i), 'dVal');
+                    $dataval = " Val: " . $dVal;
+                    $loteTxt .= $this->getTagValue($rastro->item($i), 'nLote', ' Lote: ');
+                    $loteTxt .= $this->getTagValue($rastro->item($i), 'qLote', ' Quant: ');
+                    $loteTxt .= $datafab; //$this->getTagDate($rastro->item($i), 'dFab', ' Fab: ');
+                    $loteTxt .= $dataval; //$this->getTagDate($rastro->item($i), 'dVal', ' Val: ');
+                    $loteTxt .= $this->getTagValue($rastro->item($i), 'vPMC', ' PMC: ');
+                    //$i++;
                     //}
                 }
                 if ($loteTxt != '') {
@@ -2987,7 +2990,7 @@ class Danfe extends DaCommon
         // cabecalho LOOP COM OS DADOS DOS PRODUTOS
         //CÓDIGO PRODUTO
         $texto = "CÓDIGO PRODUTO";
-        $w1    = round($w * 0.09, 0);
+        $w1    = round($w * 0.07, 0);
         $h     = 4;
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w1, $h, $texto, $aFont, 'C', 'C', 0, '', false);
@@ -3039,7 +3042,7 @@ class Danfe extends DaCommon
         $this->pdf->dashedVLine($x + $w6, $y, 0.1, $y + $hmax, 100);
         //QUANT
         $x     += $w6;
-        $w7    = round($w * 0.08, 0);
+        $w7    = round($w * 0.07, 0);
         $texto = 'QUANT';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w7, $h, $texto, $aFont, 'C', 'C', 0, '', false);
@@ -3168,10 +3171,10 @@ class Danfe extends DaCommon
                     if ($pag == $totpag) {
                         $totpag++;
                     }
-                        //ultrapassa a capacidade para uma única página
-                        //o restante dos dados serão usados nas proximas paginas
-                        $nInicio = $i;
-                        break;
+                    //ultrapassa a capacidade para uma única página
+                    //o restante dos dados serão usados nas proximas paginas
+                    $nInicio = $i;
+                    break;
                 }
 
                 $y_linha = $y + $h;
@@ -3202,9 +3205,9 @@ class Danfe extends DaCommon
                 $veicnovo = $this->itemVeiculoNovo($prod);
                 $aFont = ['font' => $this->fontePadrao, 'size' => 5, 'style' => ''];
                 $this->pdf->textBox(
-                    $x-$w3,
-                    $y+4,
-                    $this->wPrint-($w1+$w2)-2,
+                    $x - $w3,
+                    $y + 4,
+                    $this->wPrint - ($w1 + $w2) - 2,
                     22,
                     $veicnovo,
                     $aFont,
