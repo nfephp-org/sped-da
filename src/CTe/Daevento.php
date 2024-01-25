@@ -15,10 +15,8 @@ namespace NFePHP\DA\CTe;
  * @author    Roberto L. Machado <linux.rlm at gmail dot com>
  */
 
-use Exception;
-use NFePHP\DA\Legacy\Dom;
-use NFePHP\DA\Legacy\Pdf;
 use NFePHP\DA\Common\DaCommon;
+use NFePHP\DA\Legacy\Pdf;
 
 class Daevento extends DaCommon
 {
@@ -119,7 +117,8 @@ class Daevento extends DaCommon
      */
     protected function monta(
         $logo = ''
-    ) {
+    )
+    {
         if (!empty($logo)) {
             $this->logomarca = $this->adjustImage($logo);
         }
@@ -190,7 +189,8 @@ class Daevento extends DaCommon
         $x,
         $y,
         $pag
-    ) {
+    )
+    {
         $oldX = $x;
         $oldY = $y;
         $maxW = $this->wPrint;
@@ -404,31 +404,44 @@ class Daevento extends DaCommon
         $y += 5;
         $this->pdf->textBox($x, $y, $maxW, 190);
         if ($this->tpEvento == '110110') {
-            $this->pdf->textBox($x, $y, $maxW = ($maxW / 5), 5, "Grupo", $aFont, 'T', 'C', 0, '', false);
-            $this->pdf->textBox($x = $maxW, $y, $maxW, 5, "Campo", $aFont, 'T', 'C', 0, '', false);
-            $this->pdf->textBox($x = ($maxW * 2), $y, $maxW, 5, "Número", $aFont, 'T', 'C', 0, '', false);
-            $this->pdf->textBox($x = ($maxW * 3), $y, ($this->wPrint - $x), 5, "Valor", $aFont, 'T', 'C', 0, '', false);
-
             $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
             $i = 0;
-            $numlinhas = 1;
             while ($i < $this->infCorrecao->length) {
-                $x = 0;
-                $y = $numlinhas == 1 ? ($y + 5) : ($y + (5 * $numlinhas));
+                $x = 2;
                 $maxW = $this->wPrint;
                 $grupo = $this->infCorrecao->item($i)->getElementsByTagName('grupoAlterado')->item(0)->nodeValue;
                 $campo = $this->infCorrecao->item($i)->getElementsByTagName('campoAlterado')->item(0)->nodeValue;
                 $numero = 1;
                 if (!empty($this->infCorrecao->item($i)->getElementsByTagName('nroItemAlterado')->item(0))) {
-                    $numero =$this->infCorrecao->item($i)->getElementsByTagName('nroItemAlterado')->item(0)->nodeValue;
+                    $numero = $this->infCorrecao->item($i)->getElementsByTagName('nroItemAlterado')->item(0)->nodeValue;
                 }
                 $valor = $this->infCorrecao->item($i)->getElementsByTagName('valorAlterado')->item(0)->nodeValue;
+                $lines = $this->pdf->getNumLines($valor, ($this->wPrint - 35), $aFont);
 
                 $i++;
-                $this->pdf->textBox($x, $y, $maxW = ($maxW / 5), 5, $grupo, $aFont, 'T', 'C', 0, '', false);
-                $this->pdf->textBox($x = $maxW, $y, $maxW, 5, $campo, $aFont, 'T', 'C', 0, '', false);
-                $this->pdf->textBox($x = ($maxW * 2), $y, $maxW, 5, $numero, $aFont, 'T', 'C', 0, '', false);
-                $this->pdf->textBox($x = ($maxW * 3), $y, ($this->wPrint - $x), 5, $valor, $aFont, 'T', 'C', 0);
+
+                $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => 'B');
+                $this->pdf->textBox($x, $y, 30, 5, "Grupo Alterado", $aFont, 'T', 'L', 0, '', false);
+                $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
+                $this->pdf->textBox($x + 30, $y, 50, 5, $grupo, $aFont, 'T', 'L', 0, '', false);
+
+                $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => 'B');
+                $this->pdf->textBox($x + 80, $y, 30, 5, "Campo Alterado", $aFont, 'T', 'L', 0, '', false);
+                $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
+                $this->pdf->textBox($x + 110, $y, 50, 5, $campo, $aFont, 'T', 'L', 0, '', false);
+
+                $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => 'B');
+                $this->pdf->textBox($x + 160, $y, 30, 5, "Número Alterado", $aFont, 'T', 'L', 0, '', false);
+                $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
+                $this->pdf->textBox($x + 190, $y, 10, 5, $numero, $aFont, 'T', 'L', 0, '', false);
+
+                $y += 5;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => 'B');
+                $this->pdf->textBox($x, $y, 30, 5, "Valor Alterado", $aFont, 'T', 'L', 0, '', false);
+                $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
+                $this->pdf->textBox($x + 30, $y, ($this->wPrint - 35), 5, $valor, $aFont, 'T', 'L', 0, '', false);
+                $y += (3 * $lines) + 3;
+                $this->pdf->line($x, $y, $this->wPrint - $x, $y);
             }
         } elseif ($this->tpEvento == '110111') {
             $texto = $this->xJust;
