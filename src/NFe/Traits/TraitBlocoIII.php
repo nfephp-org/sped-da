@@ -178,13 +178,17 @@ trait TraitBlocoIII
                 $tempPDF = new \NFePHP\DA\Legacy\Pdf(); // cria uma instancia temporaria da class pdf
                 $tempPDF->setFont($this->fontePadrao, '', $fsize); // seta a font do PDF
 
-                $descriptionWidth = ($this->paperwidth - (4 * $this->margem)) * $this->descPercent;
+                $descriptionWidth = round(($this->paperwidth - (4 * $this->margem)) * $this->descPercent, 2);
+
                 $n = $tempPDF->wordWrap($xProd, $descriptionWidth);
+
                 $limit = 20;
+
                 while ($n > 2) {
                     $xProd = substr($this->getTagValue($prod, "xProd"), 0, $limit);
                     $p = $xProd;
-                    $n = $tempPDF->wordWrap($p, $descriptionWidth);
+                    $tempPDF->wordWrap($p, $descriptionWidth, true);
+                    $n -= 1;
                 }
                 $marginReduction = $this->paperwidth === 58 ? 2.4 : 0.4;
                 $h = ($hfont * $n) - $marginReduction;
