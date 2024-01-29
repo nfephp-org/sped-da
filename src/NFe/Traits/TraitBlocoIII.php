@@ -12,7 +12,7 @@ trait TraitBlocoIII
         if ($this->flagResume) {
             return $y;
         }
-        $matrix = [0.13, $this->descPercent, 0.10, 0.07, 0.12, 0.12, 0.12];
+        $matrix = [0.12, $this->descPercent, 0.10, 0.07, 0.13, 0.13, 0.13];
         $fsize = 7;
         if ($this->paperwidth < 70) {
             $fsize = 5;
@@ -168,7 +168,7 @@ trait TraitBlocoIII
             foreach ($this->det as $item) {
                 $prod = $item->getElementsByTagName("prod")->item(0);
                 $cProd = str_pad($this->getTagValue($prod, "cProd"), 5, '0', STR_PAD_LEFT);
-                $xProd = substr($this->getTagValue($prod, "xProd"), 0, 45);
+                $xProd = substr($this->getTagValue($prod, "xProd"), 0, 30);
                 $qCom = $this->formatValueWithDecimalPlaces((float) $this->getTagValue($prod, "qCom"), $this->getQuantityDecimalPlaces());
                 $uCom = $this->getTagValue($prod, "uCom");
                 $vUnCom = $this->formatValueWithDecimalPlaces((float) $this->getTagValue($prod, "vUnCom"), $this->getPriceDecimalPlaces());
@@ -178,10 +178,10 @@ trait TraitBlocoIII
                 $tempPDF = new \NFePHP\DA\Legacy\Pdf(); // cria uma instancia temporaria da class pdf
                 $tempPDF->setFont($this->fontePadrao, '', $fsize); // seta a font do PDF
 
+                $descriptionWidth = ($this->paperwidth - (4 * $this->margem)) * $this->descPercent;
                 $n = $tempPDF->wordWrap($xProd, $descriptionWidth);
-                $limit = 45;
+                $limit = 20;
                 while ($n > 2) {
-                    $limit -= 1;
                     $xProd = substr($this->getTagValue($prod, "xProd"), 0, $limit);
                     $p = $xProd;
                     $n = $tempPDF->wordWrap($p, $descriptionWidth);
