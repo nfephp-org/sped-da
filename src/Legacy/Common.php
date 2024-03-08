@@ -106,16 +106,16 @@ class Common
      */
     public function toTimestamp($input)
     {
-        $regex = '^(2[0-9][0-9][0-9])[-](0?[1-9]'
-            . '|1[0-2])[-](0?[1-9]'
-            . '|[12][0-9]'
-            . '|3[01])T(0[0-9]'
-            . '|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]-(01|02|03|04|05):00$';
-
-        if (!preg_match("/$regex/", $input)) {
-            return 0;
-        }
-        return \DateTime::createFromFormat("Y-m-d\TH:i:sP", $input)->getTimestamp();
+//        $regex = '^(2[0-9][0-9][0-9])[-](0?[1-9]'
+//            . '|1[0-2])[-](0?[1-9]'
+//            . '|[12][0-9]'
+//            . '|3[01])T(0[0-9]'
+//            . '|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]-(01|02|03|04|05):00$';
+//
+//        if (!preg_match("/$regex/", $input)) {
+//            return 0;
+//        }
+//        return \DateTime::createFromFormat("Y-m-d\TH:i:sP", $input)->getTimestamp();
     }
 
     /**
