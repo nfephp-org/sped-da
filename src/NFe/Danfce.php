@@ -69,7 +69,7 @@ class Danfce extends DaCommon
     protected $canceled = false;
     protected $submessage = null;
 
-    protected $bloco1H = 18.0; //cabecalho
+    protected $bloco1H = 18.0; //cabeçalho
     protected $bloco2H = 12.0; //informação fiscal
 
     protected $bloco3H = 0.0; //itens
@@ -169,7 +169,7 @@ class Danfce extends DaCommon
     }
 
     /**
-     * Registra via do estabelecimento quando a impressção for offline
+     * Registra via do estabelecimento quando a impressão for offline
      */
     public function setViaEstabelecimento()
     {
@@ -187,7 +187,7 @@ class Danfce extends DaCommon
     }
 
     /**
-     * Recebe uma string com uma informação adicionadl que sera impressa no final do pdf
+     * Recebe uma string com uma informação adicional que será impressa ao final do pdf
      *
      * @param string $texto
      */
@@ -260,7 +260,7 @@ class Danfce extends DaCommon
         $y = $this->blocoVII($y); //informações sobre o consumidor e dados da NFCe
         $y = $this->blocoVIII($y); //QRCODE
         $y = $this->blocoIX($y); //informações complementares e sobre tributos
-        $y = $this->blocoX($y); //creditos
+        $y = $this->blocoX($y); //créditos
 
         $ymark = $maxH / 4;
         if ($this->tpAmb == 2) {
@@ -322,7 +322,7 @@ class Danfce extends DaCommon
             $this->pdf->addPage($this->orientacao, $this->papel); // adiciona a primeira página
             $this->pdf->setLineWidth(0.1); // define a largura da linha
             $this->pdf->setTextColor(0, 0, 0);
-            $y = $this->blocoI(); //cabecalho
+            $y = $this->blocoI(); //cabeçalho
             $y = $this->blocoII($y); //informação cabeçalho fiscal e contingência
             $y = $this->blocoIII($y); //informação dos itens
             $y = $this->blocoIV($y); //informação sobre os totais
@@ -331,7 +331,7 @@ class Danfce extends DaCommon
             $y = $this->blocoVII($y); //informações sobre o consumidor e dados da NFCe
             $y = $this->blocoVIII($y); //QRCODE
             $y = $this->blocoIX($y); //informações sobre tributos
-            $y = $this->blocoX($y); //creditos
+            $y = $this->blocoX($y); //créditos
             $ymark = $maxH / 4;
             if ($this->tpAmb == 2) {
                 $this->pdf->setTextColor(120, 120, 120);
@@ -363,7 +363,7 @@ class Danfce extends DaCommon
         $this->bloco5H = $this->calculateHeightPag();
         $this->bloco9H = $this->calculateHeighBlokIX();
 
-        $length = $this->bloco1H //cabecalho
+        $length = $this->bloco1H //cabeçalho
             + $this->bloco2H //informação fiscal
             + $this->bloco3H //itens
             + $this->bloco4H //totais
