@@ -806,7 +806,7 @@ class Pdf extends Fpdf
     */
     public function dashedVLine($x, $y, $w, $yfinal, $n)
     {
-        $this->setDrawColor(150,150,150);
+        $this->setDrawColor(150, 150, 150);
         $this->setLineWidth($w);
         if ($y > $yfinal) {
             $aux = $yfinal;
@@ -1124,8 +1124,8 @@ class Pdf extends Fpdf
      * @param string $text
      * @return string
      */
-    private function convertToIso($text) {
+    private function convertToIso($text)
+    {
         return mb_convert_encoding($text, 'ISO-8859-1', ['UTF-8', 'windows-1252']);
     }
-
 }

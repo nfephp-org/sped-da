@@ -32,6 +32,7 @@
         "php": ">= 7.4",
         "ext-dom": "*",
         "ext-gd": "*",
+        "ext-mbstring": "*",
         "tecnickcom/tc-lib-barcode": "^1",
         "nfephp-org/sped-common": "^5.1.0"
     },
