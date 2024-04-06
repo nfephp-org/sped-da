@@ -31,7 +31,7 @@ trait TraitBlocoV
                 'valor' => $valor
             ];
         }
-        $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
+        $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => 'B'];
         $texto = "FORMA PAGAMENTO";
         $this->pdf->textBox($this->margem, $y, $this->wPrint, 4, $texto, $aFont, 'T', 'L', false, '', false);
         $texto = "VALOR PAGO R$";
@@ -39,7 +39,9 @@ trait TraitBlocoV
 
         $z = $y + $y1;
         foreach ($arpgto as $p) {
+            $aFont = ['font'=> $this->fontePadrao, 'size' => 6, 'style' => ''];
             $this->pdf->textBox($this->margem, $z, $this->wPrint, 3, $p['tipo'], $aFont, 'T', 'L', false, '', false);
+            $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
             $y2 = $this->pdf->textBox(
                 $this->margem,
                 $z,
