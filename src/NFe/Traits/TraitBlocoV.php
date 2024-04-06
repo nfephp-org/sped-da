@@ -25,7 +25,7 @@ trait TraitBlocoV
             }
         } else {
             $tipo = $this->pagType((int) $this->getTagValue($this->pag, 'tPag'));
-            $valor = number_format((float) $this->getTagValue($pgto, 'vPag'), 2, ',', '.');
+            $valor = number_format((float) $this->getTagValue($this->pag, 'vPag'), 2, ',', '.');
             $arpgto[] = [
                 'tipo' => $tipo,
                 'valor' => $valor
