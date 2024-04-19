@@ -399,7 +399,7 @@ class DanfeEtiqueta extends DaCommon
         $texto = "Valor TOTAL da NFe: R$ $total";
         $aFont = ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'B'];
         $y += $this->pdf->textBox($this->margem, $y, $this->wPrint, 6, $texto, $aFont, 'C', 'C', false, '', true);
-        $this->pdf->line($this->margem, $y+3, $this->wPrint+$this->margem, $y+2);
+        $this->pdf->line($this->margem, $y+3, $this->wPrint+$this->margem, $y+3);
         return $y+2;
     }
 
