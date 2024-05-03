@@ -294,6 +294,9 @@ class DaCommon extends Common
         }
         if ($type == '3') { //3 = PNG
             $image = imagecreatefrompng($logo);
+            if (!$image) {
+                return null;
+            }
             if ($turn_bw) {
                 imagefilter($image, IMG_FILTER_GRAYSCALE);
                 //imagefilter($image, IMG_FILTER_CONTRAST, -100);
@@ -301,6 +304,9 @@ class DaCommon extends Common
             return $this->getImageStringFromObject($image);
         } elseif ($type == '2' && $turn_bw) {
             $image = imagecreatefromjpeg($logo);
+            if (!$image) {
+                return null;
+            }
             imagefilter($image, IMG_FILTER_GRAYSCALE);
             //imagefilter($image, IMG_FILTER_CONTRAST, -100);
             return $this->getImageStringFromObject($image);
