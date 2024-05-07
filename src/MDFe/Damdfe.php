@@ -435,6 +435,12 @@ class Damdfe extends DaCommon
             'message' => [],
             'submessage' => ''
         ];
+        if (($this->tpEmis == 2 || $this->tpEmis == 5) and empty($this->nProt)) {
+            $resp['status'] = false;
+            $resp['message'][] = "MDF-e Emitido em Contingência";
+            $resp['message'][] = "devido à problemas técnicos";
+            return $resp;
+        }
         if (!isset($this->mdfeProc)) {
             $resp['status'] = false;
             $resp['message'][] = 'MDFe NÃO PROTOCOLADA';
@@ -486,10 +492,6 @@ class Damdfe extends DaCommon
                     $resp['message'][] = "MDFe ENCERRADA";
                     $resp['submessage'] = "{$dhEvento} - {$nProt}";
                 }
-            } elseif (($this->tpEmis == 2 || $this->tpEmis == 5) and empty($this->nProt)) {
-                $resp['status'] = false;
-                $resp['message'][] = "MDFE Emitido em Contingência";
-                $resp['message'][] = "devido à problemas técnicos";
             }
         }
         return $resp;
