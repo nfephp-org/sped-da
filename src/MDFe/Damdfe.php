@@ -850,7 +850,8 @@ class Damdfe extends DaCommon
             $tsHora = $this->toTimestamp($this->dhRecbto);
             $texto = $this->nProt . ' - ' . date('d/m/Y H:i:s', $tsHora);
         } else {
-            $texto = 'DAMDFE impresso em contingência - ' . date('d/m/Y   H:i:s');
+            $date = new \DateTime($this->dhEmi);
+            $texto = 'DAMDFE em Contingência - ' . $date->format('d/m/Y H:i:s');
         }
         $this->pdf->textBox($x, $y + 4, $maxW / 2, 8, $texto, $aFont, 'T', 'L', 0, '');
 
