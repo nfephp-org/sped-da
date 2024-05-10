@@ -846,14 +846,19 @@ class Damdfe extends DaCommon
         $texto = 'Protocolo de Autorização';
         $this->pdf->textBox($x, $y, $maxW / 2, 8, $texto, $aFont, 'T', 'L', 0, '');
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
+        $force = true;
         if (is_object($this->mdfeProc)) {
             $tsHora = $this->toTimestamp($this->dhRecbto);
             $texto = $this->nProt . ' - ' . date('d/m/Y H:i:s', $tsHora);
         } else {
             $date = new \DateTime($this->dhEmi);
-            $texto = 'DAMDFE em Contingência - ' . $date->format('d/m/Y H:i:s');
+            $texto = sprintf(
+                'EMISSÃO EM CONTINGÊNCIA. Obrigatória a autorização em 168 horas após esta emissão (%s)',
+                $date->format('d/m/Y H:i:s')
+            );
+            $force = false;
         }
-        $this->pdf->textBox($x, $y + 4, $maxW / 2, 8, $texto, $aFont, 'T', 'L', 0, '');
+        $this->pdf->textBox($x, $y + 4, $maxW / 2, 8, $texto, $aFont, 'T', 'L', 0, '', $force);
 
         $y -= 4;
 
