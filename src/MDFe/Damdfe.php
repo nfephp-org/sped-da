@@ -845,6 +845,7 @@ class Damdfe extends DaCommon
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
         $texto = 'Protocolo de Autorização';
         $this->pdf->textBox($x, $y, $maxW / 2, 8, $texto, $aFont, 'T', 'L', 0, '');
+        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => '');
         $force = true;
         if (is_object($this->mdfeProc)) {
             $tsHora = $this->toTimestamp($this->dhRecbto);
