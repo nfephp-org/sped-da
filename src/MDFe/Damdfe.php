@@ -853,7 +853,7 @@ class Damdfe extends DaCommon
         } else {
             $date = new \DateTime($this->dhEmi);
             $texto = sprintf(
-                'EMISSÃO EM CONTINGÊNCIA. Obrigatória a autorização em 168 horas após está emissão (%s)',
+                'EMISSÃO EM CONTINGÊNCIA. Obrigatória a autorização em 168 horas após esta emissão (%s)',
                 $date->format('d/m/Y H:i:s')
             );
             $force = false;
