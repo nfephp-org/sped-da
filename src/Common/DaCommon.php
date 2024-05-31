@@ -220,6 +220,7 @@ class DaCommon extends Common
     /**
      * Add the credits to the integrator in the footer message
      * @param string $message Mensagem do integrador a ser impressa no rodapé das paginas
+     * @param bool $powered
      * @return void
      */
     public function creditsIntegratorFooter($message = '', $powered = true)
@@ -234,7 +235,13 @@ class DaCommon extends Common
      */
     public function setDefaultFont(string $font = 'times')
     {
-        $this->fontePadrao = $font;
+        $fonte = strtolower($font);
+        if (in_array($fonte, ['times', 'arial', 'helvetica'])) {
+            if ($fonte === 'arial') {
+                $fonte = 'helvetica';
+            }
+            $this->fontePadrao = $fonte;
+        }
     }
 
     /**
