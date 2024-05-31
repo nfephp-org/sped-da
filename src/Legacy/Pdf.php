@@ -169,7 +169,8 @@ class Pdf extends Fpdf
         $Aguid="";
         $Bguid="";
         $Cguid="";
-        for ($i=0; $i < strlen($code); $i++) {
+        $len = strlen($code);
+        for ($i=0; $i < $len; $i++) {
             $needle=substr($code, $i, 1);
             $Aguid .= ((strpos($this->aSet, $needle)===false) ? "N" : "O");
             $Bguid .= ((strpos($this->bSet, $needle)===false) ? "N" : "O");
