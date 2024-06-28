@@ -285,13 +285,22 @@ class Common
                 $tPagNome = 'Depósito Bancário';
                 break;
             case '17':
-                $tPagNome = 'Pagamento Instantâneo (PIX)';
+                $tPagNome = 'Pagamento Instantâneo (PIX) - Dinâmico';
                 break;
             case '18':
                 $tPagNome = 'Transferência bancária, Carteira Digital';
                 break;
             case '19':
                 $tPagNome = 'Programa de fidelidade, Cashback, Crédito Virtual';
+                break;
+            case "20":
+                $tPagNome = 'Pagamento Instantâneo (PIX) - Estático';
+                break;
+            case "21":
+                $tPagNome = 'Crédito em Loja';
+                break;
+            case "22":
+                $tPagNome = 'Pagamento Eletrônico não Informado';
                 break;
             case '90':
                 $tPagNome = 'Sem Pagamento';

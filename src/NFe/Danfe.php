@@ -2147,9 +2147,12 @@ class Danfe extends DaCommon
                 '14' => 'Duplicata Mercantil',
                 '15' => 'Boleto',
                 '16' => 'Depósito Bancário',
-                '17' => 'Pagamento Instantâneo (PIX)',
+                '17' => 'Pagamento Instantâneo (PIX) - Dinâmico',
                 '18' => 'Transferência Bancária, Carteira Digit.',
                 '19' => 'Fidelidade, Cashback, Crédito Virtual',
+                "20" => 'Pagamento Instantâneo (PIX) - Estático',
+                "21" => 'Crédito em Loja',
+                "22" => 'Pagamento Eletrônico não Informado',
                 '90' => 'Sem pagamento',
                 '99' => 'Outros'
             ];
