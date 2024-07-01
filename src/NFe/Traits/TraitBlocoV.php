@@ -85,7 +85,7 @@ trait TraitBlocoV
             18 => 'Transferência bancária, Carteira Digital',
             19 => 'Programa fidelidade, Cashback, Créd Virt',
             20 => 'Pagamento Instantâneo (PIX) - Estático',
-            21 => 'Crédito Loja',
+            21 => 'Crédito em Loja',
             22 => 'Pagamento Eletrônico não Informado - falha de hardware do sistema emissor',
             90 => 'Sem pagamento',
             99 => 'Outros',
