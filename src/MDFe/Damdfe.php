@@ -85,6 +85,7 @@ class Damdfe extends DaCommon
 
     protected $flagDocs = false;
     protected $chaves = [];
+    protected $quantidadeChavesLayout = 20;
 
     /**
      * __construct
@@ -259,24 +260,22 @@ class Damdfe extends DaCommon
         $this->pdf->addPage($this->orientacao, $this->papel);
         $this->pdf->setLineWidth(0.1);
         $this->pdf->setTextColor(0, 0, 0);
-        //montagem da página
-        $pag = 1;
         $x = $xInic;
         $y = $yInic;
         //coloca o cabeçalho Paisagem
         if ($this->orientacao == 'P') {
-            $y = $this->headerMDFeRetrato($x, $y, $pag);
+            $y = $this->headerMDFeRetrato($x, $y);
         } else {
-            $y = $this->headerMDFePaisagem($x, $y, $pag);
+            $y = $this->headerMDFePaisagem($x, $y);
         }
         //coloca os dados da MDFe
         $y = $this->bodyMDFe($x, $y);
         //coloca os dados da MDFe
         $this->footerMDFe($x, $y);
 
-//        if ($this->flagDocs){
-        $this->addPage();
-//        }
+        if ($this->flagDocs) {
+            $this->addPage();
+        }
     }
 
     /**
@@ -284,10 +283,9 @@ class Damdfe extends DaCommon
      *
      * @param float $x
      * @param float $y
-     * @param integer $pag
      * @return string
      */
-    private function headerMDFePaisagem($x, $y, $pag)
+    private function headerMDFePaisagem($x, $y)
     {
         $oldX = $x;
         $oldY = $y;
@@ -419,6 +417,12 @@ class Damdfe extends DaCommon
             }
             $this->pdf->settextcolor(0, 0, 0);
         }
+
+        $y = $this->hPrint + 8;
+        $x = $this->wPrint - 5;
+        $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => 'I'];
+        $this->pdf->textBox($x, $y, 12, 8, 'Page ' . $this->pdf->PageNo() . '/{nb}', $aFont, 'T', 0, 0);
+
         return $oldY + 8;
     }
 
@@ -502,10 +506,9 @@ class Damdfe extends DaCommon
      *
      * @param float $x
      * @param float $y
-     * @param integer $pag
      * @return string
      */
-    private function headerMDFeRetrato($x, $y, $pag)
+    private function headerMDFeRetrato($x, $y)
     {
         $oldX = $x;
         $oldY = $y;
@@ -636,6 +639,12 @@ class Damdfe extends DaCommon
             }
             $this->pdf->settextcolor(0, 0, 0);
         }
+
+        $y = $this->hPrint + 8;
+        $x = $this->wPrint - 5;
+        $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => 'I'];
+        $this->pdf->textBox($x, $y, 12, 8, 'Page ' . $this->pdf->PageNo() . '/{nb}', $aFont, 'T', 0, 0);
+
         return $oldY + 8;
     }
 
@@ -1032,9 +1041,11 @@ class Damdfe extends DaCommon
             $x1 = round($maxW / 2, 0) + 7;
             $x2 = ($maxW / 6);
             $y = $yCabecalhoLinha;
+            $this->quantidadeChavesLayout = 21;
             if ($this->orientacao == 'L') {
                 $x1 = 225;
                 $y = $yold - 5;
+                $this->quantidadeChavesLayout = 17;
             }
             $texto = 'Chaves de acesso';
             $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
@@ -1043,9 +1054,17 @@ class Damdfe extends DaCommon
             $chavesNFe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chNFe');
             $chavesCTe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chCTe');
             $chavesMDFe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chMDFe');
-            for ($i = 0; $i < $chavesCTe->length; $i++) {
-                $this->chaves[] = $chavesCTe->item($i)->nodeValue;
+            $chaves = [];
+            for ($i = 0; $i < $chavesNFe->length; $i++) {
+                $chaves[] = $chavesNFe->item($i)->nodeValue;
             }
+            for ($i = 0; $i < $chavesCTe->length; $i++) {
+                $chaves[] = $chavesCTe->item($i)->nodeValue;
+            }
+            for ($i = 0; $i < $chavesMDFe->length; $i++) {
+                $chaves[] = $chavesMDFe->item($i)->nodeValue;
+            }
+            $this->chaves = array_slice($chaves, $this->quantidadeChavesLayout);
             $contadorChaves = 0;
             for ($i = 0; $i < $chavesNFe->length; $i++) {
                 $y += 4;
@@ -1053,11 +1072,8 @@ class Damdfe extends DaCommon
                 $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
                 $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
                 $contadorChaves++;
-                if ($this->orientacao == 'P') {
-                    if ($contadorChaves > 25) {
-                        break;
-                    }
-                } elseif ($contadorChaves > 16) {
+                if ($contadorChaves >= $this->quantidadeChavesLayout) {
+                    $this->flagDocs = true;
                     break;
                 }
             }
@@ -1067,12 +1083,8 @@ class Damdfe extends DaCommon
                 $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
                 $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
                 $contadorChaves++;
-                if ($this->orientacao == 'P') {
-                    if ($contadorChaves > 20) {
-                        $this->flagDocs = true;
-                        break;
-                    }
-                } elseif ($contadorChaves > 16) {
+                if ($contadorChaves >= $this->quantidadeChavesLayout) {
+                    $this->flagDocs = true;
                     break;
                 }
             }
@@ -1082,11 +1094,8 @@ class Damdfe extends DaCommon
                 $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
                 $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
                 $contadorChaves++;
-                if ($this->orientacao == 'P') {
-                    if ($contadorChaves > 25) {
-                        break;
-                    }
-                } elseif ($contadorChaves > 16) {
+                if ($contadorChaves >= $this->quantidadeChavesLayout) {
+                    $this->flagDocs = true;
                     break;
                 }
             }
@@ -1307,22 +1316,45 @@ class Damdfe extends DaCommon
     protected function addPage()
     {
         $x = 3;
-        $y = 3;
-        $i = 0;
-        foreach ($this->chaves as $chave) {
-            $i++;
-            if ($i < 20) {
-                continue;
-            }
-            if ($i === 21) {
-                $this->pdf->addPage($this->orientacao, $this->papel);
-                $texto = 'CHAVES DE ACESSO - CONTINUACÃO';
-                $this->pdf->textBox($x, $y, 180, 240, $texto, $aFont, 'T', 'C', 0, '');
-            }
+        $y = 7;
+        // adiciona a primeira página
+        $this->pdf->addPage($this->orientacao, $this->papel);
+        //coloca o cabeçalho Paisagem
+        if ($this->orientacao == 'P') {
+            $y = $this->headerMDFeRetrato($x, $y);
+        } else {
+            $y = $this->headerMDFePaisagem($x, $y);
+        }
+        $texto = 'CHAVES DE ACESSO - CONTINUACÃO';
+        $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
+        $this->pdf->textBox($x, $y, 180, 240, $texto, $aFont, 'T', 'C', 0, '');
+        $y = $y + 5;
+        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+        for ($c = 0; $c < count($this->chaves); $c++) {
             $y += 4;
-            $texto = $chave;
-            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $x = 7;
+            $texto = $this->chaves[$c];
             $this->pdf->textBox($x, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $c++;
+            if (isset($this->chaves[$c])) {
+                $x = 73;
+                $texto = $this->chaves[$c];
+                $this->pdf->textBox($x, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            }
+            $c++;
+            if (isset($this->chaves[$c])) {
+                $x = 138;
+                $texto = $this->chaves[$c];
+                $this->pdf->textBox($x, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            }
+            if ($this->orientacao == 'L') {
+                $c++;
+                if (isset($this->chaves[$c])) {
+                    $x = 204;
+                    $texto = $this->chaves[$c];
+                    $this->pdf->textBox($x, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+                }
+            }
         }
     }
 
@@ -1370,20 +1402,19 @@ class Damdfe extends DaCommon
             $y = 180;
         }
         $this->pdf->textBox($x, $y, $x2, $h, '', $this->baseFont, 'T', 'L', 1);
-        $texto = 'Observação
-        ' . $this->infCpl;
+        $texto = 'Observação' . $this->infCpl;
         $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => '');
         $this->pdf->textBox($x, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
         //$y = $this->hPrint - 4;
         $y = $this->hPrint + 8;
         $texto = "Impresso em  " . date('d/m/Y H:i:s') . ' ' . $this->creditos;
-        $w = $this->wPrint - 4;
+        $w = $this->wPrint - 15;
         $aFont = array('font' => $this->fontePadrao, 'size' => 6, 'style' => 'I');
         $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
         $texto = '';
         if ($this->powered) {
             $texto = "Powered by NFePHP®";
         }
-        $this->pdf->textBox($x, $y, $w, 0, $texto, $aFont, 'T', 'R', false, '');
+        $this->pdf->textBox($x, $y, $w, 8, $texto, $aFont, 'T', 'R', false, '');
     }
 }
