@@ -1329,7 +1329,7 @@ class Damdfe extends DaCommon
         $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
         $this->pdf->textBox($x, $y, 180, 240, $texto, $aFont, 'T', 'C', 0, '');
         $y = $y + 5;
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+        $aFont = array('font' => $this->fontePadrao, 'size' => 7, 'style' => '');
         for ($c = 0; $c < count($this->chaves); $c++) {
             $y += 4;
             $x = 7;
