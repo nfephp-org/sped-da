@@ -238,7 +238,7 @@ class Common
                 $tPagNome = 'Cartão de Débito';
                 break;
             case '05':
-                $tPagNome = 'Crédito Loja';
+                $tPagNome = 'Cartão da Loja';
                 break;
             case '10':
                 $tPagNome = 'Vale Alimentação';
@@ -262,13 +262,22 @@ class Common
                 $tPagNome = 'Depósito Bancário';
                 break;
             case '17':
-                $tPagNome = 'Pagamento Instantâneo (PIX)';
+                $tPagNome = 'PIX Dinâmico';
                 break;
             case '18':
-                $tPagNome = 'Transferência bancária, Carteira Digital';
+                $tPagNome = 'Transferência bancária, Carteira Digit.';
                 break;
             case '19':
-                $tPagNome = 'Programa de fidelidade, Cashback, Crédito Virtual';
+                $tPagNome = 'Programa de fidelidade, Cashback, Crédito Virt.';
+                break;
+            case '20':
+                $tPagNome = 'PIX Estático';
+                break;
+            case '21':
+                $tPagNome = 'Crédito em Loja';
+                break;
+            case '22':
+                $tPagNome = 'Pagamento Eletrônico não Informado - Falha de hardware';
                 break;
             case '90':
                 $tPagNome = 'Sem Pagamento';
