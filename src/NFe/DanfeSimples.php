@@ -604,6 +604,8 @@ class DanfeSimples extends DaCommon
             10 => fn() => preg_replace('/(\d{2})(\d{4})(\d{4})/', '($1) $2-$3', $phone)
         ];
 
-        return $acceptsPhoneLength[strlen($phone)]() ?? $phone;
+        return !empty($acceptsPhoneLength[strlen($phone)]) ?
+            $acceptsPhoneLength[strlen($phone)]() :
+            $phone;
     }
 }
