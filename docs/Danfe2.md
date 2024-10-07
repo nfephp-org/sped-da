@@ -117,11 +117,6 @@ Todos esses métodos são opcionais caso queira alterar o comportamento padrão 
      * @return void
      */
     $danfe2->exibirNumeroItem(false); //default true
-    
-    
-
-    
-
 ```
 
 ## Elementos Adicionais
@@ -179,10 +174,7 @@ São métodos que incluem informações ao DANFE.
 ## Exemplo
 
 ```php
-
-
 try {
-
     //dados
     $xml = file_get_contents(__DI__.'/arquivo_xml_nfe_modelo_55.xml');
     $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents(__DIR__ . '/tulipas.png'));
