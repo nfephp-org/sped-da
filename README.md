@@ -84,7 +84,8 @@ Ou ainda alterando o composer.json do seu aplicativo inserindo:
 ```
 
 ## Forma de uso
-[DANFE](docs/DANFE.md)
+- [DANFE](docs/Danfe2.md)
+- [DACTE](docs/Dacte.md)
 
 ## Log de mudanças e versões
 Acompanhe o [CHANGELOG](CHANGELOG.md) para maiores informações sobre as alterações recentes.
