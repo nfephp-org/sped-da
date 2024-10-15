@@ -406,7 +406,7 @@ class DanfeEtiqueta extends DaCommon
         }
 
         $aFont = ['font' => $this->fontePadrao, 'size' => 8, 'style' => ''];
-        $texto = "CNPJ: {$xNome} IE: {$ie}";
+        $texto = "{$xNome} IE: {$ie}";
         $y += $this->pdf->textBox($xRs + 2, $y, $wRs - 2, 3, $texto, $aFont, 'T', $alignH, false, '', true);
         $texto = $xLgr . ", " . $nro;
         $y += $this->pdf->textBox($xRs + 2, $y, $wRs - 2, 3, $texto, $aFont, 'T', $alignH, false, '', true);

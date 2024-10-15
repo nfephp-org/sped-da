@@ -548,7 +548,7 @@ class DanfeSimples extends DaCommon
         $this->pdf->cell(($c1 * 2), $pequeno ? 4 : 5, $companyName, 1, 0, 'C', 1);
         $ie = $isDelivery ? $entrega['IE'] : $retirada['IE'];
         $fone = $isDelivery ? $entrega['fone'] : $retirada['fone'];
-        $fone = empty($fone) ?: $this->formatPhone($fone);
+        $fone = empty($fone) ? null : $this->formatPhone($fone);
 
         $this->pdf->cell(
             ($c1 * 2),
@@ -597,7 +597,7 @@ class DanfeSimples extends DaCommon
 
     protected function formatPhone($phone)
     {
-        if (!$phone) return null;
+        if (!$phone || strlen($phone) < 8) return null;
         $phone = preg_replace('/\D+/', '', $phone);
         $acceptsPhoneLength = [
             11 => fn() => preg_replace('/(\d{2})(\d{5})(\d{4})/', '($1) $2-$3', $phone),
