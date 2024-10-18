@@ -202,11 +202,20 @@ class DanfeSimples extends DaCommon
             $stdClass = simplexml_load_string($xml);
             $json = json_encode($stdClass, JSON_OBJECT_AS_ARRAY);
             $this->nfeArray = json_decode($json, JSON_OBJECT_AS_ARRAY);
-            if (!isset($this->nfeArray['NFe']['infNFe']['@attributes']['Id'])) {
-                throw new \Exception('XML não parece ser uma NF-e ou não está autorizado!');
+            $nfeStatus = $this->nfeArray['protNFe']['infProt']['cStat'] ?? null;
+
+            if (!empty(($this->nfeArray['retEvento']['infEvento']))) {
+                $tpEvento = $this->nfeArray['retEvento']['infEvento']['tpEvento'];
+                if ($tpEvento == '110111') {
+                    throw new \Exception('Apenas NFe autorizadas podem ser impressas em formato de etiqueta!');
+                }
+            };
+
+            if (empty($nfeStatus) || $nfeStatus != '100') {
+                throw new \Exception('Apenas NFe autorizadas podem ser impressas em formato de etiqueta!');
             }
-            if ($this->nfeArray['protNFe']['infProt']['cStat'] != '100') {
-                throw new \Exception('NF-e não autorizada!');
+            if (!isset($this->nfeArray['NFe']['infNFe']['@attributes']['Id'])) {
+                throw new \Exception('XML não parece ser uma NF-e.');
             }
         }
     }
