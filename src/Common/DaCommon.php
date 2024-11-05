@@ -115,6 +115,10 @@ class DaCommon extends Common
 
     protected $cancelFlag = false;
 
+    protected $showEnderDest = true;
+
+    protected $showEnderDestFromNFeValue = 0;
+
     /**
      * Ativa ou desativa o modo debug
      * @param bool $activate Ativa ou desativa o modo debug
@@ -275,7 +279,7 @@ class DaCommon extends Common
      */
     public function getQuantityDecimalPlaces()
     {
-       return $this->quantityDecimalPlaces;
+        return $this->quantityDecimalPlaces;
     }
 
     /**
@@ -292,13 +296,14 @@ class DaCommon extends Common
      */
     public function getPriceDecimalPlaces()
     {
-       return $this->priceDecimalPlaces;
+        return $this->priceDecimalPlaces;
     }
-    
+
     /**
      * Retorna o valor formatado usando o número de casas decimais informado
      */
-    public function formatValueWithDecimalPlaces($value, $decimalPlaces = 2) {
+    public function formatValueWithDecimalPlaces($value, $decimalPlaces = 2)
+    {
         return number_format($value, $decimalPlaces, ",", ".");
     }
 
@@ -328,7 +333,7 @@ class DaCommon extends Common
         }
         if (substr($logo, 0, 24) !== 'data://text/plain;base64') {
             if (is_file($logo)) {
-                $logo = 'data://text/plain;base64,'. base64_encode(file_get_contents($logo));
+                $logo = 'data://text/plain;base64,' . base64_encode(file_get_contents($logo));
             } else {
                 //se não é uma string e nem um file retorna nulo
                 return null;
@@ -370,7 +375,7 @@ class DaCommon extends Common
         imagedestroy($image);
         $logo = ob_get_contents(); // read from buffer
         ob_end_clean();
-        return 'data://text/plain;base64,'.base64_encode($logo);
+        return 'data://text/plain;base64,' . base64_encode($logo);
     }
 
     public function setWhiteBackgroundNfeLogo(string $logoImage, string $imageUrl): void
@@ -390,7 +395,7 @@ class DaCommon extends Common
         $logo = ob_get_contents();
         ob_end_clean();
 
-        $this->logomarca = 'data://text/plain;base64,'.base64_encode($logo);
+        $this->logomarca = 'data://text/plain;base64,' . base64_encode($logo);
     }
 
     /**
@@ -400,5 +405,25 @@ class DaCommon extends Common
     public function setCancelFlag($cancelFlag = true)
     {
         $this->cancelFlag = filter_var($cancelFlag, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    public function getShowEnderDest()
+    {
+        return $this->showEnderDest;
+    }
+
+    public function setShowEnderDest($showEnderDest = true)
+    {
+        return $this->showEnderDest = $showEnderDest;
+    }
+
+    public function setShowEnderDestFromNFeValue($value)
+    {
+        return $this->showEnderDestFromNFeValue = $value;
+    }
+
+    public function getShowEnderDestFromNFeValue()
+    {
+        return $this->showEnderDestFromNFeValue;
     }
 }

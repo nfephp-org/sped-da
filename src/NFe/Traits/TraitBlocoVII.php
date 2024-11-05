@@ -30,7 +30,12 @@ trait TraitBlocoVII
             $texto = 'CONSUMIDOR NÃO IDENTIFICADO';
             $yPlus = 1;
         }
-        if (!empty($rua)) {
+
+        $showEnderDest = $this->getShowEnderDest() ?? true;
+        $vNF =  $this->getTagValue($this->ICMSTot, 'vNF');
+        $showEnderDestFromNFeValue = $this->getShowEnderDestFromNFeValue() ?? 0;
+
+        if (!empty($rua) && ($showEnderDest && $vNF > $showEnderDestFromNFeValue)) {
             $texto .= "\n {$rua}, {$numero} {$complemento} {$bairro} {$mun}-{$uf}";
         }
         if ($this->getTagValue($this->nfeProc, "xMsg")) {
@@ -268,8 +273,8 @@ trait TraitBlocoVII
                 $dhRecbto
             );
         }
-        $this->pdf->dashedHLine($this->margem, $this->bloco7H + $y, $this->wPrint, 0.1, 30);
-        return $this->bloco7H + $y;
+        $this->pdf->dashedHLine($this->margem, $this->bloco7H + $y + 3, $this->wPrint, 0.1, 30);
+        return $this->bloco7H + $y + 3;
     }
 
     protected function blocoVIIProt($y, $subSize, $protocolo, $dhRecbto)
