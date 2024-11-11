@@ -319,6 +319,13 @@ class Danfe extends DaCommon
      */
     protected $obsshow = true;
 
+    protected $title = '';
+
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
     /**
      * __construct
      * @param string $xml Conteúdo XML da NF-e (com ou sem a tag nfeProc)
@@ -491,6 +498,7 @@ class Danfe extends DaCommon
         $logo = ''
     ) {
         $this->pdf       = '';
+        $this->pdf->setTitle($this->title);
         $this->logomarca = $this->adjustImage($logo);
         //se a orientação estiver em branco utilizar o padrão estabelecido na NF
         if (empty($this->orientacao)) {
