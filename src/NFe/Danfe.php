@@ -498,7 +498,7 @@ class Danfe extends DaCommon
         $logo = ''
     ) {
         $this->pdf       = '';
-        $this->pdf->setTitle($this->title);
+
         $this->logomarca = $this->adjustImage($logo);
         //se a orientação estiver em branco utilizar o padrão estabelecido na NF
         if (empty($this->orientacao)) {
@@ -544,6 +544,7 @@ class Danfe extends DaCommon
         $this->pdf->setFillColor(255, 255, 255);
         // inicia o documento
         $this->pdf->open();
+        $this->pdf->setTitle($this->title);
         // adiciona a primeira página
         $this->pdf->addPage($this->orientacao, $this->papel);
         $this->pdf->setLineWidth(0.1);
