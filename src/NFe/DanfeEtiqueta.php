@@ -193,7 +193,6 @@ class DanfeEtiqueta extends DaCommon
         $y = $this->bloco3($y);
         $y = $this->bloco4($y);
         $y = $this->bloco5($y);
-        $y = $this->bloco6($y);
     }
 
     protected function bloco1($y)
@@ -395,16 +394,6 @@ class DanfeEtiqueta extends DaCommon
     }
 
     protected function bloco5($y)
-    {
-        $total = number_format($this->getTagValue($this->ICMSTot, 'vNF'), 2, ',', '.');
-        $texto = "Valor TOTAL da NFe: R$ $total";
-        $aFont = ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'B'];
-        $y += $this->pdf->textBox($this->margem, $y, $this->wPrint, 6, $texto, $aFont, 'C', 'C', false, '', true);
-        $this->pdf->line($this->margem, $y+3, $this->wPrint+$this->margem, $y+3);
-        return $y+2;
-    }
-
-    protected function bloco6($y)
     {
         if (!empty($this->compra)) {
             $pedido = $this->getTagValue($this->compra, 'xPed');
