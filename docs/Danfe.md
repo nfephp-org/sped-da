@@ -10,9 +10,10 @@ Nele também consta o número de protocolo no registro na integração junto ao 
 ### function __construct()
 Método construtor. Instancia a classe
 
-    ```php
-    $danfe = new Danfe([String xml]);
-    ``` 
+```php
+$danfe = new Danfe([String xml]);
+```
+
 ### function render()
 Método de rederização do PDF
 
