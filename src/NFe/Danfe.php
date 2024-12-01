@@ -2143,7 +2143,7 @@ class Danfe extends DaCommon
                 '02' => 'Cheque',
                 '03' => 'Cartão de Crédito',
                 '04' => 'Cartão de Débito',
-                '05' => 'Cartão da Loja',
+                '05' => 'Cartão da Loja/Outros Crediários',
                 '10' => 'Vale Alimentação',
                 '11' => 'Vale Refeição',
                 '12' => 'Vale Presente',
