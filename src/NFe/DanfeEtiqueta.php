@@ -375,6 +375,7 @@ class DanfeEtiqueta extends DaCommon
         $destMun = $this->getTagValue($this->enderDest, "xMun");
         $destUF = $this->getTagValue($this->enderDest, "UF");
         $destFone = $this->getTagValue($this->enderDest, "fone");
+        $destCep = $this->getTagValue($this->enderDest, "CEP");
         if (strlen($destFone) > 0) {
             if (strlen($destFone) == 11) {
                 $emitFone = $this->formatField($destFone, "(##) #####-####");
@@ -383,7 +384,7 @@ class DanfeEtiqueta extends DaCommon
             }
         }
         $aFont = ['font' => $this->fontePadrao, 'size' => 10, 'style' => ''];
-        $texto = $destLgr . ", " . $destNro;
+        $texto = "{$destLgr}, {$destNro} - CEP: {$destCep}";
         $y += $this->pdf->textBox($this->margem + 5, $y, $this->wPrint, 3, $texto, $aFont, 'T', 'L', false, '', true);
         $texto = $destBairro;
         $y += $this->pdf->textBox($this->margem + 5, $y, $this->wPrint, 3, $texto, $aFont, 'T', 'L', false, '', true);
