@@ -1038,73 +1038,71 @@ class Damdfe extends DaCommon
                 $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
                 $this->pdf->textBox($x1, $y, $x2 - 1, 8, $texto, $aFont, 'T', 'L', 0, '', false);
             }
-            $x1 = round($maxW / 2, 0) + 7;
-            $x2 = ($maxW / 6);
             $y = $yCabecalhoLinha;
-            $this->quantidadeChavesLayout = 21;
-            if ($this->orientacao == 'L') {
-                $x1 = 225;
-                $y = $yold - 5;
-                $this->quantidadeChavesLayout = 17;
-            }
-            $texto = 'Chaves de acesso';
+        }
+        $x1 = round($maxW / 2, 0) + 7;
+        $x2 = ($maxW / 6);
+        $this->quantidadeChavesLayout = 21;
+        if ($this->orientacao == 'L') {
+            $x1 = 225;
+            $y = $yold - 5;
+            $this->quantidadeChavesLayout = 17;
+        }
+        $texto = 'Chaves de acesso';
+        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+        $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+        $y = $y + 2;
+        $chavesNFe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chNFe');
+        $chavesCTe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chCTe');
+        $chavesMDFe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chMDFe');
+        $chaves = [];
+        for ($i = 0; $i < $chavesNFe->length; $i++) {
+            $chaves[] = $chavesNFe->item($i)->nodeValue;
+        }
+        for ($i = 0; $i < $chavesCTe->length; $i++) {
+            $chaves[] = $chavesCTe->item($i)->nodeValue;
+        }
+        for ($i = 0; $i < $chavesMDFe->length; $i++) {
+            $chaves[] = $chavesMDFe->item($i)->nodeValue;
+        }
+        $this->chaves = array_slice($chaves, $this->quantidadeChavesLayout);
+        $contadorChaves = 0;
+        for ($i = 0; $i < $chavesNFe->length; $i++) {
+            $y += 4;
+            $texto = $chavesNFe->item($i)->nodeValue;
             $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-            $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-            $y = $y + 2;
-            $chavesNFe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chNFe');
-            $chavesCTe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chCTe');
-            $chavesMDFe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chMDFe');
-            $chaves = [];
-            for ($i = 0; $i < $chavesNFe->length; $i++) {
-                $chaves[] = $chavesNFe->item($i)->nodeValue;
-            }
-            for ($i = 0; $i < $chavesCTe->length; $i++) {
-                $chaves[] = $chavesCTe->item($i)->nodeValue;
-            }
-            for ($i = 0; $i < $chavesMDFe->length; $i++) {
-                $chaves[] = $chavesMDFe->item($i)->nodeValue;
-            }
-            $this->chaves = array_slice($chaves, $this->quantidadeChavesLayout);
-            $contadorChaves = 0;
-            for ($i = 0; $i < $chavesNFe->length; $i++) {
-                $y += 4;
-                $texto = $chavesNFe->item($i)->nodeValue;
-                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-                $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-                $contadorChaves++;
-                if ($contadorChaves >= $this->quantidadeChavesLayout) {
-                    $this->flagDocs = true;
-                    break;
-                }
-            }
-            for ($i = 0; $i < $chavesCTe->length; $i++) {
-                $y += 4;
-                $texto = $chavesCTe->item($i)->nodeValue;
-                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-                $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-                $contadorChaves++;
-                if ($contadorChaves >= $this->quantidadeChavesLayout) {
-                    $this->flagDocs = true;
-                    break;
-                }
-            }
-            for ($i = 0; $i < $chavesMDFe->length; $i++) {
-                $y += 4;
-                $texto = $chavesMDFe->item($i)->nodeValue;
-                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-                $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-                $contadorChaves++;
-                if ($contadorChaves >= $this->quantidadeChavesLayout) {
-                    $this->flagDocs = true;
-                    break;
-                }
+            $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $contadorChaves++;
+            if ($contadorChaves >= $this->quantidadeChavesLayout) {
+                $this->flagDocs = true;
+                break;
             }
         }
-
+        for ($i = 0; $i < $chavesCTe->length; $i++) {
+            $y += 4;
+            $texto = $chavesCTe->item($i)->nodeValue;
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $contadorChaves++;
+            if ($contadorChaves >= $this->quantidadeChavesLayout) {
+                $this->flagDocs = true;
+                break;
+            }
+        }
+        for ($i = 0; $i < $chavesMDFe->length; $i++) {
+            $y += 4;
+            $texto = $chavesMDFe->item($i)->nodeValue;
+            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+            $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $contadorChaves++;
+            if ($contadorChaves >= $this->quantidadeChavesLayout) {
+                $this->flagDocs = true;
+                break;
+            }
+        }
         if ($this->aereo) {
             $altura = $y + 4;
         }
-
         if ($this->aquav) {
             $x1 = $x;
             $x2 = $maxW;
