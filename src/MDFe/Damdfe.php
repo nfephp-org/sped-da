@@ -168,8 +168,10 @@ class Damdfe extends DaCommon
             if (!empty($this->rodo)) {
                 $this->RNTRC = "";
                 $infANTT = $this->rodo->getElementsByTagName("infANTT")->item(0);
-                if (!empty($infANTT) && isset($infANTT->getElementsByTagName("RNTRC")->item(0)->nodeValue)) {
-                    $this->RNTRC = $infANTT->getElementsByTagName("RNTRC")->item(0)->nodeValue;
+                if(isset($infANTT)){
+                    if (isset($infANTT->getElementsByTagName("RNTRC")->item(0)->nodeValue)) {
+                        $this->RNTRC = $infANTT->getElementsByTagName("RNTRC")->item(0)->nodeValue;
+                    }
                 }
             }
             $this->ciot = "";
