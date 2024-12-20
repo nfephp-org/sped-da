@@ -3033,10 +3033,10 @@ class Danfe extends DaCommon
         //O/CST ou O/CSOSN
         $x     += $w3;
         $w4    = round($w * 0.05, 0);
-        $texto = 'O/CST'; // CRT = 2 ou CRT = 3
-        if ($this->getTagValue($this->emit, 'CRT') == '1') {
-            $texto = 'O/CSOSN'; //Regime do Simples CRT = 1
-        }
+        $crt = $this->getTagValue($this->emit, 'CRT');
+        // 1=Simples Nacional; 2=Simples Nacional, excesso sublimite de receita bruta;
+        // 3=Regime Normal; 4=Simples Nacional - Microempreendedor Individual - MEI;
+        $texto = in_array($crt, ['1', '4']) ? 'O/CSOSN' : 'O/CST';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w4, $h, $texto, $aFont, 'C', 'C', 0, '', false);
         //$this->pdf->line($x + $w4, $y, $x + $w4, $y + $hmax);
