@@ -24,7 +24,7 @@ class Common
             $value = trim($vct->nodeValue);
             if (strpos($value, '&') !== false) {
                 //existe um & na string, então deve ser uma entidade
-                $value = html_entity_decode($value);
+                $value = html_entity_decode($value, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
             }
             return $extraTextBefore . $value . $extraTextAfter;
         }
