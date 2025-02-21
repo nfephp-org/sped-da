@@ -372,7 +372,8 @@ class Danfce extends DaCommon
             + $this->bloco7H //informações do consumidor
             + $this->bloco8H //qrcode
             + $this->bloco9H //informações sobre tributos
-            + $this->bloco10H; //informações do integrador
+            + $this->bloco10H //informações do integrador
+            + 4;
         return $length;
     }
 
