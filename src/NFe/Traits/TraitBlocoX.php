@@ -13,9 +13,8 @@ trait TraitBlocoX
         if ($this->paperwidth < 70) {
             $aFont = ['font'=> $this->fontePadrao, 'size' => 4, 'style' => 'I'];
         }
+        $y = $this->hPrint + (2 * $this->margem) - 4;
         if (!empty($this->creditos)) {
-            $y += 4;
-
             $this->pdf->textBox(
                 $this->margem,
                 $y,
@@ -30,10 +29,7 @@ trait TraitBlocoX
                 true
             );
         }
-
         if (!empty($this->textoExtra)) {
-            $y += 4;
-
             $this->pdf->textBox(
                 $this->margem,
                 $y,
