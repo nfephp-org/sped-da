@@ -11,7 +11,6 @@ trait TraitBlocoIX
 {
     protected function blocoIX($y)
     {
-        $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
         $valor = $this->getTagValue($this->ICMSTot, 'vTotTrib');
         $trib = !empty($valor) ? number_format((float) $valor, 2, ',', '.') : '-----';
         $texto = "Tributos totais Incidentes (Lei Federal 12.741/2012): R$ {$trib}";
@@ -30,15 +29,15 @@ trait TraitBlocoIX
             true
         );
         if ($this->paperwidth < 70) {
-            $fsize = 5;
             $aFont = ['font'=> $this->fontePadrao, 'size' => 5, 'style' => ''];
         }
+        $y += 3;
         $this->pdf->textBox(
             $this->margem,
-            $y+3,
+            $y,
             $this->wPrint,
             $this->bloco9H-4,
-            str_replace(";", "\n", $this->infCpl),
+            str_replace(";", "\n", $this->infCpl . "\n" . $this->textoExtra),
             $aFont,
             'T',
             'L',
@@ -46,7 +45,7 @@ trait TraitBlocoIX
             '',
             false
         );
-        return $y + 3;
+        return $y+3;
     }
 
     /**
@@ -59,7 +58,6 @@ trait TraitBlocoIX
     {
         $papel = [$this->paperwidth, 100];
         $wprint = $this->paperwidth - (2 * $this->margem);
-        $logoAlign = 'L';
         $orientacao = 'P';
         $pdf = new Pdf($orientacao, 'mm', $papel);
         $fsize = 7;
@@ -70,7 +68,7 @@ trait TraitBlocoIX
         }
         $linhas = str_replace(';', "\n", $this->infCpl);
         $hfont = (imagefontheight($fsize)/72)*13;
-        $numlinhas = $pdf->getNumLines($linhas, $wprint, $aFont);
+        $numlinhas = $pdf->getNumLines($linhas, $wprint, $aFont) + 1;
         if (!empty($this->textoExtra)) {
             $linhas = str_replace(';', "\n", $this->textoExtra);
             $hfont = (imagefontheight($fsize)/72)*13;

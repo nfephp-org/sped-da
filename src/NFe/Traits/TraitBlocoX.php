@@ -9,9 +9,9 @@ trait TraitBlocoX
 {
     protected function blocoX($y)
     {
-        $aFont = ['font'=> $this->fontePadrao, 'size' => 6, 'style' => 'I'];
+        $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => 'I'];
         if ($this->paperwidth < 70) {
-            $aFont = ['font'=> $this->fontePadrao, 'size' => 4, 'style' => 'I'];
+            $aFont = ['font' => $this->fontePadrao, 'size' => 4, 'style' => 'I'];
         }
         $y = $this->hPrint + (2 * $this->margem) - 4;
         if (!empty($this->creditos)) {
@@ -24,21 +24,6 @@ trait TraitBlocoX
                 $aFont,
                 'T',
                 'R',
-                false,
-                '',
-                true
-            );
-        }
-        if (!empty($this->textoExtra)) {
-            $this->pdf->textBox(
-                $this->margem,
-                $y,
-                $this->wPrint,
-                $this->bloco9H,
-                $this->textoExtra,
-                $aFont,
-                'T',
-                'L',
                 false,
                 '',
                 true
