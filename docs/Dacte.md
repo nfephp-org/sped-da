@@ -76,7 +76,7 @@ Esse método estabelece os parametros de impressão do PDF, forçando essas opç
 
 ```php
 $da->printParameters('P', 'A4', 2, 2);
-``
+```
 
 ### public depecNumber($numdepec)
 
@@ -86,7 +86,7 @@ Esse metodo permite passar o número do DPEC na emissão em contigência DPEC, p
 
 ```php
 $da->depecNumber('12345678');
-``
+```
 
 ### public render($logo = null)
 
