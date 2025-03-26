@@ -4,7 +4,6 @@ namespace NFePHP\DA\Legacy;
 
 class Common
 {
-
     /**
      * Extrai o valor do node DOM
      * @param  object $theObj Instancia de DOMDocument ou DOMElement
@@ -123,14 +122,34 @@ class Common
      *
      * @param string $input
      *
-     * @return \DateTime
+     * @return \DateTime|false
      */
     public function toDateTime($input)
     {
+        if (PHP_MAJOR_VERSION > 7) {
+            try {
+                return new \DateTime($input);
+            } catch (\Exception $e) {
+                return false;
+            }
+        }
+
+        return $this->toDateTimeLegacy($input);
+    }
+
+    private function toDateTimeLegacy($input)
+    {
+        $quantidadeColons = substr_count($input, ':');
+
+        $format = "Y-m-d\TH:i:sP";
+        if ($quantidadeColons == 2) {
+            $format = "Y-m-d\TH:i:s";
+        }
+
         try {
-            return \DateTime::createFromFormat("Y-m-d\TH:i:sP", $input);
+            return \DateTime::createFromFormat($format, $input);
         } catch (\Exception $e) {
-            return null;
+            return false;
         }
     }
 
