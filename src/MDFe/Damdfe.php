@@ -88,6 +88,11 @@ class Damdfe extends DaCommon
     protected $quantidadeChavesLayout = 20;
 
     /**
+     * Define se vai ou não exibir as chaves de CT-e, NF-e e MDF-e vinculadas a essa MDF-e
+     */
+    protected bool $exibirDocumentosVinculados = true;
+
+    /**
      * __construct
      *
      * @param string $xml Arquivo XML da MDFe
@@ -275,7 +280,7 @@ class Damdfe extends DaCommon
         //coloca os dados da MDFe
         $this->footerMDFe($x, $y);
 
-        if ($this->flagDocs) {
+        if ($this->flagDocs && $this->exibirDocumentosVinculados) {
             $this->addPage();
         }
     }
@@ -1050,56 +1055,59 @@ class Damdfe extends DaCommon
             $y = $yold - 5;
             $this->quantidadeChavesLayout = 17;
         }
-        $texto = 'Chaves de acesso';
-        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-        $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-        $y = $y + 2;
-        $chavesNFe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chNFe');
-        $chavesCTe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chCTe');
-        $chavesMDFe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chMDFe');
-        $chaves = [];
-        for ($i = 0; $i < $chavesNFe->length; $i++) {
-            $chaves[] = $chavesNFe->item($i)->nodeValue;
-        }
-        for ($i = 0; $i < $chavesCTe->length; $i++) {
-            $chaves[] = $chavesCTe->item($i)->nodeValue;
-        }
-        for ($i = 0; $i < $chavesMDFe->length; $i++) {
-            $chaves[] = $chavesMDFe->item($i)->nodeValue;
-        }
-        $this->chaves = array_slice($chaves, $this->quantidadeChavesLayout);
-        $contadorChaves = 0;
-        for ($i = 0; $i < $chavesNFe->length; $i++) {
-            $y += 4;
-            $texto = $chavesNFe->item($i)->nodeValue;
+
+        if ($this->exibirDocumentosVinculados) {
+            $texto = 'Chaves de acesso';
             $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-            $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-            $contadorChaves++;
-            if ($contadorChaves >= $this->quantidadeChavesLayout) {
-                $this->flagDocs = true;
-                break;
+            $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+            $y = $y + 2;
+            $chavesNFe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chNFe');
+            $chavesCTe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chCTe');
+            $chavesMDFe = $this->dom->getElementsByTagName('infDoc')->item(0)->getElementsByTagName('chMDFe');
+            $chaves = [];
+            for ($i = 0; $i < $chavesNFe->length; $i++) {
+                $chaves[] = $chavesNFe->item($i)->nodeValue;
             }
-        }
-        for ($i = 0; $i < $chavesCTe->length; $i++) {
-            $y += 4;
-            $texto = $chavesCTe->item($i)->nodeValue;
-            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-            $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-            $contadorChaves++;
-            if ($contadorChaves >= $this->quantidadeChavesLayout) {
-                $this->flagDocs = true;
-                break;
+            for ($i = 0; $i < $chavesCTe->length; $i++) {
+                $chaves[] = $chavesCTe->item($i)->nodeValue;
             }
-        }
-        for ($i = 0; $i < $chavesMDFe->length; $i++) {
-            $y += 4;
-            $texto = $chavesMDFe->item($i)->nodeValue;
-            $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-            $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-            $contadorChaves++;
-            if ($contadorChaves >= $this->quantidadeChavesLayout) {
-                $this->flagDocs = true;
-                break;
+            for ($i = 0; $i < $chavesMDFe->length; $i++) {
+                $chaves[] = $chavesMDFe->item($i)->nodeValue;
+            }
+            $this->chaves = array_slice($chaves, $this->quantidadeChavesLayout);
+            $contadorChaves = 0;
+            for ($i = 0; $i < $chavesNFe->length; $i++) {
+                $y += 4;
+                $texto = $chavesNFe->item($i)->nodeValue;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+                $contadorChaves++;
+                if ($contadorChaves >= $this->quantidadeChavesLayout) {
+                    $this->flagDocs = true;
+                    break;
+                }
+            }
+            for ($i = 0; $i < $chavesCTe->length; $i++) {
+                $y += 4;
+                $texto = $chavesCTe->item($i)->nodeValue;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+                $contadorChaves++;
+                if ($contadorChaves >= $this->quantidadeChavesLayout) {
+                    $this->flagDocs = true;
+                    break;
+                }
+            }
+            for ($i = 0; $i < $chavesMDFe->length; $i++) {
+                $y += 4;
+                $texto = $chavesMDFe->item($i)->nodeValue;
+                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                $this->pdf->textBox($x1, $y, 70, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+                $contadorChaves++;
+                if ($contadorChaves >= $this->quantidadeChavesLayout) {
+                    $this->flagDocs = true;
+                    break;
+                }
             }
         }
         if ($this->aereo) {
@@ -1416,5 +1424,10 @@ class Damdfe extends DaCommon
             $texto = "Powered by NFePHP®";
         }
         $this->pdf->textBox($x, $y, $w, 8, $texto, $aFont, 'T', 'R', false, '');
+    }
+
+    public function setExibirDocumentosVinculados(bool $exibirDocumentosVinculados): void
+    {
+        $this->exibirDocumentosVinculados = $exibirDocumentosVinculados;
     }
 }
