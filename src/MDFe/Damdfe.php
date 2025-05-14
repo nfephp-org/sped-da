@@ -88,6 +88,11 @@ class Damdfe extends DaCommon
     protected $quantidadeChavesLayout = 20;
 
     /**
+     * Define se vai ou não exibir as chaves de CT-e, NF-e e MDF-e vinculadas a essa MDF-e
+     */
+    protected bool $exibirDocumentosVinculados = true;
+
+    /**
      * __construct
      *
      * @param string $xml Arquivo XML da MDFe
@@ -275,7 +280,7 @@ class Damdfe extends DaCommon
         //coloca os dados da MDFe
         $this->footerMDFe($x, $y);
 
-        if ($this->flagDocs && $this->isEmitidaEmContingencia()) {
+        if ($this->flagDocs && $this->exibirDocumentosVinculados) {
             $this->addPage();
         }
     }
@@ -1051,7 +1056,7 @@ class Damdfe extends DaCommon
             $this->quantidadeChavesLayout = 17;
         }
 
-        if ($this->isEmitidaEmContingencia()) {
+        if ($this->exibirDocumentosVinculados) {
             $texto = 'Chaves de acesso';
             $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
             $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
@@ -1421,8 +1426,8 @@ class Damdfe extends DaCommon
         $this->pdf->textBox($x, $y, $w, 8, $texto, $aFont, 'T', 'R', false, '');
     }
 
-    private function isEmitidaEmContingencia(): bool
+    public function setExibirDocumentosVinculados(bool $exibirDocumentosVinculados): void
     {
-        return $this->tpEmis == 2;
+        $this->exibirDocumentosVinculados = $exibirDocumentosVinculados;
     }
 }

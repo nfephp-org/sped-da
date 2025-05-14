@@ -36,6 +36,7 @@ class DamdfeTest extends TestCase
     public function test_nao_incluir_documentos(): void
     {
         $damdfe = new Damdfe(file_get_contents(TEST_FIXTURES . 'xml/mdfe.xml'));
+        $damdfe->setExibirDocumentosVinculados(false);
         $pdf = $damdfe->render();
         $this->assertFalse($this->pdfContemTexto($pdf, '53250509231544000139550010000568821095071500'));
     }
