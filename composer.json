@@ -41,7 +41,8 @@
         "phpunit/phpunit": "^9.3",
         "scrutinizer/ocular": "^1.8",
         "phpstan/phpstan": "^1.4",
-        "sebastian/phpcpd": "^6.0"
+        "sebastian/phpcpd": "^6.0",
+        "smalot/pdfparser": "^2.12"
     },
     "suggest": {
         "nfephp-org/posprint": "^0.1"
