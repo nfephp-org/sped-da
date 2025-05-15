@@ -3,8 +3,8 @@
 namespace NFePHP\DA\Tests\MDFe;
 
 use NFePHP\DA\MDFe\Damdfe;
+use NFePHP\DA\Tests\Utils;
 use PHPUnit\Framework\TestCase;
-use Smalot\PdfParser\Parser;
 
 class DamdfeTest extends TestCase
 {
@@ -38,7 +38,7 @@ class DamdfeTest extends TestCase
         $damdfe = new Damdfe(file_get_contents(TEST_FIXTURES . 'xml/mdfe.xml'));
         $damdfe->setExibirDocumentosVinculados(false);
         $pdf = $damdfe->render();
-        $this->assertFalse($this->pdfContemTexto($pdf, '53250509231544000139550010000568821095071500'));
+        $this->assertFalse(Utils::pdfContemTexto($pdf, '53250509231544000139550010000568821095071500'));
     }
 
     /**
@@ -48,16 +48,6 @@ class DamdfeTest extends TestCase
     {
         $damdfe = new Damdfe(file_get_contents(TEST_FIXTURES . 'xml/mdfe_contingencia.xml'));
         $pdf = $damdfe->render();
-        $this->assertTrue($this->pdfContemTexto($pdf, '53250509231544000139550010000568821095071500'));
-    }
-
-    private function pdfContemTexto(string $conteudoPdf, string $textoProcurado): bool
-    {
-        $parser = new Parser();
-        $pdf = $parser->parseContent($conteudoPdf);
-
-        $texto = $pdf->getText();
-
-        return strpos($texto, $textoProcurado) !== false;
+        $this->assertTrue(Utils::pdfContemTexto($pdf, '53250509231544000139550010000568821095071500'));
     }
 }
