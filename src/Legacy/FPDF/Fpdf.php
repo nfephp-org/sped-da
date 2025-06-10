@@ -691,8 +691,8 @@ class Fpdf
         //Output a cell
         $k = $this->k;
         if ($this->y+$h > $this->pageBreakTrigger
-            && !$this->InHeader
-            && !$this->InFooter
+            && !$this->inHeader
+            && !$this->inFooter
             && $this->acceptPageBreak()
         ) {
             //Automatic page break
@@ -1256,7 +1256,7 @@ class Fpdf
             || $format[0] != $this->defPageFormat[0]
             || $format[1] != $this->defPageFormat[1]
         ) {
-            $this->PageSizes[$this->page] = [$this->wPt, $this->hPt];
+            $this->pageSizes[$this->page] = [$this->wPt, $this->hPt];
         }
     }
 
@@ -1565,8 +1565,8 @@ class Fpdf
             $this->newObj();
             $this->out('<</Type /Page');
             $this->out('/Parent 1 0 R');
-            if (isset($this->PageSizes[$n])) {
-                $this->out(sprintf('/MediaBox [0 0 %.2F %.2F]', $this->PageSizes[$n][0], $this->PageSizes[$n][1]));
+            if (isset($this->pageSizes[$n])) {
+                $this->out(sprintf('/MediaBox [0 0 %.2F %.2F]', $this->pageSizes[$n][0], $this->pageSizes[$n][1]));
             }
             $this->out('/Resources 2 0 R');
             if (isset($this->PageLinks[$n])) {
@@ -1579,7 +1579,7 @@ class Fpdf
                         $annots .= '/A <</S /URI /URI '.$this->textString($pl[4]).'>>>>';
                     } else {
                         $l = $this->links[$pl[4]];
-                        $h = isset($this->PageSizes[$l[0]]) ? $this->PageSizes[$l[0]][1] : $hPt;
+                        $h = isset($this->pageSizes[$l[0]]) ? $this->pageSizes[$l[0]][1] : $hPt;
                         $annots .= sprintf('/Dest [%d 0 R /XYZ 0 %.2F null]>>', 1+2*$l[0], $h-$l[1]*$this->k);
                     }
                 }
