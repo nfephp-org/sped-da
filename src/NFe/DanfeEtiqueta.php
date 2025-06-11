@@ -250,11 +250,8 @@ class DanfeEtiqueta extends DaCommon
         $emitUF = $this->getTagValue($this->enderEmit, "UF");
         $emitFone = $this->getTagValue($this->enderEmit, "fone");
         if (strlen($emitFone) > 0) {
-            if (strlen($emitFone) == 11) {
-                $emitFone = $this->formatField($emitFone, "(##) #####-####");
-            } else {
-                $emitFone = $this->formatField($emitFone, "(##) ####-####");
-            }
+            $format = strlen($emitFone) >= 11 ? "(##) #####-####" : "(##) ####-####";
+            $emitFone = $this->formatField($emitFone, $format);
         }
         $h = 20;
         $maxHimg = $h-2;
@@ -376,11 +373,8 @@ class DanfeEtiqueta extends DaCommon
         $destFone = $this->getTagValue($this->enderDest, "fone");
         $destCep = $this->getTagValue($this->enderDest, "CEP");
         if (strlen($destFone) > 0) {
-            if (strlen($destFone) == 11) {
-                $emitFone = $this->formatField($destFone, "(##) #####-####");
-            } else {
-                $emitFone = $this->formatField($destFone, "(##) ####-####");
-            }
+            $format = strlen($destFone) >= 11 ? "(##) #####-####" : "(##) ####-####";
+            $destFone = $this->formatField($destFone, $format);
         }
         $aFont = ['font' => $this->fontePadrao, 'size' => 10, 'style' => ''];
         $texto = "{$destLgr}, {$destNro} - CEP: {$destCep}";
