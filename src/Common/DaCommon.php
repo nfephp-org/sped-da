@@ -300,7 +300,7 @@ class DaCommon extends Common
             throw new \Exception('O formato da imagem não é aceitável! Somente PNG ou JPG podem ser usados.');
         }
         if ($type == '3') { //3 = PNG
-            $image = imagecreatefrompng($logo);
+            $image = @imagecreatefrompng($logo);
             if (!$image) {
                 return null;
             }
