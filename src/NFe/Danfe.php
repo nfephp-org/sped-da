@@ -323,6 +323,13 @@ class Danfe extends DaCommon
 
     protected bool $usarLinhaTracejadaSeparacaoItens = true;
 
+    /**
+     * Limite de duplicatas que devem ser exibidas.
+     *
+     * @var integer
+     */
+    protected $limiteQtdDuplicatasExibir = 7;
+
     public function setTitle($title)
     {
         $this->title = $title;
@@ -397,6 +404,16 @@ class Danfe extends DaCommon
         $this->gerarInformacoesAutomaticas = filter_var($gerarInformacoesAutomaticas, FILTER_VALIDATE_BOOLEAN);
     }
 
+    /**
+     * Define o limite de duplicatas a serem exibidas.
+     *
+     * @param integer $limiteQtdDuplicatasExibir
+     */
+    public function setLimiteQtdDuplicatasExibir($limiteQtdDuplicatasExibir)
+    {
+        $this->limiteQtdDuplicatasExibir = $limiteQtdDuplicatasExibir;
+    }
+
     protected function calculoEspacoVericalDadosAdicionais()
     {
         $this->textoAdic = '';
@@ -452,7 +469,7 @@ class Danfe extends DaCommon
             $flagVTT = $flagVTT || strpos(strtolower(trim($this->textoAdic)), 'vl');
             $flagVTT = $flagVTT && strpos(strtolower(trim($this->textoAdic)), 'aprox');
             $flagVTT = $flagVTT && (strpos(strtolower(trim($this->textoAdic)), 'trib') ||
-                strpos(strtolower(trim($this->textoAdic)), 'imp'));
+                    strpos(strtolower(trim($this->textoAdic)), 'imp'));
             $vTotTrib = $this->getTagValue($this->ICMSTot, 'vTotTrib');
             if ($vTotTrib != '' && !$flagVTT) {
                 $this->textoAdic .= "\n Valor Aproximado dos Tributos : R$ "
@@ -2003,14 +2020,14 @@ class Danfe extends DaCommon
             $dups    = "";
             $dupcont = 0;
             $nFat    = $this->dup->length;
-            if ($nFat > 7) {
+            if ($nFat > $this->limiteQtdDuplicatasExibir) {
                 $myH = 6;
                 $myW = $this->wPrint;
                 if ($this->orientacao == 'L') {
                     $myW -= $this->wCanhoto;
                 }
                 $aFont = ['font' => $this->fontePadrao, 'size' => 9, 'style' => ''];
-                $texto = "Existem mais de 7 duplicatas registradas, portanto não "
+                $texto = "Existem mais de " . $this->limiteQtdDuplicatasExibir . " duplicatas registradas, portanto não "
                     . "serão exibidas, confira diretamente pelo XML.";
                 $this->pdf->textBox($x, $y, $myW, $myH, $texto, $aFont, 'C', 'C', 1, '');
 
@@ -2740,7 +2757,7 @@ class Danfe extends DaCommon
         }
         $infAdProd = !empty($itemProd->getElementsByTagName('infAdProd')->item(0)->nodeValue)
             ? substr(
-                //$this->anfaveaDANFE($itemProd->getElementsByTagName('infAdProd')->item(0)->nodeValue),
+            //$this->anfaveaDANFE($itemProd->getElementsByTagName('infAdProd')->item(0)->nodeValue),
                 $itemProd->getElementsByTagName('infAdProd')->item(0)->nodeValue,
                 0,
                 500
@@ -2759,16 +2776,16 @@ class Danfe extends DaCommon
                 if ($rastro->length === 1) {
                     $i = 0;
                     //while ($i < $rastro->length) {
-                        $dFab = $this->getTagDate($rastro->item($i), 'dFab');
-                        $datafab = " Fab: " . $dFab;
-                        $dVal = $this->getTagDate($rastro->item($i), 'dVal');
-                        $dataval = " Val: " . $dVal;
-                        $loteTxt .= $this->getTagValue($rastro->item($i), 'nLote', ' Lote: ');
-                        $loteTxt .= $this->getTagValue($rastro->item($i), 'qLote', ' Quant: ');
-                        $loteTxt .= $datafab; //$this->getTagDate($rastro->item($i), 'dFab', ' Fab: ');
-                        $loteTxt .= $dataval; //$this->getTagDate($rastro->item($i), 'dVal', ' Val: ');
-                        $loteTxt .= $this->getTagValue($rastro->item($i), 'vPMC', ' PMC: ');
-                        //$i++;
+                    $dFab = $this->getTagDate($rastro->item($i), 'dFab');
+                    $datafab = " Fab: " . $dFab;
+                    $dVal = $this->getTagDate($rastro->item($i), 'dVal');
+                    $dataval = " Val: " . $dVal;
+                    $loteTxt .= $this->getTagValue($rastro->item($i), 'nLote', ' Lote: ');
+                    $loteTxt .= $this->getTagValue($rastro->item($i), 'qLote', ' Quant: ');
+                    $loteTxt .= $datafab; //$this->getTagDate($rastro->item($i), 'dFab', ' Fab: ');
+                    $loteTxt .= $dataval; //$this->getTagDate($rastro->item($i), 'dVal', ' Val: ');
+                    $loteTxt .= $this->getTagValue($rastro->item($i), 'vPMC', ' PMC: ');
+                    //$i++;
                     //}
                 }
                 if ($loteTxt != '') {
@@ -3231,10 +3248,10 @@ class Danfe extends DaCommon
                     if ($pag == $totpag) {
                         $totpag++;
                     }
-                        //ultrapassa a capacidade para uma única página
-                        //o restante dos dados serão usados nas proximas paginas
-                        $nInicio = $i;
-                        break;
+                    //ultrapassa a capacidade para uma única página
+                    //o restante dos dados serão usados nas proximas paginas
+                    $nInicio = $i;
+                    break;
                 }
 
                 $y_linha = $y + $h;
