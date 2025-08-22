@@ -557,24 +557,31 @@ class Danfe extends DaCommon
         //##################################################################
         //Verificando quantas linhas serão usadas para impressão das duplicatas
         $linhasDup = 0;
-        $qtdPag    = 0;
         if (isset($this->dup) && $this->dup->length > 0) {
             $qtdPag = $this->dup->length;
-        } elseif (isset($this->detPag) && $this->detPag->length > 0) {
-            $qtdPag = $this->detPag->length;
+            if (($qtdPag > 0) && ($qtdPag <= 7)) {
+                $linhasDup = 1;
+            } elseif (($qtdPag > 7) && ($qtdPag <= 14)) {
+                $linhasDup = 2;
+            } elseif (($qtdPag > 14) && ($qtdPag <= 21)) {
+                $linhasDup = 3;
+            } elseif ($qtdPag > 21) {
+                // chinnonsantos 11/05/2016: Limite máximo de impressão de duplicatas na NFe,
+                // só vai ser exibito as 21 primeiras duplicatas (parcelas de pagamento),
+                // se não oculpa espaço d+, cada linha comporta até 7 duplicatas.
+                $linhasDup = 3;
+            }
+        } 
+        
+        //Verificando quantas linhas serão usadas para impressão de pagamentos
+        $linhasPag = 0;
+        if ($this->exibirTextoFatura && isset($this->detPag) && $this->detPag->length > 0) {
+            $linhasPag = ceil($this->detPag->length / 4);
+            if ($linhasPag > 4) {
+                $linhasPag = 4;
+            }
         }
-        if (($qtdPag > 0) && ($qtdPag <= 7)) {
-            $linhasDup = 1;
-        } elseif (($qtdPag > 7) && ($qtdPag <= 14)) {
-            $linhasDup = 2;
-        } elseif (($qtdPag > 14) && ($qtdPag <= 21)) {
-            $linhasDup = 3;
-        } elseif ($qtdPag > 21) {
-            // chinnonsantos 11/05/2016: Limite máximo de impressão de duplicatas na NFe,
-            // só vai ser exibito as 21 primeiras duplicatas (parcelas de pagamento),
-            // se não oculpa espaço d+, cada linha comporta até 7 duplicatas.
-            $linhasDup = 3;
-        }
+
         //verifica se será impressa a linha dos serviços ISSQN
         $linhaISSQN = 0;
         if ((isset($this->ISSQNtot)) && ($this->getTagValue($this->ISSQNtot, 'vServ') > 0)) {
@@ -594,16 +601,17 @@ class Danfe extends DaCommon
         $hcabecalho    = 47; //para cabeçalho
         $hdestinatario = 25; //para destinatario
         $hduplicatas   = 12; //para cada grupo de 7 duplicatas
+        $hpagamentos   = 9; //para cada grupo de pagamentos
+        $hlocalentrega = 0;
         if (isset($this->entrega)) {
             $hlocalentrega = 25;
-        } else {
-            $hlocalentrega = 0;
         }
+        
+        $hlocalretirada = 0;
         if (isset($this->retirada)) {
             $hlocalretirada = 25;
-        } else {
-            $hlocalretirada = 0;
         }
+
         $himposto    = 18; // para imposto
         $htransporte = 25; // para transporte
         $hissqn      = 11; // para issqn
@@ -615,6 +623,7 @@ class Danfe extends DaCommon
             + $hlocalentrega
             + $hlocalretirada
             + ($linhasDup * $hduplicatas)
+            + ($linhasPag * $hpagamentos)
             + $himposto + $htransporte
             + ($linhaISSQN * $hissqn)
             + $this->hdadosadic
@@ -719,7 +728,9 @@ class Danfe extends DaCommon
         //caso tenha boleto imprimir fatura
         if ($this->dup->length > 0) {
             $y = $this->fatura($x, $y + 1);
-        } elseif ($this->exibirTextoFatura) {
+        }
+
+        if ($this->exibirTextoFatura) {
             //Se somente tiver a forma de pagamento sem pagamento não imprimir nada
             if (count($formaPag) == '1' && isset($formaPag[90])) {
                 $y = $y;
@@ -729,6 +740,7 @@ class Danfe extends DaCommon
                 $y = $this->pagamento($x, $y + 1);
             }
         }
+        
         //coloca os dados dos impostos e totais da NFe
         $y = $this->imposto($x, $y + 1);
         //coloca os dados do trasnporte
@@ -2016,16 +2028,16 @@ class Danfe extends DaCommon
 
                 return ($y + $h - 3);
             }
-            if ($textoFatura !== "" && $this->exibirTextoFatura) {
-                $myH = 6;
-                $myW = $this->wPrint;
-                if ($this->orientacao == 'L') {
-                    $myW -= $this->wCanhoto;
-                }
-                $aFont = ['font' => $this->fontePadrao, 'size' => 8, 'style' => ''];
-                $this->pdf->textBox($x, $y, $myW, $myH, $textoFatura, $aFont, 'C', 'L', 1, '');
-                $y += $myH + 1;
-            }
+            // if ($textoFatura !== "" && $this->exibirTextoFatura) {
+            //     $myH = 6;
+            //     $myW = $this->wPrint;
+            //     if ($this->orientacao == 'L') {
+            //         $myW -= $this->wCanhoto;
+            //     }
+            //     $aFont = ['font' => $this->fontePadrao, 'size' => 8, 'style' => ''];
+            //     $this->pdf->textBox($x, $y, $myW, $myH, $textoFatura, $aFont, 'C', 'L', 1, '');
+            //     $y += $myH + 1;
+            // }
             if ($this->orientacao == 'P') {
                 $w = round($this->wPrint / 7.018, 0) - 1;
             } else {
