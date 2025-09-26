@@ -74,7 +74,7 @@ trait TraitBlocoV
             2 => 'Cheque',
             3 => 'Cartão de Crédito',
             4 => 'Cartão de Débito',
-            5 => 'Cartão da Loja',
+            5 => 'Cartão da Loja/Outros Crediários',
             10 => 'Vale Alimentação',
             11 => 'Vale Refeição',
             12 => 'Vale Presente',
