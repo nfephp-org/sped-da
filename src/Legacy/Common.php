@@ -257,7 +257,7 @@ class Common
                 $tPagNome = 'Cartão de Débito';
                 break;
             case '05':
-                $tPagNome = 'Cartão da Loja';
+                $tPagNome = 'Cartão da Loja/Outros Crediários';
                 break;
             case '10':
                 $tPagNome = 'Vale Alimentação';
