@@ -88,6 +88,7 @@ trait TraitBlocoV
             21 => 'Crédito em Loja',
             22 => 'Pagamento Eletrônico não Informado - falha de hardware do sistema emissor',
             90 => 'Sem pagamento',
+            91 => 'Pagamento Posterior',
             99 => 'Outros',
         ];
         return mb_strtoupper($lista[$type]);
