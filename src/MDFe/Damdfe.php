@@ -864,7 +864,7 @@ class Damdfe extends DaCommon
                 $percursos[] = $per->nodeValue;
             }
             $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
-            $this->pdf->textBox($x1, $y + 0.5, $x2 - 1, 4, implode(', ', $percursos), $aFont, 'T', 'L', 0, '', false);
+            $this->pdf->textBox($x1, $y + 0.5, $wp - 1, 4, implode(', ', $percursos), $aFont, 'T', 'L', 0, '', false);
 
             $y = $y + 7;
         } else {
