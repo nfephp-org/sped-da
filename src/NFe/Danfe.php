@@ -54,6 +54,13 @@ class Danfe extends DaCommon
      */
     public $exibirNumeroItemPedido = false;
     /**
+     * Parâmetro do controle se deve somar o valor do ICMS FCP ao valor do ICMS
+     * na base de cálculo e no valor do ICMS destacado na DANFE.
+     *
+     * @var boolean
+     */
+    public $exibirSomaDoFCPNoTotalICMS = true;
+    /**
      * Parâmetro do controle se deve concatenar automaticamente informações complementares
      * na descrição do produto, como por exemplo, informações sobre impostos.
      *
@@ -2242,8 +2249,8 @@ class Danfe extends DaCommon
      * @param float $y Posição vertical canto superior
      * @param float $w Largura do campo
      * @param float $h Altura do campo
-     * @param float $h Título do campo
-     * @param float $h Valor do imposto
+     * @param string $titulo Título do campo
+     * @param string $campoImposto Campo do imposto
      *
      * @return float Sugestão do $x do próximo imposto
      */
@@ -2254,12 +2261,12 @@ class Danfe extends DaCommon
         $the_field = $this->ICMSTot->getElementsByTagName($campoImposto)->item(0);
         if (isset($the_field)) {
             $value = $the_field->nodeValue;
-            if ($campoImposto == 'vICMS') { // soma junto ao ICMS o FCP
+            if ($campoImposto == 'vICMS' && $this->exibirSomaDoFCPNoTotalICMS) { // soma junto ao ICMS o FCP
                 $the_field_aux = $this->ICMSTot->getElementsByTagName('vFCP')->item(0);
                 if (isset($the_field_aux)) {
                     $value2 = $the_field_aux->nodeValue;
                 }
-            } elseif ($campoImposto == 'vST') { // soma junto ao ICMS ST o FCP ST
+            } elseif ($campoImposto == 'vST' && $this->exibirSomaDoFCPNoTotalICMS) { // soma junto ao ICMS ST o FCP ST
                 $the_field_aux = $this->ICMSTot->getElementsByTagName('vFCPST')->item(0);
                 if (isset($the_field_aux)) {
                     $value2 = $the_field_aux->nodeValue;
