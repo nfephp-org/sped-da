@@ -429,7 +429,7 @@ class Danfe extends DaCommon
             /*
             $this->textoAdic .= !empty($this->getTagValue($this->infAdic, "infAdFisco"))
                 ? "\n Inf. fisco: " . $this->getTagValue($this->infAdic, "infAdFisco")
-                : '';*/
+                : ''; */
             if ($this->obsshow) {
                 $obsCont = $this->infAdic->getElementsByTagName("obsCont");
                 if (isset($obsCont)) {
