@@ -426,10 +426,10 @@ class Danfe extends DaCommon
             if ($this->exibirEmailDestinatario) {
                 $this->textoAdic .= $this->getTagValue($this->dest, "email", ' Email do Destinatário: ');
             }
-
+            /*
             $this->textoAdic .= !empty($this->getTagValue($this->infAdic, "infAdFisco"))
                 ? "\n Inf. fisco: " . $this->getTagValue($this->infAdic, "infAdFisco")
-                : '';
+                : '';*/
             if ($this->obsshow) {
                 $obsCont = $this->infAdic->getElementsByTagName("obsCont");
                 if (isset($obsCont)) {
@@ -3788,6 +3788,12 @@ class Danfe extends DaCommon
         }
         $y     += 2;
         $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
+        $inf = $this->getTagValue($this->infNFe, 'infAdFisco', '');
+        if (!empty($texto)) {
+            $texto = $texto . "\n" . $inf;
+        } elseif (!empty($inf)) {
+            $texto = $inf;
+        }
         $this->pdf->textBox($x, $y, $w - 2, $h, $texto, $aFont, 'T', 'L', 0, '', false);
 
         return $y + $h;
