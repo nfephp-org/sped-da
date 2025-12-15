@@ -1647,19 +1647,51 @@ class Dacte extends DaCommon
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x + 85, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $qCarga = 0;
+        $qCargaLitro = 0;
+        $qCargaMMBTU = 0;
         foreach ($this->infQ as $infQ) {
             if ($this->getTagValue($infQ, "cUnid") == '03') {
                 $qCarga += (float)$this->getTagValue($infQ, "qCarga");
             }
+            if ($this->getTagValue($infQ, "cUnid") == '04') {
+                $qCargaLitro += (float)$this->getTagValue($infQ, "qCarga");
+            }
+            if ($this->getTagValue($infQ, "cUnid") == '05') {
+                $qCargaMMBTU += (float)$this->getTagValue($infQ, "qCarga");
+            }
         }
-        $texto = !empty($qCarga) ? number_format($qCarga, 3, ",", ".") : '';
+        
+        $texto = !empty($qCarga) ? 'Unidades: ' . number_format($qCarga, 3, ",", ".") : '';
+        if ($texto <> '') {
+            /* se MMBTU não está vazio então vamos exibir unidade e litros na mesma linha */
+            if (!empty($qCargaMMBTU)) 
+                $texto = $texto . (!empty($qCargaLitro) ? ' - Litros: ' . number_format($qCargaLitro, 3, ",", ".") : '');
+        } else {
+            $texto = !empty($qCargaLitro) ? 'Litros: ' . number_format($qCargaLitro, 3, ",", ".") : '';
+        }
+        
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
             'style' => 'B');
-        $this->pdf->textBox($x + 85, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $this->pdf->textBox($x + 73, $y + 2.5, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+
+        /* se MMBTU está VAZIO e unidade foi informada, então vamos exibir o litros na linha debaixo */
+        if (empty($qCargaMMBTU) && !empty($qCarga)) {
+            $texto = !empty($qCargaLitro) ? 'Litros: ' . number_format($qCargaLitro, 3, ",", ".") : '';
+            $this->pdf->textBox($x + 73, $y + 5.5, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+        }
+
+        $texto = !empty($qCargaMMBTU) ? 'MMBTU: ' . number_format($qCargaMMBTU, 3, ",", ".") : '';
+
+        /* Se não foi informado Litros ou Unidades então vamos exibir na primeira linha */
+        if (empty($qCarga) && empty($qCargaLitro))
+            $this->pdf->textBox($x + 73, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+        else
+            $this->pdf->textBox($x + 73, $y + 5.5, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+
         $x = $w * 0.53;
-        $this->pdf->line($x + 56, $y, $x + 56, $y + 9);
+        $this->pdf->line($x + 56, $y, $x + 56, $y + 10);
         /*$texto = 'NOME DA SEGURADORA';
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
