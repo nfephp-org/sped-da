@@ -543,7 +543,7 @@ class DanfeEtiqueta extends DaCommon
         $alturaRestante = $this->hPrint - $y - 5;
         $alturaLinha = 4;
         $maxLinhas = floor($alturaRestante / $alturaLinha);
-        $charsPorLinha = 95;
+        $charsPorLinha = 86;
         $maxChars = $maxLinhas * $charsPorLinha;
 
         $texto = trim($this->infCpl . "\n" . $this->infAdFisco);
