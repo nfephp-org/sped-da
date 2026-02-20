@@ -2250,23 +2250,17 @@ class Danfe extends DaCommon
     protected function impostoHelper($x, $y, $w, $h, $titulo, $campoImposto)
     {
         $value = 0;
-        $value2 = 0;
         $the_field = $this->ICMSTot->getElementsByTagName($campoImposto)->item(0);
         if (isset($the_field)) {
             $value = $the_field->nodeValue;
             if ($campoImposto == 'vICMS') { // soma junto ao ICMS o FCP
                 $the_field_aux = $this->ICMSTot->getElementsByTagName('vFCP')->item(0);
                 if (isset($the_field_aux)) {
-                    $value2 = $the_field_aux->nodeValue;
-                }
-            } elseif ($campoImposto == 'vST') { // soma junto ao ICMS ST o FCP ST
-                $the_field_aux = $this->ICMSTot->getElementsByTagName('vFCPST')->item(0);
-                if (isset($the_field_aux)) {
-                    $value2 = $the_field_aux->nodeValue;
+                    $value += $the_field_aux->nodeValue;
                 }
             }
         }
-        $valorImposto = number_format($value + $value2, 2, ",", ".");
+        $valorImposto = number_format($value, 2, ",", ".");
 
         $fontTitulo = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $fontValor  = ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'B'];
@@ -2291,12 +2285,15 @@ class Danfe extends DaCommon
     {
         $x_inicial = $x;
         //#####################################################################
-        $campos_por_linha = 9;
+        $campos_primeira_linha = 10;
+        $campos_segunda_linha = 9;
         if (!$this->exibirPIS) {
-            $campos_por_linha--;
+            $campos_primeira_linha--;
+            $campos_segunda_linha--;
         }
         if (!$this->exibirIcmsInterestadual) {
-            $campos_por_linha -= 2;
+            $campos_primeira_linha -= 2;
+            $campos_segunda_linha -= 2;
         }
 
         if ($this->orientacao == 'P') {
@@ -2306,7 +2303,8 @@ class Danfe extends DaCommon
             $maxW       = $this->wPrint - $this->wCanhoto;
             $title_size = 40;
         }
-        $w = $maxW / $campos_por_linha;
+        $w_primeira_linha = $maxW / $campos_primeira_linha;
+        $w_segunda_linha = $maxW / $campos_segunda_linha;
 
         $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => 'B'];
         $texto = "CÁLCULO DO IMPOSTO";
@@ -2314,42 +2312,43 @@ class Danfe extends DaCommon
         $y += 3;
         $h = 7;
 
-        $x = $this->impostoHelper($x, $y, $w, $h, "BASE DE CÁLC. DO ICMS", "vBC");
-        $x = $this->impostoHelper($x, $y, $w, $h, "VALOR DO ICMS", "vICMS");
-        $x = $this->impostoHelper($x, $y, $w, $h, "BASE DE CÁLC. ICMS S.T.", "vBCST");
-        $x = $this->impostoHelper($x, $y, $w, $h, "VALOR DO ICMS SUBST.", "vST");
-        $x = $this->impostoHelper($x, $y, $w, $h, "V. IMP. IMPORTAÇÃO", "vII");
+        $x = $this->impostoHelper($x, $y, $w_primeira_linha, $h, "BASE DE CÁLC. DO ICMS", "vBC");
+        $x = $this->impostoHelper($x, $y, $w_primeira_linha, $h, "VALOR DO ICMS", "vICMS");
+        $x = $this->impostoHelper($x, $y, $w_primeira_linha, $h, "BASE DE CÁLC. ICMS S.T.", "vBCST");
+        $x = $this->impostoHelper($x, $y, $w_primeira_linha, $h, "VALOR DO ICMS SUBST.", "vST");
+        $x = $this->impostoHelper($x, $y, $w_primeira_linha, $h, "V. FCP", "vFCPST");
+        $x = $this->impostoHelper($x, $y, $w_primeira_linha, $h, "V. IMP. IMPORTAÇÃO", "vII");
 
         if ($this->exibirIcmsInterestadual) {
-            $x = $this->impostoHelper($x, $y, $w, $h, "V. ICMS UF REMET.", "vICMSUFRemet");
-            $x = $this->impostoHelper($x, $y, $w, $h, "V. FCP UF DEST.", "vFCPUFDest");
+            $x = $this->impostoHelper($x, $y, $w_primeira_linha, $h, "V. ICMS UF REMET.", "vICMSUFRemet");
+            $x = $this->impostoHelper($x, $y, $w_primeira_linha, $h, "V. FCP UF DEST.", "vFCPUFDest");
         }
 
         if ($this->exibirPIS) {
-            $x = $this->impostoHelper($x, $y, $w, $h, "VALOR DO PIS", "vPIS");
+            $x = $this->impostoHelper($x, $y, $w_primeira_linha, $h, "VALOR DO PIS", "vPIS");
         }
 
-        $x = $this->impostoHelper($x, $y, $w, $h, "V. TOTAL PRODUTOS", "vProd");
+        $x = $this->impostoHelper($x, $y, $w_primeira_linha, $h, "V. TOTAL PRODUTOS", "vProd");
 
         //
 
         $y += $h;
         $x = $x_inicial;
 
-        $x = $this->impostoHelper($x, $y, $w, $h, "VALOR DO FRETE", "vFrete");
-        $x = $this->impostoHelper($x, $y, $w, $h, "VALOR DO SEGURO", "vSeg");
-        $x = $this->impostoHelper($x, $y, $w, $h, "DESCONTO", "vDesc");
-        $x = $this->impostoHelper($x, $y, $w, $h, "OUTRAS DESPESAS", "vOutro");
-        $x = $this->impostoHelper($x, $y, $w, $h, "VALOR TOTAL IPI", "vIPI");
+        $x = $this->impostoHelper($x, $y, $w_segunda_linha, $h, "VALOR DO FRETE", "vFrete");
+        $x = $this->impostoHelper($x, $y, $w_segunda_linha, $h, "VALOR DO SEGURO", "vSeg");
+        $x = $this->impostoHelper($x, $y, $w_segunda_linha, $h, "DESCONTO", "vDesc");
+        $x = $this->impostoHelper($x, $y, $w_segunda_linha, $h, "OUTRAS DESPESAS", "vOutro");
+        $x = $this->impostoHelper($x, $y, $w_segunda_linha, $h, "VALOR TOTAL IPI", "vIPI");
 
         if ($this->exibirIcmsInterestadual) {
-            $x = $this->impostoHelper($x, $y, $w, $h, "V. ICMS UF DEST.", "vICMSUFDest");
-            $x = $this->impostoHelper($x, $y, $w, $h, "V. TOT. TRIB.", "vTotTrib");
+            $x = $this->impostoHelper($x, $y, $w_segunda_linha, $h, "V. ICMS UF DEST.", "vICMSUFDest");
+            $x = $this->impostoHelper($x, $y, $w_segunda_linha, $h, "V. TOT. TRIB.", "vTotTrib");
         }
         if ($this->exibirPIS) {
-            $x = $this->impostoHelper($x, $y, $w, $h, "VALOR DA COFINS", "vCOFINS");
+            $x = $this->impostoHelper($x, $y, $w_segunda_linha, $h, "VALOR DA COFINS", "vCOFINS");
         }
-        $x = $this->impostoHelper($x, $y, $w, $h, "V. TOTAL DA NOTA", "vNF");
+        $x = $this->impostoHelper($x, $y, $w_segunda_linha, $h, "V. TOTAL DA NOTA", "vNF");
 
         return ($y + $h);
     } //fim imposto
