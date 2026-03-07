@@ -1517,191 +1517,282 @@ class Dacte extends DaCommon
         $this->pdf->textBox($x + 8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
     }
 
-    /**
+        /**
      * descricaoCarga
-     * Monta o campo com os dados do remetente na DACTE. ( retrato  e paisagem  )
+     * Monta o campo com os dados da carga na DACTE. (retrato e paisagem)
      *
      * @param number $x Posição horizontal canto esquerdo
      * @param number $y Posição vertical canto superior
-     * @return number Posição vertical final
+     * @return void
      */
     protected function descricaoCarga($x = 0, $y = 0)
     {
         $oldX = $x;
-        $oldY = $y;
+
         if ($this->orientacao == 'P') {
             $maxW = $this->wPrint;
         } else {
             $maxW = $this->wPrint - $this->wCanhoto;
         }
+
         $w = $maxW;
         $h = 17;
+
+        $normalizarTpMed = function ($tpMed) {
+            $tpMed = mb_strtoupper(trim((string) $tpMed), 'UTF-8');
+
+            $map = [
+                'Á' => 'A',
+                'À' => 'A',
+                'Ã' => 'A',
+                'Â' => 'A',
+                'É' => 'E',
+                'Ê' => 'E',
+                'Í' => 'I',
+                'Ó' => 'O',
+                'Ô' => 'O',
+                'Õ' => 'O',
+                'Ú' => 'U',
+                'Ç' => 'C',
+            ];
+
+            $tpMed = strtr($tpMed, $map);
+
+            return preg_replace('/\s+/', ' ', $tpMed);
+        };
+
+        $converterPesoParaKg = function ($cUnid, $qCarga) {
+            if ($cUnid === '01') {
+                return (float) $qCarga; // KG
+            }
+
+            if ($cUnid === '02') {
+                return (float) $qCarga * 1000; // TON -> KG
+            }
+
+            return 0.0;
+        };
+
+        $formatarValor = function ($valor, $decimais = 3) {
+            return (float) $valor > 0 ? number_format((float) $valor, $decimais, ',', '.') : '';
+        };
+
+        $pesoBrutoKg = 0.0;
+        $pesoBaseCalculoKg = 0.0;
+        $pesoAferidoKg = 0.0;
+        $cubagemM3 = 0.0;
+        $qtdeVolumes = 0.0;
+
+        foreach ($this->infQ as $infQ) {
+            $cUnid = trim((string) $this->getTagValue($infQ, 'cUnid'));
+            $tpMed = $normalizarTpMed($this->getTagValue($infQ, 'tpMed'));
+            $qCarga = (float) $this->getTagValue($infQ, 'qCarga');
+
+            if ($cUnid === '00') {
+                $cubagemM3 += $qCarga;
+                continue;
+            }
+
+            if (in_array($cUnid, ['03', '04', '05'], true)) {
+                $qtdeVolumes += $qCarga;
+                continue;
+            }
+
+            if (!in_array($cUnid, ['01', '02'], true)) {
+                continue;
+            }
+
+            $valorKg = $converterPesoParaKg($cUnid, $qCarga);
+
+            if ($tpMed === 'PESO BRUTO') {
+                $pesoBrutoKg += $valorKg;
+                continue;
+            }
+
+            if (in_array($tpMed, ['PESO BASE DE CALCULO', 'PESO BASE CALCULO', 'PESO BC'], true)) {
+                $pesoBaseCalculoKg += $valorKg;
+                continue;
+            }
+
+            $pesoAferidoKg += $valorKg;
+        }
+
         $texto = 'PRODUTO PREDOMINANTE';
-        $aFont = array(
+        $aFont = [
             'font' => $this->fontePadrao,
             'size' => 6,
-            'style' => '');
+            'style' => '',
+        ];
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
-        $texto = $this->getTagValue($this->infCarga, "proPred");
+
+        $texto = $this->getTagValue($this->infCarga, 'proPred');
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x, $y + 2.8, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+
         $x = $w * 0.56;
         $this->pdf->line($x, $y, $x, $y + 8);
+
         $aFont = $this->formatPadrao;
         $texto = 'OUTRAS CARACTERÍSTICAS DA CARGA';
         $this->pdf->textBox($x + 1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = $this->getTagValue($this->infCarga, "xOutCat");
+
+        $texto = $this->getTagValue($this->infCarga, 'xOutCat');
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x + 1, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+
         $x = $w * 0.8;
         $this->pdf->line($x, $y, $x, $y + 8);
+
         $aFont = $this->formatPadrao;
         $texto = 'VALOR TOTAL DA CARGA';
         $this->pdf->textBox($x + 1, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = $this->getTagValue($this->infCarga, "vCarga") == "" ?
-            $this->getTagValue($this->infCarga, "vMerc") : $this->getTagValue($this->infCarga, "vCarga");
-        $texto = number_format($texto, 2, ",", ".");
+
+        $valorCarga = $this->getTagValue($this->infCarga, 'vCarga');
+        if ($valorCarga === '') {
+            $valorCarga = $this->getTagValue($this->infCarga, 'vMerc');
+        }
+
+        $texto = $valorCarga !== '' ? number_format((float) $valorCarga, 2, ',', '.') : '';
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x + 1, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+
         $y += 8;
         $x = $oldX;
         $this->pdf->line($x, $y, $w + 1, $y);
-        //Identifica código da unidade
-        //01 = KG (QUILOS)
-        $qCarga = 0;
-        $qCargaPesoBruto = 0;
-        $qCargaPesoBaseCalculo = 0;
-        $qCargaPesoAferido = 0;
-        foreach ($this->infQ as $infQ) {
-            if (in_array($this->getTagValue($infQ, "cUnid"), array('01', '02'))) {
-                if ($this->getTagValue($infQ, "tpMed") == 'PESO BRUTO')
-                    $qCargaPesoBruto += $this->getTagValue($infQ, "cUnid") == '01' ? $this->getTagValue($infQ, "qCarga") : $this->getTagValue($infQ, "qCarga") * 1000;
-                else if ($this->getTagValue($infQ, "tpMed") == 'PESO BASE DE CALCULO')
-                    $qCargaPesoBaseCalculo += $this->getTagValue($infQ, "cUnid") == '01' ? $this->getTagValue($infQ, "qCarga") : $this->getTagValue($infQ, "qCarga") * 1000;
-                else
-                    $qCargaPesoAferido += $this->getTagValue($infQ, "cUnid") == '01' ? $this->getTagValue($infQ, "qCarga") : $this->getTagValue($infQ, "qCarga") * 1000;
-            } else {
-                $qCarga += $this->getTagValue($infQ, "qCarga");
-            }
-        }
+
+        // PESO BRUTO
         $texto = 'PESO BRUTO (KG)';
-        $aFont = array(
+        $aFont = [
             'font' => $this->fontePadrao,
             'size' => 5,
-            'style' => '');
+            'style' => '',
+        ];
         $this->pdf->textBox($x + 8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = number_format($qCargaPesoBruto, 3, ",", ".");
-        $aFont = array(
+
+        $texto = $formatarValor($pesoBrutoKg);
+        $aFont = [
             'font' => $this->fontePadrao,
             'size' => 7,
-            'style' => 'B');
+            'style' => 'B',
+        ];
         $this->pdf->textBox($x + 2, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+
         $x = $w * 0.12;
         $this->pdf->line($x + 13.5, $y, $x + 13.5, $y + 9);
+
+        // PESO BASE CÁLCULO
         $texto = 'PESO BASE CÁLCULO (KG)';
-        $aFont = array(
+        $aFont = [
             'font' => $this->fontePadrao,
             'size' => 5,
-            'style' => '');
+            'style' => '',
+        ];
         $this->pdf->textBox($x + 20, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = number_format($qCargaPesoBaseCalculo, 3, ",", ".");
-        $aFont = array(
+
+        $texto = $formatarValor($pesoBaseCalculoKg);
+        $aFont = [
             'font' => $this->fontePadrao,
             'size' => 7,
-            'style' => 'B');
+            'style' => 'B',
+        ];
         $this->pdf->textBox($x + 17, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+
         $x = $w * 0.24;
         $this->pdf->line($x + 25, $y, $x + 25, $y + 9);
+
+        // PESO AFERIDO
         $texto = 'PESO AFERIDO (KG)';
-        $aFont = array(
+        $aFont = [
             'font' => $this->fontePadrao,
             'size' => 5,
-            'style' => '');
+            'style' => '',
+        ];
         $this->pdf->textBox($x + 35, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = number_format($qCargaPesoAferido, 3, ",", ".");
-        $aFont = array(
+
+        $texto = $formatarValor($pesoAferidoKg);
+        $aFont = [
             'font' => $this->fontePadrao,
             'size' => 7,
-            'style' => 'B');
+            'style' => 'B',
+        ];
         $this->pdf->textBox($x + 28, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+
         $x = $w * 0.36;
         $this->pdf->line($x + 41.3, $y, $x + 41.3, $y + 9);
+
+        // CUBAGEM
         $texto = 'CUBAGEM(M3)';
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x + 60, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $qCarga = 0;
-        foreach ($this->infQ as $infQ) {
-            if ($this->getTagValue($infQ, "cUnid") == '00') {
-                $qCarga += (float)$this->getTagValue($infQ, "qCarga");
-            }
-        }
-        $texto = !empty($qCarga) ? number_format($qCarga, 3, ",", ".") : '';
-        $aFont = array(
+
+        $texto = $formatarValor($cubagemM3);
+        $aFont = [
             'font' => $this->fontePadrao,
             'size' => 7,
-            'style' => 'B');
+            'style' => 'B',
+        ];
         $this->pdf->textBox($x + 50, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+
         $x = $w * 0.45;
-        //$this->pdf->line($x+37, $y, $x+37, $y + 9);
+
+        // QTDE(VOL)
         $texto = 'QTDE(VOL)';
         $aFont = $this->formatPadrao;
         $this->pdf->textBox($x + 85, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $qCarga = 0;
-        foreach ($this->infQ as $infQ) {
-            if ($this->getTagValue($infQ, "cUnid") == '03') {
-                $qCarga += (float)$this->getTagValue($infQ, "qCarga");
-            }
-        }
-        $texto = !empty($qCarga) ? number_format($qCarga, 3, ",", ".") : '';
-        $aFont = array(
+
+        $texto = $formatarValor($qtdeVolumes);
+        $aFont = [
             'font' => $this->fontePadrao,
             'size' => 7,
-            'style' => 'B');
+            'style' => 'B',
+        ];
         $this->pdf->textBox($x + 85, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+
         $x = $w * 0.53;
         $this->pdf->line($x + 56, $y, $x + 56, $y + 9);
+
         /*$texto = 'NOME DA SEGURADORA';
-        $aFont = $this->formatPadrao;
-        $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = $this->getTagValue($this->seg, "xSeg");
-        $aFont = array(
-            'font' => $this->fontePadrao,
-            'size' => 7,
-            'style' => 'B');
-        $this->pdf->textBox($x + 31, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $y += 3;
-        $this->pdf->line($x, $y, $w + 1, $y);
-        $texto = 'RESPONSÁVEL';
-        $aFont = $this->formatPadrao;
-        $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = $this->respSeg;
-        $aFont = array(
-            'font' => $this->fontePadrao,
-            'size' => 7,
-            'style' => 'B');
-        $this->pdf->textBox($x, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $x = $w * 0.68;
-        $this->pdf->line($x, $y, $x, $y + 6);
-        $texto = 'NÚMERO DA APOLICE';
-        $aFont = $this->formatPadrao;
-        $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = $this->getTagValue($this->seg, "nApol");
-        $aFont = array(
-            'font' => $this->fontePadrao,
-            'size' => 7,
-            'style' => 'B');
-        $this->pdf->textBox($x, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $x = $w * 0.85;
-        $this->pdf->line($x, $y, $x, $y + 6);
-        $texto = 'NÚMERO DA AVERBAÇÃO';
-        $aFont = $this->formatPadrao;
-        $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = $this->getTagValue($this->seg, "nAver");
-        $aFont = array(
-            'font' => $this->fontePadrao,
-            'size' => 7,
-            'style' => 'B');
-        $this->pdf->textBox($x, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');*/
+    $aFont = $this->formatPadrao;
+    $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+    $texto = $this->getTagValue($this->seg, "xSeg");
+    $aFont = array(
+        'font' => $this->fontePadrao,
+        'size' => 7,
+        'style' => 'B');
+    $this->pdf->textBox($x + 31, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+    $y += 3;
+    $this->pdf->line($x, $y, $w + 1, $y);
+    $texto = 'RESPONSÁVEL';
+    $aFont = $this->formatPadrao;
+    $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+    $texto = $this->respSeg;
+    $aFont = array(
+        'font' => $this->fontePadrao,
+        'size' => 7,
+        'style' => 'B');
+    $this->pdf->textBox($x, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+    $x = $w * 0.68;
+    $this->pdf->line($x, $y, $x, $y + 6);
+    $texto = 'NÚMERO DA APOLICE';
+    $aFont = $this->formatPadrao;
+    $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+    $texto = $this->getTagValue($this->seg, "nApol");
+    $aFont = array(
+        'font' => $this->fontePadrao,
+        'size' => 7,
+        'style' => 'B');
+    $this->pdf->textBox($x, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+    $x = $w * 0.85;
+    $this->pdf->line($x, $y, $x, $y + 6);
+    $texto = 'NÚMERO DA AVERBAÇÃO';
+    $aFont = $this->formatPadrao;
+    $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+    $texto = $this->getTagValue($this->seg, "nAver");
+    $aFont = array(
+        'font' => $this->fontePadrao,
+        'size' => 7,
+        'style' => 'B');
+    $this->pdf->textBox($x, $y + 3, $w, $h, $texto, $aFont, 'T', 'L', 0, '');*/
     }
 
     /**
