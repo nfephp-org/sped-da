@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mdfeProc versao="3.00" xmlns="http://www.portalfiscal.inf.br/mdfe">
+    <MDFe xmlns="http://www.portalfiscal.inf.br/mdfe">
+        <infMDFe Id="MDFe43250509231544000139580010000050701307347338" versao="3.00">
+            <ide>
+                <cUF>43</cUF>
+                <tpAmb>1</tpAmb>
+                <tpEmit>2</tpEmit>
+                <mod>58</mod>
+                <serie>1</serie>
+                <nMDF>5070</nMDF>
+                <cMDF>30734733</cMDF>
+                <cDV>8</cDV>
+                <modal>1</modal>
+                <dhEmi>2025-05-09T15:15:00-02:00</dhEmi>
+                <tpEmis>2</tpEmis>
+                <procEmi>0</procEmi>
+                <verProc>1.0</verProc>
+                <UFIni>RS</UFIni>
+                <UFFim>RS</UFFim>
+                <infMunCarrega>
+                    <cMunCarrega>4311205</cMunCarrega>
+                    <xMunCarrega>Júlio de Castilhos</xMunCarrega>
+                </infMunCarrega>
+                <infMunCarrega>
+                    <cMunCarrega>4322608</cMunCarrega>
+                    <xMunCarrega>Venâncio Aires</xMunCarrega>
+                </infMunCarrega>
+                <infMunCarrega>
+                    <cMunCarrega>4307807</cMunCarrega>
+                    <xMunCarrega>Estrela</xMunCarrega>
+                </infMunCarrega>
+                <infMunCarrega>
+                    <cMunCarrega>4315503</cMunCarrega>
+                    <xMunCarrega>Restinga Seca</xMunCarrega>
+                </infMunCarrega>
+                <infMunCarrega>
+                    <cMunCarrega>4306106</cMunCarrega>
+                    <xMunCarrega>Cruz Alta</xMunCarrega>
+                </infMunCarrega>
+                <infMunCarrega>
+                    <cMunCarrega>4322004</cMunCarrega>
+                    <xMunCarrega>Triunfo</xMunCarrega>
+                </infMunCarrega>
+                <infMunCarrega>
+                    <cMunCarrega>4310009</cMunCarrega>
+                    <xMunCarrega>Ibirubá</xMunCarrega>
+                </infMunCarrega>
+                <infMunCarrega>
+                    <cMunCarrega>4320107</cMunCarrega>
+                    <xMunCarrega>Sarandi</xMunCarrega>
+                </infMunCarrega>
+                <infMunCarrega>
+                    <cMunCarrega>4301008</cMunCarrega>
+                    <xMunCarrega>Arroio do Meio</xMunCarrega>
+                </infMunCarrega>
+                <infMunCarrega>
+                    <cMunCarrega>4319604</cMunCarrega>
+                    <xMunCarrega>São Sepé</xMunCarrega>
+                </infMunCarrega>
+                <infMunCarrega>
+                    <cMunCarrega>4322202</cMunCarrega>
+                    <xMunCarrega>Tupanciretã</xMunCarrega>
+                </infMunCarrega>
+                <infMunCarrega>
+                    <cMunCarrega>4322707</cMunCarrega>
+                    <xMunCarrega>Vera Cruz</xMunCarrega>
+                </infMunCarrega>
+            </ide>
+            <emit>
+                <CNPJ>08645189000181</CNPJ>
+                <IE>2260022210</IE>
+                <xNome>FULANO DE TAL LTDA</xNome>
+                <xFant>DEPOSITO</xFant>
+                <enderEmit>
+                    <xLgr>BOA ESPERANÇA</xLgr>
+                    <nro>200</nro>
+                    <xBairro>Centro</xBairro>
+                    <cMun>4322707</cMun>
+                    <xMun>Vera Cruz</xMun>
+                    <CEP>96880000</CEP>
+                    <UF>RS</UF>
+                    <fone>5199999999</fone>
+                </enderEmit>
+            </emit>
+            <infModal versaoModal="3.00">
+                <rodo>
+                    <infANTT/>
+                    <veicTracao>
+                        <placa>JXX7A23</placa>
+                        <RENAVAM>01229069999</RENAVAM>
+                        <tara>4050</tara>
+                        <condutor>
+                            <xNome>Nome do Motorista</xNome>
+                            <CPF>99999999999</CPF>
+                        </condutor>
+                        <tpRod>02</tpRod>
+                        <tpCar>02</tpCar>
+                        <UF>RS</UF>
+                    </veicTracao>
+                </rodo>
+            </infModal>
+            <infDoc>
+                <infMunDescarga>
+                    <cMunDescarga>4320800</cMunDescarga>
+                    <xMunDescarga>Soledade</xMunDescarga>
+                    <infNFe>
+                        <chNFe>53250509231544000139550010000568821095071500</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544000139550010000568831095015764</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544001968550010000115721094972730</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544001968550010000115671094950567</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544001020550010000131811094866918</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250409231544000643550010000248581094832650</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250409231544001704550010000106961094831086</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250409231544001704550010000106951094828363</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250409231544002425550010000079061094812820</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250409231544001100550010000135661094806551</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250409231544002182550010000116061094805435</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250409231544001615550010000095821094802913</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250409231544002859550010000041561094748109</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250409231544000805550010000146131094745200</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250409231544002344550010000087261094353722</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                    <infNFe>
+                        <chNFe>53250509231544002344550010000087631094908993</chNFe>
+                    </infNFe>
+                </infMunDescarga>
+            </infDoc>
+            <prodPred>
+                <tpCarga>05</tpCarga>
+                <xProd>Utilidades domésticas</xProd>
+                <NCM>39241000</NCM>
+            </prodPred>
+            <tot>
+                <qNFe>16</qNFe>
+                <qMDFe>0</qMDFe>
+                <vCarga>99962.74</vCarga>
+                <cUnid>01</cUnid>
+                <qCarga>0.0000</qCarga>
+            </tot>
+            <infAdic/>
+        </infMDFe>
+        <infMDFeSupl>
+            <qrCodMDFe>
+                <![CDATA[https://dfe-portal.svrs.rs.gov.br/mdfe/qrCode?chMDFe=53250509231544000139580010000050701307347338&tpAmb=1]]></qrCodMDFe>
+        </infMDFeSupl>
+        <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+            <SignedInfo>
+                <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+                <Reference URI="#MDFe43250509231544000139580010000050701307347338">
+                    <Transforms>
+                        <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                        <Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+                    </Transforms>
+                    <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                    <DigestValue>zobmvQJ3TZpOFPfyHMWdM0M+ThQ=</DigestValue>
+                </Reference>
+            </SignedInfo>
+            <SignatureValue>
+                nKq6X1iYJaShOp6Xh32XUx8+jOCMJOZJLObVY5NB34bNyqvb/zcg7rrb9WXh5uQuRdgMS8mVAvTDbvg06WtTis3Ut8l1Q/fSMHpFQLUKKTMaRvNSyFBjpAMi4qVgKfbNPZ4ssBhBcJlGPIvoU4iN3SRfTsk7zvxIJxZctoPmg+uGmcIIyZggdwKNM89FUzCzRLRBNZ7fhxcJxMFd/s+pqw0w3lq2TimPGUUPWGsSOvPXNQF82p39NLbUVBGC/uEhxU+vlCWi63HyXKYilrudoKwcatZlGbTqKPxHxCDp8i/jjpN5t3qzMaV5buOTNJsMrv+jo5Ji7I2xVaWng4Q+DA==
+            </SignatureValue>
+            <KeyInfo>
+                <X509Data>
+                    <X509Certificate>
+                        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
+                    </X509Certificate>
+                </X509Data>
+            </KeyInfo>
+        </Signature>
+    </MDFe>
+    <protMDFe xmlns="http://www.portalfiscal.inf.br/mdfe" versao="3.00">
+        <infProt Id="MDFe943250017124744">
+            <tpAmb>1</tpAmb>
+            <verAplic>RS20250408085447</verAplic>
+            <chMDFe>43250509231542000139580010000050701307347338</chMDFe>
+            <dhRecbto>2025-05-09T15:15:52-03:00</dhRecbto>
+            <nProt>943250017424744</nProt>
+            <digVal>zobmvQJ3TZpOFPfyHMWdM0M+ThQ=</digVal>
+            <cStat>100</cStat>
+            <xMotivo>Autorizado o uso do MDF-e</xMotivo>
+        </infProt>
+    </protMDFe>
+</mdfeProc>

@@ -233,6 +233,7 @@ class DaCommon extends Common
     /**
      * Add the credits to the integrator in the footer message
      * @param string $message Mensagem do integrador a ser impressa no rodapé das paginas
+     * @param bool $powered
      * @return void
      */
     public function creditsIntegratorFooter($message = '', $powered = true)
@@ -247,7 +248,13 @@ class DaCommon extends Common
      */
     public function setDefaultFont(string $font = 'times')
     {
-        $this->fontePadrao = $font;
+        $fonte = strtolower($font);
+        if (in_array($fonte, ['times', 'arial', 'helvetica'])) {
+            if ($fonte === 'arial') {
+                $fonte = 'helvetica';
+            }
+            $this->fontePadrao = $fonte;
+        }
     }
 
     /**
@@ -348,7 +355,10 @@ class DaCommon extends Common
             throw new \Exception('O formato da imagem não é aceitável! Somente PNG ou JPG podem ser usados.');
         }
         if ($type == '3') { //3 = PNG
-            $image = imagecreatefrompng($logo);
+            $image = @imagecreatefrompng($logo);
+            if (!$image) {
+                return null;
+            }
             if ($turn_bw) {
                 imagefilter($image, IMG_FILTER_GRAYSCALE);
                 //imagefilter($image, IMG_FILTER_CONTRAST, -100);
@@ -356,6 +366,9 @@ class DaCommon extends Common
             return $this->getImageStringFromObject($image);
         } elseif ($type == '2' && $turn_bw) {
             $image = imagecreatefromjpeg($logo);
+            if (!$image) {
+                return null;
+            }
             imagefilter($image, IMG_FILTER_GRAYSCALE);
             //imagefilter($image, IMG_FILTER_CONTRAST, -100);
             return $this->getImageStringFromObject($image);

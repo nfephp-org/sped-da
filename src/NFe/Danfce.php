@@ -55,6 +55,7 @@ class Danfce extends DaCommon
     protected $urlQR = '';
     protected $pdf;
     protected $margem = 2;
+    protected $textoExtra = '';
     protected $flagResume = false;
     protected $hMaxLinha = 5;
     protected $hBoxLinha = 6;
@@ -169,7 +170,7 @@ class Danfce extends DaCommon
     }
 
     /**
-     * Registra via do estabelecimento quando a impressção for offline
+     * Registra via do estabelecimento quando a impressão for offline
      */
     public function setViaEstabelecimento()
     {
@@ -184,6 +185,16 @@ class Danfce extends DaCommon
     public function setOffLineDoublePrint($flag = true)
     {
         $this->offline_double = $flag;
+    }
+
+    /**
+     * Recebe uma string com uma informação adicional que será impressa ao final do pdf
+     *
+     * @param string $texto
+     */
+    public function setExtraContent($texto)
+    {
+        $this->textoExtra = $texto;
     }
 
     /**
@@ -253,7 +264,7 @@ class Danfce extends DaCommon
             $y = $this->blocoVIII($y); //QRCODE
         }
         $y = $this->blocoIX($y); //informações complementares e sobre tributos
-        $y = $this->blocoX($y); //creditos
+        $y = $this->blocoX($y); //créditos
 
         $y = $this->blocoXI($y); //Decreto cartão de crédito RS 56.670
 
@@ -311,7 +322,7 @@ class Danfce extends DaCommon
             $this->pdf->addPage($this->orientacao, $this->papel); // adiciona a primeira página
             $this->pdf->setLineWidth(0.1); // define a largura da linha
             $this->pdf->setTextColor(0, 0, 0);
-            $y = $this->blocoI(); //cabecalho
+            $y = $this->blocoI(); //cabeçalho
             $y = $this->blocoII($y); //informação cabeçalho fiscal e contingência
             $y = $this->blocoIII($y); //informação dos itens
             $y = $this->blocoIV($y); //informação sobre os totais
@@ -320,9 +331,8 @@ class Danfce extends DaCommon
             $y = $this->blocoVII($y); //informações sobre o consumidor e dados da NFCe
             $y = $this->blocoVIII($y); //QRCODE
             $y = $this->blocoIX($y); //informações sobre tributos
-            $y = $this->blocoX($y); //creditos
+            $y = $this->blocoX($y); //créditos
             $y = $this->blocoXI($y); //Decreto cartão de crédito RS 56.670
-
             $ymark = $maxH / 4;
             $ymark = $this->printMessages($ymark, $messages);
             $this->pdf->setTextColor(0, 0, 0);
@@ -338,7 +348,7 @@ class Danfce extends DaCommon
         $this->bloco5H = $this->calculateHeightPag();
         $this->bloco9H = $this->calculateHeighBlokIX();
 
-        $length = $this->bloco1H //cabecalho
+        $length = $this->bloco1H //cabeçalho
             + $this->bloco2H //informação fiscal
             + $this->bloco3H //itens
             + $this->bloco4H //totais
@@ -349,6 +359,7 @@ class Danfce extends DaCommon
             + $this->bloco9H //informações sobre tributos
             + $this->bloco10H //informações do integrador
             + $this->bloco11H; //decreto 56.670
+            + 4;
         return $length;
     }
 

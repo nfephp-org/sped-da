@@ -1569,10 +1569,19 @@ class Dacte extends DaCommon
         //Identifica código da unidade
         //01 = KG (QUILOS)
         $qCarga = 0;
+        $qCargaPesoBruto = 0;
+        $qCargaPesoBaseCalculo = 0;
+        $qCargaPesoAferido = 0;
         foreach ($this->infQ as $infQ) {
             if (in_array($this->getTagValue($infQ, "cUnid"), array('01', '02'))) {
-                $qCarga += $this->getTagValue($infQ, "cUnid") == '01' ?
-                    $this->getTagValue($infQ, "qCarga") : $this->getTagValue($infQ, "qCarga") * 1000;
+                if ($this->getTagValue($infQ, "tpMed") == 'PESO BRUTO')
+                    $qCargaPesoBruto += $this->getTagValue($infQ, "cUnid") == '01' ? $this->getTagValue($infQ, "qCarga") : $this->getTagValue($infQ, "qCarga") * 1000;
+                else if ($this->getTagValue($infQ, "tpMed") == 'PESO BASE DE CALCULO')
+                    $qCargaPesoBaseCalculo += $this->getTagValue($infQ, "cUnid") == '01' ? $this->getTagValue($infQ, "qCarga") : $this->getTagValue($infQ, "qCarga") * 1000;
+                else
+                    $qCargaPesoAferido += $this->getTagValue($infQ, "cUnid") == '01' ? $this->getTagValue($infQ, "qCarga") : $this->getTagValue($infQ, "qCarga") * 1000;
+            } else {
+                $qCarga += $this->getTagValue($infQ, "qCarga");
             }
         }
         $texto = 'PESO BRUTO (KG)';
@@ -1581,7 +1590,7 @@ class Dacte extends DaCommon
             'size' => 5,
             'style' => '');
         $this->pdf->textBox($x + 8, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = number_format($qCarga, 3, ",", ".");
+        $texto = number_format($qCargaPesoBruto, 3, ",", ".");
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
@@ -1595,7 +1604,7 @@ class Dacte extends DaCommon
             'size' => 5,
             'style' => '');
         $this->pdf->textBox($x + 20, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = number_format($qCarga, 3, ",", ".");
+        $texto = number_format($qCargaPesoBaseCalculo, 3, ",", ".");
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,
@@ -1609,7 +1618,7 @@ class Dacte extends DaCommon
             'size' => 5,
             'style' => '');
         $this->pdf->textBox($x + 35, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
-        $texto = number_format($qCarga, 3, ",", ".");
+        $texto = number_format($qCargaPesoAferido, 3, ",", ".");
         $aFont = array(
             'font' => $this->fontePadrao,
             'size' => 7,

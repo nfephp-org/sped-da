@@ -97,7 +97,7 @@ class Fpdf181
         $this->withAlpha = false;
         $this->ws = 0;
 
-        $this->fontpath = __DIR__. FPDF_FONTPATH;
+        $this->fontpath = __DIR__. self::FPDF_FONTPATH;
 
         // Core fonts
         $this->coreFonts = [
@@ -2056,7 +2056,7 @@ class Fpdf181
 
     protected function putInfo()
     {
-        $this->metadata['Producer'] = 'FPDF ' . FPDF_VERSION;
+        $this->metadata['Producer'] = 'FPDF ' . self::FPDF_VERSION;
         $this->metadata['CreationDate'] = 'D:' . @date('YmdHis');
         foreach ($this->metadata as $key => $value) {
             $this->put('/' . $key . ' ' . $this->textString($value));

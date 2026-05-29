@@ -4,7 +4,6 @@ namespace NFePHP\DA\Legacy;
 
 class Common
 {
-
     /**
      * Extrai o valor do node DOM
      * @param  object $theObj Instancia de DOMDocument ou DOMElement
@@ -24,7 +23,7 @@ class Common
             $value = trim($vct->nodeValue);
             if (strpos($value, '&') !== false) {
                 //existe um & na string, então deve ser uma entidade
-                $value = html_entity_decode($value);
+                $value = html_entity_decode($value, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
             }
             return $extraTextBefore . $value . $extraTextAfter;
         }
@@ -123,14 +122,34 @@ class Common
      *
      * @param string $input
      *
-     * @return \DateTime
+     * @return \DateTime|false
      */
     public function toDateTime($input)
     {
+        if (PHP_MAJOR_VERSION > 7) {
+            try {
+                return new \DateTime($input);
+            } catch (\Exception $e) {
+                return false;
+            }
+        }
+
+        return $this->toDateTimeLegacy($input);
+    }
+
+    private function toDateTimeLegacy($input)
+    {
+        $quantidadeColons = substr_count($input, ':');
+
+        $format = "Y-m-d\TH:i:sP";
+        if ($quantidadeColons == 2) {
+            $format = "Y-m-d\TH:i:s";
+        }
+
         try {
-            return \DateTime::createFromFormat("Y-m-d\TH:i:sP", $input);
+            return \DateTime::createFromFormat($format, $input);
         } catch (\Exception $e) {
-            return null;
+            return false;
         }
     }
 
@@ -261,7 +280,7 @@ class Common
                 $tPagNome = 'Cartão de Débito';
                 break;
             case '05':
-                $tPagNome = 'Crédito Loja';
+                $tPagNome = 'Cartão da Loja/Outros Crediários';
                 break;
             case '10':
                 $tPagNome = 'Vale Alimentação';
@@ -288,10 +307,19 @@ class Common
                 $tPagNome = 'Pagamento Instantâneo (PIX) - Dinâmico';
                 break;
             case '18':
-                $tPagNome = 'Transferência bancária, Carteira Digital';
+                $tPagNome = 'Transferência bancária, Carteira Digit.';
                 break;
             case '19':
-                $tPagNome = 'Programa de fidelidade, Cashback, Crédito Virtual';
+                $tPagNome = 'Programa de fidelidade, Cashback, Crédito Virt.';
+                break;
+            case '20':
+                $tPagNome = 'PIX Estático';
+                break;
+            case '21':
+                $tPagNome = 'Crédito em Loja';
+                break;
+            case '22':
+                $tPagNome = 'Pagamento Eletrônico não Informado - Falha de hardware';
                 break;
             case "20":
                 $tPagNome = 'Pagamento Instantâneo (PIX) - Estático';

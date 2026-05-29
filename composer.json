@@ -2,9 +2,20 @@
     "name": "zucchetti-pos/sped-da",
     "type": "library",
     "description": "sped-da contêm as classes para criação dos documentos auxiliares referidos no projeto Sped.",
-    "keywords": ["nfe", "sped", "nfephp", "Danfe", "Dacte", "CCe" ],
+    "keywords": [
+        "nfe",
+        "sped",
+        "nfephp",
+        "Danfe",
+        "Dacte",
+        "CCe"
+    ],
     "homepage": "https://github.com/zucchetti-pos/sped-da",
-    "license": ["LGPL-3.0-or-later+", "GPL-3.0-or-later", "MIT"],
+    "license": [
+        "LGPL-3.0-or-later+",
+        "GPL-3.0-or-later",
+        "MIT"
+    ],
     "authors": [
         {
             "name": "Roberto L. Machado",
@@ -21,6 +32,7 @@
         "php": ">= 7.4",
         "ext-dom": "*",
         "ext-gd": "*",
+        "ext-mbstring": "*",
         "tecnickcom/tc-lib-barcode": "^1",
         "nfephp-org/sped-common": "^5.1.0"
     },
@@ -29,7 +41,8 @@
         "phpunit/phpunit": "^9.3",
         "scrutinizer/ocular": "^1.8",
         "phpstan/phpstan": "^1.4",
-        "sebastian/phpcpd": "^6.0"
+        "sebastian/phpcpd": "^6.0",
+        "smalot/pdfparser": "^2.12"
     },
     "suggest": {
         "nfephp-org/posprint": "^0.1"

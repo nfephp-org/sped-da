@@ -18,39 +18,38 @@ trait TraitBlocoIII
         if ($this->paperwidth < 70) {
             $fsize = 5;
         }
-        $aFont = ['font' => $this->fontePadrao, 'size' => $fsize, 'style' => ''];
-        $bFont = ['font' => $this->fontePadrao, 'size' => $fsize, 'style' => 'B'];
+        $aFont = ['font'=> $this->fontePadrao, 'size' => $fsize, 'style' => ''];
         $descriptionWidth = $this->getDescriptionBlockWidth();
 
-        $texto = "Cód";
+        $texto = "Código";
         $x = $this->margem;
-        $this->pdf->textBox($x, $y, ($this->wPrint * $matrix[0]), 3, $texto, $bFont, 'T', 'L', false, '', true);
+        $this->pdf->textBox($x, $y, ($this->wPrint * $matrix[0]), 3, $texto, $aFont, 'T', 'L', false, '', true);
 
         $texto = "Descrição";
         $x1 = $x + ($this->wPrint * $matrix[0]);
-        $this->pdf->textBox($x1, $y, ($this->wPrint * $matrix[1]), 3, $texto, $bFont, 'T', 'L', false, '', true);
+        $this->pdf->textBox($x1, $y, ($this->wPrint * $matrix[1]), 3, $texto, $aFont, 'T', 'L', false, '', true);
 
         $texto = "Qtde";
         $x2 = $x1 + ($this->wPrint * $matrix[1]);
-        $this->pdf->textBox($x2, $y, ($this->wPrint * $matrix[2]), 3, $texto, $bFont, 'T', 'C', false, '', true);
+        $this->pdf->textBox($x2, $y, ($this->wPrint * $matrix[2]), 3, $texto, $aFont, 'T', 'C', false, '', true);
 
         $texto = "UN";
         $x3 = $x2 + ($this->wPrint * $matrix[2]);
-        $this->pdf->textBox($x3, $y, ($this->wPrint * $matrix[3]), 3, $texto, $bFont, 'T', 'C', false, '', true);
+        $this->pdf->textBox($x3, $y, ($this->wPrint * $matrix[3]), 3, $texto, $aFont, 'T', 'C', false, '', true);
 
         $texto = "Vl Unit";
         $x4 = $x3 + ($this->wPrint * $matrix[3]);
-        $this->pdf->textBox($x4, $y, ($this->wPrint * $matrix[4]), 3, $texto, $bFont, 'T', 'C', false, '', true);
+        $this->pdf->textBox($x4, $y, ($this->wPrint * $matrix[4]), 3, $texto, $aFont, 'T', 'C', false, '', true);
 
         $texto = "Desc";
         $x5 = $x4 + ($this->wPrint * $matrix[4]);
-        $this->pdf->textBox($x5, $y, ($this->wPrint * $matrix[5]), 3, $texto, $bFont, 'T', 'R', false, '', true);
+        $this->pdf->textBox($x5, $y, ($this->wPrint * $matrix[5]), 3, $texto, $aFont, 'T', 'R', false, '', true);
 
-        $texto = "Total";
+        $texto = "Vl Total";
         $x6 = $x5 + ($this->wPrint * $matrix[5]);
-        $y1 = $this->pdf->textBox($x6, $y, ($this->wPrint * $matrix[6]), 3, $texto, $bFont, 'T', 'R', false, '', true);
+        $y1 = $this->pdf->textBox($x6, $y, ($this->wPrint * $matrix[6]), 3, $texto, $aFont, 'T', 'R', false, '', true);
 
-        $y2 = $y + $y1 + 0.5;
+        $y2 = $y + $y1;
         if ($this->det->length == 0) {
         } else {
             foreach ($this->itens as $item) {

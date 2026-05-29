@@ -95,7 +95,7 @@ trait TraitBlocoII
                 true
             );
         }
-        $this->pdf->dashedHLine($this->margem, $this->bloco2H + $y - $this->margem, $this->wPrint, 0.1, 30);
-        return $this->bloco2H + $y - $this->margem;
+        $this->pdf->dashedHLine($this->margem, $this->bloco2H + $y, $this->wPrint, 0.1, 30);
+        return $this->bloco2H + $y;
     }
 }

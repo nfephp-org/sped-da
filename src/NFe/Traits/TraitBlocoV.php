@@ -25,13 +25,13 @@ trait TraitBlocoV
             }
         } else {
             $tipo = $this->pagType((int) $this->getTagValue($this->pag, 'tPag'));
-            $valor = number_format((float) $this->getTagValue($pgto, 'vPag'), 2, ',', '.');
+            $valor = number_format((float) $this->getTagValue($this->pag, 'vPag'), 2, ',', '.');
             $arpgto[] = [
                 'tipo' => $tipo,
                 'valor' => $valor
             ];
         }
-        $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
+        $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => 'B'];
         $texto = "FORMA PAGAMENTO";
         $this->pdf->textBox($this->margem, $y, $this->wPrint, 4, $texto, $aFont, 'T', 'L', false, '', false);
         $texto = "VALOR PAGO R$";
@@ -39,7 +39,9 @@ trait TraitBlocoV
 
         $z = $y + $y1;
         foreach ($arpgto as $p) {
+            $aFont = ['font'=> $this->fontePadrao, 'size' => 6, 'style' => ''];
             $this->pdf->textBox($this->margem, $z, $this->wPrint, 3, $p['tipo'], $aFont, 'T', 'L', false, '', false);
+            $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
             $y2 = $this->pdf->textBox(
                 $this->margem,
                 $z,
@@ -61,7 +63,6 @@ trait TraitBlocoV
         $texto =  !empty($this->vTroco) ? number_format((float) $this->vTroco, 2, ',', '.') : '0,00';
         $y1 = $this->pdf->textBox($this->margem, $z, $this->wPrint, 3, $texto, $aFont, 'T', 'R', false, '', false);
 
-
         $this->pdf->dashedHLine($this->margem, $this->bloco5H+$y, $this->wPrint, 0.1, 30);
         return $this->bloco5H + $y;
     }
@@ -73,7 +74,7 @@ trait TraitBlocoV
             2 => 'Cheque',
             3 => 'Cartão de Crédito',
             4 => 'Cartão de Débito',
-            5 => 'Crédito Loja',
+            5 => 'Cartão da Loja/Outros Crediários',
             10 => 'Vale Alimentação',
             11 => 'Vale Refeição',
             12 => 'Vale Presente',
@@ -87,9 +88,10 @@ trait TraitBlocoV
             21 => 'Crédito em Loja',
             22 => 'Pagamento Eletrônico não Informado',
             90 => 'Sem pagamento',
+            91 => 'Pagamento Posterior',
             99 => 'Outros',
         ];
-        return $lista[$type];
+        return mb_strtoupper($lista[$type]);
     }
 
     protected function calculateHeightPag()
