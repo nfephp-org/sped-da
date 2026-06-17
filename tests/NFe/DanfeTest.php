@@ -15,4 +15,19 @@ class DanfeTest extends TestCase
         file_put_contents(TEST_FIXTURES . 'pdf/nfe_linhas.pdf', $pdf);
         $this->assertIsString($pdf);
     }
+
+    public function testGerarNfeComTamanhosDeFonteCustomizados(): void
+    {
+        $obj = new Danfe(file_get_contents(TEST_FIXTURES . 'xml/nfe.xml'));
+        $obj->setFontSizeScale(0.9, 4);
+        $obj->setFontSizeMap([
+            10 => 9,
+            8 => 7,
+            '5.7' => 5,
+        ]);
+
+        $pdf = $obj->render();
+
+        $this->assertIsString($pdf);
+    }
 }

@@ -136,6 +136,7 @@ class Danfse extends DaCommon
         }
 
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
+        $this->applyPdfFontSettings();
         $this->pdf->aliasNbPages();
         $this->pdf->setMargins(self::PAGE_MARGIN, self::PAGE_MARGIN);
         $this->pdf->setAutoPageBreak(false);

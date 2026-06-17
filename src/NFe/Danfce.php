@@ -220,6 +220,7 @@ class Danfce extends DaCommon
         $this->papel = [$this->paperwidth, $tamPapelVert];
         $this->logoAlign = 'L';
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
+        $this->applyPdfFontSettings();
 
         //margens do PDF, em milímetros. Obs.: a margem direita é sempre igual à
         //margem esquerda. A margem inferior *não* existe na FPDF, é definida aqui

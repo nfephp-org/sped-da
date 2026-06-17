@@ -249,6 +249,7 @@ class Dacte extends DaCommon
         }
         //instancia a classe pdf
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
+        $this->applyPdfFontSettings();
         // verifica se foi passa a fonte a ser usada
         $this->formatPadrao = array(
             'font' => $this->fontePadrao,

@@ -168,6 +168,7 @@ class DanfeEtiqueta extends DaCommon
         $this->papel = [$this->paperwidth, $this->paperlength];
         $this->logoAlign = 'L';
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
+        $this->applyPdfFontSettings();
         $this->pdf->aliasNbPages();
         $this->pdf->setMargins($margEsq, $margSup); // fixa as margens
         $this->pdf->setDrawColor(0, 0, 0);

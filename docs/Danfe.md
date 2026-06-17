@@ -20,3 +20,22 @@ Método de rederização do PDF
 $pdf = $danfe->render();
 ```
 retorna um PDF codificado.
+
+### Personalizacao dos tamanhos de fonte
+Os tamanhos de fonte podem ser ajustados antes da renderizacao do PDF.
+
+```php
+$danfe = new Danfe($xml);
+
+// Reduz todos os tamanhos de fonte em 10%, mantendo no minimo 4 pontos.
+$danfe->setFontSizeScale(0.9, 4);
+
+// Opcionalmente substitui tamanhos especificos.
+$danfe->setFontSizeMap([
+    10 => 9,
+    8 => 7,
+    '5.7' => 5,
+]);
+
+$pdf = $danfe->render();
+```

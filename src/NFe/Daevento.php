@@ -162,6 +162,7 @@ class Daevento extends DaCommon
             $this->orientacao = 'P';
         }
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
+        $this->applyPdfFontSettings();
         if ($this->orientacao == 'P') {
             // margens do PDF
             $margSup = 2;

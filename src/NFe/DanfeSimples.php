@@ -217,6 +217,7 @@ class DanfeSimples extends DaCommon
             $this->orientacao = 'L';
         }
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
+        $this->applyPdfFontSettings();
         if ($this->orientacao == 'L') {
             if ($this->papel == 'A5') {
                 $this->maxW = 210;

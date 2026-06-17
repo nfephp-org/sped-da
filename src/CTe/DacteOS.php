@@ -222,6 +222,7 @@ class DacteOS extends DaCommon
         $margDir = $this->margesq;
 
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
+        $this->applyPdfFontSettings();
         $this->formatPadrao = array(
             'font' => $this->fontePadrao,
             'size' => 6,

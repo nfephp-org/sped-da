@@ -14,6 +14,7 @@ namespace NFePHP\DA\Common;
  */
 
 use NFePHP\DA\Legacy\Common;
+use NFePHP\DA\Legacy\Pdf;
 
 class DaCommon extends Common
 {
@@ -73,6 +74,18 @@ class DaCommon extends Common
      * @var array
      */
     protected $aFont = ['font' => 'times', 'size' => 8, 'style' => ''];
+    /**
+     * @var float
+     */
+    protected $fontSizeScale = 1.0;
+    /**
+     * @var array
+     */
+    protected $fontSizeMap = [];
+    /**
+     * @var float|null
+     */
+    protected $minimumFontSize = null;
     /**
      * @var string
      */
@@ -245,6 +258,35 @@ class DaCommon extends Common
     }
 
     /**
+     * Seta a escala aplicada aos tamanhos de fonte do documento.
+     * @param float $scale
+     * @param float|null $minimumSize
+     * @return void
+     */
+    public function setFontSizeScale($scale = 1.0, $minimumSize = null)
+    {
+        $scale = (float) $scale;
+        if ($scale <= 0) {
+            $scale = 1.0;
+        }
+        $this->fontSizeScale = $scale;
+        $this->minimumFontSize = $minimumSize === null ? null : max((float) $minimumSize, 0.1);
+        $this->applyPdfFontSettings();
+    }
+
+    /**
+     * Seta substituicoes de tamanhos de fonte.
+     * Ex.: [10 => 9, 8 => 7, '5.7' => 5]
+     * @param array $fontSizeMap
+     * @return void
+     */
+    public function setFontSizeMap(array $fontSizeMap = [])
+    {
+        $this->fontSizeMap = $fontSizeMap;
+        $this->applyPdfFontSettings();
+    }
+
+    /**
      * Seta o numero de casas decimais a serem usadas como padrão
      * @param int $dec
      */
@@ -266,6 +308,20 @@ class DaCommon extends Common
     protected function monta($logo = null)
     {
         //todo replaced in other classes
+    }
+
+    /**
+     * Aplica as configuracoes de fonte ao PDF atual.
+     * @return void
+     */
+    protected function applyPdfFontSettings(?Pdf $pdf = null)
+    {
+        $pdf = $pdf ?? $this->pdf;
+        if (!$pdf instanceof Pdf) {
+            return;
+        }
+        $pdf->setFontSizeScale($this->fontSizeScale, $this->minimumFontSize);
+        $pdf->setFontSizeMap($this->fontSizeMap);
     }
 
     /**

@@ -16,6 +16,18 @@ class Pdf extends Fpdf
     private $jStart = ["A"=> 103, "B"=> 104, "C" => 105];      // Caracteres de seleção do grupo 128
     private $jSwap = ["A" => 101, "B" => 100, "C" => 99];      // Caracteres de troca de grupo
     private $angle = 0;
+    /**
+     * @var float
+     */
+    private $fontSizeScale = 1.0;
+    /**
+     * @var array
+     */
+    private $fontSizeMap = [];
+    /**
+     * @var float|null
+     */
+    private $minimumFontSize = null;
 
     public function __construct($orientation = 'P', $unit = 'mm', $format = 'A4')
     {
@@ -162,6 +174,52 @@ class Pdf extends Fpdf
     }
 
     /**
+     * Define a escala aplicada aos tamanhos de fonte do PDF.
+     * @param float $scale
+     * @param float|null $minimumSize
+     * @return void
+     */
+    public function setFontSizeScale($scale = 1.0, $minimumSize = null)
+    {
+        $scale = (float) $scale;
+        if ($scale <= 0) {
+            $scale = 1.0;
+        }
+        $this->fontSizeScale = $scale;
+        $this->minimumFontSize = $minimumSize === null ? null : max((float) $minimumSize, 0.1);
+    }
+
+    /**
+     * Define tamanhos especificos para substituir os tamanhos originais.
+     * @param array $fontSizeMap
+     * @return void
+     */
+    public function setFontSizeMap(array $fontSizeMap = [])
+    {
+        $this->fontSizeMap = [];
+        foreach ($fontSizeMap as $originalSize => $newSize) {
+            if (!is_numeric($originalSize) || !is_numeric($newSize)) {
+                continue;
+            }
+            $newSize = (float) $newSize;
+            if ($newSize <= 0) {
+                continue;
+            }
+            $this->fontSizeMap[$this->fontSizeKey($originalSize)] = $newSize;
+        }
+    }
+
+    public function setFont($family, $style = '', $size = 0)
+    {
+        parent::setFont($family, $style, $this->normalizeFontSize($size));
+    }
+
+    public function setFontSize($size)
+    {
+        parent::setFontSize($this->normalizeFontSize($size));
+    }
+
+    /**
      * Imprime barcode 128
      */
     public function code128($x, $y, $code, $w, $h)
@@ -233,6 +291,37 @@ class Pdf extends Fpdf
                 $x += ($c[$j++]+$c[$j])*$modul;
             }
         }
+    }
+
+    /**
+     * @param int|float|string $size
+     * @return int|float|string
+     */
+    private function normalizeFontSize($size)
+    {
+        if (!is_numeric($size) || (float) $size <= 0) {
+            return $size;
+        }
+        $fontSize = (float) $size;
+        $key = $this->fontSizeKey($fontSize);
+        if (array_key_exists($key, $this->fontSizeMap)) {
+            $fontSize = $this->fontSizeMap[$key];
+        } else {
+            $fontSize *= $this->fontSizeScale;
+        }
+        if ($this->minimumFontSize !== null) {
+            $fontSize = max($fontSize, $this->minimumFontSize);
+        }
+        return $fontSize;
+    }
+
+    /**
+     * @param int|float|string $size
+     * @return string
+     */
+    private function fontSizeKey($size)
+    {
+        return rtrim(rtrim(sprintf('%.4F', (float) $size), '0'), '.');
     }
 
     /**

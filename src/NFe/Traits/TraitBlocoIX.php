@@ -60,6 +60,7 @@ trait TraitBlocoIX
         $wprint = $this->paperwidth - (2 * $this->margem);
         $orientacao = 'P';
         $pdf = new Pdf($orientacao, 'mm', $papel);
+        $this->applyPdfFontSettings($pdf);
         $fsize = 7;
         $aFont = ['font'=> $this->fontePadrao, 'size' => 7, 'style' => ''];
         if ($this->paperwidth < 70) {

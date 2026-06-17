@@ -129,6 +129,7 @@ class Daevento extends DaCommon
         $margEsq = $this->margesq;
         $margDir = $this->margesq;
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
+        $this->applyPdfFontSettings();
         if ($this->orientacao == 'P') {
             // posição inicial do relatorio
             $xInic = 1;
