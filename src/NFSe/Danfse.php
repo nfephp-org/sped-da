@@ -1159,7 +1159,18 @@ class Danfse extends DaCommon
 
     private function tpRetPisCofins($value)
     {
-        $map = ['1' => 'PIS/COFINS/CSLL Não Retido', '2' => 'PIS/COFINS Retido', '3' => 'CSLL Retido'];
+        $map = [
+            '0' => 'PIS/COFINS/CSLL Não Retidos',
+            '1' => 'PIS/COFINS Retido',
+            '2' => 'PIS/COFINS Não Retido',
+            '3' => 'PIS/COFINS/CSLL Retidos',
+            '4' => 'PIS/COFINS Retidos, CSLL Não Retido',
+            '5' => 'PIS Retido, COFINS/CSLL Não Retido',
+            '6' => 'COFINS Retido, PIS/CSLL Não Retido',
+            '7' => 'PIS Não Retido, COFINS/CSLL Retidos',
+            '8' => 'PIS/COFINS Não Retidos, CSLL Retido',
+            '9' => 'COFINS Não Retido, PIS/CSLL Retidos'
+        ];
         return isset($map[$value]) ? $map[$value] : $this->dash($value);
     }
 
