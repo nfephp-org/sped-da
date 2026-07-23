@@ -1009,7 +1009,23 @@ class Danfse extends DaCommon
             return $this->formatField($digits, '(##) ####-####');
         }
         if (strlen($digits) === 11) {
-            return $this->formatField($digits, '(##) #####-####');
+            if (
+                in_array(
+                    substr($digits, 0, 4),
+                    [
+                        '0300',
+                        '0303',
+                        '0304',
+                        '0500',
+                        '0800',
+                        '0900'
+                    ]
+                )
+            ) {
+                return $this->formatField($digits, '#### ### ####');
+            } else {
+                return $this->formatField($digits, '(##) #####-####');
+            }
         }
         return $phone;
     }
