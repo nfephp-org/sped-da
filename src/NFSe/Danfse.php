@@ -396,6 +396,14 @@ class Danfse extends DaCommon
         }
 
         $end = $this->childNode('end', $node);
+
+        $tpEmit = $this->tpEmit($this->value('tpEmit', $this->infDPS));
+        if ($title === "PRESTADOR / FORNECEDOR" && $node->tagName === "prest" && $tpEmit === "Prestador") {
+            $nome = $this->value('xNome', $this->firstNode('emit', $this->infNFSe));
+        } else {
+            $nome = $this->value('xNome', $node);
+        }
+
         $this->drawSectionTitle($title, self::X, $y, self::CELL, self::ROW);
         $this->drawField('CNPJ / CPF / NIF', $this->document($node), self::COL2, $y, self::CELL, self::ROW);
         if ($withIm) {
@@ -403,7 +411,7 @@ class Danfse extends DaCommon
         }
         $this->drawField('Telefone', $this->formatPhone($this->value('fone', $node)), self::COL4, $y, self::CELL, self::ROW);
 
-        $this->drawField('Nome / Nome Empresarial', $this->ellipsis($this->value('xNome', $node), 80), self::X, $y + 6.4, self::CELL2, self::ROW);
+        $this->drawField('Nome / Nome Empresarial', $this->ellipsis($nome, 80), self::X, $y + 6.4, self::CELL2, self::ROW);
         $this->drawField('Município / Sigla UF', $this->municipioUf($end), self::COL3, $y + 6.4, self::CELL, self::ROW);
         $this->drawField('Código IBGE / CEP', $this->ibgeCep($end), self::COL4, $y + 6.4, self::CELL, self::ROW);
 
