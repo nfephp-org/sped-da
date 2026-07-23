@@ -7,6 +7,7 @@
         <xLocEmi>Curitiba</xLocEmi>
         <ambGer>1</ambGer>
         <emit>
+            <xNome>Prestador Nacional de Servicos Ltda</xNome>
             <enderNac>
                 <UF>PR</UF>
             </enderNac>
@@ -24,7 +25,6 @@
                     <CNPJ>12345678000195</CNPJ>
                     <IM>12345</IM>
                     <fone>4133334444</fone>
-                    <xNome>Prestador Nacional de Servicos Ltda</xNome>
                     <end>
                         <endNac>
                             <cMun>4106902</cMun>
