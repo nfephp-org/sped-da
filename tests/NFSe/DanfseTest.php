@@ -210,10 +210,11 @@ class DanfseTest extends TestCase
         $this->assertStringContainsString('NFS-e SEM VALIDADE JURÍDICA', $text);
         $this->assertStringContainsString('O DESTINATÁRIO É O PRÓPRIO TOMADOR/ADQUIRENTE DA OPERAÇÃO', $text);
         $this->assertStringContainsString('NFS-e Subst.: 99999999999999999999999999999999999999999999999999', $text);
-        $this->assertStringContainsString('SUBSTITUÍDA', $text);
+        $this->assertStringContainsString('NFS-e de Decisão Judicial', $text);
+        $this->assertStringNotContainsString('SUBSTITUÍDA', $text);
     }
 
-    public function testImprimeMarcaDaguaCanceladaQuandoXmlIndicaCancelamento(): void
+    public function testNaoImprimeMarcaDaguaCanceladaParaCStat101(): void
     {
         $xml = str_replace(
             '<cStat>100</cStat>',
@@ -225,12 +226,12 @@ class DanfseTest extends TestCase
         $text = $this->textFromPdf($pdf);
         $operators = $this->decompressedPdfOperators($pdf);
 
-        $this->assertStringContainsString('CANCELADA', $text);
-        $this->assertStringContainsString('0.651 0.651 0.651 rg', $operators);
-        $this->assertGreaterThan(50.0, $this->watermarkFontSize($operators, 'CANCELADA'));
+        $this->assertStringContainsString('NFS-e de Substituição Gerada', $text);
+        $this->assertStringNotContainsString('CANCELADA', $text);
+        $this->assertEquals(0.0, $this->watermarkFontSize($operators, 'CANCELADA'));
     }
 
-    public function testImprimeMarcaDaguaSubstituidaQuandoXmlIndicaSubstituicao(): void
+    public function testNaoImprimeMarcaDaguaSubstituidaParaCStat102(): void
     {
         $xml = str_replace(
             '<cStat>100</cStat>',
@@ -247,8 +248,35 @@ class DanfseTest extends TestCase
         $text = $this->textFromPdf($pdf);
         $operators = $this->decompressedPdfOperators($pdf);
 
-        $this->assertStringContainsString('NFS-e substituída', $text);
+        $this->assertStringContainsString('NFS-e de Decisão Judicial', $text);
         $this->assertStringContainsString('NFS-e Subst.: 99999999999999999999999999999999999999999999999999', $text);
+        $this->assertStringNotContainsString('SUBSTITUÍDA', $text);
+        $this->assertEquals(0.0, $this->watermarkFontSize($operators, 'SUBSTITUÍDA'));
+    }
+
+    public function testImprimeMarcaDaguaCanceladaQuandoMarcadaManualmente(): void
+    {
+        $danfse = new Danfse(file_get_contents(TEST_FIXTURES . 'xml/nfse-v2.xml'));
+        $danfse->setAsCanceled();
+
+        $pdf = $danfse->render();
+        $text = $this->textFromPdf($pdf);
+        $operators = $this->decompressedPdfOperators($pdf);
+
+        $this->assertStringContainsString('CANCELADA', $text);
+        $this->assertStringContainsString('0.651 0.651 0.651 rg', $operators);
+        $this->assertGreaterThan(50.0, $this->watermarkFontSize($operators, 'CANCELADA'));
+    }
+
+    public function testImprimeMarcaDaguaSubstituidaQuandoMarcadaManualmente(): void
+    {
+        $danfse = new Danfse(file_get_contents(TEST_FIXTURES . 'xml/nfse-v2.xml'));
+        $danfse->setAsSubstituted();
+
+        $pdf = $danfse->render();
+        $text = $this->textFromPdf($pdf);
+        $operators = $this->decompressedPdfOperators($pdf);
+
         $this->assertStringContainsString('SUBSTITUÍDA', $text);
         $this->assertStringContainsString('0.651 0.651 0.651 rg', $operators);
         $this->assertGreaterThan(50.0, $this->watermarkFontSize($operators, 'SUBSTITUÍDA'));
