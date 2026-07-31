@@ -609,11 +609,10 @@ class Danfse extends DaCommon
 
     private function drawWatermark()
     {
-        $cStat = $this->value('cStat', $this->infNFSe);
-        if ($this->canceled || in_array($cStat, ['101', '135'], true)) {
+        if ($this->canceled) {
             $this->watermark('CANCELADA');
         }
-        if ($this->substituted || in_array($cStat, ['102', '151'], true)) {
+        if ($this->substituted) {
             $this->watermark('SUBSTITUÍDA');
         }
     }
@@ -1125,7 +1124,15 @@ class Danfse extends DaCommon
 
     private function situacao($value)
     {
-        $map = ['100' => 'NFS-e autorizada', '101' => 'NFS-e cancelada', '102' => 'NFS-e substituída'];
+        $map = [
+            '100' => 'NFS-e Gerada',
+            '101' => 'NFS-e de Substituição Gerada',
+            '102' => 'NFS-e de Decisão Judicial',
+            '103' => 'NFS-e Avulsa',
+            '107' => 'NFS-e MEI',
+            '108' => 'Nota de Crédito',
+            '109' => 'Nota de Débito',
+        ];
         return isset($map[$value]) ? $map[$value] : $this->dash($value);
     }
 
