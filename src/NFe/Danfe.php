@@ -1586,16 +1586,18 @@ class Danfe extends DaCommon
         $texto = 'HORA DA SAÍDA/ENTRADA';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
-        $hSaiEnt = !empty($this->ide->getElementsByTagName("hSaiEnt")->item(0)->nodeValue)
-            ? $this->ide->getElementsByTagName("hSaiEnt")->item(0)->nodeValue
-            : '';
-        if ($hSaiEnt == '') {
-            $dhSaiEnt   = !empty($this->ide->getElementsByTagName("dhSaiEnt")->item(0)->nodeValue)
-                ? $this->ide->getElementsByTagName("dhSaiEnt")->item(0)->nodeValue
-                : '';
-            $tsDhSaiEnt = $this->toDateTime($dhSaiEnt);
-            if ($tsDhSaiEnt) {
-                $hSaiEnt = $tsDhSaiEnt->format('H:i:s');
+        $hSaiEnt = '';
+        $hSaiEntTag = $this->ide->getElementsByTagName("hSaiEnt");
+        if ($hSaiEntTag && $hSaiEntTag->length > 0 && !empty($hSaiEntTag->item(0)->nodeValue)) {
+            $hSaiEnt = $hSaiEntTag->item(0)->nodeValue;
+        } else {
+            $dhSaiEntTag = $this->ide->getElementsByTagName("dhSaiEnt");
+            if ($dhSaiEntTag && $dhSaiEntTag->length > 0 && !empty($dhSaiEntTag->item(0)->nodeValue)) {
+                $dhSaiEnt   = $dhSaiEntTag->item(0)->nodeValue;
+                $tsDhSaiEnt = $this->toDateTime($dhSaiEnt);
+                if ($tsDhSaiEnt) {
+                    $hSaiEnt = $tsDhSaiEnt->format('H:i:s');
+                }
             }
         }
         $texto = $hSaiEnt;
