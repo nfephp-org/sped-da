@@ -236,6 +236,12 @@ class Danfe extends DaCommon
      *
      * @var \DOMElement
      */
+    protected $IBSCBSTot;
+    /**
+     * Node
+     *
+     * @var \DOMElement
+     */
     protected $ISSQNtot;
     /**
      * Node
@@ -2280,6 +2286,111 @@ class Danfe extends DaCommon
     }
 
     /**
+     * Auxilia a montagem dos campos de impostos e totais informando o valor explicitamente
+     *
+     * @param float $x Posicao horizontal canto esquerdo
+     * @param float $y Posicao vertical canto superior
+     * @param float $w Largura do campo
+     * @param float $h Altura do campo
+     * @param string $titulo Titulo do campo
+     * @param string|float|int|null $valorImposto Valor do imposto
+     *
+     * @return float Sugestao do $x do proximo imposto
+     */
+    protected function impostoValorHelper($x, $y, $w, $h, $titulo, $valorImposto)
+    {
+        $valorImposto = number_format((float) $valorImposto, 2, ",", ".");
+
+        $fontTitulo = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
+        $fontValor  = ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'B'];
+        $this->pdf->textBox($x, $y, $w, $h, $titulo, $fontTitulo, 'T', 'L', 1, '');
+        $this->pdf->textBox($x, $y, $w, $h, $valorImposto, $fontValor, 'B', 'R', 0, '');
+
+        return $x + $w;
+    }
+
+    protected function impostoValorICMSTot($campoImposto)
+    {
+        $value = (float) $this->getTagValue($this->ICMSTot, $campoImposto);
+        if ($campoImposto == 'vICMS') {
+            $value += (float) $this->getTagValue($this->ICMSTot, 'vFCP');
+        } elseif ($campoImposto == 'vST') {
+            $value += (float) $this->getTagValue($this->ICMSTot, 'vFCPST');
+        }
+
+        return $value;
+    }
+
+    protected function possuiTotaisIBSCBS()
+    {
+        if (empty($this->IBSCBSTot)) {
+            return false;
+        }
+
+        foreach (['vBCIBSCBS', 'vIBS', 'vCBS'] as $tag) {
+            if ($this->getTagValue($this->IBSCBSTot, $tag) !== '') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function valorImpostoSeletivo()
+    {
+        $ISTot = $this->dom->getElementsByTagName("ISTot")->item(0);
+        if (empty($ISTot)) {
+            return 0;
+        }
+
+        return (float) $this->getTagValue($ISTot, 'vIS');
+    }
+
+    protected function impostoIBSCBS($x, $y, $maxW, $title_size)
+    {
+        $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => 'B'];
+        $texto = "CÁLCULO DO IMPOSTO";
+        $this->pdf->textBox($x, $y, $title_size, 8, $texto, $aFont, 'T', 'L', 0, '');
+        $y += 3;
+        $h = 7;
+
+        $linha1 = [
+            ["BASE DE CÁLCULO DO ICMS", $this->impostoValorICMSTot('vBC')],
+            ["VALOR DO ICMS", $this->impostoValorICMSTot('vICMS')],
+            ["VALOR TOTAL IBS", $this->getTagValue($this->IBSCBSTot, 'vIBS')],
+            ["VALOR TOTAL CBS", $this->getTagValue($this->IBSCBSTot, 'vCBS')],
+            ["BASE DE CÁLC. ICMS S.T.", $this->impostoValorICMSTot('vBCST')],
+            ["VALOR DO ICMS SUBST.", $this->impostoValorICMSTot('vST')],
+            ["V. TOTAL PRODUTOS", $this->impostoValorICMSTot('vProd')],
+        ];
+        $linha2 = [
+            ["VALOR DO FRETE", $this->impostoValorICMSTot('vFrete')],
+            ["VALOR DO SEGURO", $this->impostoValorICMSTot('vSeg')],
+            ["VALOR IMP SELETIVO", $this->valorImpostoSeletivo()],
+            ["DESCONTO", $this->impostoValorICMSTot('vDesc')],
+            ["OUTRAS DESPESAS", $this->impostoValorICMSTot('vOutro')],
+            ["VALOR TOTAL IPI", $this->impostoValorICMSTot('vIPI')],
+            ["VLR APROX DOS TRIBUTOS", $this->impostoValorICMSTot('vTotTrib')],
+            ["V. TOTAL DA NOTA", $this->impostoValorICMSTot('vNF')],
+        ];
+
+        $x_inicial = $x;
+        $w = $maxW / count($linha1);
+        foreach ($linha1 as $campo) {
+            $x = $this->impostoValorHelper($x, $y, $w, $h, $campo[0], $campo[1]);
+        }
+
+        $y += $h;
+        $x = $x_inicial;
+        $w = $maxW / count($linha2);
+        foreach ($linha2 as $campo) {
+            $x = $this->impostoValorHelper($x, $y, $w, $h, $campo[0], $campo[1]);
+        }
+
+        return ($y + $h);
+    }
+
+    /**
      * imposto
      * Monta o campo de impostos e totais da DANFE (retrato e paisagem)
      *
@@ -2307,6 +2418,11 @@ class Danfe extends DaCommon
             $maxW       = $this->wPrint - $this->wCanhoto;
             $title_size = 40;
         }
+
+        if ($this->possuiTotaisIBSCBS()) {
+            return $this->impostoIBSCBS($x, $y, $maxW, $title_size);
+        }
+
         $w = $maxW / $campos_por_linha;
 
         $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => 'B'];
@@ -4162,6 +4278,7 @@ class Danfe extends DaCommon
             $this->cobr       = $this->dom->getElementsByTagName("cobr")->item(0);
             $this->dup        = $this->dom->getElementsByTagName('dup');
             $this->ICMSTot    = $this->dom->getElementsByTagName("ICMSTot")->item(0);
+            $this->IBSCBSTot  = $this->dom->getElementsByTagName("IBSCBSTot")->item(0);
             $this->ISSQNtot   = $this->dom->getElementsByTagName("ISSQNtot")->item(0);
             $this->transp     = $this->dom->getElementsByTagName("transp")->item(0);
             $this->transporta = $this->dom->getElementsByTagName("transporta")->item(0);
