@@ -18,6 +18,7 @@ try {
     $danfe->exibirValorTributos = false;
     $danfe->descProdInfoComplemento = false;
     $danfe->exibirNumeroItemPedido = false;
+    $danfe->exibirSomaDoFCPNoTotalICMS = false;
     $danfe->setOcultarUnidadeTributavel(true);
     $danfe->obsContShow(false);
     $danfe->printParameters(
