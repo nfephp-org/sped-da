@@ -3823,7 +3823,9 @@ class Danfe extends DaCommon
      */
     protected function rodape($x)
     {
-        $y = $this->maxH - 4;
+        // Fixo em maxH - 4, o crédito do integrador caía dentro da área não
+        // imprimível mesmo com margem inferior folgada
+        $y = $this->maxH - $this->marginf - 2;
         if ($this->orientacao == 'P') {
             $w = $this->wPrint;
         } else {
