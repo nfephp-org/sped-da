@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
     <NFe xmlns="http://www.portalfiscal.inf.br/nfe">
-        <infNFe Id="NFe35150300822602000124550010009923461099234656" versao="3.10">
+        <infNFe Id="NFe3515030AJXNDOF000124550010009923461099234656" versao="3.10">
             <ide>
                 <cUF>35</cUF>
                 <cNF>09923465</cNF>
@@ -154,6 +154,7 @@
                         </COFINSNT>
                     </COFINS>
                 </imposto>
+                <infAdProd>2222222222222 22222222222 222222222 22222222 22222222222 22222222222 OS: 35 Cor retornada F1587 LUMICOLOR Lotes: 2906</infAdProd>
             </det>
             <det nItem="3">
                 <prod>
@@ -201,6 +202,7 @@
                         </COFINSNT>
                     </COFINS>
                 </imposto>
+                <infAdProd>33333333333333 3333333333333333 33333333333333333 33333333333333333 333333333333333 333333333333333 OS: 35 Cor retornada F1587 LUMICOLOR Lotes: 2906</infAdProd>
             </det>
             <det nItem="4">
                 <prod>
@@ -248,6 +250,7 @@
                         </COFINSNT>
                     </COFINS>
                 </imposto>
+                <infAdProd>4444444444444444 44444444444444 44444444444444 OS: 35 Cor retornada F1587 LUMICOLOR Lotes: 2906</infAdProd>
             </det>
             <det nItem="5">
                 <prod>
@@ -295,6 +298,7 @@
                         </COFINSNT>
                     </COFINS>
                 </imposto>
+                <infAdProd>OS: 35 Cor retornada F1587 LUMICOLOR Lotes: 2906</infAdProd>
             </det>
             <total>
                 <ICMSTot>

@@ -13,11 +13,12 @@ try {
 
     $danfe = new Danfe($xml);
     $danfe->exibirTextoFatura = false;
-    $danfe->exibirPIS = false;
-    $danfe->exibirIcmsInterestadual = false;
-    $danfe->exibirValorTributos = false;
-    $danfe->descProdInfoComplemento = false;
-    $danfe->exibirNumeroItemPedido = false;
+    $danfe->exibirPIS = true;
+    $danfe->exibirIcmsInterestadual = true;
+    $danfe->exibirValorTributos = true;
+    $danfe->exibirInfAdProd = false;
+    $danfe->descProdInfoComplemento = true;
+    $danfe->exibirNumeroItemPedido = true;
     $danfe->setOcultarUnidadeTributavel(true);
     $danfe->obsContShow(false);
     $danfe->printParameters(
