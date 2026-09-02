@@ -23,6 +23,12 @@ class Danfe extends DaCommon
      */
     protected $qCanhoto = 1;
     /**
+     * Define exibição de informações adicionais do produto
+     *
+     * @var bool
+     */
+    public $exibirInfAdProd = true;
+    /**
      * Define a exbição dos valores de PIS e Cofins
      *
      * @var bool
@@ -2268,6 +2274,9 @@ class Danfe extends DaCommon
             }
         }
         $valorImposto = number_format($value + $value2, 2, ",", ".");
+        if (!$this->exibirValorTributos && $campoImposto == 'vTotTrib') {
+            $valorImposto = '---';
+        }
 
         $fontTitulo = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $fontValor  = ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'B'];
@@ -2750,6 +2759,9 @@ class Danfe extends DaCommon
         if (!empty($infAdProd)) {
             $infAdProd = trim($infAdProd);
             $infAdProd .= ' ';
+        }
+        if (!$this->exibirInfAdProd) {
+            $infAdProd = '';
         }
         $loteTxt = '';
         if ($this->descProdInfoLoteTxt) {
