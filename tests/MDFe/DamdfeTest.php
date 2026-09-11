@@ -68,4 +68,27 @@ class DamdfeTest extends TestCase
             'O CPF do responsável pelo pagamento não foi impresso'
         );
     }
+
+    /**
+     * O valor do Vale-Pedágio é obrigatório no schema e deve ser impresso formatado.
+     * O segundo disp do fixture não traz o nCompra, que é opcional, para garantir que
+     * a ausência do campo não interrompe a impressão
+     */
+    public function test_vale_pedagio_valor(): void
+    {
+        $damdfe = new Damdfe(file_get_contents(TEST_FIXTURES . 'xml/mdfe_vale_pedagio_valor.xml'));
+        $pdf = $damdfe->render();
+        $this->assertTrue(
+            Utils::pdfContemTexto($pdf, 'Valor R$'),
+            'A coluna do valor do Vale-Pedágio não foi impressa'
+        );
+        $this->assertTrue(
+            Utils::pdfContemTexto($pdf, '150,75'),
+            'O valor do Vale-Pedágio não foi impresso'
+        );
+        $this->assertTrue(
+            Utils::pdfContemTexto($pdf, '1.234,50'),
+            'O valor do Vale-Pedágio não foi impresso com o separador de milhar'
+        );
+    }
 }
