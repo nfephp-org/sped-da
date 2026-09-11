@@ -985,12 +985,15 @@ class Damdfe extends DaCommon
                 $texto = 'Vale Pedágio';
                 $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
                 $this->pdf->textBox($x1, $y, $x2, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-                $x2 = ($x2 / 3);
-                $this->pdf->textBox($x1, $y, $x2 - 3, 6 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
+                /* o quadro tem quatro colunas: responsável, fornecedora, comprovante e valor.
+                   Cada uma usa a largura inteira menos uma folga de 1mm, porque um CNPJ
+                   ocupa 22,3mm na fonte 9 e não cabe em larguras menores */
+                $x2 = ($x2 / 4);
+                $this->pdf->textBox($x1, $y, $x2, 6 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
                 $y += 5;
                 $texto = 'Responsável CNPJ/CPF';
                 $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-                $this->pdf->textBox($x1, $y, $x2 - 4, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+                $this->pdf->textBox($x1, $y, $x2 - 1, 8, $texto, $aFont, 'T', 'L', 0, '', false);
                 $altura = $y;
                 for ($i = 0; $i < $valesPedagios; $i++) {
                     $altura += 4;
@@ -1002,32 +1005,50 @@ class Damdfe extends DaCommon
                     }
                     $texto = $pgNode->length == 0 ? '' : $pgNode->item(0)->nodeValue;
                     $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
-                    $this->pdf->textBox($x1, $altura, $x2 - 5, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+                    $this->pdf->textBox($x1, $altura, $x2 - 1, 10, $texto, $aFont, 'T', 'L', 0, '', false);
                 }
-                $x1 += $x2 - 3;
-                $this->pdf->textBox($x1, $y, $x2 - 3, 6 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
+                $x1 += $x2;
+                $this->pdf->textBox($x1, $y, $x2, 6 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
                 $texto = 'Fornecedora CNPJ';
                 $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-                $this->pdf->textBox($x1, $y, $x2 - 4, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+                $this->pdf->textBox($x1, $y, $x2 - 1, 8, $texto, $aFont, 'T', 'L', 0, '', false);
                 $altura = $y;
                 for ($i = 0; $i < $valesPedagios; $i++) {
                     $altura += 4;
                     $pgNode = $this->valePed->item($i)->getElementsByTagName('CNPJForn');
                     $texto = $pgNode->length == 0 ? '' : $pgNode->item(0)->nodeValue;
                     $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
-                    $this->pdf->textBox($x1, $altura, $x2 - 3, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+                    $this->pdf->textBox($x1, $altura, $x2 - 1, 10, $texto, $aFont, 'T', 'L', 0, '', false);
                 }
-                $x1 += $x2 - 3;
-                $this->pdf->textBox($x1, $y, $x2 + 6, 6 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
+                $x1 += $x2;
+                $this->pdf->textBox($x1, $y, $x2, 6 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
                 $texto = 'Nº Comprovante';
                 $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-                $this->pdf->textBox($x1, $y, $x2 + 6, 8, $texto, $aFont, 'T', 'L', 0, '', false);
+                $this->pdf->textBox($x1, $y, $x2 - 1, 8, $texto, $aFont, 'T', 'L', 0, '', false);
                 $altura = $y;
                 for ($i = 0; $i < $valesPedagios; $i++) {
                     $altura += 4;
-                    $texto = $this->valePed->item($i)->getElementsByTagName('nCompra')->item(0)->nodeValue;
+                    /* o nCompra é opcional no schema, por isso a existência é verificada */
+                    $compraNode = $this->valePed->item($i)->getElementsByTagName('nCompra');
+                    $texto = $compraNode->length == 0 ? '' : $compraNode->item(0)->nodeValue;
                     $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
-                    $this->pdf->textBox($x1, $altura, $x2 + 6, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+                    $this->pdf->textBox($x1, $altura, $x2 - 1, 10, $texto, $aFont, 'T', 'L', 0, '', false);
+                }
+                $x1 += $x2;
+                $this->pdf->textBox($x1, $y, $x2, 6 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
+                $texto = 'Valor R$';
+                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+                $this->pdf->textBox($x1, $y, $x2 - 1, 8, $texto, $aFont, 'T', 'R', 0, '', false);
+                $altura = $y;
+                for ($i = 0; $i < $valesPedagios; $i++) {
+                    $altura += 4;
+                    $valorNode = $this->valePed->item($i)->getElementsByTagName('vValePed');
+                    $texto = '';
+                    if ($valorNode->length > 0) {
+                        $texto = number_format($valorNode->item(0)->nodeValue, 2, ',', '.');
+                    }
+                    $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
+                    $this->pdf->textBox($x1, $altura, $x2 - 1, 10, $texto, $aFont, 'T', 'R', 0, '', false);
                 }
             }
             if ($this->seg != "" && $this->seg->length > 0) {
