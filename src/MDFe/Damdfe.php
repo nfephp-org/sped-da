@@ -1041,15 +1041,46 @@ class Damdfe extends DaCommon
                 $y += 2;
                 $altura = $y;
                 for ($i = 0; $i < $this->seg->length; $i++) {
-                    $altura += 4;
-                    $xSeg = $this->seg->item($i)->getElementsByTagName('infSeg')->item(0)->getElementsByTagName('xSeg')->item(0)->nodeValue;
-                    $CNPJ = $this->seg->item($i)->getElementsByTagName('infSeg')->item(0)->getElementsByTagName('CNPJ')->item(0)->nodeValue;
-                    $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
-                    $this->pdf->textBox($x1, $altura, 95, 4, "{$CNPJ} {$xSeg}", $aFont, 'T', 'L', 0, '', false);
-
-                    $altura += 4;
-                    $texto = $this->seg->item($i)->getElementsByTagName('nApol')->item(0)->nodeValue;
-                    $this->pdf->textBox($x1, $altura, 95, 4, "Número da apólice: {$texto}", $aFont, 'T', 'L', 0, '', false);
+                    $seguro = $this->seg->item($i);
+                    /* o responsável pelo seguro é obrigatório no modal rodoviário desde a
+                       lei 11.442/07: 1 para o emitente do MDF-e e 2 para o contratante */
+                    $respSeg = $seguro->getElementsByTagName('respSeg');
+                    if ($respSeg->length > 0) {
+                        $altura += 4;
+                        $texto = $respSeg->item(0)->nodeValue == '1'
+                            ? 'Emitente do MDF-e'
+                            : 'Contratante';
+                        $this->pdf->textBox(
+                            $x1,
+                            $altura,
+                            95,
+                            4,
+                            "Responsável pelo seguro: {$texto}",
+                            $aFont,
+                            'T',
+                            'L',
+                            0,
+                            '',
+                            false
+                        );
+                    }
+                    /* o grupo infSeg é opcional, por isso a existência é verificada antes
+                       de os dados da seguradora serem lidos */
+                    $infSeg = $seguro->getElementsByTagName('infSeg');
+                    if ($infSeg->length > 0) {
+                        $altura += 4;
+                        $xSeg = $infSeg->item(0)->getElementsByTagName('xSeg')->item(0)->nodeValue;
+                        $CNPJ = $infSeg->item(0)->getElementsByTagName('CNPJ')->item(0)->nodeValue;
+                        $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
+                        $this->pdf->textBox($x1, $altura, 95, 4, "{$CNPJ} {$xSeg}", $aFont, 'T', 'L', 0, '', false);
+                    }
+                    /* o número da apólice também é opcional no schema */
+                    $nApol = $seguro->getElementsByTagName('nApol');
+                    if ($nApol->length > 0) {
+                        $altura += 4;
+                        $texto = $nApol->item(0)->nodeValue;
+                        $this->pdf->textBox($x1, $altura, 95, 4, "Número da apólice: {$texto}", $aFont, 'T', 'L', 0, '', false);
+                    }
                 }
             }
             $this->condutor = $this->veicTracao->getElementsByTagName('condutor');
