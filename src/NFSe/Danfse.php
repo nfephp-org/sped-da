@@ -398,7 +398,7 @@ class Danfse extends DaCommon
         $end = $this->childNode('end', $node);
 
         $tpEmit = $this->tpEmit($this->value('tpEmit', $this->infDPS));
-        if ($title === "PRESTADOR / FORNECEDOR" && $node->tagName === "prest" && $tpEmit === "Prestador") {
+        if ($title === "PRESTADOR / FORNECEDOR" && $node->localName === "prest" && $tpEmit === "Prestador") {
             $nome = $this->value('xNome', $this->firstNode('emit', $this->infNFSe));
         } else {
             $nome = $this->value('xNome', $node);
