@@ -50,4 +50,22 @@ class DamdfeTest extends TestCase
         $pdf = $damdfe->render();
         $this->assertTrue(Utils::pdfContemTexto($pdf, '53250509231544000139550010000568821095071500'));
     }
+
+    /**
+     * O responsável pelo pagamento do Vale-Pedágio é informado por CNPJ ou por CPF,
+     * conforme o xs:choice do schema, e ambos devem ser impressos
+     */
+    public function test_vale_pedagio_responsavel_pelo_pagamento(): void
+    {
+        $damdfe = new Damdfe(file_get_contents(TEST_FIXTURES . 'xml/mdfe_vale_pedagio.xml'));
+        $pdf = $damdfe->render();
+        $this->assertTrue(
+            Utils::pdfContemTexto($pdf, '05405941000129'),
+            'O CNPJ do responsável pelo pagamento não foi impresso'
+        );
+        $this->assertTrue(
+            Utils::pdfContemTexto($pdf, '11122233396'),
+            'O CPF do responsável pelo pagamento não foi impresso'
+        );
+    }
 }
