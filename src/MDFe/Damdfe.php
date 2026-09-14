@@ -77,6 +77,8 @@ class Damdfe extends DaCommon
     protected $valePed;
     protected $infCpl;
     protected $seg;
+    /* seguros que não couberam na folha e saem no quadro de continuação */
+    protected $segurosRestantes = array();
     protected $infAdFisco;
     protected $dhRecbto;
     protected $condutor;
@@ -286,6 +288,8 @@ class Damdfe extends DaCommon
         $y = $this->bodyMDFe($x, $y);
         //coloca os dados da MDFe
         $this->footerMDFe($x, $y);
+        /* os seguros que não couberam saem em folhas de continuação, antes das chaves */
+        $this->seguroContinuacao($xInic, $yInic);
 
         if ($this->flagDocs && $this->exibirDocumentosVinculados) {
             $this->addPage();
@@ -1370,6 +1374,99 @@ class Damdfe extends DaCommon
     }
 
     /**
+     * linhasSeguroDisponiveisMDFe
+     * Quantas linhas de 4mm cabem entre o início da lista e o quadro de Observação, que é
+     * impresso em posição fixa pelo footerMDFe. A lista começa em altura variável, conforme
+     * o vale-pedágio e as chaves de acesso impressos acima dela, por isso a medida é feita
+     * a cada folha. O total inclui as duas linhas que cada grupo gasta com o seu título e
+     * o cabeçalho das colunas, descontadas por quem divide os grupos.
+     *
+     * @param float $y Posição vertical em que a lista começa
+     * @return number
+     */
+    protected function linhasSeguroDisponiveisMDFe($y)
+    {
+        $yObservacao = $this->orientacao == 'P' ? 240 : 180;
+        /* uma folga para a última linha não encostar na moldura da Observação */
+        $linhas = (int) floor((($yObservacao - 4) - $y) / 4);
+        return $linhas > 0 ? $linhas : 0;
+    }
+
+    /**
+     * cortaGruposSeguroMDFe
+     * Separa o que cabe na folha do que segue para a continuação. Os grupos são impressos
+     * um abaixo do outro, então as linhas são consumidas em sequência, e cada grupo gasta
+     * ainda duas com o seu título e o cabeçalho das colunas. O excedente fica guardado
+     * para o quadro de continuação.
+     *
+     * @param array $grupos
+     * @param float $y Posição vertical em que a lista começa
+     * @return array Grupos impressos nesta folha
+     */
+    protected function cortaGruposSeguroMDFe($grupos, $y)
+    {
+        $disponivel = $this->linhasSeguroDisponiveisMDFe($y);
+        $folha = array();
+        $resto = array();
+        foreach ($grupos as $grupo) {
+            /* sem espaço para o título, o cabeçalho e ao menos uma linha, o grupo inteiro
+               segue para a folha seguinte */
+            $cabe = $disponivel - 2;
+            if ($cabe < 1) {
+                $resto[] = $grupo;
+                continue;
+            }
+            /* a lista ocupa dois pares de colunas, então cada linha recebe dois seguros */
+            $limite = $cabe * 2;
+            $sobra = array_slice($grupo['itens'], $limite);
+            if (count($sobra) > 0) {
+                $resto[] = array('titulo' => $grupo['titulo'], 'itens' => $sobra);
+            }
+            $grupo['itens'] = array_slice($grupo['itens'], 0, $limite);
+            $folha[] = $grupo;
+            /* o grupo seguinte começa abaixo deste: além das linhas usadas pela lista,
+               descontam-se o título, o cabeçalho e o intervalo de 6mm entre os blocos */
+            $usadas = (int) ceil(count($grupo['itens']) / 2);
+            $disponivel -= 2 + $usadas + 2;
+        }
+        $this->segurosRestantes = $resto;
+        return $folha;
+    }
+
+    /**
+     * seguroContinuacao
+     * Imprime, em folhas de continuação, os seguros que não couberam na primeira. Segue o
+     * mesmo desenho já usado neste documento para as chaves de acesso: o cabeçalho é
+     * repetido e o quadro traz o título de continuação.
+     *
+     * @param float $x
+     * @param float $y
+     */
+    protected function seguroContinuacao($x, $y)
+    {
+        $xInic = $x;
+        $yInic = $y;
+        while (count($this->segurosRestantes) > 0) {
+            $this->pdf->addPage($this->orientacao, $this->papel);
+            $x = $xInic;
+            $y = $yInic;
+            if ($this->orientacao == 'P') {
+                $y = $this->headerMDFeRetrato($x, $y);
+            } else {
+                $y = $this->headerMDFePaisagem($x, $y);
+            }
+            $texto = 'SEGURO DA CARGA - CONTINUACÃO';
+            $aFont = array('font' => $this->fontePadrao, 'size' => 10, 'style' => 'B');
+            $this->pdf->textBox($x, $y, 180, 8, $texto, $aFont, 'T', 'C', 0, '');
+            $y += 8;
+            /* apenas os grupos que ainda têm seguros aparecem nesta folha: um responsável
+               cuja lista terminou não repete título nem cabeçalho */
+            $grupos = $this->cortaGruposSeguroMDFe($this->segurosRestantes, $y);
+            $this->quadroSeguroMDFe($x, $y, $grupos);
+        }
+    }
+
+    /**
      * agrupaSegurosMDFe
      * Separa os seguros pelo responsável informado em cada registro. O responsável é
      * obrigatório no modal rodoviário desde a lei 11.442/07, e agrupar por ele evita
@@ -1457,7 +1554,7 @@ class Damdfe extends DaCommon
      * @param float $y
      * @return float Posição vertical da última linha impressa
      */
-    protected function quadroSeguroMDFe($x, $y)
+    protected function quadroSeguroMDFe($x, $y, $grupos = null)
     {
         $wSeguradora = 64;
         $wApolice = 30;
@@ -1465,7 +1562,17 @@ class Damdfe extends DaCommon
         $aFontTitulo = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
         $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
         $altura = $y;
-        foreach ($this->agrupaSegurosMDFe() as $grupo) {
+        /* na primeira folha os grupos são obtidos do documento e divididos conforme o
+           espaço disponível; na continuação vêm prontos, com o que sobrou da anterior */
+        if ($grupos === null) {
+            $grupos = $this->cortaGruposSeguroMDFe($this->agrupaSegurosMDFe(), $y);
+        }
+        foreach ($grupos as $indice => $grupo) {
+            /* os blocos são separados por um intervalo, para os títulos não ficarem colados
+               na lista do responsável anterior */
+            if ($indice > 0) {
+                $altura += 6;
+            }
             $this->pdf->textBox(
                 $colunas[0],
                 $altura,
@@ -1539,8 +1646,6 @@ class Damdfe extends DaCommon
                 /* a primeira linha já foi contada no avanço acima */
                 $altura += ($ocupadas - 1) * 4;
             }
-            /* o bloco do responsável seguinte começa abaixo do último seguro deste */
-            $altura += 6;
         }
         return $altura;
     }
