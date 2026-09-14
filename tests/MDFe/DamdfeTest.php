@@ -130,6 +130,30 @@ class DamdfeTest extends TestCase
     }
 
     /**
+     * O quadro de Observação é impresso em posição fixa na folha, então os seguros que não
+     * cabem acima dele seguem em folha de continuação, em vez de se sobreporem
+     */
+    public function test_seguro_continuacao(): void
+    {
+        $damdfe = new Damdfe(file_get_contents(TEST_FIXTURES . 'xml/mdfe_seguro_continuacao.xml'));
+        $pdf = $damdfe->render();
+        $texto = Utils::textoPdf($pdf);
+        $this->assertStringContainsString(
+            'SEGURO DA CARGA - CONTINUACÃO',
+            $texto,
+            'A folha de continuação do seguro não foi gerada'
+        );
+        /* o fixture traz sessenta seguros: nenhum pode se perder na divisão entre as folhas */
+        for ($i = 1; $i <= 60; $i++) {
+            $this->assertStringContainsString(
+                "SEGURADORA NUMERO {$i}",
+                $texto,
+                "O seguro {$i} não foi impresso em nenhuma folha"
+            );
+        }
+    }
+
+    /**
      * O valor do Vale-Pedágio é obrigatório no schema e deve ser impresso formatado.
      * O segundo disp do fixture não traz o nCompra, que é opcional, para garantir que
      * a ausência do campo não interrompe a impressão
