@@ -1053,56 +1053,7 @@ class Damdfe extends DaCommon
             }
             if ($this->seg != "" && $this->seg->length > 0) {
                 $y += 10;
-                $x1 = $x;
-                $x2 = ($x2 / 3);
-                $this->pdf->textBox($x1, $y, $x2 + 6, 6 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
-                $texto = 'Seguradora';
-                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
-                $this->pdf->textBox($x1, $y, $x2 + 6, 8, $texto, $aFont, 'T', 'L', 0, '', false);
-                $y += 2;
-                $altura = $y;
-                for ($i = 0; $i < $this->seg->length; $i++) {
-                    $seguro = $this->seg->item($i);
-                    /* o responsável pelo seguro é obrigatório no modal rodoviário desde a
-                       lei 11.442/07: 1 para o emitente do MDF-e e 2 para o contratante */
-                    $respSeg = $seguro->getElementsByTagName('respSeg');
-                    if ($respSeg->length > 0) {
-                        $altura += 4;
-                        $texto = $respSeg->item(0)->nodeValue == '1'
-                            ? 'Emitente do MDF-e'
-                            : 'Contratante';
-                        $this->pdf->textBox(
-                            $x1,
-                            $altura,
-                            95,
-                            4,
-                            "Responsável pelo seguro: {$texto}",
-                            $aFont,
-                            'T',
-                            'L',
-                            0,
-                            '',
-                            false
-                        );
-                    }
-                    /* o grupo infSeg é opcional, por isso a existência é verificada antes
-                       de os dados da seguradora serem lidos */
-                    $infSeg = $seguro->getElementsByTagName('infSeg');
-                    if ($infSeg->length > 0) {
-                        $altura += 4;
-                        $xSeg = $infSeg->item(0)->getElementsByTagName('xSeg')->item(0)->nodeValue;
-                        $CNPJ = $infSeg->item(0)->getElementsByTagName('CNPJ')->item(0)->nodeValue;
-                        $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
-                        $this->pdf->textBox($x1, $altura, 95, 4, "{$CNPJ} {$xSeg}", $aFont, 'T', 'L', 0, '', false);
-                    }
-                    /* o número da apólice também é opcional no schema */
-                    $nApol = $seguro->getElementsByTagName('nApol');
-                    if ($nApol->length > 0) {
-                        $altura += 4;
-                        $texto = $nApol->item(0)->nodeValue;
-                        $this->pdf->textBox($x1, $altura, 95, 4, "Número da apólice: {$texto}", $aFont, 'T', 'L', 0, '', false);
-                    }
-                }
+                $altura = $this->quadroSeguroMDFe($x, $y);
             }
             $this->condutor = $this->veicTracao->getElementsByTagName('condutor');
             $x1 = round($maxW / 2, 0) + 7;
@@ -1416,6 +1367,182 @@ class Damdfe extends DaCommon
         }
 
         return $altura + 10;
+    }
+
+    /**
+     * agrupaSegurosMDFe
+     * Separa os seguros pelo responsável informado em cada registro. O responsável é
+     * obrigatório no modal rodoviário desde a lei 11.442/07, e agrupar por ele evita
+     * repeti-lo a cada seguro.
+     *
+     * @return array Grupos na ordem de impressão, cada um com o título e os seus seguros
+     */
+    protected function agrupaSegurosMDFe()
+    {
+        $emitente = array();
+        $contratante = array();
+        for ($i = 0; $i < $this->seg->length; $i++) {
+            $seguro = $this->seg->item($i);
+            $respSeg = $seguro->getElementsByTagName('respSeg');
+            /* na falta do responsável o seguro acompanha o emitente, que é o caso comum */
+            if ($respSeg->length == 0 || $respSeg->item(0)->nodeValue == '1') {
+                $emitente[] = $seguro;
+            } else {
+                $contratante[] = $seguro;
+            }
+        }
+        $grupos = array();
+        if (count($emitente) > 0) {
+            $grupos[] = array('titulo' => 'Emitente do MDF-e', 'itens' => $emitente);
+        }
+        if (count($contratante) > 0) {
+            $grupos[] = array('titulo' => 'Contratante', 'itens' => $contratante);
+        }
+        return $grupos;
+    }
+
+    /**
+     * dadosSeguroMDFe
+     * Nome da seguradora, antecedido do seu CNPJ, e número da apólice. Os dois campos são
+     * opcionais no schema, por isso a existência é verificada.
+     *
+     * @param \DOMElement $seguro
+     * @return array array(seguradora, apólice)
+     */
+    protected function dadosSeguroMDFe($seguro)
+    {
+        $seguradora = '';
+        $infSeg = $seguro->getElementsByTagName('infSeg');
+        if ($infSeg->length > 0) {
+            $xSeg = $infSeg->item(0)->getElementsByTagName('xSeg')->item(0)->nodeValue;
+            $cnpj = $infSeg->item(0)->getElementsByTagName('CNPJ')->item(0)->nodeValue;
+            $seguradora = "{$cnpj} {$xSeg}";
+        }
+        $apolice = '';
+        $nApol = $seguro->getElementsByTagName('nApol');
+        if ($nApol->length > 0) {
+            $apolice = $nApol->item(0)->nodeValue;
+        }
+        return array($seguradora, $apolice);
+    }
+
+    /**
+     * linhasSeguradoraMDFe
+     * Quantas linhas o nome da seguradora ocupa na largura da coluna. O wordWrap mede com
+     * a fonte corrente, por isso ela é estabelecida antes, e recebe o texto por referência,
+     * por isso recebe uma cópia.
+     *
+     * @param string $seguradora
+     * @param float $largura
+     * @return number
+     */
+    protected function linhasSeguradoraMDFe($seguradora, $largura)
+    {
+        if ($seguradora === '') {
+            return 1;
+        }
+        $this->pdf->setFont($this->fontePadrao, '', 8);
+        $texto = $seguradora;
+        $linhas = $this->pdf->wordWrap($texto, $largura);
+        return $linhas > 0 ? $linhas : 1;
+    }
+
+    /**
+     * quadroSeguroMDFe
+     * Desenha o quadro de seguro: um bloco por responsável, com a lista distribuída em dois
+     * pares de colunas. Dois pares aproveitam a largura da folha e reduzem a altura
+     * ocupada, que é disputada com o quadro de Observação, impresso logo abaixo.
+     *
+     * @param float $x
+     * @param float $y
+     * @return float Posição vertical da última linha impressa
+     */
+    protected function quadroSeguroMDFe($x, $y)
+    {
+        $wSeguradora = 64;
+        $wApolice = 30;
+        $colunas = array($x, $x + $wSeguradora + $wApolice + 4);
+        $aFontTitulo = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
+        $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
+        $altura = $y;
+        foreach ($this->agrupaSegurosMDFe() as $grupo) {
+            $this->pdf->textBox(
+                $colunas[0],
+                $altura,
+                95,
+                4,
+                'Responsável pelo Seguro: ' . $grupo['titulo'],
+                $aFontTitulo,
+                'T',
+                'L',
+                0,
+                '',
+                false
+            );
+            $altura += 4;
+            foreach ($colunas as $coluna) {
+                $this->pdf->textBox(
+                    $coluna,
+                    $altura,
+                    $wSeguradora,
+                    4,
+                    'Seguradora',
+                    $aFont,
+                    'T',
+                    'L',
+                    0,
+                    '',
+                    false
+                );
+                $this->pdf->textBox(
+                    $coluna + $wSeguradora,
+                    $altura,
+                    $wApolice,
+                    4,
+                    'Número da Apólice',
+                    $aFont,
+                    'T',
+                    'L',
+                    0,
+                    '',
+                    false
+                );
+            }
+            /* os seguros preenchem os dois pares de colunas alternadamente, e a linha
+               seguinte começa abaixo do registro mais alto da linha atual, porque o nome
+               da seguradora pode não caber na largura e quebrar em mais de uma linha */
+            foreach (array_chunk($grupo['itens'], 2) as $linha) {
+                $altura += 4;
+                $ocupadas = 1;
+                foreach ($linha as $i => $seguro) {
+                    $coluna = $colunas[$i];
+                    list($seguradora, $apolice) = $this->dadosSeguroMDFe($seguro);
+                    $this->pdf->textBox($coluna, $altura, $wSeguradora, 4, $seguradora, $aFont, 'T', 'L', 0, '', false);
+                    $this->pdf->textBox(
+                        $coluna + $wSeguradora,
+                        $altura,
+                        $wApolice,
+                        4,
+                        $apolice,
+                        $aFont,
+                        'T',
+                        'L',
+                        0,
+                        '',
+                        false
+                    );
+                    $linhasSeguro = $this->linhasSeguradoraMDFe($seguradora, $wSeguradora);
+                    if ($linhasSeguro > $ocupadas) {
+                        $ocupadas = $linhasSeguro;
+                    }
+                }
+                /* a primeira linha já foi contada no avanço acima */
+                $altura += ($ocupadas - 1) * 4;
+            }
+            /* o bloco do responsável seguinte começa abaixo do último seguro deste */
+            $altura += 6;
+        }
+        return $altura;
     }
 
     protected function addPage()

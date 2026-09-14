@@ -8,11 +8,13 @@ class Utils
 {
     public static function pdfContemTexto(string $conteudoPdf, string $textoProcurado): bool
     {
+        return strpos(self::textoPdf($conteudoPdf), $textoProcurado) !== false;
+    }
+
+    public static function textoPdf(string $conteudoPdf): string
+    {
         $parser = new Parser();
-        $pdf = $parser->parseContent($conteudoPdf);
 
-        $texto = $pdf->getText();
-
-        return strpos($texto, $textoProcurado) !== false;
+        return $parser->parseContent($conteudoPdf)->getText();
     }
 }

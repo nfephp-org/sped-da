@@ -75,11 +75,11 @@ class DamdfeTest extends TestCase
         $damdfe = new Damdfe(file_get_contents(TEST_FIXTURES . 'xml/mdfe_seguro.xml'));
         $pdf = $damdfe->render();
         $this->assertTrue(
-            Utils::pdfContemTexto($pdf, 'Responsável pelo seguro: Emitente do MDF-e'),
+            Utils::pdfContemTexto($pdf, 'Responsável pelo Seguro: Emitente do MDF-e'),
             'O responsável pelo seguro não foi impresso para o emitente'
         );
         $this->assertTrue(
-            Utils::pdfContemTexto($pdf, 'Responsável pelo seguro: Contratante'),
+            Utils::pdfContemTexto($pdf, 'Responsável pelo Seguro: Contratante'),
             'O responsável pelo seguro não foi impresso para o contratante'
         );
     }
@@ -99,8 +99,33 @@ class DamdfeTest extends TestCase
             'O nome da seguradora não foi impresso'
         );
         $this->assertTrue(
-            Utils::pdfContemTexto($pdf, 'Número da apólice: 2355523235325002'),
+            Utils::pdfContemTexto($pdf, '2355523235325002'),
             'O número da apólice não foi impresso'
+        );
+    }
+
+    /**
+     * Os seguros são agrupados pelo responsável, que aparece uma única vez como título
+     * do bloco, e a lista é distribuída em dois pares de colunas
+     */
+    public function test_seguro_agrupado_por_responsavel(): void
+    {
+        $damdfe = new Damdfe(file_get_contents(TEST_FIXTURES . 'xml/mdfe_seguro.xml'));
+        $pdf = $damdfe->render();
+        /* o fixture traz dois seguros do emitente e um do contratante: o título do
+           emitente sai uma vez só, e não uma vez por seguro */
+        $this->assertSame(
+            1,
+            substr_count(Utils::textoPdf($pdf), 'Responsável pelo Seguro: Emitente do MDF-e'),
+            'O responsável do grupo foi repetido a cada seguro'
+        );
+        $this->assertTrue(
+            Utils::pdfContemTexto($pdf, 'Seguradora'),
+            'O cabeçalho da coluna da seguradora não foi impresso'
+        );
+        $this->assertTrue(
+            Utils::pdfContemTexto($pdf, 'Número da Apólice'),
+            'O cabeçalho da coluna da apólice não foi impresso'
         );
     }
 
