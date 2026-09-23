@@ -68,6 +68,8 @@ class DanfeSimplificadoTipo2Test extends TestCase
         $texto = $this->normaliza(Utils::textoPdf($pdf));
         $this->assertStringContainsString('EMITIDA EM CONTINGÊNCIA', $texto);
         $this->assertStringContainsString('Pendente de autorização', $texto);
+        // chave com tpEmis 9 (contingência offline) na 35ª posição
+        $this->assertStringContainsString('5026 0912 3456 7800 0195 5500 6000 9999 1497 1082 3233', $texto);
         $this->assertStringNotContainsString('Protocolo de autorização', $texto);
     }
 
