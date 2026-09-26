@@ -241,6 +241,12 @@ class Danfe extends DaCommon
      * Node
      *
      * @var \DOMElement
+     */    
+    protected $IBSCBSTot;
+    /**
+     * Node
+     *
+     * @var \DOMElement
      */
     protected $ISSQNtot;
     /**
@@ -2273,6 +2279,14 @@ class Danfe extends DaCommon
                 }
             }
         }
+
+        if(isset($this->IBSCBSTot)) {
+            $the_field = $this->IBSCBSTot->getElementsByTagName($campoImposto)->item(0);
+            if (isset($the_field)) {
+                $value = $the_field->nodeValue;
+            }
+        }
+
         $valorImposto = number_format($value + $value2, 2, ",", ".");
         if (!$this->exibirValorTributos && $campoImposto == 'vTotTrib') {
             $valorImposto = '---';
@@ -2360,6 +2374,15 @@ class Danfe extends DaCommon
             $x = $this->impostoHelper($x, $y, $w, $h, "VALOR DA COFINS", "vCOFINS");
         }
         $x = $this->impostoHelper($x, $y, $w, $h, "V. TOTAL DA NOTA", "vNF");
+
+        $y += $h;
+        $x = $x_inicial;
+
+        $x = $this->impostoHelper($x, $y, $w, $h, "BASE DE CÁLC. IBS", "vBCIBS");
+        $x = $this->impostoHelper($x, $y, $w, $h, "VALOR TOTAL IBS", "vIBS");
+        $x = $this->impostoHelper($x, $y, $w, $h, "BASE DE CÁLC. CBS", "vBCCBS");
+        $x = $this->impostoHelper($x, $y, $w, $h, "VALOR TOTAL CBS", "vCBS");
+        $x = $this->impostoHelper($x, $y, $w, $h, "V.T. IMPOSTO SELETIVO", "vIS");
 
         return ($y + $h);
     } //fim imposto
@@ -3015,7 +3038,7 @@ class Danfe extends DaCommon
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
         $y += 3;
         //desenha a caixa dos dados dos itens da NF
-        $hmax  += 1;
+        $hmax  -= 4;
         $texto = '';
         $this->pdf->textBox($x, $y, $w, $hmax);
         //##################################################################################
@@ -3192,6 +3215,11 @@ class Danfe extends DaCommon
 
         foreach ($this->det as $d) {
             if ($i >= $nInicio) {
+                if ($i - $nInicio >= 7) {
+                    $nInicio = $i;
+                    break;
+                }
+
                 $thisItem = $this->det->item($i);
                 //carrega as tags do item
                 $prod         = $thisItem->getElementsByTagName("prod")->item(0);
@@ -4174,6 +4202,7 @@ class Danfe extends DaCommon
             $this->cobr       = $this->dom->getElementsByTagName("cobr")->item(0);
             $this->dup        = $this->dom->getElementsByTagName('dup');
             $this->ICMSTot    = $this->dom->getElementsByTagName("ICMSTot")->item(0);
+            $this->IBSCBSTot    = $this->dom->getElementsByTagName("IBSCBSTot")->item(0);
             $this->ISSQNtot   = $this->dom->getElementsByTagName("ISSQNtot")->item(0);
             $this->transp     = $this->dom->getElementsByTagName("transp")->item(0);
             $this->transporta = $this->dom->getElementsByTagName("transporta")->item(0);
