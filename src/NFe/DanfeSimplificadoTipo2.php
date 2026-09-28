@@ -208,9 +208,31 @@ class DanfeSimplificadoTipo2 extends Danfce
     {
         $aFont = ['font' => $this->fontePadrao, 'size' => $size, 'style' => $style];
         $meio = $this->wPrint / 2;
-        $this->pdf->textBox($this->margem, $y, $meio, 3, $rotulo, $aFont, 'T', 'L', false, '', false);
+        // A altura da linha é a do lado mais alto: um rótulo longo ("CARTÃO DA LOJA/OUTROS
+        // CREDIÁRIOS") quebra em 2 linhas enquanto o valor ocupa 1, e medir só o valor desenhava a
+        // próxima linha por cima da segunda linha do rótulo.
+        $hRotulo = $this->pdf->textBox($this->margem, $y, $meio, 3, $rotulo, $aFont, 'T', 'L', false, '', false);
+        $hValor = $this->pdf->textBox($this->margem + $meio, $y, $meio, 3, $valor, $aFont, 'T', 'R', false, '', false);
 
-        return $this->pdf->textBox($this->margem + $meio, $y, $meio, 3, $valor, $aFont, 'T', 'R', false, '', false);
+        return max($hRotulo, $hValor);
+    }
+
+    /**
+     * Linhas que o rótulo de imprimeLinha() ocupa na meia largura, na fonte da linha. A largura sai do
+     * papel e da margem, não de wPrint: a altura da bobina (calculatePaperLength) é calculada antes de
+     * monta() preencher wPrint.
+     *
+     * @param string $rotulo
+     * @param int $size
+     *
+     * @return int
+     */
+    private function linhasDoRotulo($rotulo, $size)
+    {
+        $tempPDF = new Pdf();
+        $tempPDF->setFont($this->fontePadrao, '', $size);
+
+        return max(1, $tempPDF->wordWrap($rotulo, ($this->paperwidth - 2 * $this->margem) / 2));
     }
 
     // ---------------------------------------------------------------- divisão I
@@ -373,7 +395,12 @@ class DanfeSimplificadoTipo2 extends Danfce
 
     protected function calculateHeightPag()
     {
-        $n = max($this->pag->length, 1);
+        // Uma forma de pagamento reserva 3 mm por linha do rótulo: o nome longo quebra na meia largura.
+        $n = 0;
+        foreach ($this->pag as $pgto) {
+            $n += $this->linhasDoRotulo($this->pagType((int) $this->getTagValue($pgto, 'tPag')), 7);
+        }
+        $n = max($n, 1);
         $rtc = $this->linhasRtc();
 
         return 4 + (3 * $n) + 3 + 1 + ($rtc ? count($rtc) * 3 + 2 : 0);

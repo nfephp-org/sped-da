@@ -173,6 +173,63 @@ class DanfeSimplificadoTipo2Test extends TestCase
         $this->assertIsString($pdf);
     }
 
+    /**
+     * "CARTÃO DA LOJA/OUTROS CREDIÁRIOS" (tPag 05) quebra em duas linhas na meia largura do rótulo: a
+     * linha seguinte (Troco) e o resto do bloco têm de descer junto, sem desenhar por cima.
+     */
+    public function test_forma_de_pagamento_longa_nao_sobrepoe_o_troco(): void
+    {
+        foreach ([80, 58] as $largura) {
+            $xml = str_replace(
+                '<pag><detPag><tPag>01</tPag><vPag>100.00</vPag></detPag><vTroco>44.04</vTroco></pag>',
+                '<pag><detPag><tPag>05</tPag><vPag>30.00</vPag></detPag>'
+                    . '<detPag><tPag>05</tPag><vPag>25.96</vPag></detPag></pag>',
+                file_get_contents(TEST_FIXTURES . 'xml/nfe_danfe_simplificado_tipo2_autorizada.xml')
+            );
+            $danfe = new DanfeSimplificadoTipo2($xml);
+            $danfe->setPaperWidth($largura);
+            $pdf = $danfe->render();
+
+            // Linha de base (y do PDF, de baixo para cima) de cada `BT x y Td (texto) Tj` do stream.
+            $trechos = $this->trechosDeTexto($pdf);
+            $baseY = function (string $padrao) use ($trechos, $largura): array {
+                $ys = [];
+                foreach ($trechos as [$y, $texto]) {
+                    if (preg_match($padrao, $texto)) {
+                        $ys[] = $y;
+                    }
+                }
+                $this->assertNotEmpty($ys, "não achei {$padrao} no PDF de {$largura} mm");
+
+                return $ys;
+            };
+
+            // 5 pt ≈ 1,8 mm: menos que isso entre duas linhas de base de fonte 7 é sobreposição.
+            $this->assertGreaterThanOrEqual(5, min($baseY('/CREDI/')) - max($baseY('/^Troco/')), "{$largura} mm: Troco sobre a forma de pagamento");
+            $this->assertGreaterThanOrEqual(5, min($baseY('/^Troco/')) - max($baseY('/CBS R/')), "{$largura} mm: CBS sobre o Troco");
+            $this->assertGreaterThanOrEqual(5, min($baseY('/IBS R/')) - max($baseY('/^Consulte/')), "{$largura} mm: bloco estourou sobre a chave");
+        }
+    }
+
+    /** [y, texto] de cada trecho escrito no PDF, lidos dos streams (comprimidos ou não). */
+    private function trechosDeTexto(string $pdf): array
+    {
+        preg_match_all('/stream\r?\n(.*?)\r?\nendstream/s', $pdf, $streams);
+        $trechos = [];
+        foreach ($streams[1] as $stream) {
+            $conteudo = @gzuncompress($stream);
+            if ($conteudo === false) {
+                $conteudo = $stream;
+            }
+            preg_match_all('/BT [\d.]+ ([\d.]+) Td \((.*?)\) Tj ET/s', $conteudo, $m, PREG_SET_ORDER);
+            foreach ($m as $t) {
+                $trechos[] = [(float) $t[1], $t[2]];
+            }
+        }
+
+        return $trechos;
+    }
+
     private function normaliza(string $texto): string
     {
         return preg_replace('/\s+/u', ' ', $texto);
