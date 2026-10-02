@@ -632,6 +632,68 @@ class DanfseTest extends TestCase
         );
     }
 
+    public function testTomadorSemEnderecoNaoExibeEnderecoDeOutroParticipante(): void
+    {
+        $text = $this->textFromPdf(
+            (new Danfse($this->adnXml('v1.01-mei-tomador-sem-endereco')))->render()
+        );
+        $tomador = $this->textBetween($text, 'TOMADOR / ADQUIRENTE', 'DESTINATÁRIO DA OPERAÇÃO');
+
+        $this->assertStringContainsString('Nome / Nome Empresarial CICLANA DE OLIVEIRA', $tomador);
+        $this->assertStringContainsString('Município / Sigla UF - Código IBGE / CEP - Endereço - E-mail -', $tomador);
+        $this->assertStringNotContainsString('RUA DOS PINHEIROS', $tomador);
+        $this->assertStringNotContainsString('4106902', $tomador);
+        $this->assertStringNotContainsString('81.650-000', $tomador);
+    }
+
+    public function testPrestadorSemEnderecoQueNaoEhEmitenteNaoExibeDadosDeOutroParticipante(): void
+    {
+        $xml = str_replace(
+            ['<tpEmit>1</tpEmit>', '<prest>' . "\n" . '          <CNPJ>11222333000181</CNPJ>'],
+            ['<tpEmit>2</tpEmit>', '<prest>' . "\n" . '          <CNPJ>45723174000110</CNPJ>'],
+            $this->adnXml('v1.01-ibscbs-prestador-emitente')
+        );
+
+        $text = $this->textFromPdf((new Danfse($xml))->render());
+        $prestador = $this->textBetween($text, 'PRESTADOR / FORNECEDOR', 'TOMADOR / ADQUIRENTE');
+
+        $this->assertStringContainsString('45.723.174/0001-10', $prestador);
+        $this->assertStringContainsString('Município / Sigla UF - Código IBGE / CEP - Endereço - E-mail -', $prestador);
+        $this->assertStringContainsString('Telefone -', $prestador);
+        $this->assertStringNotContainsString('3550308', $prestador);
+        $this->assertStringNotContainsString('RUA DAS ARAUCARIAS', $prestador);
+    }
+
+    /**
+     * @dataProvider xmlsSemGrupoIbsCbsProvider
+     */
+    public function testBlocoIbsCbsSemGrupoIbscbsNaoUsaValoresDeOutrosGrupos(string $file): void
+    {
+        $text = $this->textFromPdf((new Danfse(file_get_contents(TEST_FIXTURES . $file)))->render());
+        $ibsCbs = $this->textBetween($text, 'TRIBUTAÇÃO IBS / CBS', 'VALOR TOTAL DA NFS-E');
+
+        $this->assertStringContainsString('CST / cClassTrib - ', $ibsCbs);
+        $this->assertStringContainsString(
+            'Município Incidência / Sigla UF - Exclusões e Reduções da Base de Cálculo - '
+            . 'Base de Cálculo Após Exclusões e Reduções - ',
+            $ibsCbs
+        );
+        $this->assertStringNotContainsString('R$', $ibsCbs);
+        $this->assertStringNotContainsString('%', $ibsCbs);
+        $this->assertStringContainsString('Total do IBS/CBS - Valor Líquido da NFS-e + IBS/CBS -', $text);
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public function xmlsSemGrupoIbsCbsProvider(): array
+    {
+        return [
+            'leiaute 1.00' => ['xml/nfse-adn/v1.00-prestador-emitente.xml'],
+            'leiaute 1.01 sem IBSCBS' => ['xml/nfse-real/nfse-real-sanitized-01.xml'],
+        ];
+    }
+
     /**
      * @return array<string, array{string, string, string}>
      */

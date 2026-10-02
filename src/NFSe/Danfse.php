@@ -197,7 +197,7 @@ class Danfse extends DaCommon
             throw new Exception('O xml de NFS-e informado é inválido.');
         }
         $this->xpath = new DOMXPath($this->dom);
-        $this->infNFSe = $this->firstNode('infNFSe');
+        $this->infNFSe = $this->firstNode('infNFSe', $this->dom);
         $this->infDPS = $this->firstNode('infDPS', $this->infNFSe);
         if (!$this->infNFSe || !$this->infDPS) {
             throw new Exception('O xml informado não contém as tags infNFSe/infDPS da NFS-e.');
@@ -772,10 +772,17 @@ class Danfse extends DaCommon
         return '...';
     }
 
+    /**
+     * Primeiro descendente de $context com o nome informado. Sem contexto (grupo
+     * ausente no XML) não há busca: procurar no documento inteiro traria a tag de
+     * outro grupo ou participante.
+     */
     private function firstNode($name, ?DOMNode $context = null)
     {
-        $base = $context ?: $this->dom;
-        $nodes = $this->xpath->query('.//*[local-name()="' . $name . '"]', $base);
+        if (!$context) {
+            return null;
+        }
+        $nodes = $this->xpath->query('.//*[local-name()="' . $name . '"]', $context);
         if ($nodes && $nodes->length > 0) {
             return $nodes->item(0);
         }
@@ -980,6 +987,9 @@ class Danfse extends DaCommon
 
     private function ibsExclusoes(?DOMElement $valores)
     {
+        if (!$this->ibsCbsNode()) {
+            return '-';
+        }
         $dpsValores = $this->childNode('valores', $this->infDPS);
         return $this->sumValues([
             $this->value('vDescIncond', $dpsValores),
