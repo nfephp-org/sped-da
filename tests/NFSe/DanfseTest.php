@@ -532,7 +532,7 @@ class DanfseTest extends TestCase
 
         $this->assertSame(
             6.0,
-            $this->textFontSize($operators, 'Ambiente gerador: 1')
+            $this->textFontSize($operators, 'Ambiente gerador: Prefeitura')
         );
         $this->assertSame(
             6.0,
@@ -563,7 +563,275 @@ class DanfseTest extends TestCase
         $text = $this->textFromPdf((new Danfse($xml))->render());
 
         $this->assertStringNotContainsString('Município: Curitiba / PR', $text);
-        $this->assertStringContainsString('Ambiente gerador: 1', $text);
+        $this->assertStringContainsString('Ambiente gerador: Prefeitura', $text);
+    }
+
+    public function testCompletaPrestadorComDadosDoEmitenteDaNfse(): void
+    {
+        $text = $this->textFromPdf(
+            (new Danfse($this->adnXml('v1.01-ibscbs-prestador-emitente')))->render()
+        );
+        $prestador = $this->textBetween($text, 'PRESTADOR / FORNECEDOR', 'TOMADOR / ADQUIRENTE');
+
+        $this->assertStringContainsString('Telefone (41) 99999-0000', $prestador);
+        $this->assertStringContainsString('Nome / Nome Empresarial ALFA SOLUCOES EM SOFTWARE LTDA', $prestador);
+        $this->assertStringContainsString('Município / Sigla UF 4106902 / PR', $prestador);
+        $this->assertStringContainsString('Código IBGE / CEP 4106902 / 80.010-000', $prestador);
+        $this->assertStringContainsString('Endereço RUA DAS ARAUCARIAS, 100, SALA 2, CENTRO', $prestador);
+        $this->assertStringContainsString('E-mail contato@alfa.example.com', $prestador);
+        $this->assertStringNotContainsString('3550308', $prestador);
+        $this->assertStringNotContainsString('01.310-100', $prestador);
+    }
+
+    public function testCompletaEmailDoPrestadorComEmitenteNoXmlRealSanitizado(): void
+    {
+        $text = $this->textFromPdf(
+            (new Danfse(file_get_contents(TEST_FIXTURES . 'xml/nfse-real/nfse-real-sanitized-06.xml')))->render()
+        );
+        $prestador = $this->textBetween($text, 'PRESTADOR / FORNECEDOR', 'TOMADOR / ADQUIRENTE');
+
+        $this->assertStringContainsString('Telefone (11) 3333-4444', $prestador);
+        $this->assertStringContainsString('E-mail contato@example.org', $prestador);
+    }
+
+    public function testLeDescricaoELocaisQueOLeiauteNacionalInformaEmInfNfse(): void
+    {
+        $text = $this->textFromPdf(
+            (new Danfse($this->adnXml('v1.01-ibscbs-prestador-emitente')))->render()
+        );
+
+        $this->assertStringContainsString('Local da Prestação / Sigla UF / País Curitiba', $text);
+        $this->assertStringContainsString('Análise e desenvolvimento de sistemas. Descrição do Serviço', $text);
+        $this->assertStringContainsString('Município / Sigla UF / País da Incidência do ISSQN Curitiba', $text);
+        $this->assertStringContainsString(
+            'Indicador de Operação / Código IBGE Incidência / Município Incidência / Sigla UF 100301 / 4106902 / Curitiba',
+            $text
+        );
+    }
+
+    public function testLeXOutInfDaNfseNosLeiautes100E101(): void
+    {
+        $leiaute100 = $this->textFromPdf(
+            (new Danfse($this->adnXml('v1.00-prestador-emitente')))->render()
+        );
+        $xml101 = preg_replace(
+            '#(</valores>\s*)(<IBSCBS>\s*<cLocalidadeIncid>)#',
+            '$1<xOutInf>Informação municipal do leiaute 1.01</xOutInf>$2',
+            $this->adnXml('v1.01-ibscbs-prestador-emitente'),
+            1
+        );
+        $leiaute101 = $this->textFromPdf((new Danfse($xml101))->render());
+
+        $this->assertStringContainsString(
+            'Inf. Cont.: Contrato fictício 2026/001 | Inf. A. T. Mun.: Informação municipal fictícia (xOutInf) |',
+            $leiaute100
+        );
+        $this->assertStringContainsString(
+            'Inf. Cont.: Contrato fictício 2026/001 | Inf. A. T. Mun.: Informação municipal do leiaute 1.01 |',
+            $leiaute101
+        );
+    }
+
+    public function testTomadorSemEnderecoNaoExibeEnderecoDeOutroParticipante(): void
+    {
+        $text = $this->textFromPdf(
+            (new Danfse($this->adnXml('v1.01-mei-tomador-sem-endereco')))->render()
+        );
+        $tomador = $this->textBetween($text, 'TOMADOR / ADQUIRENTE', 'DESTINATÁRIO DA OPERAÇÃO');
+
+        $this->assertStringContainsString('Nome / Nome Empresarial CICLANA DE OLIVEIRA', $tomador);
+        $this->assertStringContainsString('Município / Sigla UF - Código IBGE / CEP - Endereço - E-mail -', $tomador);
+        $this->assertStringNotContainsString('RUA DOS PINHEIROS', $tomador);
+        $this->assertStringNotContainsString('4106902', $tomador);
+        $this->assertStringNotContainsString('81.650-000', $tomador);
+    }
+
+    public function testPrestadorSemEnderecoQueNaoEhEmitenteNaoExibeDadosDeOutroParticipante(): void
+    {
+        $xml = str_replace(
+            ['<tpEmit>1</tpEmit>', '<prest>' . "\n" . '          <CNPJ>11222333000181</CNPJ>'],
+            ['<tpEmit>2</tpEmit>', '<prest>' . "\n" . '          <CNPJ>45723174000110</CNPJ>'],
+            $this->adnXml('v1.01-ibscbs-prestador-emitente')
+        );
+
+        $text = $this->textFromPdf((new Danfse($xml))->render());
+        $prestador = $this->textBetween($text, 'PRESTADOR / FORNECEDOR', 'TOMADOR / ADQUIRENTE');
+
+        $this->assertStringContainsString('45.723.174/0001-10', $prestador);
+        $this->assertStringContainsString('Município / Sigla UF - Código IBGE / CEP - Endereço - E-mail -', $prestador);
+        $this->assertStringContainsString('Telefone -', $prestador);
+        $this->assertStringNotContainsString('3550308', $prestador);
+        $this->assertStringNotContainsString('RUA DAS ARAUCARIAS', $prestador);
+    }
+
+    /**
+     * @dataProvider xmlsSemGrupoIbsCbsProvider
+     */
+    public function testBlocoIbsCbsSemGrupoIbscbsNaoUsaValoresDeOutrosGrupos(string $file): void
+    {
+        $text = $this->textFromPdf((new Danfse(file_get_contents(TEST_FIXTURES . $file)))->render());
+        $ibsCbs = $this->textBetween($text, 'TRIBUTAÇÃO IBS / CBS', 'VALOR TOTAL DA NFS-E');
+
+        $this->assertStringContainsString('CST / cClassTrib - ', $ibsCbs);
+        $this->assertStringContainsString(
+            'Município Incidência / Sigla UF - Exclusões e Reduções da Base de Cálculo - '
+            . 'Base de Cálculo Após Exclusões e Reduções - ',
+            $ibsCbs
+        );
+        $this->assertStringNotContainsString('R$', $ibsCbs);
+        $this->assertStringNotContainsString('%', $ibsCbs);
+        $this->assertStringContainsString('Total do IBS/CBS - Valor Líquido da NFS-e + IBS/CBS -', $text);
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public function xmlsSemGrupoIbsCbsProvider(): array
+    {
+        return [
+            'leiaute 1.00' => ['xml/nfse-adn/v1.00-prestador-emitente.xml'],
+            'leiaute 1.01 sem IBSCBS' => ['xml/nfse-real/nfse-real-sanitized-01.xml'],
+        ];
+    }
+
+    /**
+     * @dataProvider xmlsComFinalidadeRegularProvider
+     */
+    public function testTraduzFinalidadeRegularDoLeiaute101(string $file): void
+    {
+        $text = $this->textFromPdf((new Danfse(file_get_contents(TEST_FIXTURES . $file)))->render());
+
+        $this->assertStringContainsString('FINALIDADE NFS-e regular', $text);
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public function xmlsComFinalidadeRegularProvider(): array
+    {
+        return [
+            'adn com IBSCBS' => ['xml/nfse-adn/v1.01-ibscbs-prestador-emitente.xml'],
+            'real sanitizado 06' => ['xml/nfse-real/nfse-real-sanitized-06.xml'],
+        ];
+    }
+
+    public function testValorDoServicoUsaVServQuandoVServPrestTemVReceb(): void
+    {
+        $text = $this->textFromPdf((new Danfse($this->adnXml('v1.01-vreceb')))->render());
+
+        $this->assertStringContainsString('Valor da Operação / Serviço R$ 1.500,00', $text);
+        $this->assertStringNotContainsString('1500.00', $text);
+    }
+
+    /**
+     * @dataProvider regimesEspeciaisProvider
+     */
+    public function testTraduzRegimeEspecialDeTributacaoConformeXsd(string $code, string $expected): void
+    {
+        $xml = str_replace(
+            '<regEspTrib>0</regEspTrib>',
+            '<regEspTrib>' . $code . '</regEspTrib>',
+            $this->adnXml('v1.01-ibscbs-prestador-emitente')
+        );
+
+        $text = $this->textFromPdf((new Danfse($xml))->render());
+
+        $this->assertStringContainsString(
+            'Regime Especial de Tributação do ISSQN ' . $expected . ' Tipo de Imunidade do ISSQN',
+            $text
+        );
+    }
+
+    /**
+     * @return array<string, array{string, string}>
+     */
+    public function regimesEspeciaisProvider(): array
+    {
+        return [
+            'regEspTrib 1' => ['1', 'Ato Cooperado (Cooperativa)'],
+            'regEspTrib 3' => ['3', 'Microempresa Municipal'],
+            'regEspTrib 4' => ['4', 'Notário ou Registrador'],
+            'regEspTrib 5' => ['5', 'Profissional Autônomo'],
+            'regEspTrib 6' => ['6', 'Sociedade de Profissionais'],
+            'regEspTrib 9' => ['9', 'Outros'],
+        ];
+    }
+
+    /**
+     * @dataProvider regimesApuracaoSimplesNacionalProvider
+     */
+    public function testTraduzRegimeDeApuracaoDoSimplesNacionalConformeXsd(string $code, string $expected): void
+    {
+        $xml = str_replace(
+            '<regApTribSN>1</regApTribSN>',
+            '<regApTribSN>' . $code . '</regApTribSN>',
+            $this->adnXml('v1.01-ibscbs-prestador-emitente')
+        );
+
+        $text = $this->textFromPdf((new Danfse($xml))->render());
+
+        $this->assertStringContainsString(
+            'Regime de Apuração Tributária pelo SN ' . $expected . ' TOMADOR / ADQUIRENTE',
+            $text
+        );
+    }
+
+    /**
+     * @return array<string, array{string, string}>
+     */
+    public function regimesApuracaoSimplesNacionalProvider(): array
+    {
+        return [
+            'regApTribSN 2' => ['2', 'Regime de apuração dos tributos federais pelo SN e do ISSQN por fora do SN'],
+            'regApTribSN 3' => ['3', 'Regime de apuração dos tributos federais e municipal por fora do SN'],
+        ];
+    }
+
+    public function testExibeTotaisAproximadosPercentuaisComoPercentual(): void
+    {
+        $text = $this->textFromPdf((new Danfse($this->adnXml('v1.00-prestador-emitente')))->render());
+
+        $this->assertStringContainsString(
+            'Lei nº 12.741/2012: Federais: 13,45% ; Estaduais: 0,00% ; Municipais: 2,00%',
+            $text
+        );
+    }
+
+    public function testExibeTotalAproximadoDoSimplesNacional(): void
+    {
+        $text = $this->textFromPdf(
+            (new Danfse(file_get_contents(TEST_FIXTURES . 'xml/nfse-real/nfse-real-sanitized-01.xml')))->render()
+        );
+
+        $this->assertStringContainsString('Lei nº 12.741/2012: Simples Nacional: 13,78%', $text);
+        $this->assertStringNotContainsString('Federais: - ; Estaduais: - ; Municipais: -', $text);
+    }
+
+    public function testTraduzAmbienteGeradorConformeXsd(): void
+    {
+        $pdf = (new Danfse($this->adnXml('v1.01-ibscbs-prestador-emitente')))->render();
+
+        $this->assertStringContainsString('Ambiente gerador: Sistema Nacional da NFS-e', $this->textFromPdf($pdf));
+        $this->assertSame(
+            6.0,
+            $this->textFontSize($this->decompressedPdfOperators($pdf), 'Ambiente gerador: Sistema Nacional da NFS-e')
+        );
+    }
+
+    public function testObtemSiglaDaUfPeloCodigoIbgeDoMunicipio(): void
+    {
+        $text = $this->textFromPdf(
+            (new Danfse($this->adnXml('v1.01-ibscbs-prestador-emitente')))->render()
+        );
+        $tomador = $this->textBetween($text, 'TOMADOR / ADQUIRENTE', 'DESTINATÁRIO DA OPERAÇÃO');
+
+        $this->assertStringContainsString('Município / Sigla UF 3550308 / SP', $tomador);
+        $this->assertStringContainsString('Local da Prestação / Sigla UF / País Curitiba / PR', $text);
+        $this->assertStringContainsString('Município / Sigla UF / País da Incidência do ISSQN Curitiba / PR', $text);
+        $this->assertStringContainsString(
+            'Indicador de Operação / Código IBGE Incidência / Município Incidência / Sigla UF 100301 / 4106902 / Curitiba / PR',
+            $text
+        );
     }
 
     /**
@@ -599,6 +867,21 @@ class DanfseTest extends TestCase
     {
         $parser = new Parser();
         return $this->normalize($parser->parseContent($pdf)->getText());
+    }
+
+    private function adnXml(string $name): string
+    {
+        return file_get_contents(TEST_FIXTURES . 'xml/nfse-adn/' . $name . '.xml');
+    }
+
+    private function textBetween(string $text, string $start, string $end): string
+    {
+        $from = strpos($text, $start);
+        $this->assertNotFalse($from, $start);
+        $to = strpos($text, $end, $from + strlen($start));
+        $this->assertNotFalse($to, $end);
+
+        return substr($text, $from, $to - $from);
     }
 
     private function createTemporaryPngLogo(): string

@@ -31,6 +31,14 @@ class Danfse extends DaCommon
     private const LABEL_FONT = 'arial';
     private const CONTENT_FONT = 'arial';
 
+    /** Sigla da UF pelos dois primeiros dígitos do código IBGE do município. */
+    private const UF_IBGE = [
+        '11' => 'RO', '12' => 'AC', '13' => 'AM', '14' => 'RR', '15' => 'PA', '16' => 'AP', '17' => 'TO',
+        '21' => 'MA', '22' => 'PI', '23' => 'CE', '24' => 'RN', '25' => 'PB', '26' => 'PE', '27' => 'AL',
+        '28' => 'SE', '29' => 'BA', '31' => 'MG', '32' => 'ES', '33' => 'RJ', '35' => 'SP', '41' => 'PR',
+        '42' => 'SC', '43' => 'RS', '50' => 'MS', '51' => 'MT', '52' => 'GO', '53' => 'DF'
+    ];
+
     /** @var string */
     protected $xml;
 
@@ -197,7 +205,7 @@ class Danfse extends DaCommon
             throw new Exception('O xml de NFS-e informado é inválido.');
         }
         $this->xpath = new DOMXPath($this->dom);
-        $this->infNFSe = $this->firstNode('infNFSe');
+        $this->infNFSe = $this->firstNode('infNFSe', $this->dom);
         $this->infDPS = $this->firstNode('infDPS', $this->infNFSe);
         if (!$this->infNFSe || !$this->infDPS) {
             throw new Exception('O xml informado não contém as tags infNFSe/infDPS da NFS-e.');
@@ -252,7 +260,7 @@ class Danfse extends DaCommon
             $municipio = '';
         }
         $this->text(self::COL4, 3.5, self::CELL, 3.4, $this->dash($municipio), $this->fontContent(8), 'C', 'C');
-        $this->text(self::COL4, 8.7, self::CELL, 2.7, 'Ambiente gerador: ' . $this->dash($this->value('ambGer', $this->infNFSe)), $this->fontContent(6));
+        $this->text(self::COL4, 8.7, self::CELL, 2.7, 'Ambiente gerador: ' . $this->ambGer($this->value('ambGer', $this->infNFSe)), $this->fontContent(6));
         $this->text(self::COL4, 11.3, self::CELL, 2.7, 'Ambiente: ' . $this->tpAmb($this->value('tpAmb', $this->infDPS)), $this->fontContent(6));
     }
 
@@ -396,27 +404,42 @@ class Danfse extends DaCommon
         }
 
         $end = $this->childNode('end', $node);
+        $im = $this->value('IM', $node);
+        $fone = $this->value('fone', $node);
+        $email = $this->value('email', $node);
 
         $tpEmit = $this->tpEmit($this->value('tpEmit', $this->infDPS));
-        if ($title === "PRESTADOR / FORNECEDOR" && $node->localName === "prest" && $tpEmit === "Prestador") {
+        $isPrestador = $title === "PRESTADOR / FORNECEDOR" && $node->localName === "prest";
+        if ($isPrestador && $tpEmit === "Prestador") {
             $nome = $this->value('xNome', $this->firstNode('emit', $this->infNFSe));
         } else {
             $nome = $this->value('xNome', $node);
         }
 
+        // Em infDPS/prest (TCInfoPrestador) end, fone e email são opcionais; quando o
+        // prestador é o emitente da NFS-e, esses dados constam em infNFSe/emit (TCEmitente).
+        $emit = $isPrestador ? $this->prestadorEmitente($node) : null;
+        if ($emit) {
+            $nome = $this->firstNonEmpty([$nome, $this->value('xNome', $emit)]);
+            $end = $end ?: $this->childNode('enderNac', $emit);
+            $im = $this->firstNonEmpty([$im, $this->value('IM', $emit)]);
+            $fone = $this->firstNonEmpty([$fone, $this->value('fone', $emit)]);
+            $email = $this->firstNonEmpty([$email, $this->value('email', $emit)]);
+        }
+
         $this->drawSectionTitle($title, self::X, $y, self::CELL, self::ROW);
         $this->drawField('CNPJ / CPF / NIF', $this->document($node), self::COL2, $y, self::CELL, self::ROW);
         if ($withIm) {
-            $this->drawField('Indicador Municipal (Inscrição)', $this->value('IM', $node), self::COL3, $y, self::CELL, self::ROW);
+            $this->drawField('Indicador Municipal (Inscrição)', $im, self::COL3, $y, self::CELL, self::ROW);
         }
-        $this->drawField('Telefone', $this->formatPhone($this->value('fone', $node)), self::COL4, $y, self::CELL, self::ROW);
+        $this->drawField('Telefone', $this->formatPhone($fone), self::COL4, $y, self::CELL, self::ROW);
 
         $this->drawField('Nome / Nome Empresarial', $this->ellipsis($nome, 80), self::X, $y + 6.4, self::CELL2, self::ROW);
         $this->drawField('Município / Sigla UF', $this->municipioUf($end), self::COL3, $y + 6.4, self::CELL, self::ROW);
         $this->drawField('Código IBGE / CEP', $this->ibgeCep($end), self::COL4, $y + 6.4, self::CELL, self::ROW);
 
         $this->drawField('Endereço', $this->ellipsis($this->address($end), 80), self::X, $y + 12.9, self::CELL2, self::ROW);
-        $this->drawField('E-mail', $this->value('email', $node), self::COL3, $y + 12.9, self::CELL2, self::ROW);
+        $this->drawField('E-mail', $email, self::COL3, $y + 12.9, self::CELL2, self::ROW);
 
         if ($title === 'PRESTADOR / FORNECEDOR') {
             $reg = $this->childNode('regTrib', $node);
@@ -445,10 +468,13 @@ class Danfse extends DaCommon
         $cServ = $this->childNode('cServ', $serv);
         $loc = $this->childNode('locPrest', $serv);
         $codigos = $this->joinNonEmpty([$this->value('cTribNac', $cServ), $this->value('cTribMun', $cServ)], ' / ');
-        $descCodigo = $this->value('xTribMun', $cServ);
-        if (empty($descCodigo)) {
-            $descCodigo = $this->value('xTribNac', $cServ);
-        }
+        // xTribMun/xTribNac pertencem a infNFSe (TCInfNFSe); cServ é mantido como alternativa.
+        $descCodigo = $this->firstNonEmpty([
+            $this->childValue('xTribMun', $this->infNFSe),
+            $this->value('xTribMun', $cServ),
+            $this->childValue('xTribNac', $this->infNFSe),
+            $this->value('xTribNac', $cServ)
+        ]);
 
         $this->drawSectionTitle('SERVIÇO PRESTADO', self::X, $y, self::CELL, self::ROW);
         $this->drawField('Código de Tributação Nacional / Municipal', $codigos, self::COL2, $y, self::CELL, self::ROW);
@@ -554,7 +580,7 @@ class Danfse extends DaCommon
         $totCibs = $this->childNode('totCIBS', $this->ibsCbsNode());
 
         $this->drawSectionTitle('VALOR TOTAL DA NFS-E', self::X, $y, self::CELL, self::ROW_TOTAL);
-        $this->drawMoneyField('Valor da Operação / Serviço', $this->value('vServPrest', $dpsValores), self::COL2, $y, self::CELL, self::ROW_TOTAL);
+        $this->drawMoneyField('Valor da Operação / Serviço', $this->valorServico($dpsValores), self::COL2, $y, self::CELL, self::ROW_TOTAL);
         $this->drawMoneyField('Desconto Incondicionado', $this->value('vDescIncond', $dpsValores), self::COL3, $y, self::CELL, self::ROW_TOTAL);
         $this->drawMoneyField('Desconto Condicionado', $this->value('vDescCond', $dpsValores), self::COL4, $y, self::CELL, self::ROW_TOTAL);
         $this->drawMoneyField('Total das Retenções (ISSQN / Federais)', $this->value('vTotalRet', $infValores), self::X, $y + 6.9, self::CELL, self::ROW_TOTAL);
@@ -754,10 +780,17 @@ class Danfse extends DaCommon
         return '...';
     }
 
+    /**
+     * Primeiro descendente de $context com o nome informado. Sem contexto (grupo
+     * ausente no XML) não há busca: procurar no documento inteiro traria a tag de
+     * outro grupo ou participante.
+     */
     private function firstNode($name, ?DOMNode $context = null)
     {
-        $base = $context ?: $this->dom;
-        $nodes = $this->xpath->query('.//*[local-name()="' . $name . '"]', $base);
+        if (!$context) {
+            return null;
+        }
+        $nodes = $this->xpath->query('.//*[local-name()="' . $name . '"]', $context);
         if ($nodes && $nodes->length > 0) {
             return $nodes->item(0);
         }
@@ -783,10 +816,27 @@ class Danfse extends DaCommon
         return $node ? trim($node->nodeValue) : '';
     }
 
+    private function childValue($name, ?DOMNode $context = null)
+    {
+        $node = $this->childNode($name, $context);
+        return $node ? trim($node->nodeValue) : '';
+    }
+
     private function firstValue(array $names, ?DOMNode $context = null)
     {
         foreach ($names as $name) {
             $value = $this->value($name, $context);
+            if ($value !== '') {
+                return $value;
+            }
+        }
+        return '';
+    }
+
+    private function firstNonEmpty(array $values)
+    {
+        foreach ($values as $value) {
+            $value = trim((string) $value);
             if ($value !== '') {
                 return $value;
             }
@@ -823,6 +873,20 @@ class Danfse extends DaCommon
         return $this->dash($nif);
     }
 
+    /**
+     * Retorna infNFSe/emit quando o emitente da NFS-e é o próprio prestador (mesmo CNPJ/CPF).
+     */
+    private function prestadorEmitente(DOMElement $prest)
+    {
+        $emit = $this->childNode('emit', $this->infNFSe);
+        if (!$emit) {
+            return null;
+        }
+        $docEmit = $this->firstNonEmpty([$this->childValue('CNPJ', $emit), $this->childValue('CPF', $emit)]);
+        $docPrest = $this->firstNonEmpty([$this->childValue('CNPJ', $prest), $this->childValue('CPF', $prest)]);
+        return $docEmit !== '' && $docEmit === $docPrest ? $emit : null;
+    }
+
     private function personIdentified(DOMElement $node)
     {
         return $this->value('CNPJ', $node) !== ''
@@ -831,22 +895,32 @@ class Danfse extends DaCommon
             || $this->value('xNome', $node) !== '';
     }
 
-    private function municipioUf(?DOMElement $end)
+    /**
+     * Grupo que contém município/UF/CEP do endereço. Em infNFSe/emit/enderNac
+     * (TCEnderecoEmitente) esses campos ficam no próprio grupo.
+     */
+    private function addressLocation(?DOMElement $end)
     {
+        if ($end && $end->localName === 'enderNac') {
+            return $end;
+        }
         $nac = $this->firstNode('endNac', $end) ?: $this->firstNode('enderNac', $end);
         $ext = $this->firstNode('endExt', $end);
-        $base = $nac ?: $ext;
+        return $nac ?: $ext;
+    }
+
+    private function municipioUf(?DOMElement $end)
+    {
+        $base = $this->addressLocation($end);
         return $this->dash($this->joinNonEmpty([
             $this->firstValue(['xMun', 'xCidade', 'cMun'], $base),
-            $this->value('UF', $base)
+            $this->firstNonEmpty([$this->value('UF', $base), $this->ufIbge($this->value('cMun', $base))])
         ], ' / '));
     }
 
     private function ibgeCep(?DOMElement $end)
     {
-        $nac = $this->firstNode('endNac', $end) ?: $this->firstNode('enderNac', $end);
-        $ext = $this->firstNode('endExt', $end);
-        $base = $nac ?: $ext;
+        $base = $this->addressLocation($end);
         $cep = $this->value('CEP', $base);
         if (!empty($cep) && strlen(preg_replace('/\D/', '', $cep)) === 8) {
             $cep = $this->formatField($cep, '##.###-###');
@@ -869,29 +943,53 @@ class Danfse extends DaCommon
 
     private function localPrestacao(?DOMElement $loc)
     {
+        // infNFSe/xLocPrestacao descreve locPrest/cLocPrestacao (TCLocPrest só tem os códigos).
         return $this->dash($this->joinNonEmpty([
-            $this->firstValue(['xLocPrestacao', 'xLocPrest', 'cLocPrest'], $loc),
-            $this->value('UF', $loc),
+            $this->firstNonEmpty([
+                $this->childValue('xLocPrestacao', $this->infNFSe),
+                $this->firstValue(['xLocPrestacao', 'xLocPrest', 'cLocPrestacao', 'cLocPrest'], $loc)
+            ]),
+            $this->firstNonEmpty([$this->value('UF', $loc), $this->ufIbge($this->value('cLocPrestacao', $loc))]),
             $this->value('cPaisPrestacao', $loc)
         ], ' / '));
     }
 
     private function issqnLocal(?DOMElement $tribMun)
     {
+        // cLocIncid/xLocIncid pertencem a infNFSe (TCInfNFSe), não a tribMun (TCTribMunicipal).
+        $cLocIncid = $this->firstNonEmpty([
+            $this->childValue('cLocIncid', $this->infNFSe),
+            $this->value('cLocIncid', $tribMun)
+        ]);
         return $this->dash($this->joinNonEmpty([
-            $this->firstValue(['xLocIncid', 'cLocIncid'], $tribMun),
-            $this->value('UF', $tribMun),
+            $this->firstNonEmpty([
+                $this->childValue('xLocIncid', $this->infNFSe),
+                $this->firstValue(['xLocIncid', 'cLocIncid'], $tribMun),
+                $cLocIncid
+            ]),
+            $this->firstNonEmpty([$this->value('UF', $tribMun), $this->ufIbge($cLocIncid)]),
             $this->value('cPaisResult', $tribMun)
         ], ' / '));
     }
 
     private function ibsLocal(?DOMElement $valores)
     {
+        // cIndOp fica em infDPS/IBSCBS (TCRTCInfoIBSCBS) e a localidade de incidência
+        // em infNFSe/IBSCBS (TCRTCIBSCBS); IBSCBS/valores é mantido como alternativa.
+        $nfseIbsCbs = $this->childNode('IBSCBS', $this->infNFSe);
+        $dpsIbsCbs = $this->childNode('IBSCBS', $this->infDPS);
+        $cLocalidade = $this->firstNonEmpty([
+            $this->childValue('cLocalidadeIncid', $nfseIbsCbs),
+            $this->value('cLocalidadeIncid', $valores)
+        ]);
         return $this->dash($this->joinNonEmpty([
-            $this->value('cIndOp', $valores),
-            $this->value('cLocalidadeIncid', $valores),
-            $this->value('xLocalidadeIncid', $valores),
-            $this->value('UF', $valores)
+            $this->firstNonEmpty([$this->childValue('cIndOp', $dpsIbsCbs), $this->value('cIndOp', $valores)]),
+            $cLocalidade,
+            $this->firstNonEmpty([
+                $this->childValue('xLocalidadeIncid', $nfseIbsCbs),
+                $this->value('xLocalidadeIncid', $valores)
+            ]),
+            $this->firstNonEmpty([$this->value('UF', $valores), $this->ufIbge($cLocalidade)])
         ], ' / '));
     }
 
@@ -902,6 +1000,9 @@ class Danfse extends DaCommon
 
     private function ibsExclusoes(?DOMElement $valores)
     {
+        if (!$this->ibsCbsNode()) {
+            return '-';
+        }
         $dpsValores = $this->childNode('valores', $this->infDPS);
         return $this->sumValues([
             $this->value('vDescIncond', $dpsValores),
@@ -929,7 +1030,12 @@ class Danfse extends DaCommon
         $this->appendInfo($parts, 'Doc. Tec.: ', $this->value('idDocTec', $info));
         $this->appendInfo($parts, 'Núm. Ped.: ', $this->value('xPed', $info));
         $this->appendInfo($parts, 'Item Ped.: ', $this->value('xItemPed', $info));
-        $this->appendInfo($parts, 'Inf. A. T. Mun.: ', $this->value('xOutInf', $info));
+        // xOutInf: infNFSe/valores (leiaute 1.00) ou infNFSe (leiaute 1.01).
+        $this->appendInfo($parts, 'Inf. A. T. Mun.: ', $this->firstNonEmpty([
+            $this->childValue('xOutInf', $this->infNFSe),
+            $this->childValue('xOutInf', $this->childNode('valores', $this->infNFSe)),
+            $this->value('xOutInf', $info)
+        ]));
 
         $tax = $this->totaisAproximados();
         $prefix = implode(' | ', $parts);
@@ -954,12 +1060,27 @@ class Danfse extends DaCommon
     {
         $dpsValores = $this->childNode('valores', $this->infDPS);
         $totTrib = $this->childNode('totTrib', $this->childNode('trib', $dpsValores));
-        $fed = $this->firstValue(['vTotTribFed', 'pTotTribFed'], $totTrib);
-        $est = $this->firstValue(['vTotTribEst', 'pTotTribEst'], $totTrib);
-        $mun = $this->firstValue(['vTotTribMun', 'pTotTribMun'], $totTrib);
-        return 'Totais Aproximados dos Tributos cfe. Lei nº 12.741/2012: Federais: '
-            . $this->formatApproximateTax($fed) . ' ; Estaduais: ' . $this->formatApproximateTax($est)
-            . ' ; Municipais: ' . $this->formatApproximateTax($mun);
+        $label = 'Totais Aproximados dos Tributos cfe. Lei nº 12.741/2012: ';
+        // pTotTribSN: percentual aproximado do total dos tributos da alíquota do Simples Nacional.
+        $simples = $this->value('pTotTribSN', $totTrib);
+        if ($simples !== '') {
+            return $label . 'Simples Nacional: ' . $this->formatApproximatePercent($simples);
+        }
+        return $label . 'Federais: ' . $this->approximateTax($totTrib, 'Fed')
+            . ' ; Estaduais: ' . $this->approximateTax($totTrib, 'Est')
+            . ' ; Municipais: ' . $this->approximateTax($totTrib, 'Mun');
+    }
+
+    /**
+     * vTotTrib* (TCTribTotalMonet) é valor em R$; pTotTrib* (TCTribTotalPercent) é percentual.
+     */
+    private function approximateTax(?DOMElement $totTrib, $sphere)
+    {
+        $value = $this->value('vTotTrib' . $sphere, $totTrib);
+        if ($value !== '') {
+            return $this->formatApproximateTax($value);
+        }
+        return $this->formatApproximatePercent($this->value('pTotTrib' . $sphere, $totTrib));
     }
 
     private function printFederalTax()
@@ -1055,6 +1176,14 @@ class Danfse extends DaCommon
         return 'R$ ' . number_format($number, 2, ',', '.');
     }
 
+    private function formatApproximatePercent($value)
+    {
+        if ($this->normalizedNumber($value) === null) {
+            return $this->dash($value);
+        }
+        return $this->percent($value);
+    }
+
     private function formatApproximateTax($value)
     {
         if ($value === '') {
@@ -1110,6 +1239,26 @@ class Danfse extends DaCommon
         return implode($separator, $out);
     }
 
+    private function valorServico(?DOMElement $dpsValores)
+    {
+        // vServPrest é um grupo (TCVServPrest: vReceb, vServ); o valor do serviço é vServ.
+        $vServ = $this->childNode('vServ', $this->childNode('vServPrest', $dpsValores));
+        return $vServ ? trim($vServ->nodeValue) : $this->value('vServPrest', $dpsValores);
+    }
+
+    private function ufIbge($cMun)
+    {
+        $digits = preg_replace('/\D/', '', (string) $cMun);
+        $code = substr($digits, 0, 2);
+        return strlen($digits) === 7 && array_key_exists($code, self::UF_IBGE) ? self::UF_IBGE[$code] : '';
+    }
+
+    private function ambGer($value)
+    {
+        $map = ['1' => 'Prefeitura', '2' => 'Sistema Nacional da NFS-e'];
+        return isset($map[$value]) ? $map[$value] : $this->dash($value);
+    }
+
     private function tpAmb($value)
     {
         $map = ['1' => 'Produção', '2' => 'Homologação'];
@@ -1138,7 +1287,13 @@ class Danfse extends DaCommon
 
     private function finalidade($value)
     {
-        $map = ['1' => 'NFS-e regular', '2' => 'NFS-e de substituição', '3' => 'NFS-e de ajuste'];
+        // finNFSe em infDPS/IBSCBS (TSRTCFinNFSe, leiaute 1.01): 0 - NFS-e regular.
+        $map = [
+            '0' => 'NFS-e regular',
+            '1' => 'NFS-e regular',
+            '2' => 'NFS-e de substituição',
+            '3' => 'NFS-e de ajuste'
+        ];
         return isset($map[$value]) ? $map[$value] : $this->dash($value);
     }
 
@@ -1150,13 +1305,28 @@ class Danfse extends DaCommon
 
     private function regApTribSN($value)
     {
-        $map = ['1' => 'Regime de apuração dos tributos federais e municipal pelo Simples Nacional'];
+        // TSRegimeApuracaoSimpNac
+        $map = [
+            '1' => 'Regime de apuração dos tributos federais e municipal pelo Simples Nacional',
+            '2' => 'Regime de apuração dos tributos federais pelo SN e do ISSQN por fora do SN',
+            '3' => 'Regime de apuração dos tributos federais e municipal por fora do SN'
+        ];
         return isset($map[$value]) ? $map[$value] : $this->dash($value);
     }
 
     private function regEspTrib($value)
     {
-        $map = ['0' => 'Nenhum', '1' => 'Microempresa Municipal', '2' => 'Estimativa'];
+        // TSRegEspTrib
+        $map = [
+            '0' => 'Nenhum',
+            '1' => 'Ato Cooperado (Cooperativa)',
+            '2' => 'Estimativa',
+            '3' => 'Microempresa Municipal',
+            '4' => 'Notário ou Registrador',
+            '5' => 'Profissional Autônomo',
+            '6' => 'Sociedade de Profissionais',
+            '9' => 'Outros'
+        ];
         return isset($map[$value]) ? $map[$value] : $this->dash($value);
     }
 
