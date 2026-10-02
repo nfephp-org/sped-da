@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<NFSe xmlns="http://www.sped.fazenda.gov.br/nfse" versao="1.01">
+  <infNFSe Id="NFS41069022211222333000181000000000012326091234567897">
+    <xLocEmi>Curitiba</xLocEmi>
+    <xLocPrestacao>Curitiba</xLocPrestacao>
+    <nNFSe>123</nNFSe>
+    <cLocIncid>4106902</cLocIncid>
+    <xLocIncid>Curitiba</xLocIncid>
+    <xTribNac>Análise e desenvolvimento de sistemas.</xTribNac>
+    <xNBS>Serviços de desenvolvimento de software sob encomenda</xNBS>
+    <verAplic>SefinNac_Pre_1.4.0</verAplic>
+    <ambGer>2</ambGer>
+    <tpEmis>1</tpEmis>
+    <procEmi>1</procEmi>
+    <cStat>100</cStat>
+    <dhProc>2026-09-15T10:20:30-03:00</dhProc>
+    <nDFSe>456789</nDFSe>
+    <emit>
+      <CNPJ>11222333000181</CNPJ>
+      <IM>1234567</IM>
+      <xNome>ALFA SOLUCOES EM SOFTWARE LTDA</xNome>
+      <enderNac>
+        <xLgr>RUA DAS ARAUCARIAS</xLgr>
+        <nro>100</nro>
+        <xCpl>SALA 2</xCpl>
+        <xBairro>CENTRO</xBairro>
+        <cMun>4106902</cMun>
+        <UF>PR</UF>
+        <CEP>80010000</CEP>
+      </enderNac>
+      <fone>41999990000</fone>
+      <email>contato@alfa.example.com</email>
+    </emit>
+    <valores>
+      <vBC>1500.00</vBC>
+      <pAliqAplic>2.00</pAliqAplic>
+      <vISSQN>30.00</vISSQN>
+      <vTotalRet>0.00</vTotalRet>
+      <vLiq>1500.00</vLiq>
+    </valores>
+    <IBSCBS>
+      <cLocalidadeIncid>4106902</cLocalidadeIncid>
+      <xLocalidadeIncid>Curitiba</xLocalidadeIncid>
+      <valores>
+        <vBC>1470.00</vBC>
+        <uf>
+          <pIBSUF>0.10</pIBSUF>
+          <pAliqEfetUF>0.10</pAliqEfetUF>
+        </uf>
+        <mun>
+          <pIBSMun>0.00</pIBSMun>
+          <pAliqEfetMun>0.00</pAliqEfetMun>
+        </mun>
+        <fed>
+          <pCBS>0.90</pCBS>
+          <pAliqEfetCBS>0.90</pAliqEfetCBS>
+        </fed>
+      </valores>
+      <totCIBS>
+        <vTotNF>1514.70</vTotNF>
+        <gIBS>
+          <vIBSTot>1.47</vIBSTot>
+          <gIBSUFTot>
+            <vIBSUF>1.47</vIBSUF>
+          </gIBSUFTot>
+          <gIBSMunTot>
+            <vIBSMun>0.00</vIBSMun>
+          </gIBSMunTot>
+        </gIBS>
+        <gCBS>
+          <vCBS>13.23</vCBS>
+        </gCBS>
+      </totCIBS>
+    </IBSCBS>
+    <DPS xmlns="http://www.sped.fazenda.gov.br/nfse" versao="1.01">
+      <infDPS Id="DPS410690221122233300018100001000000000000123">
+        <tpAmb>1</tpAmb>
+        <dhEmi>2026-09-15T10:15:00-03:00</dhEmi>
+        <verAplic>ERP-FICTICIO-2.3</verAplic>
+        <serie>1</serie>
+        <nDPS>123</nDPS>
+        <dCompet>2026-09-15</dCompet>
+        <tpEmit>1</tpEmit>
+        <cLocEmi>4106902</cLocEmi>
+        <prest>
+          <CNPJ>11222333000181</CNPJ>
+          <IM>1234567</IM>
+          <regTrib>
+            <opSimpNac>3</opSimpNac>
+            <regApTribSN>1</regApTribSN>
+            <regEspTrib>0</regEspTrib>
+          </regTrib>
+        </prest>
+        <toma>
+          <CPF>52998224725</CPF>
+          <xNome>FULANO DE TAL DA SILVA</xNome>
+          <end>
+            <endNac>
+              <cMun>3550308</cMun>
+              <CEP>01310100</CEP>
+            </endNac>
+            <xLgr>AVENIDA PAULISTA</xLgr>
+            <nro>1000</nro>
+            <xBairro>BELA VISTA</xBairro>
+          </end>
+          <email>fulano@example.com</email>
+        </toma>
+        <serv>
+          <locPrest>
+            <cLocPrestacao>4106902</cLocPrestacao>
+          </locPrest>
+          <cServ>
+            <cTribNac>010101</cTribNac>
+            <xDescServ>Licenciamento e suporte mensal do sistema de gestão - competência 09/2026.</xDescServ>
+            <cNBS>115022000</cNBS>
+          </cServ>
+          <infoCompl>
+            <xInfComp>Contrato fictício 2026/001</xInfComp>
+          </infoCompl>
+        </serv>
+        <valores>
+          <vServPrest>
+            <vServ>1500.00</vServ>
+          </vServPrest>
+          <trib>
+            <tribMun>
+              <tribISSQN>1</tribISSQN>
+              <tpRetISSQN>1</tpRetISSQN>
+            </tribMun>
+            <totTrib>
+              <vTotTrib>
+                <vTotTribFed>200.00</vTotTribFed>
+                <vTotTribEst>0.00</vTotTribEst>
+                <vTotTribMun>30.00</vTotTribMun>
+              </vTotTrib>
+            </totTrib>
+          </trib>
+        </valores>
+        <IBSCBS>
+          <finNFSe>0</finNFSe>
+          <indFinal>1</indFinal>
+          <cIndOp>100301</cIndOp>
+          <indDest>0</indDest>
+          <valores>
+            <trib>
+              <gIBSCBS>
+                <CST>000</CST>
+                <cClassTrib>000001</cClassTrib>
+              </gIBSCBS>
+            </trib>
+          </valores>
+        </IBSCBS>
+      </infDPS>
+      <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+        <SignedInfo>
+          <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+          <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+          <Reference URI="#X">
+            <Transforms>
+              <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+              <Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+            </Transforms>
+            <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+            <DigestValue>AAAA</DigestValue>
+          </Reference>
+        </SignedInfo>
+        <SignatureValue>AAAA</SignatureValue>
+        <KeyInfo>
+          <X509Data>
+            <X509Certificate>AAAA</X509Certificate>
+          </X509Data>
+        </KeyInfo>
+      </Signature>
+    </DPS>
+  </infNFSe>
+  <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+    <SignedInfo>
+      <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+      <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+      <Reference URI="#X">
+        <Transforms>
+          <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+          <Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+        </Transforms>
+        <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+        <DigestValue>AAAA</DigestValue>
+      </Reference>
+    </SignedInfo>
+    <SignatureValue>AAAA</SignatureValue>
+    <KeyInfo>
+      <X509Data>
+        <X509Certificate>AAAA</X509Certificate>
+      </X509Data>
+    </KeyInfo>
+  </Signature>
+</NFSe>

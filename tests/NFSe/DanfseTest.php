@@ -566,6 +566,72 @@ class DanfseTest extends TestCase
         $this->assertStringContainsString('Ambiente gerador: 1', $text);
     }
 
+    public function testCompletaPrestadorComDadosDoEmitenteDaNfse(): void
+    {
+        $text = $this->textFromPdf(
+            (new Danfse($this->adnXml('v1.01-ibscbs-prestador-emitente')))->render()
+        );
+        $prestador = $this->textBetween($text, 'PRESTADOR / FORNECEDOR', 'TOMADOR / ADQUIRENTE');
+
+        $this->assertStringContainsString('Telefone (41) 99999-0000', $prestador);
+        $this->assertStringContainsString('Nome / Nome Empresarial ALFA SOLUCOES EM SOFTWARE LTDA', $prestador);
+        $this->assertStringContainsString('Município / Sigla UF 4106902 / PR', $prestador);
+        $this->assertStringContainsString('Código IBGE / CEP 4106902 / 80.010-000', $prestador);
+        $this->assertStringContainsString('Endereço RUA DAS ARAUCARIAS, 100, SALA 2, CENTRO', $prestador);
+        $this->assertStringContainsString('E-mail contato@alfa.example.com', $prestador);
+        $this->assertStringNotContainsString('3550308', $prestador);
+        $this->assertStringNotContainsString('01.310-100', $prestador);
+    }
+
+    public function testCompletaEmailDoPrestadorComEmitenteNoXmlRealSanitizado(): void
+    {
+        $text = $this->textFromPdf(
+            (new Danfse(file_get_contents(TEST_FIXTURES . 'xml/nfse-real/nfse-real-sanitized-06.xml')))->render()
+        );
+        $prestador = $this->textBetween($text, 'PRESTADOR / FORNECEDOR', 'TOMADOR / ADQUIRENTE');
+
+        $this->assertStringContainsString('Telefone (11) 3333-4444', $prestador);
+        $this->assertStringContainsString('E-mail contato@example.org', $prestador);
+    }
+
+    public function testLeDescricaoELocaisQueOLeiauteNacionalInformaEmInfNfse(): void
+    {
+        $text = $this->textFromPdf(
+            (new Danfse($this->adnXml('v1.01-ibscbs-prestador-emitente')))->render()
+        );
+
+        $this->assertStringContainsString('Local da Prestação / Sigla UF / País Curitiba', $text);
+        $this->assertStringContainsString('Análise e desenvolvimento de sistemas. Descrição do Serviço', $text);
+        $this->assertStringContainsString('Município / Sigla UF / País da Incidência do ISSQN Curitiba', $text);
+        $this->assertStringContainsString(
+            'Indicador de Operação / Código IBGE Incidência / Município Incidência / Sigla UF 100301 / 4106902 / Curitiba',
+            $text
+        );
+    }
+
+    public function testLeXOutInfDaNfseNosLeiautes100E101(): void
+    {
+        $leiaute100 = $this->textFromPdf(
+            (new Danfse($this->adnXml('v1.00-prestador-emitente')))->render()
+        );
+        $xml101 = preg_replace(
+            '#(</valores>\s*)(<IBSCBS>\s*<cLocalidadeIncid>)#',
+            '$1<xOutInf>Informação municipal do leiaute 1.01</xOutInf>$2',
+            $this->adnXml('v1.01-ibscbs-prestador-emitente'),
+            1
+        );
+        $leiaute101 = $this->textFromPdf((new Danfse($xml101))->render());
+
+        $this->assertStringContainsString(
+            'Inf. Cont.: Contrato fictício 2026/001 | Inf. A. T. Mun.: Informação municipal fictícia (xOutInf) |',
+            $leiaute100
+        );
+        $this->assertStringContainsString(
+            'Inf. Cont.: Contrato fictício 2026/001 | Inf. A. T. Mun.: Informação municipal do leiaute 1.01 |',
+            $leiaute101
+        );
+    }
+
     /**
      * @return array<string, array{string, string, string}>
      */
@@ -599,6 +665,21 @@ class DanfseTest extends TestCase
     {
         $parser = new Parser();
         return $this->normalize($parser->parseContent($pdf)->getText());
+    }
+
+    private function adnXml(string $name): string
+    {
+        return file_get_contents(TEST_FIXTURES . 'xml/nfse-adn/' . $name . '.xml');
+    }
+
+    private function textBetween(string $text, string $start, string $end): string
+    {
+        $from = strpos($text, $start);
+        $this->assertNotFalse($from, $start);
+        $to = strpos($text, $end, $from + strlen($start));
+        $this->assertNotFalse($to, $end);
+
+        return substr($text, $from, $to - $from);
     }
 
     private function createTemporaryPngLogo(): string
