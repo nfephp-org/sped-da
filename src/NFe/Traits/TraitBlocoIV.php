@@ -18,7 +18,9 @@ trait TraitBlocoIV
         $valor = $this->getTagValue($this->ICMSTot, 'vNF');
         $desconto = $this->getTagValue($this->ICMSTot, 'vDesc');
         $frete = $this->getTagValue($this->ICMSTot, 'vFrete');
-        $bruto = $valor + $desconto - $frete;
+        $outro = $this->getTagValue($this->ICMSTot, 'vOutro');
+        
+        $bruto = $valor + $desconto - $frete - $outro;
 
         $aFont = ['font' => $this->fontePadrao, 'size' => 8, 'style' => ''];
         $texto = "Qtde total de itens";
@@ -78,7 +80,9 @@ trait TraitBlocoIV
             false
         );
 
-        $texto = "Desconto R$";
+
+
+        $texto = "Adicionais R$";
         $this->pdf->textBox(
             $this->margem,
             $y + $y1 + $y2,
@@ -92,7 +96,7 @@ trait TraitBlocoIV
             '',
             false
         );
-        $texto = number_format((float) $desconto, 2, ',', '.');
+        $texto = number_format((float) $outro, 2, ',', '.');
         $y3 = $this->pdf->textBox(
             $this->margem + $this->wPrint / 2,
             $y + $y1 + $y2,
@@ -107,7 +111,9 @@ trait TraitBlocoIV
             false
         );
 
-        $texto = "Frete R$";
+
+
+        $texto = "Desconto R$";
         $this->pdf->textBox(
             $this->margem,
             $y + $y1 + $y2 + $y3,
@@ -121,10 +127,39 @@ trait TraitBlocoIV
             '',
             false
         );
-        $texto = number_format((float) $frete, 2, ',', '.');
+        $texto = number_format((float) $desconto, 2, ',', '.');
         $y4 = $this->pdf->textBox(
             $this->margem + $this->wPrint / 2,
             $y + $y1 + $y2 + $y3,
+            $this->wPrint / 2,
+            3,
+            $texto,
+            $aFont,
+            'T',
+            'R',
+            false,
+            '',
+            false
+        );
+
+        $texto = "Frete R$";
+        $this->pdf->textBox(
+            $this->margem,
+            $y + $y1 + $y2 + $y3 + $y4,
+            $this->wPrint / 2,
+            3,
+            $texto,
+            $aFont,
+            'T',
+            'L',
+            false,
+            '',
+            false
+        );
+        $texto = number_format((float) $frete, 2, ',', '.');
+        $y5 = $this->pdf->textBox(
+            $this->margem + $this->wPrint / 2,
+            $y + $y1 + $y2 + $y3 + $y4,
             $this->wPrint / 2,
             3,
             $texto,
@@ -143,7 +178,7 @@ trait TraitBlocoIV
         $texto = "Valor a Pagar R$";
         $this->pdf->textBox(
             $this->margem,
-            $y + $y1 + $y2 + $y3 + $y4,
+            $y + $y1 + $y2 + $y3 + $y4 + $y5,
             $this->wPrint / 2,
             3,
             $texto,
@@ -155,9 +190,9 @@ trait TraitBlocoIV
             false
         );
         $texto = number_format((float) $valor, 2, ',', '.');
-        $y4 = $this->pdf->textBox(
+        $y5 = $this->pdf->textBox(
             $this->margem + $this->wPrint / 2,
-            $y + $y1 + $y2 + $y3 + $y4,
+            $y + $y1 + $y2 + $y3 + $y4 + $y5,
             $this->wPrint / 2,
             3,
             $texto,
