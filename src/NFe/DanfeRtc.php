@@ -18,7 +18,7 @@ class DanfeRtc extends Danfe
     {
         parent::__construct($xml);
         $this->hCabecalho = 54;
-        $this->hCabecalhoItens = 10;
+        $this->hCabecalhoItens = 12;
         $this->hImposto = empty($this->dom) ? 18 : $this->alturaImpostoRtc();
     }
 
@@ -121,7 +121,7 @@ class DanfeRtc extends Danfe
         $hmax += 1;
         $this->pdf->textBox($x, $y, $w, $hmax);
         $this->cabecalhoItens($x, $y, $w);
-        $y += 6;
+        $y += 8;
 
         $totItens = $this->det->length;
         $i = 0;
@@ -154,16 +154,7 @@ class DanfeRtc extends Danfe
      */
     protected function calculeHeight($item, $mostrarUnidadeTributavel = false)
     {
-        $w = $this->larguraUtil(1);
-        $wDesc = round($w * 0.34, 0);
-        $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
-        $texto = $this->descricaoProduto($item);
-        $linhas = max(1, $this->pdf->getNumLines($texto, $wDesc, $aFont));
-        $hDesc = round(($linhas * $this->pdf->fontSize) + ($linhas * 0.5), 2);
-        $hDesc = max(4, $hDesc);
-        $nTrib = count($this->linhasTributoItem($item));
-
-        return round($hDesc + ($nTrib * 3.3) + 1.2, 2);
+        return $this->medidaFaixa($item)['h'];
     }
 
     /**
@@ -277,18 +268,27 @@ class DanfeRtc extends Danfe
     protected function cabecalhoItens($x, $y, $w)
     {
         $cols = $this->colunasItem($w);
-        $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
-        $h = 6;
-        $labels = ['CÓDIGO', 'DESCRIÇÃO', 'NCM', 'CST', 'CFOP', 'cClassTrib', 'UN', 'QUANT', 'V.UNIT', 'V.TOTAL'];
-        $i = 0;
-        foreach ($cols as $largura) {
-            $this->pdf->textBox($x, $y, $largura, $h, $labels[$i], $aFont, 'C', 'C', 0, '', false);
+        $aFont = ['font' => $this->fontePadrao, 'size' => 5, 'style' => 'B'];
+        $h = 8;
+        $labels = [
+            "DESCRIÇÃO DO PRODUTO / SERVIÇO",
+            "CST / CFOP",
+            "QTD / UN",
+            "VLR UNIT",
+            "VLR TOTAL",
+            "BASES DE CÁLCULO",
+            "ALÍQUOTAS",
+            "VALOR DOS TRIBUTOS",
+        ];
+        foreach ($cols as $i => $largura) {
+            $this->pdf->textBox($x, $y, $largura, $h, $labels[$i], $aFont, 'C', 'C', 1, '', false);
             $x += $largura;
-            $i++;
         }
     }
 
     /**
+     * Uma faixa por item: identificação à esquerda e quatro linhas de tributo à direita.
+     *
      * @param float $x
      * @param float $y
      * @param float $w
@@ -298,40 +298,99 @@ class DanfeRtc extends Danfe
      */
     protected function faixaItem($x, $y, $w, $h, $det)
     {
-        $prod = $det->getElementsByTagName('prod')->item(0);
+        $medida = $this->medidaFaixa($det);
         $cols = $this->colunasItem($w);
-        $valores = [
-            $this->getTagValue($prod, 'cProd'),
-            $this->descricaoProduto($det),
-            $this->getTagValue($prod, 'NCM'),
-            $this->cstItem($det),
-            $this->getTagValue($prod, 'CFOP'),
-            $this->cClassTribItem($det),
-            $this->getTagValue($prod, 'uCom'),
-            $this->textoQuantidade($prod, 'qCom'),
-            $this->textoNumero($prod, 'vUnCom'),
-            $this->textoNumero($prod, 'vProd'),
-        ];
-        $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
+        $lh = $medida['lh'];
+        $hMiolo = $medida['hMiolo'];
+        $prod = $det->getElementsByTagName('prod')->item(0);
+        $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
+        $aFontMiudo = ['font' => $this->fontePadrao, 'size' => 5, 'style' => ''];
+
         $cursor = $x;
-        $hDesc = 4;
-        foreach ($valores as $i => $texto) {
-            $align = ($i >= 7) ? 'R' : 'L';
-            $this->pdf->textBox($cursor, $y, $cols[$i], $hDesc, $texto, $aFont, 'T', $align, 0, '');
-            $cursor += $cols[$i];
+        foreach ($cols as $i => $largura) {
+            if ($i > 0) {
+                $this->pdf->line($cursor, $y, $cursor, $y + $hMiolo);
+            }
+            $cursor += $largura;
         }
 
-        $yTrib = $y + $hDesc;
-        $aFontTrib = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
-        $wNome = 16;
-        $wNum = round(($w - $wNome) / 3, 0);
-        foreach ($this->linhasTributoItem($det) as $linha) {
-            $this->pdf->textBox($x, $yTrib, $wNome, 3.3, $linha[0], $aFontTrib, 'T', 'L', 0, '');
-            $this->pdf->textBox($x + $wNome, $yTrib, $wNum, 3.3, 'Base ' . $linha[1], $aFontTrib, 'T', 'L', 0, '');
-            $this->pdf->textBox($x + $wNome + $wNum, $yTrib, $wNum, 3.3, 'Alíq. ' . $linha[2], $aFontTrib, 'T', 'L', 0, '');
-            $this->pdf->textBox($x + $wNome + (2 * $wNum), $yTrib, $wNum, 3.3, 'Valor ' . $linha[3], $aFontTrib, 'T', 'L', 0, '');
-            $yTrib += 3.3;
+        $this->pdf->textBox($x, $y, $cols[0], $lh * $medida['nNome'], $medida['nome'], $aFont, 'T', 'L', 0, '');
+        if ($medida['info'] !== '') {
+            $this->pdf->textBox(
+                $x,
+                $y + ($lh * $medida['nNome']),
+                $cols[0],
+                $lh * $medida['nInfo'],
+                $medida['info'],
+                $aFontMiudo,
+                'T',
+                'L',
+                0,
+                ''
+            );
         }
+        $this->pdf->textBox($x, $y + $hMiolo - $lh, $cols[0], $lh, $medida['rodape'], $aFontMiudo, 'B', 'L', 0, '');
+
+        $xCst = $x + $cols[0];
+        $this->pdf->textBox($xCst, $y, $cols[1], $lh, $this->cstItem($det), $aFont, 'T', 'C', 0, '');
+        $this->pdf->textBox($xCst, $y + $lh, $cols[1], $lh, $this->getTagValue($prod, 'CFOP'), $aFont, 'T', 'C', 0, '');
+
+        $xQtd = $xCst + $cols[1];
+        $un = $this->getTagValue($prod, 'uCom');
+        $this->pdf->textBox($xQtd, $y, $cols[2], $lh, $this->textoQuantidade($prod, 'qCom'), $aFont, 'T', 'C', 0, '');
+        $this->pdf->textBox($xQtd, $y + $lh, $cols[2], $lh, $un === '' ? '' : '[' . $un . ']', $aFont, 'T', 'C', 0, '');
+
+        $xUnit = $xQtd + $cols[2];
+        $this->pdf->textBox($xUnit, $y, $cols[3], $lh, $this->textoNumero($prod, 'vUnCom'), $aFont, 'T', 'R', 0, '');
+        $xTotal = $xUnit + $cols[3];
+        $this->pdf->textBox($xTotal, $y, $cols[4], $lh, $this->textoNumero($prod, 'vProd'), $aFont, 'T', 'R', 0, '');
+
+        $xBase = $xTotal + $cols[4];
+        $xAliq = $xBase + $cols[5];
+        $xValor = $xAliq + $cols[6];
+        foreach ($this->linhasTributoFaixa($det) as $i => $linha) {
+            $yLinha = $y + ($i * $lh);
+            $this->pdf->textBox($xBase, $yLinha, $cols[5], $lh, $linha[0], $aFontMiudo, 'T', 'R', 0, '');
+            $this->pdf->textBox($xAliq, $yLinha, $cols[6], $lh, $linha[1], $aFontMiudo, 'T', 'C', 0, '');
+            $this->pdf->textBox($xValor, $yLinha, $cols[7], $lh, $linha[2], $aFontMiudo, 'T', 'R', 0, '');
+        }
+
+        $this->pdf->dashedHLine($x, $y + $hMiolo + 0.4, $w, 0.1, 120);
+    }
+
+    /**
+     * Altura da faixa desenhada por faixaItem().
+     *
+     * @param \DOMElement $det
+     * @return array{h: float, hMiolo: float, lh: float, nNome: int, nInfo: int, nome: string, info: string, rodape: string}
+     */
+    protected function medidaFaixa($det)
+    {
+        $cols = $this->colunasItem($this->larguraUtil(1));
+        $wDesc = max(10, $cols[0] - 1);
+        $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
+        $aFontMiudo = ['font' => $this->fontePadrao, 'size' => 5, 'style' => ''];
+        $lh = 3.3;
+        $prod = $det->getElementsByTagName('prod')->item(0);
+        $nome = $prod ? $this->getTagValue($prod, 'xProd') : '';
+        $info = $this->getTagValue($det, 'infAdProd');
+        $nNome = max(1, (int) $this->pdf->getNumLines($nome, $wDesc, $aFont));
+        $nInfo = $info === '' ? 0 : max(1, (int) $this->pdf->getNumLines($info, $wDesc, $aFontMiudo));
+        $hTexto = ($nNome + $nInfo) * $lh;
+        $hNcm = $lh;
+        $hTax = 4 * $lh;
+        $hMiolo = max($hTexto + $hNcm, $hTax + $hNcm);
+
+        return [
+            'h' => round($hMiolo + 1.2, 2),
+            'hMiolo' => $hMiolo,
+            'lh' => $lh,
+            'nNome' => $nNome,
+            'nInfo' => $nInfo,
+            'nome' => $nome,
+            'info' => $info,
+            'rodape' => $this->rodapeItem($det),
+        ];
     }
 
     /**
@@ -340,73 +399,122 @@ class DanfeRtc extends Danfe
      */
     protected function colunasItem($w)
     {
-        $partes = [0.09, 0.28, 0.08, 0.05, 0.05, 0.09, 0.05, 0.07, 0.12, 0.12];
+        $partes = [0.28, 0.09, 0.09, 0.10, 0.11, 0.11, 0.12];
         $cols = [];
         $usado = 0;
-        foreach ($partes as $i => $parte) {
-            if ($i === count($partes) - 1) {
-                $cols[] = $w - $usado;
-                break;
-            }
+        foreach ($partes as $parte) {
             $largura = round($w * $parte, 0);
             $cols[] = $largura;
             $usado += $largura;
         }
+        $cols[] = $w - $usado;
 
         return $cols;
     }
 
     /**
+     * Quatro linhas fixas. Tag ausente permanece em branco.
+     *
      * @param \DOMElement $det
-     * @return array<int, array{0: string, 1: string, 2: string, 3: string}>
+     * @return array<int, array{0: string, 1: string, 2: string}>
      */
-    protected function linhasTributoItem($det)
+    protected function linhasTributoFaixa($det)
     {
         $imposto = $det->getElementsByTagName('imposto')->item(0);
-        if (empty($imposto)) {
-            return [];
-        }
-        $linhas = [];
-        $icms = $imposto->getElementsByTagName('ICMS')->item(0);
-        if (!empty($icms)) {
-            $linhas[] = [
-                'ICMS',
-                $this->textoNumero($icms, 'vBC'),
-                $this->textoNumero($icms, 'pICMS'),
-                $this->textoNumero($icms, 'vICMS'),
-            ];
-        }
-        $ibscbs = $this->primeiroFilho($imposto, 'IBSCBS');
-        $gIbsCbs = $this->primeiroFilho($ibscbs, 'gIBSCBS');
-        if (!empty($gIbsCbs)) {
-            $base = $this->textoNumero($gIbsCbs, 'vBC');
-            $gIbsUf = $this->primeiroFilho($gIbsCbs, 'gIBSUF');
-            $gIbsMun = $this->primeiroFilho($gIbsCbs, 'gIBSMun');
-            $gCbs = $this->primeiroFilho($gIbsCbs, 'gCBS');
-            $linhas[] = ['IBS UF', $base, $this->textoAliquota($gIbsUf, 'pIBSUF'), $this->textoNumero($gIbsUf, 'vIBSUF')];
-            $linhas[] = ['IBS Mun', $base, $this->textoAliquota($gIbsMun, 'pIBSMun'), $this->textoNumero($gIbsMun, 'vIBSMun')];
-            $linhas[] = ['CBS', $base, $this->textoAliquota($gCbs, 'pCBS'), $this->textoNumero($gCbs, 'vCBS')];
-        }
+        $icms = $imposto ? $imposto->getElementsByTagName('ICMS')->item(0) : null;
+        $ipi = $imposto ? $imposto->getElementsByTagName('IPI')->item(0) : null;
         $is = $this->primeiroFilho($imposto, 'IS');
-        if (!empty($is)) {
-            $linhas[] = [
-                'IS',
+        $gIbsCbs = $this->primeiroFilho($this->primeiroFilho($imposto, 'IBSCBS'), 'gIBSCBS');
+        $gIbsUf = $this->primeiroFilho($gIbsCbs, 'gIBSUF');
+        $gIbsMun = $this->primeiroFilho($gIbsCbs, 'gIBSMun');
+        $gCbs = $this->primeiroFilho($gIbsCbs, 'gCBS');
+
+        return [
+            [
+                $this->textoNumero($icms, 'vBC'),
+                $this->textoPercentual($icms, 'pICMS'),
+                $this->textoNumero($icms, 'vICMS'),
+            ],
+            [
+                $this->textoNumero($gIbsCbs, 'vBC'),
+                $this->parTexto(
+                    $this->textoPercentual($gIbsUf, 'pIBSUF'),
+                    $this->textoPercentual($gCbs, 'pCBS')
+                ),
+                $this->parTexto(
+                    $this->textoNumero($gIbsUf, 'vIBSUF'),
+                    $this->textoNumero($gCbs, 'vCBS')
+                ),
+            ],
+            [
                 $this->textoNumero($is, 'vBCIS'),
-                $this->textoNumero($is, 'pIS'),
-                $this->textoNumero($is, 'vIS'),
-            ];
-        }
-        $ipi = $imposto->getElementsByTagName('IPI')->item(0);
-        if (!empty($ipi)) {
-            $linhas[] = [
-                'IPI',
+                $this->parTexto(
+                    $this->textoPercentual($gIbsMun, 'pIBSMun'),
+                    $this->textoPercentual($is, 'pIS')
+                ),
+                $this->parTexto(
+                    $this->textoNumero($gIbsMun, 'vIBSMun'),
+                    $this->textoNumero($is, 'vIS')
+                ),
+            ],
+            [
                 $this->textoNumero($ipi, 'vBC'),
-                $this->textoNumero($ipi, 'pIPI'),
+                $this->textoPercentual($ipi, 'pIPI'),
                 $this->textoNumero($ipi, 'vIPI'),
-            ];
+            ],
+        ];
+    }
+
+    /**
+     * @param \DOMElement $det
+     * @return string
+     */
+    protected function rodapeItem($det)
+    {
+        $prod = $det->getElementsByTagName('prod')->item(0);
+        $ncm = $prod ? $this->getTagValue($prod, 'NCM') : '';
+        $classe = $this->cClassTribItem($det);
+        $partes = [];
+        if ($ncm !== '') {
+            $partes[] = '[NCM ' . $ncm . ']';
+        }
+        if ($classe !== '') {
+            $partes[] = '[cClassTrib ' . $classe . ']';
         }
 
-        return $linhas;
+        return implode(' ', $partes);
+    }
+
+    /**
+     * @param string $esquerda
+     * @param string $direita
+     * @return string
+     */
+    protected function parTexto($esquerda, $direita)
+    {
+        if ($esquerda === '' && $direita === '') {
+            return '';
+        }
+        if ($esquerda === '') {
+            return $direita;
+        }
+        if ($direita === '') {
+            return $esquerda;
+        }
+
+        return $esquerda . ' / ' . $direita;
+    }
+
+    /**
+     * @param \DOMElement|null $grupo
+     * @param string $tagCheia
+     * @return string
+     */
+    protected function textoPercentual($grupo, $tagCheia)
+    {
+        $numero = $this->textoAliquota($grupo, $tagCheia);
+
+        return $numero === '' ? '' : $numero . '%';
     }
 
     /**
