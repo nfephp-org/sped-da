@@ -978,6 +978,10 @@ class Dacte extends DaCommon
                 $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'C', 'C', 0, '');
                 $y += $h;
             }
+            if ($resp['valida']) {
+                $this->pdf->settextcolor(0, 0, 0);
+                return $oldY + 8;
+            }
             $y += 5;
             $w = $maxW - (2 * $x);
             $texto = "SEM VALOR FISCAL";
@@ -997,9 +1001,17 @@ class Dacte extends DaCommon
     {
         $resp = [
             'status' => true,
+            'valida' => false,
             'message' => [],
             'submessage' => ''
         ];
+        if ($this->tpEmis == 2 && !isset($this->cteProc)) {
+            $resp['status'] = false;
+            $resp['valida'] = true;
+            $resp['message'][] = "CTe Emitido em Contingência";
+            $resp['message'][] = "devido à problemas técnicos";
+            return $resp;
+        }
         if (!isset($this->cteProc)) {
             $resp['status'] = false;
             $resp['message'][] = 'CTe NÃO PROTOCOLADO';
@@ -3699,7 +3711,7 @@ class Dacte extends DaCommon
         $texto = '';
         switch ($this->tpEmis) {
             case 2:
-                $texto = 'CONTINGÊNCIA FS' . $dhCont . $xJust;
+                $texto = 'EMITIDO EM CONTINGÊNCIA OFF-LINE' . $dhCont . $xJust;
                 break;
             case 3:
                 $texto = 'CONTINGÊNCIA SCAN' . $dhCont . $xJust;
