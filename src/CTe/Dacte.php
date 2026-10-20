@@ -1000,6 +1000,9 @@ class Dacte extends DaCommon
             'message' => [],
             'submessage' => ''
         ];
+        if ($this->tpEmis == 2 && !isset($this->cteProc)) {
+            return $resp;
+        }
         if (!isset($this->cteProc)) {
             $resp['status'] = false;
             $resp['message'][] = 'CTe NÃO PROTOCOLADO';
@@ -3699,7 +3702,7 @@ class Dacte extends DaCommon
         $texto = '';
         switch ($this->tpEmis) {
             case 2:
-                $texto = 'CONTINGÊNCIA FS' . $dhCont . $xJust;
+                $texto = 'CONTINGÊNCIA OFF-LINE' . $dhCont . $xJust;
                 break;
             case 3:
                 $texto = 'CONTINGÊNCIA SCAN' . $dhCont . $xJust;
