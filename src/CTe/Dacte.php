@@ -2836,6 +2836,10 @@ class Dacte extends DaCommon
             $texto = 'DETALHAMENTO DO CT-E COMPLEMENTADO';
             $descr1 = 'CHAVE DO CT-E COMPLEMENTADO';
             $descr2 = 'VALOR COMPLEMENTADO';
+        } elseif ($this->tpCTe == 3) {
+            $texto = 'DETALHAMENTO DO CT-E SUBSTITUÍDO';
+            $descr1 = 'CHAVE DO CT-E SUBSTITUÍDO';
+            $descr2 = 'VALOR SUBSTITUÍDO';
         } else {
             $texto = 'DETALHAMENTO DO CT-E ANULADO';
             $descr1 = 'CHAVE DO CT-E ANULADO';

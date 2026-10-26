@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cteProc versao="4.00" xmlns="http://www.portalfiscal.inf.br/cte">
+    <CTe>
+        <infCte versao="4.00" Id="CTe41260111111111000191570010000000011000000018">
+            <ide>
+                <cUF>41</cUF>
+                <cCT>00000001</cCT>
+                <CFOP>6353</CFOP>
+                <natOp>PRESTACAO DE SERVICO DE TRANSPORTE</natOp>
+                <mod>57</mod>
+                <serie>1</serie>
+                <nCT>1</nCT>
+                <dhEmi>2026-01-15T08:00:00-03:00</dhEmi>
+                <tpImp>1</tpImp>
+                <tpEmis>1</tpEmis>
+                <cDV>8</cDV>
+                <tpAmb>1</tpAmb>
+                <tpCTe>3</tpCTe>
+                <procEmi>0</procEmi>
+                <verProc>1.0</verProc>
+                <cMunEnv>4106902</cMunEnv>
+                <xMunEnv>CURITIBA</xMunEnv>
+                <UFEnv>PR</UFEnv>
+                <modal>01</modal>
+                <tpServ>0</tpServ>
+                <cMunIni>4106902</cMunIni>
+                <xMunIni>CURITIBA</xMunIni>
+                <UFIni>PR</UFIni>
+                <cMunFim>4314902</cMunFim>
+                <xMunFim>PORTO ALEGRE</xMunFim>
+                <UFFim>RS</UFFim>
+                <retira>1</retira>
+                <indIEToma>1</indIEToma>
+                <toma3><toma>0</toma></toma3>
+            </ide>
+            <compl><xObs>CT-e emitido em substituicao ao CT-e original.</xObs></compl>
+            <emit>
+                <CNPJ>11111111000191</CNPJ>
+                <IE>1111111111</IE>
+                <xNome>TRANSPORTADORA EXEMPLO LTDA</xNome>
+                <enderEmit>
+                    <xLgr>RUA EXEMPLO</xLgr>
+                    <nro>100</nro>
+                    <xBairro>CENTRO</xBairro>
+                    <cMun>4106902</cMun>
+                    <xMun>CURITIBA</xMun>
+                    <CEP>80000000</CEP>
+                    <UF>PR</UF>
+                    <fone>4133333333</fone>
+                </enderEmit>
+            </emit>
+            <rem>
+                <CNPJ>22222222000172</CNPJ>
+                <IE>2222222222</IE>
+                <xNome>REMETENTE EXEMPLO LTDA</xNome>
+                <fone>4133333334</fone>
+                <enderReme>
+                    <xLgr>RUA DO REMETENTE</xLgr>
+                    <nro>200</nro>
+                    <xBairro>INDUSTRIAL</xBairro>
+                    <cMun>4106902</cMun>
+                    <xMun>CURITIBA</xMun>
+                    <CEP>80000001</CEP>
+                    <UF>PR</UF>
+                    <cPais>1058</cPais>
+                    <xPais>BRASIL</xPais>
+                </enderReme>
+            </rem>
+            <dest>
+                <CNPJ>33333333000153</CNPJ>
+                <IE>ISENTO</IE>
+                <xNome>DESTINATARIO EXEMPLO LTDA</xNome>
+                <fone>5133333335</fone>
+                <enderDest>
+                    <xLgr>AVENIDA DO DESTINATARIO</xLgr>
+                    <nro>300</nro>
+                    <xBairro>CENTRO</xBairro>
+                    <cMun>4314902</cMun>
+                    <xMun>PORTO ALEGRE</xMun>
+                    <CEP>90000000</CEP>
+                    <UF>RS</UF>
+                    <cPais>1058</cPais>
+                    <xPais>BRASIL</xPais>
+                </enderDest>
+            </dest>
+            <vPrest>
+                <vTPrest>100.00</vTPrest>
+                <vRec>100.00</vRec>
+                <Comp><xNome>FRETE VALOR</xNome><vComp>90.00</vComp></Comp>
+                <Comp><xNome>GRIS</xNome><vComp>10.00</vComp></Comp>
+            </vPrest>
+            <imp>
+                <ICMS><ICMS00><CST>00</CST><vBC>100.00</vBC><pICMS>12.00</pICMS><vICMS>12.00</vICMS></ICMS00></ICMS>
+                <vTotTrib>12.00</vTotTrib>
+            </imp>
+            <infCTeNorm>
+                <infCarga>
+                    <vCarga>1000.00</vCarga>
+                    <proPred>MERCADORIA DIVERSA</proPred>
+                    <infQ><cUnid>01</cUnid><tpMed>PESO BRUTO</tpMed><qCarga>100.0000</qCarga></infQ>
+                    <infQ><cUnid>03</cUnid><tpMed>VOLUMES</tpMed><qCarga>2.0000</qCarga></infQ>
+                </infCarga>
+                <infDoc>
+                    <infNFe><chave>41260122222222000172550010000000011000000011</chave></infNFe>
+                </infDoc>
+                <infCteSub>
+                    <chCte>41260111111111000191570010000000001000000019</chCte>
+                </infCteSub>
+                <infModal versaoModal="4.00">
+                    <rodo><RNTRC>12345678</RNTRC></rodo>
+                </infModal>
+            </infCTeNorm>
+        </infCte>
+    </CTe>
+    <protCTe versao="4.00">
+        <infProt>
+            <tpAmb>1</tpAmb>
+            <verAplic>PR-v4</verAplic>
+            <chCTe>41260111111111000191570010000000011000000018</chCTe>
+            <dhRecbto>2026-01-15T08:01:00-03:00</dhRecbto>
+            <nProt>141260000000001</nProt>
+            <digVal>abc</digVal>
+            <cStat>100</cStat>
+            <xMotivo>Autorizado o uso do CT-e</xMotivo>
+        </infProt>
+    </protCTe>
+</cteProc>
