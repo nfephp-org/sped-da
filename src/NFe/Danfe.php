@@ -100,6 +100,25 @@ class Danfe extends DaCommon
      */
     protected $ocultarUnidadeTributavel = false;
     /**
+     * Altura reservada ao quadro de impostos, em milímetros.
+     * O padrão 18 mm é o leiaute atual. DanfeRtc aumenta este valor.
+     *
+     * @var int
+     */
+    protected $hImposto = 18;
+    /**
+     * Altura reservada ao cabeçalho, em milímetros.
+     *
+     * @var int
+     */
+    protected $hCabecalho = 47;
+    /**
+     * Altura reservada ao título da grade de itens, em milímetros.
+     *
+     * @var int
+     */
+    protected $hCabecalhoItens = 4;
+    /**
      * XML NFe
      *
      * @var string
@@ -598,7 +617,7 @@ class Danfe extends DaCommon
         $this->hdadosadic = $this->calculoEspacoVericalDadosAdicionais();
 
         //altura disponivel para os campos da DANFE
-        $hcabecalho    = 47; //para cabeçalho
+        $hcabecalho    = $this->hCabecalho;
         $hdestinatario = 25; //para destinatario
         $hduplicatas   = 12; //para cada grupo de 7 duplicatas
         if (isset($this->entrega)) {
@@ -611,11 +630,11 @@ class Danfe extends DaCommon
         } else {
             $hlocalretirada = 0;
         }
-        $himposto    = 18; // para imposto
+        $himposto    = $this->hImposto;
         $htransporte = 25; // para transporte
         $hissqn      = 11; // para issqn
         $hfooter     = 5; // para rodape
-        $hCabecItens = 4; //cabeçalho dos itens
+        $hCabecItens = $this->hCabecalhoItens;
 
         $hOCUPADA    = $hcabecalho
             + $hdestinatario
