@@ -4076,9 +4076,7 @@ class Danfe extends DaCommon
         $formaNfpRef = "\r\nNFP Ref.: série:%d número:%d emit:%s em %s modelo: %d IE:%s";
         $saida       = '';
         $nfRefs      = $this->ide->getElementsByTagName('NFref');
-        if (0 === $nfRefs->length) {
-            return $saida;
-        }
+
         if ($nfRefs->length > 2) {
             return 'Existem mais de 2 NF/NFe/ECF/NFP/CTe referenciadas, não serão exibidas na DANFE.';
         }
@@ -4144,6 +4142,56 @@ class Danfe extends DaCommon
                 }
                 $saida .= sprintf($formaNfpRef, $serie, $numero, $cpf_cnpj, $data, $mod, $ie);
             }
+        }
+
+        $dfeReferenciados = $this->infNFe
+            ->getElementsByTagName('DFeReferenciado');
+
+        $chavesReferenciadas = [];
+
+        foreach ($dfeReferenciados as $dfeReferenciado) {
+            $chaveNode = $dfeReferenciado
+                ->getElementsByTagName('chaveAcesso')
+                ->item(0);
+
+            if (empty($chaveNode)) {
+                continue;
+            }
+
+            $chave_acesso = trim($chaveNode->nodeValue);
+
+            if (empty($chave_acesso)) {
+                continue;
+            }
+            $chavesReferenciadas[$chave_acesso] = $chave_acesso;
+        }
+
+        foreach ($chavesReferenciadas as $chave_acesso) {
+            $chave_acessoF = $this->formatField(
+                $chave_acesso,
+                $this->formatoChave
+            );
+
+            $data = substr($chave_acesso, 4, 2)
+                . "/20"
+                . substr($chave_acesso, 2, 2);
+
+            $cnpj = $this->formatField(
+                substr($chave_acesso, 6, 14),
+                "##.###.###/####-##"
+            );
+
+            $serie  = substr($chave_acesso, 22, 3);
+            $numero = substr($chave_acesso, 25, 9);
+
+            $saida .= sprintf(
+                $formaNfeRef,
+                $serie,
+                $numero,
+                $cnpj,
+                $data,
+                $chave_acessoF
+            );
         }
 
         return $saida;
