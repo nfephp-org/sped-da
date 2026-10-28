@@ -4156,7 +4156,7 @@ class Danfe extends DaCommon
      * Devolve uma string com a finalidade da Nota de Crédito (finNFe = 5) ou da
      * Nota de Débito (finNFe = 6) e o seu tipo (tpNFCredito / tpNFDebito),
      * incluídos pela NT 2025.002 (Reforma Tributária)
-     * Exemplo: Nota de Débito - tpNFDebito 04: Multa e juros
+     * Exemplo: Nota de Débito: Multa e juros
      *
      * @return string Informação a ser adicionada no rodapé sobre a finalidade da NF-e.
      */
@@ -4197,17 +4197,17 @@ class Danfe extends DaCommon
         if ($tipo == '') {
             return $titulo;
         }
-        $descricao = isset($tipos[$tipo]) ? ': ' . $tipos[$tipo] : '';
+        $descricao = isset($tipos[$tipo]) ? $tipos[$tipo] : "{$tag} {$tipo}";
 
-        return "{$titulo} - {$tag} {$tipo}{$descricao}";
+        return "{$titulo}: {$descricao}";
     }
 
     /**
      *  geraInformacoesDosDFeReferenciados
      * Devolve uma string com os documentos referenciados pelos itens da NF-e no
-     * grupo det/DFeReferenciado (NT 2025.002), agrupados por chave de acesso
-     * Exemplo: DFe Ref.: série:1 número:1234 emit:11.111.111/0001-91
-     * em 05/2026 [0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000] itens: 1, 2
+     * grupo det/DFeReferenciado (NT 2025.002), um por chave de acesso. Quando
+     * a NF-e referencia mais de um documento, informa os itens de cada um
+     * Exemplo: Nota Originária Número: 1234 Série: 1 ChAcesso 00000000000000000000000000000000000000000000
      *
      * @return string Informacoes a serem adicionadas no rodapé sobre os DFe referenciados.
      */
@@ -4216,7 +4216,7 @@ class Danfe extends DaCommon
         if (!$this->gerarInformacoesAutomaticas) {
             return '';
         }
-        $formaDFeRef = "\r\nDFe Ref.: série:%d número:%d emit:%s em %s [%s]";
+        $formaDFeRef = "\r\nNota Originária Número: %d Série: %d ChAcesso %s";
         $saida       = '';
         $itensPorChave = [];
         foreach ($this->dom->getElementsByTagName('DFeReferenciado') as $dfeRef) {
@@ -4233,14 +4233,11 @@ class Danfe extends DaCommon
             }
         }
         foreach ($itensPorChave as $chave_acesso => $itens) {
-            $chave_acessoF = $this->formatField($chave_acesso, $this->formatoChave);
-            $data          = substr($chave_acesso, 4, 2) . "/20" . substr($chave_acesso, 2, 2);
-            $cnpj          = $this->formatField(substr($chave_acesso, 6, 14), "##.###.###/####-##");
-            $serie         = substr($chave_acesso, 22, 3);
-            $numero        = substr($chave_acesso, 25, 9);
-            $saida         .= sprintf($formaDFeRef, $serie, $numero, $cnpj, $data, $chave_acessoF);
-            if (!empty($itens)) {
-                $saida .= ' itens: ' . implode(', ', $itens);
+            $serie  = substr($chave_acesso, 22, 3);
+            $numero = substr($chave_acesso, 25, 9);
+            $saida  .= sprintf($formaDFeRef, $numero, $serie, $chave_acesso);
+            if (count($itensPorChave) > 1 && !empty($itens)) {
+                $saida .= ' Itens: ' . implode(', ', $itens);
             }
         }
 

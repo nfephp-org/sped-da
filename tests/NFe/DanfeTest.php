@@ -28,17 +28,15 @@ class DanfeTest extends TestCase
         $danfe->setGerarInformacoesAutomaticas(true);
         $texto = Utils::textoPdf($danfe->render());
 
-        $this->assertStringContainsString('Nota de Débito - tpNFDebito 04: Multa e juros', $texto);
+        $this->assertStringContainsString('Nota de Débito: Multa e juros', $texto);
         $this->assertStringContainsString(
-            'DFe Ref.: série:1 número:1234 emit:11.111.111/0001-91 em 05/2026',
+            'Nota Originária Número: 1234 Série: 1 ChAcesso 35260511111111000191550010000012341000012345 Itens: 1, 2',
             $texto
         );
-        $this->assertStringContainsString('itens: 1, 2', $texto);
         $this->assertStringContainsString(
-            'DFe Ref.: série:1 número:5678 emit:11.111.111/0001-91 em 06/2026',
+            'Nota Originária Número: 5678 Série: 1 ChAcesso 35260611111111000191550010000056781000056786 Itens: 3',
             $texto
         );
-        $this->assertStringContainsString('itens: 3', $texto);
     }
 
     /**
@@ -50,6 +48,6 @@ class DanfeTest extends TestCase
         $texto = Utils::textoPdf($danfe->render());
 
         $this->assertStringNotContainsString('Nota de Débito', $texto);
-        $this->assertStringNotContainsString('DFe Ref.', $texto);
+        $this->assertStringNotContainsString('Nota Originária', $texto);
     }
 }
