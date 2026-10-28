@@ -415,7 +415,9 @@ class Danfe extends DaCommon
         ];
         $k = $this->pdf->k;
         $this->textadicfontsize = $fontProduto['size'] / $k;
+        $this->textoAdic .= $this->geraInformacoesDaFinalidade();
         $this->textoAdic .= $this->geraInformacoesDasNotasReferenciadas();
+        $this->textoAdic .= $this->geraInformacoesDosDFeReferenciados();
         if (isset($this->infAdic)) {
             $i = 0;
             if ($this->textoAdic != '') {
@@ -4143,6 +4145,99 @@ class Danfe extends DaCommon
                     $cpf_cnpj = $this->formatField($cnpj, "##.###.###/####-##");
                 }
                 $saida .= sprintf($formaNfpRef, $serie, $numero, $cpf_cnpj, $data, $mod, $ie);
+            }
+        }
+
+        return $saida;
+    }
+
+    /**
+     *  geraInformacoesDaFinalidade
+     * Devolve uma string com a finalidade da Nota de Crédito (finNFe = 5) ou da
+     * Nota de Débito (finNFe = 6) e o seu tipo (tpNFCredito / tpNFDebito),
+     * incluídos pela NT 2025.002 (Reforma Tributária)
+     * Exemplo: Nota de Débito: Multa e juros
+     *
+     * @return string Informação a ser adicionada no rodapé sobre a finalidade da NF-e.
+     */
+    protected function geraInformacoesDaFinalidade()
+    {
+        if (!$this->gerarInformacoesAutomaticas) {
+            return '';
+        }
+        $finNFe = $this->getTagValue($this->ide, 'finNFe');
+        if ($finNFe == '5') {
+            $tag = 'tpNFCredito';
+            $titulo = 'Nota de Crédito';
+            $tipos = [
+                '01' => 'Multa e juros',
+                '02' => 'Apropriação de crédito presumido de IBS sobre o saldo devedor na ZFM',
+                '03' => 'Retorno por recusa na entrega ou por não localização do destinatário',
+                '04' => 'Redução de valores',
+                '05' => 'Transferência de crédito na sucessão',
+                '06' => 'Retorno por recusa parcial na entrega',
+            ];
+        } elseif ($finNFe == '6') {
+            $tag = 'tpNFDebito';
+            $titulo = 'Nota de Débito';
+            $tipos = [
+                '01' => 'Transferência de créditos para Cooperativas',
+                '02' => 'Anulação de Crédito por Saídas Imunes/Isentas',
+                '03' => 'Débitos de notas fiscais não processadas na apuração',
+                '04' => 'Multa e juros',
+                '05' => 'Transferência de crédito na sucessão',
+                '06' => 'Pagamento antecipado',
+                '07' => 'Perda em estoque',
+                '08' => 'Desenquadramento do SN',
+            ];
+        } else {
+            return '';
+        }
+        $tipo = $this->getTagValue($this->ide, $tag);
+        if ($tipo == '') {
+            return $titulo;
+        }
+        $descricao = isset($tipos[$tipo]) ? $tipos[$tipo] : "{$tag} {$tipo}";
+
+        return "{$titulo}: {$descricao}";
+    }
+
+    /**
+     *  geraInformacoesDosDFeReferenciados
+     * Devolve uma string com os documentos referenciados pelos itens da NF-e no
+     * grupo det/DFeReferenciado (NT 2025.002), um por chave de acesso. Quando
+     * a NF-e referencia mais de um documento, informa os itens de cada um
+     * Exemplo: Nota Originária Número: 1234 Série: 1 ChAcesso 00000000000000000000000000000000000000000000
+     *
+     * @return string Informacoes a serem adicionadas no rodapé sobre os DFe referenciados.
+     */
+    protected function geraInformacoesDosDFeReferenciados()
+    {
+        if (!$this->gerarInformacoesAutomaticas) {
+            return '';
+        }
+        $formaDFeRef = "\r\nNota Originária Número: %d Série: %d ChAcesso %s";
+        $saida       = '';
+        $itensPorChave = [];
+        foreach ($this->dom->getElementsByTagName('DFeReferenciado') as $dfeRef) {
+            $chave_acesso = $this->getTagValue($dfeRef, 'chaveAcesso');
+            if ($chave_acesso == '') {
+                continue;
+            }
+            if (!isset($itensPorChave[$chave_acesso])) {
+                $itensPorChave[$chave_acesso] = [];
+            }
+            $nItem = $this->getTagValue($dfeRef, 'nItem');
+            if ($nItem != '') {
+                $itensPorChave[$chave_acesso][] = $nItem;
+            }
+        }
+        foreach ($itensPorChave as $chave_acesso => $itens) {
+            $serie  = substr($chave_acesso, 22, 3);
+            $numero = substr($chave_acesso, 25, 9);
+            $saida  .= sprintf($formaDFeRef, $numero, $serie, $chave_acesso);
+            if (count($itensPorChave) > 1 && !empty($itens)) {
+                $saida .= ' Itens: ' . implode(', ', $itens);
             }
         }
 
