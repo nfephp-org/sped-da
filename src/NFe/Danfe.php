@@ -2578,6 +2578,7 @@ class Danfe extends DaCommon
         //Tratar Multiplos volumes
         $volumes     = $this->transp->getElementsByTagName('vol');
         $quantidade  = 0;
+        $quantidadeInformada = false;
         $especie     = '';
         $marca       = '';
         $numero      = '';
@@ -2585,8 +2586,11 @@ class Danfe extends DaCommon
         $pesoBruto   = 0;
         $pesoLiquido = 0;
         foreach ($volumes as $volume) {
-            $quantidade  += !empty($volume->getElementsByTagName("qVol")->item(0)->nodeValue) ?
-                $volume->getElementsByTagName("qVol")->item(0)->nodeValue : 0;
+            $qVolNode = $volume->getElementsByTagName("qVol")->item(0);
+            if (null !== $qVolNode) {
+                $quantidadeInformada = true;
+                $quantidade += $qVolNode->nodeValue;
+            }
             $pesoBruto   += !empty($volume->getElementsByTagName("pesoB")->item(0)->nodeValue) ?
                 $volume->getElementsByTagName("pesoB")->item(0)->nodeValue : 0;
             $pesoLiquido += !empty($volume->getElementsByTagName("pesoL")->item(0)->nodeValue) ?
@@ -2628,7 +2632,7 @@ class Danfe extends DaCommon
         $texto = 'QUANTIDADE';
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w1, $h, $texto, $aFont, 'T', 'L', 1, '');
-        if (!empty($quantidade)) {
+        if ($quantidadeInformada) {
             $texto = $quantidade;
             $aFont = ['font' => $this->fontePadrao, 'size' => 10, 'style' => 'B'];
             $this->pdf->textBox($x, $y, $w1, $h, $texto, $aFont, 'B', 'C', 0, '');
