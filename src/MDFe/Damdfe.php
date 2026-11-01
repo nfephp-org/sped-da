@@ -1025,7 +1025,10 @@ class Damdfe extends DaCommon
                 $altura = $y;
                 for ($i = 0; $i < $valesPedagios; $i++) {
                     $altura += 4;
-                    $texto = $this->valePed->item($i)->getElementsByTagName('nCompra')->item(0)->nodeValue;
+                    /* o nCompra é opcional no schema e a ausência não deve
+                       interromper a impressão */
+                    $compraNode = $this->valePed->item($i)->getElementsByTagName('nCompra');
+                    $texto = $compraNode->length == 0 ? '' : $compraNode->item(0)->nodeValue;
                     $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
                     $this->pdf->textBox($x1, $altura, $x2, 4, $texto, $aFont, 'T', 'L', 0, '', false);
                 }
@@ -1042,13 +1045,18 @@ class Damdfe extends DaCommon
                 $altura = $y;
                 for ($i = 0; $i < $this->seg->length; $i++) {
                     $altura += 4;
-                    $xSeg = $this->seg->item($i)->getElementsByTagName('infSeg')->item(0)->getElementsByTagName('xSeg')->item(0)->nodeValue;
-                    $CNPJ = $this->seg->item($i)->getElementsByTagName('infSeg')->item(0)->getElementsByTagName('CNPJ')->item(0)->nodeValue;
+                    /* infSeg é opcional: o seguro pode trazer apenas o responsável */
+                    $infSeg = $this->seg->item($i)->getElementsByTagName('infSeg');
+                    $xSeg = $infSeg->length == 0
+                        ? '' : $infSeg->item(0)->getElementsByTagName('xSeg')->item(0)->nodeValue;
+                    $CNPJ = $infSeg->length == 0
+                        ? '' : $infSeg->item(0)->getElementsByTagName('CNPJ')->item(0)->nodeValue;
                     $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
                     $this->pdf->textBox($x1, $altura, 95, 4, "{$CNPJ} {$xSeg}", $aFont, 'T', 'L', 0, '', false);
 
                     $altura += 4;
-                    $texto = $this->seg->item($i)->getElementsByTagName('nApol')->item(0)->nodeValue;
+                    $nApolNode = $this->seg->item($i)->getElementsByTagName('nApol');
+                    $texto = $nApolNode->length == 0 ? '' : $nApolNode->item(0)->nodeValue;
                     $this->pdf->textBox($x1, $altura, 95, 4, "Número da apólice: {$texto}", $aFont, 'T', 'L', 0, '', false);
                 }
             }
