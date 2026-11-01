@@ -151,4 +151,33 @@ class DamdfeTest extends TestCase
             'O valor do Vale-Pedágio não foi impresso com o separador de milhar'
         );
     }
+
+    /**
+     * O nCompra é opcional no grupo disp do Vale-Pedágio: um disp sem ele
+     * não pode interromper a geração do DAMDFE.
+     */
+    public function test_vale_pedagio_sem_ncompra_nao_interrompe_a_geracao(): void
+    {
+        $xml = file_get_contents(TEST_FIXTURES . 'xml/mdfe_vale_pedagio_valor.xml');
+        $damdfe = new Damdfe($xml);
+        $pdf = $damdfe->render();
+
+        $this->assertNotEmpty($pdf);
+        $this->assertStringStartsWith('%PDF', $pdf);
+    }
+
+    /**
+     * infSeg e nApol são opcionais: um seguro que traz apenas o responsável
+     * não pode interromper a geração do DAMDFE.
+     */
+    public function test_seguro_sem_infseg_nao_interrompe_a_geracao(): void
+    {
+        $xml = file_get_contents(TEST_FIXTURES . 'xml/mdfe_seguro.xml');
+        $damdfe = new Damdfe($xml);
+        $pdf = $damdfe->render();
+
+        $this->assertNotEmpty($pdf);
+        $this->assertStringStartsWith('%PDF', $pdf);
+    }
+
 }
