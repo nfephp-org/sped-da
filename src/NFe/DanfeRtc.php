@@ -11,6 +11,9 @@ namespace NFePHP\DA\NFe;
  */
 class DanfeRtc extends Danfe
 {
+    /** Par "ROTULO valor / ROTULO valor" que cabe em 5 pt nas colunas de tributos. */
+    const MAX_CARACTERES_PAR = 28;
+
     /**
      * @param string $xml
      */
@@ -36,9 +39,10 @@ class DanfeRtc extends Danfe
         $y = parent::header($x, $y, $pag, $totPag);
         $maxW = $this->larguraUtil($pag);
         $h = 7;
-        $wCrt = 62;
+        // Mesma grade da linha de IE/IM logo acima: coluna de 25% e valor centralizado.
+        $wCrt = round($maxW * 0.250, 0);
         $crt = $this->getTagValue($this->emit, 'CRT');
-        $this->caixa($x, $y, $wCrt, $h, 'CÓDIGO DE REGIME TRIBUTÁRIO', $this->rotuloCrt($crt), 8);
+        $this->caixa($x, $y, $wCrt, $h, 'CÓDIGO DE REGIME TRIBUTÁRIO', $this->rotuloCrt($crt), 10, 'C');
         $this->caixa(
             $x + $wCrt,
             $y,
@@ -46,7 +50,8 @@ class DanfeRtc extends Danfe
             $h,
             'TIPO DE REGIME DE APURAÇÃO DO IBS E DA CBS',
             '',
-            8
+            10,
+            'C'
         );
 
         return $y + $h;
@@ -81,19 +86,23 @@ class DanfeRtc extends Danfe
             ['VALOR TOTAL IPI', $this->textoNumero($this->ICMSTot, 'vIPI')],
         ]);
         $opcionais = $this->camposIcmsOpcionais();
-        if (!empty($opcionais)) {
-            $y = $this->linhaTotais($x, $y, $w, $opcionais);
+        foreach (array_chunk($opcionais, 4) as $linha) {
+            $y = $this->linhaTotais($x, $y, $w, $linha);
         }
 
         $ibs = $this->dom->getElementsByTagName('IBSCBSTot')->item(0);
         $isTot = $this->dom->getElementsByTagName('ISTot')->item(0);
         $y = $this->tituloBloco($x, $y, $w, 'TOTAL DO IBS / CBS / IS');
         $y = $this->linhaTotais($x, $y, $w, [
-            ['IBS UF', $this->textoNumero($ibs, 'vIBSUF')],
-            ['IBS MUNICIPAL', $this->textoNumero($ibs, 'vIBSMun')],
-            ['CBS', $this->textoNumero($ibs, 'vCBS')],
-            ['IS', $this->textoNumero($isTot, 'vIS')],
+            ['VALOR DA CBS', $this->textoNumero($ibs, 'vCBS')],
+            ['VALOR DO IBS UF', $this->textoNumero($ibs, 'vIBSUF')],
+            ['VALOR DO IBS MUNICÍPIO', $this->textoNumero($ibs, 'vIBSMun')],
+            ['VALOR DO IMPOSTO SELETIVO', $this->textoNumero($isTot, 'vIS')],
         ]);
+        $mono = $this->camposMonoOpcionais();
+        if (!empty($mono)) {
+            $y = $this->linhaTotais($x, $y, $w, $mono);
+        }
 
         return $y;
     }
@@ -162,47 +171,90 @@ class DanfeRtc extends Danfe
      */
     protected function alturaImpostoRtc()
     {
-        $linhasOpcionais = (int) ceil(count($this->camposIcmsOpcionais()) / 6);
+        $linhasOpcionais = (int) ceil(count($this->camposIcmsOpcionais()) / 4);
         $h = (3 + 7) * 3;
         $h += $linhasOpcionais * 7;
+        if (!empty($this->camposMonoOpcionais())) {
+            $h += 7;
+        }
 
         return $h + 1;
     }
 
     /**
+     * Campos condicionados do bloco ICMS/IPI (NT 2026.010, item 4.4): só com valor no XML.
+     * A lib grava esses totais zerados mesmo sem a operação, então zero não conta.
+     *
      * @return array<int, array{0: string, 1: string}>
      */
     protected function camposIcmsOpcionais()
     {
         $campos = [];
         $mapa = [
-            'vFCP' => 'FCP',
-            'vICMSUFDest' => 'ICMS UF DEST.',
-            'vICMSUFRemet' => 'ICMS UF REMET.',
-            'vFCPUFDest' => 'FCP UF DEST.',
-            'vICMSMono' => 'ICMS MONO',
+            'vFCP' => ['VALOR DO FCP', false],
+            'vFCPST' => ['VALOR DO FCP RETIDO POR ST', false],
+            'vICMSUFDest' => ['VALOR DO DIFAL NA UF DE DESTINO', false],
+            'vFCPUFDest' => ['VALOR DO FCP NA UF DE DESTINO', false],
+            'qBCMono' => ['BC DO ICMS MONOFÁSICO', true],
+            'vICMSMono' => ['VALOR DO ICMS MONOFÁSICO', false],
+            'qBCMonoReten' => ['BC DO ICMS MONOFÁSICO POR RETENÇÃO', true],
+            'vICMSMonoReten' => ['VALOR DO ICMS MONOFÁSICO POR RETENÇÃO', false],
         ];
-        foreach ($mapa as $tag => $titulo) {
-            $valor = $this->textoNumero($this->ICMSTot, $tag);
-            if ($valor !== '') {
-                $campos[] = [$titulo, $valor];
-            }
-        }
-        if (empty($this->dom)) {
-            return $campos;
-        }
-        $tot = $this->dom->getElementsByTagName('IBSCBSTot')->item(0);
-        $gMono = $tot ? $tot->getElementsByTagName('gMono')->item(0) : null;
-        if ($gMono) {
-            foreach (['vIBSMono' => 'IBS MONO', 'vCBSMono' => 'CBS MONO'] as $tag => $titulo) {
-                $valor = $this->textoNumero($gMono, $tag);
-                if ($valor !== '') {
-                    $campos[] = [$titulo, $valor];
-                }
+        foreach ($mapa as $tag => $def) {
+            if ($this->valorPositivo($this->ICMSTot, $tag)) {
+                $campos[] = [$def[0], $def[1]
+                    ? $this->textoQuantidade($this->ICMSTot, $tag)
+                    : $this->textoNumero($this->ICMSTot, $tag)];
             }
         }
 
         return $campos;
+    }
+
+    /**
+     * Monofasia do bloco IBS/CBS/IS (NT 2026.010, itens 4.1 e 4.4): o par normal com o
+     * grupo gMono, o par por retenção quando houver retenção. A lib grava gMono zerado
+     * em toda nota, então o grupo só conta com algum valor.
+     *
+     * @return array<int, array{0: string, 1: string}>
+     */
+    protected function camposMonoOpcionais()
+    {
+        if (empty($this->dom)) {
+            return [];
+        }
+        $tot = $this->dom->getElementsByTagName('IBSCBSTot')->item(0);
+        $gMono = $this->primeiroFilho($tot, 'gMono');
+        $campos = [];
+        $pares = [
+            [['vIBSMono', 'VALOR DO IBS MONOFÁSICO'], ['vCBSMono', 'VALOR DA CBS MONOFÁSICA']],
+            [
+                ['vIBSMonoReten', 'VALOR DO IBS MONOFÁSICO POR RETENÇÃO'],
+                ['vCBSMonoReten', 'VALOR DA CBS MONOFÁSICA POR RETENÇÃO'],
+            ],
+        ];
+        foreach ($pares as $par) {
+            if (!$this->valorPositivo($gMono, $par[0][0]) && !$this->valorPositivo($gMono, $par[1][0])) {
+                continue;
+            }
+            foreach ($par as $campo) {
+                $campos[] = [$campo[1], $this->textoNumero($gMono, $campo[0])];
+            }
+        }
+
+        return $campos;
+    }
+
+    /**
+     * @param \DOMNode|null $node
+     * @param string $tag
+     * @return bool
+     */
+    protected function valorPositivo($node, $tag)
+    {
+        $campo = $this->primeiroFilho($node, $tag);
+
+        return !empty($campo) && (float) $campo->nodeValue > 0;
     }
 
     /**
@@ -234,7 +286,7 @@ class DanfeRtc extends Danfe
         $h = 7;
         $cursor = $x;
         foreach ($campos as $campo) {
-            $this->caixa($cursor, $y, $largura, $h, $campo[0], $campo[1], 9);
+            $this->caixa($cursor, $y, $largura, $h, $campo[0], $campo[1], 10);
             $cursor += $largura;
         }
 
@@ -249,14 +301,16 @@ class DanfeRtc extends Danfe
      * @param string $titulo
      * @param string $valor
      * @param int $tamanhoValor
+     * @param string $alinhamento L, C ou R, como no textBox
      * @return void
      */
-    protected function caixa($x, $y, $w, $h, $titulo, $valor, $tamanhoValor)
+    protected function caixa($x, $y, $w, $h, $titulo, $valor, $tamanhoValor, $alinhamento = 'R')
     {
-        $fontTitulo = ['font' => $this->fontePadrao, 'size' => 5, 'style' => ''];
+        // Mesmo desenho dos quadros herdados da Danfe.
+        $fontTitulo = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $fontValor = ['font' => $this->fontePadrao, 'size' => $tamanhoValor, 'style' => 'B'];
         $this->pdf->textBox($x, $y, $w, $h, $titulo, $fontTitulo, 'T', 'L', 1, '');
-        $this->pdf->textBox($x, $y, $w, $h, $valor, $fontValor, 'B', 'R', 0, '');
+        $this->pdf->textBox($x, $y, $w, $h, $valor, $fontValor, 'B', $alinhamento, 0, '');
     }
 
     /**
@@ -314,7 +368,7 @@ class DanfeRtc extends Danfe
             $cursor += $largura;
         }
 
-        $this->pdf->textBox($x, $y, $cols[0], $lh * $medida['nNome'], $medida['nome'], $aFont, 'T', 'L', 0, '');
+        $this->pdf->textBox($x, $y, $cols[0], $lh * $medida['nNome'], $medida['nome'], $aFont, 'T', 'L', 0, '', false);
         if ($medida['info'] !== '') {
             $this->pdf->textBox(
                 $x,
@@ -348,11 +402,22 @@ class DanfeRtc extends Danfe
         $xBase = $xTotal + $cols[4];
         $xAliq = $xBase + $cols[5];
         $xValor = $xAliq + $cols[6];
-        foreach ($this->linhasTributoFaixa($det) as $i => $linha) {
-            $yLinha = $y + ($i * $lh);
-            $this->pdf->textBox($xBase, $yLinha, $cols[5], $lh, $linha[0], $aFontMiudo, 'T', 'R', 0, '');
-            $this->pdf->textBox($xAliq, $yLinha, $cols[6], $lh, $linha[1], $aFontMiudo, 'T', 'C', 0, '');
-            $this->pdf->textBox($xValor, $yLinha, $cols[7], $lh, $linha[2], $aFontMiudo, 'T', 'R', 0, '');
+        $colunas = [[$xBase, $cols[5]], [$xAliq, $cols[6]], [$xValor, $cols[7]]];
+        foreach (array_values($medida['tributos']) as $c => $linhas) {
+            foreach ($linhas as $i => $texto) {
+                $this->pdf->textBox(
+                    $colunas[$c][0],
+                    $y + ($i * $lh),
+                    $colunas[$c][1],
+                    $lh,
+                    $texto,
+                    $aFontMiudo,
+                    'T',
+                    'R',
+                    0,
+                    ''
+                );
+            }
         }
 
         $this->pdf->dashedHLine($x, $y + $hMiolo + 0.4, $w, 0.1, 120);
@@ -362,7 +427,7 @@ class DanfeRtc extends Danfe
      * Altura da faixa desenhada por faixaItem().
      *
      * @param \DOMElement $det
-     * @return array{h: float, hMiolo: float, lh: float, nNome: int, nInfo: int, nome: string, info: string, rodape: string}
+     * @return array<string, mixed> h, hMiolo, lh, nNome, nInfo, nome, info, rodape e tributos
      */
     protected function medidaFaixa($det)
     {
@@ -376,10 +441,12 @@ class DanfeRtc extends Danfe
         $info = $this->getTagValue($det, 'infAdProd');
         $nNome = max(1, (int) $this->pdf->getNumLines($nome, $wDesc, $aFont));
         $nInfo = $info === '' ? 0 : max(1, (int) $this->pdf->getNumLines($info, $wDesc, $aFontMiudo));
+        $tributos = $this->tributosItem($det);
         $hTexto = ($nNome + $nInfo) * $lh;
         $hNcm = $lh;
-        $hTax = 4 * $lh;
-        $hMiolo = max($hTexto + $hNcm, $hTax + $hNcm);
+        // Só as linhas que existem no XML: item sem tributo fica com a altura da descrição.
+        $hTax = max(2, count($tributos['bases']), count($tributos['aliquotas']), count($tributos['valores'])) * $lh;
+        $hMiolo = max($hTexto + $hNcm, $hTax);
 
         return [
             'h' => round($hMiolo + 1.2, 2),
@@ -390,6 +457,7 @@ class DanfeRtc extends Danfe
             'nome' => $nome,
             'info' => $info,
             'rodape' => $this->rodapeItem($det),
+            'tributos' => $tributos,
         ];
     }
 
@@ -399,7 +467,7 @@ class DanfeRtc extends Danfe
      */
     protected function colunasItem($w)
     {
-        $partes = [0.28, 0.09, 0.09, 0.10, 0.11, 0.11, 0.12];
+        $partes = [0.27, 0.07, 0.08, 0.09, 0.09, 0.12, 0.14];
         $cols = [];
         $usado = 0;
         foreach ($partes as $parte) {
@@ -413,56 +481,199 @@ class DanfeRtc extends Danfe
     }
 
     /**
-     * Quatro linhas fixas. Tag ausente permanece em branco.
+     * Base, alíquota e valor do item no modelo da NT 2026.010 (item 4.3): cada linha
+     * leva o rótulo do tributo e só entra o que existe no XML. Bases uma por linha;
+     * alíquotas e valores em pares, na ordem do modelo (ICMS, CBS, IBS UF, IPI,
+     * IBS MUN, IS). Monofasia (CST 620) vem de gIBSCBSMono, que não tem gIBSCBS.
      *
      * @param \DOMElement $det
-     * @return array<int, array{0: string, 1: string, 2: string}>
+     * @return array{bases: string[], aliquotas: string[], valores: string[]}
      */
-    protected function linhasTributoFaixa($det)
+    protected function tributosItem($det)
     {
         $imposto = $det->getElementsByTagName('imposto')->item(0);
         $icms = $imposto ? $imposto->getElementsByTagName('ICMS')->item(0) : null;
         $ipi = $imposto ? $imposto->getElementsByTagName('IPI')->item(0) : null;
         $is = $this->primeiroFilho($imposto, 'IS');
-        $gIbsCbs = $this->primeiroFilho($this->primeiroFilho($imposto, 'IBSCBS'), 'gIBSCBS');
+        $ibscbs = $this->primeiroFilho($imposto, 'IBSCBS');
+        $gIbsCbs = $this->primeiroFilho($ibscbs, 'gIBSCBS');
         $gIbsUf = $this->primeiroFilho($gIbsCbs, 'gIBSUF');
         $gIbsMun = $this->primeiroFilho($gIbsCbs, 'gIBSMun');
         $gCbs = $this->primeiroFilho($gIbsCbs, 'gCBS');
 
-        return [
+        $bases = [
+            ['ICMS', $this->textoNumero($icms, 'vBC')],
+            ['IBS/CBS', $this->textoNumero($gIbsCbs, 'vBC')],
+            ['IS', $this->textoNumero($is, 'vBCIS')],
+            ['IPI', $this->textoNumero($ipi, 'vBC')],
+        ];
+        $aliquotas = [
+            ['ICMS', $this->textoPercentual($icms, 'pICMS')],
+            ['CBS', $this->textoPercentual($gCbs, 'pCBS')],
+            ['IBS UF', $this->textoPercentual($gIbsUf, 'pIBSUF')],
+            ['IPI', $this->textoPercentual($ipi, 'pIPI')],
+            ['IBS MUN', $this->textoPercentual($gIbsMun, 'pIBSMun')],
+            ['IS', $this->textoPercentual($is, 'pIS')],
+        ];
+        $valores = [
+            ['ICMS', $this->textoNumero($icms, 'vICMS')],
+            ['CBS', $this->textoNumero($gCbs, 'vCBS')],
+            ['IBS UF', $this->textoNumero($gIbsUf, 'vIBSUF')],
+            ['IPI', $this->textoNumero($ipi, 'vIPI')],
+            ['IBS MUN', $this->textoNumero($gIbsMun, 'vIBSMun')],
+            ['IS', $this->textoNumero($is, 'vIS')],
+        ];
+        $linhas = ['bases' => [], 'aliquotas' => [], 'valores' => []];
+        $prod = $det->getElementsByTagName('prod')->item(0);
+        $unidade = $prod ? $this->getTagValue($prod, 'uTrib') : '';
+        $grupos = $this->tributosMonoItem($this->primeiroFilho($ibscbs, 'gIBSCBSMono'), $unidade);
+        $grupos[0] = [
+            array_merge($bases, $grupos[0][0]),
+            array_merge($aliquotas, $grupos[0][1]),
+            array_merge($valores, $grupos[0][2]),
+        ];
+        // Cada grupo fecha os próprios pares: retenção não divide linha com o tributo normal.
+        // O par da retenção (grupo 1) não cabe numa linha da coluna: um por linha.
+        foreach ($grupos as $i => $grupo) {
+            $par = $i === 1 ? 1 : 2;
+            $linhas['bases'] = array_merge($linhas['bases'], $this->linhasRotuladas($grupo[0], 1));
+            $linhas['aliquotas'] = array_merge($linhas['aliquotas'], $this->linhasRotuladas($grupo[1], $par));
+            $linhas['valores'] = array_merge($linhas['valores'], $this->linhasRotuladas($grupo[2], $par));
+        }
+
+        return $linhas;
+    }
+
+    /**
+     * Monofasia do item em três grupos de [bases, alíquotas, valores]: padrão, retenção
+     * (gMonoReten) e retido anteriormente (gMonoRet). Ad valorem traz base em R$ e
+     * alíquota %; ad rem, quantidade e R$ por unidade. O padrão segue a ordem do modelo.
+     *
+     * @param \DOMElement|null $mono gIBSCBSMono
+     * @param string $unidade uTrib do item: unidade da base e da alíquota ad rem
+     * @return array<int, array<int, array<int, array{0: string, 1: string}>>>
+     */
+    protected function tributosMonoItem($mono, $unidade = '')
+    {
+        $vazio = [[[], [], []], [[], [], []], [[], [], []]];
+        if (empty($mono)) {
+            return $vazio;
+        }
+        $ibs = $this->primeiroFilho($mono, 'gIBSMonoAdValorem') ?: $this->primeiroFilho($mono, 'gIBSMonoAdRem');
+        $cbs = $this->primeiroFilho($mono, 'gCBSMonoAdValorem') ?: $this->primeiroFilho($mono, 'gCBSMonoAdRem');
+
+        $ibsPad = $this->primeiroFilho($ibs, 'gMonoPadrao');
+        $cbsPad = $this->primeiroFilho($cbs, 'gMonoPadrao');
+        $ufMun = $this->primeiroFilho($ibsPad, 'vIBSMonoUF') !== null;
+        $padrao = [
+            [['MONO', $this->baseMono($ibsPad ?: $cbsPad, 'vBCMono', 'qBCMono', $unidade)]],
             [
-                $this->textoNumero($icms, 'vBC'),
-                $this->textoPercentual($icms, 'pICMS'),
-                $this->textoNumero($icms, 'vICMS'),
+                ['CBS', $this->textoPercentual($cbsPad, 'pAliqMonoCBS')],
+                ['CBS', $this->textoAdRem($cbsPad, 'adRemCBS', $unidade)],
+                ['IBS UF', $this->textoPercentual($ibsPad, 'pAliqMonoUF')],
+                ['IBS', $this->textoAdRem($ibsPad, 'adRemIBS', $unidade)],
+                ['IBS MUN', $this->textoPercentual($ibsPad, 'pAliqMonoMun')],
             ],
             [
-                $this->textoNumero($gIbsCbs, 'vBC'),
-                $this->parTexto(
-                    $this->textoPercentual($gIbsUf, 'pIBSUF'),
-                    $this->textoPercentual($gCbs, 'pCBS')
-                ),
-                $this->parTexto(
-                    $this->textoNumero($gIbsUf, 'vIBSUF'),
-                    $this->textoNumero($gCbs, 'vCBS')
-                ),
-            ],
-            [
-                $this->textoNumero($is, 'vBCIS'),
-                $this->parTexto(
-                    $this->textoPercentual($gIbsMun, 'pIBSMun'),
-                    $this->textoPercentual($is, 'pIS')
-                ),
-                $this->parTexto(
-                    $this->textoNumero($gIbsMun, 'vIBSMun'),
-                    $this->textoNumero($is, 'vIS')
-                ),
-            ],
-            [
-                $this->textoNumero($ipi, 'vBC'),
-                $this->textoPercentual($ipi, 'pIPI'),
-                $this->textoNumero($ipi, 'vIPI'),
+                ['CBS', $this->textoNumero($cbsPad, 'vCBSMono')],
+                ['IBS UF', $this->textoNumero($ibsPad, 'vIBSMonoUF')],
+                ['IBS', $ufMun ? '' : $this->textoNumero($ibsPad, 'vIBSMono')],
+                ['IBS MUN', $this->textoNumero($ibsPad, 'vIBSMonoMun')],
             ],
         ];
+
+        $ibsReten = $this->primeiroFilho($ibs, 'gMonoReten');
+        $cbsReten = $this->primeiroFilho($cbs, 'gMonoReten');
+        $reten = [
+            [['RETEN', $this->baseMono($ibsReten ?: $cbsReten, 'vBCMonoReten', 'qBCMonoReten', $unidade)]],
+            [
+                ['CBS RETEN', $this->textoPercentual($cbsReten, 'pAliqMonoReten')],
+                ['CBS RETEN', $this->textoAdRem($cbsReten, 'adRemCBSReten', $unidade)],
+                ['IBS RETEN', $this->textoPercentual($ibsReten, 'pAliqMonoReten')],
+                ['IBS RETEN', $this->textoAdRem($ibsReten, 'adRemIBSReten', $unidade)],
+            ],
+            [
+                ['CBS RETEN', $this->textoNumero($cbsReten, 'vCBSMonoReten')],
+                ['IBS RETEN', $this->textoNumero($ibsReten, 'vIBSMonoReten')],
+            ],
+        ];
+
+        $retAnt = [[], [], [
+            ['CBS RET ANT', $this->textoNumero($this->primeiroFilho($cbs, 'gMonoRet'), 'vCBSMonoRet')],
+            ['IBS RET ANT', $this->textoNumero($this->primeiroFilho($ibs, 'gMonoRet'), 'vIBSMonoRet')],
+        ]];
+
+        return [$padrao, $reten, $retAnt];
+    }
+
+    /**
+     * @param \DOMElement|null $grupo
+     * @param string $tagValor base em R$ (ad valorem)
+     * @param string $tagQtd base em quantidade (ad rem)
+     * @param string $unidade
+     * @return string
+     */
+    protected function baseMono($grupo, $tagValor, $tagQtd, $unidade = '')
+    {
+        if ($this->primeiroFilho($grupo, $tagValor)) {
+            return $this->textoNumero($grupo, $tagValor);
+        }
+        if (!$this->primeiroFilho($grupo, $tagQtd)) {
+            return '';
+        }
+
+        return trim($this->textoQuantidade($grupo, $tagQtd) . ' ' . $unidade);
+    }
+
+    /**
+     * Alíquota ad rem é em R$ por unidade tributável (ex.: R$ 1,0530/L), não percentual.
+     *
+     * @param \DOMElement|null $grupo
+     * @param string $tag
+     * @param string $unidade
+     * @return string
+     */
+    protected function textoAdRem($grupo, $tag, $unidade = '')
+    {
+        $campo = $this->primeiroFilho($grupo, $tag);
+        if (empty($campo) || $campo->nodeValue === '') {
+            return '';
+        }
+
+        $unidade = $unidade !== '' ? $unidade : 'un';
+
+        return 'R$ ' . number_format((float) $campo->nodeValue, 4, ',', '.') . '/' . $unidade;
+    }
+
+    /**
+     * "ROTULO valor", descartando o que não existe no XML; $porLinha itens por linha.
+     *
+     * @param array<int, array{0: string, 1: string}> $itens
+     * @param int $porLinha
+     * @return string[]
+     */
+    protected function linhasRotuladas(array $itens, $porLinha)
+    {
+        $textos = [];
+        foreach ($itens as $item) {
+            if ($item[1] !== '') {
+                $textos[] = $item[0] . ' ' . $item[1];
+            }
+        }
+        // Par que não cabe na coluna (ad rem, valores grandes) vai um por linha: o textBox
+        // encolheria a fonte e o item ficaria com tamanhos diferentes.
+        $linhas = [];
+        for ($i = 0; $i < count($textos); $i++) {
+            $par = $porLinha > 1 && isset($textos[$i + 1]) ? $textos[$i] . ' / ' . $textos[$i + 1] : '';
+            if ($par !== '' && mb_strlen($par) <= self::MAX_CARACTERES_PAR) {
+                $linhas[] = $par;
+                $i++;
+                continue;
+            }
+            $linhas[] = $textos[$i];
+        }
+
+        return $linhas;
     }
 
     /**
@@ -483,26 +694,6 @@ class DanfeRtc extends Danfe
         }
 
         return implode(' ', $partes);
-    }
-
-    /**
-     * @param string $esquerda
-     * @param string $direita
-     * @return string
-     */
-    protected function parTexto($esquerda, $direita)
-    {
-        if ($esquerda === '' && $direita === '') {
-            return '';
-        }
-        if ($esquerda === '') {
-            return $direita;
-        }
-        if ($direita === '') {
-            return $esquerda;
-        }
-
-        return $esquerda . ' / ' . $direita;
     }
 
     /**

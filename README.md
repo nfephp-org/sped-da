@@ -59,7 +59,11 @@ $danfe = new \NFePHP\DA\NFe\DanfeRtc($xml);
 $pdf = $danfe->render();
 ```
 
-Tag ausente fica em branco. O quadro "Tipo de regime de apuração do IBS e da CBS" fica reservado até a tag ser publicada.
+Só é impresso o que existe no XML (NT 2026.010, item 4.4): os totais condicionados (FCP, DIFAL, ICMS monofásico, IBS/CBS monofásicos) entram apenas com valor maior que zero, e cada item mostra só as linhas de base, alíquota e valor dos tributos que tem.
+
+- Itens: rótulo em cada valor (`ICMS 63,00 / CBS 4,50`), na ordem do modelo da NT; pares que não cabem na coluna vão um por linha.
+- Monofasia (CST 620): padrão, retenção e retido anteriormente, ad valorem (R$ e %) e ad rem (quantidade e R$ por unidade tributável).
+- O quadro "Tipo de regime de apuração do IBS e da CBS" fica reservado até a tag ser publicada.
 
 ## Contribuindo
 Este é um projeto totalmente *OpenSource*, para usa-lo e modifica-lo você não paga absolutamente nada. Porém para continuarmos a mante-lo é necessário qua alguma contribuição seja feita, seja auxiliando na codificação, na documentação ou na realização de testes e identificação de falhas e BUGs.
