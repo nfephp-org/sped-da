@@ -52,7 +52,7 @@ Para a geração dos documentos auxiliares devem feitas as seguintes consideraç
 
 ## DanfeRtc
 
-Leiaute da NT 2026.010 (Reforma Tributária do Consumo). A classe `NFePHP\DA\NFe\Danfe` permanece com o leiaute atual.
+Leiaute da NT 2026.010 (Reforma Tributária do Consumo). A classe `NFePHP\DA\NFe\Danfe` permanece com o leiaute atual; a `DanfeRtc` desenha com o `DanfeRtcPdf` (texto afastado da borda), trocado em `Danfe::novoPdf()`.
 
 ```php
 $danfe = new \NFePHP\DA\NFe\DanfeRtc($xml);

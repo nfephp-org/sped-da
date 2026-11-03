@@ -514,6 +514,16 @@ class Danfe extends DaCommon
     }
 
     /**
+     * Pdf onde o DANFE é desenhado; subclasses podem trocar o acabamento.
+     *
+     * @return Pdf
+     */
+    protected function novoPdf()
+    {
+        return new Pdf($this->orientacao, 'mm', $this->papel);
+    }
+
+    /**
      * monta
      * Monta a DANFE conforme as informações fornecidas para a classe durante sua
      * construção. Constroi DANFEs com até 3 páginas podendo conter até 56 itens.
@@ -537,7 +547,7 @@ class Danfe extends DaCommon
             }
         }
         //instancia a classe pdf
-        $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
+        $this->pdf = $this->novoPdf();
         //margens do PDF, em milímetros. Obs.: a margem direita é sempre igual à
         //margem esquerda. A margem inferior *não* existe na FPDF, é definida aqui
         //apenas para controle se necessário ser maior do que a margem superior
