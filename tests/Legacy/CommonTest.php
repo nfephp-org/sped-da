@@ -39,6 +39,13 @@ class CommonTest extends TestCase
         $this->assertFalse($this->common->toDateTime('invalid-date'));
     }
 
+    public function testToDateTimeVazioNaoViraAgora()
+    {
+        // DANFE sem dhSaiEnt: new \DateTime('') seria a hora atual e sairia como hora de saida
+        $this->assertFalse($this->common->toDateTime(''));
+        $this->assertFalse($this->common->toDateTime(null));
+    }
+
     public function testToDateTimeLegacy()
     {
         $reflection = new \ReflectionClass($this->common);
