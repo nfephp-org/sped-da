@@ -596,7 +596,8 @@ class Danfe extends DaCommon
         $qtdPag    = 0;
         if (isset($this->dup) && $this->dup->length > 0) {
             $qtdPag = $this->dup->length;
-        } elseif (isset($this->detPag) && $this->detPag->length > 0) {
+        } elseif ($this->exibirTextoFatura && isset($this->detPag) && $this->detPag->length > 0) {
+            // as formas de pagamento só ocupam espaço quando são impressas (exibirTextoFatura)
             $qtdPag = $this->detPag->length;
         }
         if (($qtdPag > 0) && ($qtdPag <= 7)) {
