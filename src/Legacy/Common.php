@@ -99,6 +99,10 @@ class Common
      */
     public function toDateTime($input)
     {
+        if (empty($input)) {
+            return false;
+        }
+
         if (PHP_MAJOR_VERSION > 7) {
             try {
                 return new \DateTime($input);
