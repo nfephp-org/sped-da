@@ -116,6 +116,50 @@ class DanfeRtc extends Danfe
     }
 
     /**
+     * O ISSQN vem logo após os totais, antes do transportador, como nos modelos da NT 2026.010
+     * (retrato e paisagem), na largura útil da folha.
+     *
+     * @param float $x
+     * @param float $y
+     * @return float
+     */
+    protected function transporte($x, $y)
+    {
+        if ($this->temIssqn()) {
+            $w = $this->larguraUtil(1);
+            $y = $this->tituloBloco($x, $y, $w, 'CÁLCULO DO ISSQN');
+            $y = $this->linhaTotais($x, $y, $w, [
+                ['INSCRIÇÃO MUNICIPAL', $this->getTagValue($this->emit, 'IM')],
+                ['VALOR TOTAL DOS SERVIÇOS', $this->textoNumero($this->ISSQNtot, 'vServ')],
+                ['BASE DE CÁLCULO DO ISSQN', $this->textoNumero($this->ISSQNtot, 'vBC')],
+                ['VALOR DO ISSQN', $this->textoNumero($this->ISSQNtot, 'vISS')],
+            ]) + 1;
+        }
+
+        return parent::transporte($x, $y);
+    }
+
+    /**
+     * Já impresso antes do transportador (transporte).
+     *
+     * @param float $x
+     * @param float $y
+     * @return float
+     */
+    protected function issqn($x, $y)
+    {
+        return $y;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function temIssqn()
+    {
+        return isset($this->ISSQNtot) && $this->getTagValue($this->ISSQNtot, 'vServ') > 0;
+    }
+
+    /**
      * Grade em faixa: identificação do item e, abaixo, base, alíquota e valor.
      *
      * @param float $x
@@ -129,6 +173,12 @@ class DanfeRtc extends Danfe
      */
     protected function itens($x, $y, &$nInicio, $hmax, $pag = 0, $totpag = 0, $hCabecItens = 7)
     {
+        $proximo = $this->det->item($nInicio);
+        if ($proximo !== null && $hmax < $hCabecItens + $this->calculeHeight($proximo)) {
+            // Nem um item cabe (paisagem com todos os quadros): a grade começa na folha seguinte,
+            // em vez de uma grade sem altura sob os quadros de baixo.
+            return $y;
+        }
         $oldX = $x;
         $oldY = $y;
         $w = $this->larguraUtil($pag);

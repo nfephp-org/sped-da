@@ -5,6 +5,7 @@ namespace NFePHP\DA\Tests;
 use NFePHP\DA\NFe\Danfe;
 use NFePHP\DA\NFe\DanfeRtc;
 use PHPUnit\Framework\TestCase;
+use Smalot\PdfParser\Parser;
 
 class DanfeRtcTest extends TestCase
 {
@@ -186,6 +187,41 @@ class DanfeRtcTest extends TestCase
 
         $pdf = (new DanfeRtc(file_get_contents($this->fixture('nfe_rtc_completa.xml'))))->render();
         $this->assertSame(1, preg_match_all('#/Type\s*/Page[^s]#', $pdf));
+    }
+
+    /**
+     * Paisagem (tpImp=2, leiaute alternativo da NT): os quadros não cabem com os itens na folha 1;
+     * a grade vai inteira para a folha 2, sem nada desenhado por cima, e o ISSQN vem antes do transportador.
+     */
+    public function testPaisagemComTodosOsQuadrosLevaOsItensParaAFolhaSeguinte()
+    {
+        $pdf = (new DanfeRtc($this->paisagem('nfe_rtc_completa.xml')))->render();
+        $folhas = (new Parser())->parseContent($pdf)->getPages();
+
+        $this->assertCount(2, $folhas);
+        $folha1 = $folhas[0]->getText();
+        $this->assertStringNotContainsString('DADOS DOS PRODUTOS', $folha1);
+        $this->assertLessThan(strpos($folha1, 'TRANSPORTADOR'), strpos($folha1, 'CÁLCULO DO ISSQN'));
+        $this->assertStringContainsString('SERVICO DE INSTALACAO', $folhas[1]->getText());
+    }
+
+    /**
+     * Paisagem: a folha 1 aproveita a altura que sobra (quatro dos seis itens) e não reserva
+     * espaço para as formas de pagamento, que só aparecem com exibirTextoFatura.
+     */
+    public function testPaisagemAproveitaAFolhaUm()
+    {
+        $pdf = (new DanfeRtc($this->paisagem('nfe_rtc_itens.xml')))->render();
+        $folhas = (new Parser())->parseContent($pdf)->getPages();
+
+        $this->assertCount(2, $folhas);
+        $this->assertStringContainsString('RTC TESTE CST510', $folhas[0]->getText());
+        $this->assertStringContainsString('RTC TESTE CST515', $folhas[1]->getText());
+    }
+
+    private function paisagem($nome)
+    {
+        return preg_replace('#<tpImp>\d</tpImp>#', '<tpImp>2</tpImp>', file_get_contents($this->fixture($nome)));
     }
 
     private function fixture($nome = 'nfe_rtc_minimo.xml')
