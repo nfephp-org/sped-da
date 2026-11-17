@@ -259,13 +259,15 @@ class Dacte extends DaCommon
             'size' => 7,
             'style' => 'B');
         if ($this->orientacao == 'P') {
-            // margens do PDF
-            $margSup = 2;
-            $margEsq = 2;
-            $margDir = 2;
-            // posição inicial do relatorio
-            $xInic = 1;
-            $yInic = 1;
+            // margens do PDF, como definidas em printParameters()
+            $margSup = $this->margsup;
+            $margEsq = $this->margesq;
+            $margDir = $this->margesq;
+            // posição inicial do relatorio: o conteúdo COMEÇA na margem. Fixo em
+            // 1mm, o wPrint abaixo descontava a margem sem que nada a
+            // respeitasse, e o documento saía colado na borda do papel
+            $xInic = $margEsq;
+            $yInic = $margSup;
             if ($this->papel == 'A4') {
                 //A4 210x297mm
                 $maxW = 210;
@@ -450,7 +452,7 @@ class Dacte extends DaCommon
         //$y = $this->canhoto($x, $y);
         //coloca o rodapé da página
         if ($this->orientacao == 'P') {
-            $this->rodape(2, $this->hPrint - 2);
+            $this->rodape($xInic, $this->hPrint - 2);
         } else {
             $this->rodape($xInic, $this->hPrint + 2.3);
         }
@@ -3667,8 +3669,10 @@ class Dacte extends DaCommon
             'size' => 6,
             'style' => '');
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'C', 1, '');
-        //$this->pdf->line($x, $y + 3, $w * 1.385, $y + 3);
-        $this->pdf->line($x, $y + 3, $w * 1.385, $y + 3);
+        // $w * 1.385 era coordenada ABSOLUTA calibrada para wAdic = 150 (a
+        // largura fixa da classe): a linha ia até 207,75mm quaisquer que fossem
+        // a margem e o início do conteúdo, e furava a margem direita
+        $this->pdf->line($x, $y + 3, $oldX + $this->wPrint, $y + 3);
         //o texto com os dados adicionais foi obtido na função xxxxxx
         //e carregado em uma propriedade privada da classe
         //$this->wAdic com a largura do campo

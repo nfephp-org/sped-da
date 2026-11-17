@@ -231,9 +231,11 @@ class DacteOS extends DaCommon
             'size' => 7,
             'style' => 'B');
         if ($this->orientacao == 'P') {
-            // posição inicial do relatorio
-            $xInic = 1;
-            $yInic = 1;
+            // posição inicial do relatorio: o conteúdo COMEÇA na margem. Fixo em
+            // 1mm, o wPrint abaixo descontava a margem sem que nada a
+            // respeitasse, e o documento saía colado na borda do papel
+            $xInic = $margEsq;
+            $yInic = $margSup;
             if ($this->papel == 'A4') {
                 //A4 210x297mm
                 $maxW = 210;
