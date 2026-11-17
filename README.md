@@ -50,6 +50,17 @@ Para a geração dos documentos auxiliares devem feitas as seguintes consideraç
 * No caso especifico da NFC-e (Nota fiscal do consumidor) existe um outro pacote que poderá vir a ser usado, trata-se do [*"posprint"*](https://github.com/nfephp-org/posprint) devido ao fato desse documento auxiliar normalmente ser impresso em impressoras térmicas POS, que não trabalham adequadamente com PDF e devem receber os dados em sua pópria linguagem (RAW data). Dessa forma o pacote *"posprint"* poderá tornar-se ser uma das dependências desse pacote.
 * Para a conversão dos dados em PDF é necessário o uso de uma biblioteca que seja ativamente mantida, usada por um grande contingente de programadores e que atenda minimamente os PSR. Uma grande atenção deve ser dedicada a esse ponto pois com a inclusão do PHP7 podem surgir problemas de incompatibilidade com bibliotecas que não sejam mantidas atualizadas.
 
+## DanfeRtc
+
+Leiaute da NT 2026.010 (Reforma Tributária do Consumo). A classe `NFePHP\DA\NFe\Danfe` permanece com o leiaute atual.
+
+```php
+$danfe = new \NFePHP\DA\NFe\DanfeRtc($xml);
+$pdf = $danfe->render();
+```
+
+Tag ausente fica em branco. O quadro "Tipo de regime de apuração do IBS e da CBS" fica reservado até a tag ser publicada.
+
 ## Contribuindo
 Este é um projeto totalmente *OpenSource*, para usa-lo e modifica-lo você não paga absolutamente nada. Porém para continuarmos a mante-lo é necessário qua alguma contribuição seja feita, seja auxiliando na codificação, na documentação ou na realização de testes e identificação de falhas e BUGs.
 
