@@ -14,22 +14,6 @@ class DanfeRtc extends Danfe
     /** Par "ROTULO valor / ROTULO valor" que cabe em 5 pt nas colunas de tributos. */
     const MAX_CARACTERES_PAR = 28;
 
-    /** Respiro, em mm, entre a grade de itens da folha 1 e os dados adicionais. */
-    const RESPIRO_GRADE = 1;
-
-    /**
-     * Diferença, em mm, entre a altura que a folha 1 tem de fato para os itens e a que a Danfe
-     * estima com alturas fixas por quadro (duplicatas, transporte...). Medida em monta().
-     *
-     * @var float
-     */
-    protected $ajusteFolha1 = 0.0;
-
-    /**
-     * @var float|null
-     */
-    protected $folgaFolha1;
-
     /**
      * @param string $xml
      */
@@ -39,38 +23,6 @@ class DanfeRtc extends Danfe
         $this->hCabecalho = 54;
         $this->hCabecalhoItens = 12;
         $this->hImposto = empty($this->dom) ? 18 : $this->alturaImpostoRtc();
-    }
-
-    /**
-     * A Danfe conta as folhas com alturas fixas por quadro, que não batem com o que é desenhado
-     * (sobram de 8 a 35 mm na folha 1, conforme as duplicatas). A primeira montagem mede onde a
-     * grade começa de fato; se a estimativa errou, monta de novo com a altura real, para a contagem
-     * de folhas e a grade da folha 1 usarem o espaço que existe.
-     *
-     * @param string $logo
-     * @return void
-     */
-    protected function monta($logo = '')
-    {
-        $this->ajusteFolha1 = 0.0;
-        $this->folgaFolha1 = null;
-        $this->qtdeItensProc = 0;
-        parent::monta($logo);
-        if ($this->folgaFolha1 !== null && abs($this->folgaFolha1) >= 0.1) {
-            $this->ajusteFolha1 = $this->folgaFolha1;
-            $this->qtdeItensProc = 0;
-            parent::monta($logo);
-        }
-    }
-
-    /**
-     * Entra na altura ocupada da folha 1 (Danfe::monta): aplica a medição de monta().
-     *
-     * @return float
-     */
-    protected function sizeExtraTextoFatura()
-    {
-        return parent::sizeExtraTextoFatura() - $this->ajusteFolha1;
     }
 
     /**
@@ -221,12 +173,7 @@ class DanfeRtc extends Danfe
      */
     protected function itens($x, $y, &$nInicio, $hmax, $pag = 0, $totpag = 0, $hCabecItens = 7)
     {
-        if ((int) $pag === 1) {
-            // Os dados adicionais ficam presos ao pé da folha (Danfe::dadosAdicionais); a grade
-            // (título + caixa de $hmax + 4) pode descer até eles.
-            $yDadosAdicionais = $this->maxH - (7 + $this->hdadosadic);
-            $this->folgaFolha1 = ($yDadosAdicionais - self::RESPIRO_GRADE - 4 - $y) - $hmax;
-        }
+        $this->medirFolha1($y, $hmax, $pag);
         $proximo = $this->det->item($nInicio);
         if ($proximo !== null && $hmax < $hCabecItens + $this->calculeHeight($proximo)) {
             // Nem um item cabe (paisagem com todos os quadros): a grade começa na folha seguinte,

@@ -166,6 +166,17 @@ class Danfe extends DaCommon
      * @var integer
      */
     protected $qtdeItensProc;
+    /**
+     * Diferença, em mm, entre a altura que a folha 1 tem de fato para os itens e a estimada
+     * com alturas fixas por quadro. Medida na primeira montagem (monta).
+     *
+     * @var float
+     */
+    protected $ajusteFolha1 = 0.0;
+    /**
+     * @var float|null
+     */
+    protected $folgaFolha1;
     /*
      * NF-e processada
      *
@@ -525,14 +536,56 @@ class Danfe extends DaCommon
 
     /**
      * monta
+     * A altura livre da folha 1 é estimada com alturas fixas por quadro, que não batem com o
+     * que é desenhado (ex.: mais de 7 duplicatas reservam 12 mm por grupo de 7 e imprimem uma
+     * linha de aviso). A primeira montagem mede onde a grade de itens começa; se a estimativa
+     * errou, monta de novo com a altura real, para a contagem de folhas e a grade da folha 1
+     * usarem o espaço que existe até os dados adicionais.
+     *
+     * @param string $logo
+     * @return void
+     */
+    protected function monta($logo = '')
+    {
+        $this->ajusteFolha1 = 0.0;
+        $this->folgaFolha1 = null;
+        $this->qtdeItensProc = 0;
+        $this->montaFolhas($logo);
+        if ($this->folgaFolha1 !== null && abs($this->folgaFolha1) >= 0.1) {
+            $this->ajusteFolha1 = $this->folgaFolha1;
+            $this->qtdeItensProc = 0;
+            $this->montaFolhas($logo);
+        }
+    }
+
+    /**
+     * Registra, na folha 1, quanto a grade de itens pode crescer (ou encolher) além de $hmax:
+     * os dados adicionais ficam presos ao pé da folha (dadosAdicionais) e a grade ocupa o
+     * título, 3 mm, mais a caixa de $hmax + 1.
+     *
+     * @param float $y
+     * @param float $hmax
+     * @param int|string $pag
+     * @return void
+     */
+    protected function medirFolha1($y, $hmax, $pag)
+    {
+        if ((int) $pag === 1) {
+            $yDadosAdicionais = $this->maxH - (7 + $this->hdadosadic);
+            $this->folgaFolha1 = ($yDadosAdicionais - 4 - $y) - $hmax;
+        }
+    }
+
+    /**
      * Monta a DANFE conforme as informações fornecidas para a classe durante sua
      * construção. Constroi DANFEs com até 3 páginas podendo conter até 56 itens.
      * A definição de margens e posições iniciais para a impressão são estabelecidas
      * pelo conteúdo da funçao e podem ser modificados.
      *
-     * @return string O ID da NFe de 44 caracteres extraído do arquivo XML
+     * @param string $logo
+     * @return void
      */
-    protected function monta(
+    protected function montaFolhas(
         $logo = ''
     ) {
         $this->pdf       = '';
@@ -657,7 +710,8 @@ class Danfe extends DaCommon
             + $this->hdadosadic
             + $hfooter
             + $hCabecItens
-            + $this->sizeExtraTextoFatura();
+            + $this->sizeExtraTextoFatura()
+            - $this->ajusteFolha1;
 
         //alturas disponiveis para os dados
         $hDispo1 = $this->hPrint - $hOCUPADA;
@@ -3025,6 +3079,7 @@ class Danfe extends DaCommon
      */
     protected function itens($x, $y, &$nInicio, $hmax, $pag = 0, $totpag = 0, $hCabecItens = 7)
     {
+        $this->medirFolha1($y, $hmax, $pag);
         $oldX = $x;
         $oldY = $y;
         $totItens = $this->det->length;
