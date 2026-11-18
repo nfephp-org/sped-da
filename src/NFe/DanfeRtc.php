@@ -14,6 +14,22 @@ class DanfeRtc extends Danfe
     /** Par "ROTULO valor / ROTULO valor" que cabe em 5 pt nas colunas de tributos. */
     const MAX_CARACTERES_PAR = 28;
 
+    /** Respiro, em mm, entre a grade de itens da folha 1 e os dados adicionais. */
+    const RESPIRO_GRADE = 1;
+
+    /**
+     * Diferença, em mm, entre a altura que a folha 1 tem de fato para os itens e a que a Danfe
+     * estima com alturas fixas por quadro (duplicatas, transporte...). Medida em monta().
+     *
+     * @var float
+     */
+    protected $ajusteFolha1 = 0.0;
+
+    /**
+     * @var float|null
+     */
+    protected $folgaFolha1;
+
     /**
      * @param string $xml
      */
@@ -23,6 +39,38 @@ class DanfeRtc extends Danfe
         $this->hCabecalho = 54;
         $this->hCabecalhoItens = 12;
         $this->hImposto = empty($this->dom) ? 18 : $this->alturaImpostoRtc();
+    }
+
+    /**
+     * A Danfe conta as folhas com alturas fixas por quadro, que não batem com o que é desenhado
+     * (sobram de 8 a 35 mm na folha 1, conforme as duplicatas). A primeira montagem mede onde a
+     * grade começa de fato; se a estimativa errou, monta de novo com a altura real, para a contagem
+     * de folhas e a grade da folha 1 usarem o espaço que existe.
+     *
+     * @param string $logo
+     * @return void
+     */
+    protected function monta($logo = '')
+    {
+        $this->ajusteFolha1 = 0.0;
+        $this->folgaFolha1 = null;
+        $this->qtdeItensProc = 0;
+        parent::monta($logo);
+        if ($this->folgaFolha1 !== null && abs($this->folgaFolha1) >= 0.1) {
+            $this->ajusteFolha1 = $this->folgaFolha1;
+            $this->qtdeItensProc = 0;
+            parent::monta($logo);
+        }
+    }
+
+    /**
+     * Entra na altura ocupada da folha 1 (Danfe::monta): aplica a medição de monta().
+     *
+     * @return float
+     */
+    protected function sizeExtraTextoFatura()
+    {
+        return parent::sizeExtraTextoFatura() - $this->ajusteFolha1;
     }
 
     /**
@@ -173,6 +221,12 @@ class DanfeRtc extends Danfe
      */
     protected function itens($x, $y, &$nInicio, $hmax, $pag = 0, $totpag = 0, $hCabecItens = 7)
     {
+        if ((int) $pag === 1) {
+            // Os dados adicionais ficam presos ao pé da folha (Danfe::dadosAdicionais); a grade
+            // (título + caixa de $hmax + 4) pode descer até eles.
+            $yDadosAdicionais = $this->maxH - (7 + $this->hdadosadic);
+            $this->folgaFolha1 = ($yDadosAdicionais - self::RESPIRO_GRADE - 4 - $y) - $hmax;
+        }
         $proximo = $this->det->item($nInicio);
         if ($proximo !== null && $hmax < $hCabecItens + $this->calculeHeight($proximo)) {
             // Nem um item cabe (paisagem com todos os quadros): a grade começa na folha seguinte,
@@ -426,19 +480,21 @@ class DanfeRtc extends Danfe
             $cursor += $largura;
         }
 
-        $this->pdf->textBox($x, $y, $cols[0], $lh * $medida['nNome'], $medida['nome'], $aFont, 'T', 'L', 0, '', false);
+        $this->pdf->textBox($x, $y, $cols[0], $medida['hNome'], $medida['nome'], $aFont, 'T', 'L', 0, '', false);
         if ($medida['info'] !== '') {
+            // false: quebra em linhas mantendo os 5 pt; o padrão (true) encolhe a fonte até caber numa linha.
             $this->pdf->textBox(
                 $x,
-                $y + ($lh * $medida['nNome']),
+                $y + $medida['hNome'],
                 $cols[0],
-                $lh * $medida['nInfo'],
+                $medida['hInfo'],
                 $medida['info'],
                 $aFontMiudo,
                 'T',
                 'L',
                 0,
-                ''
+                '',
+                false
             );
         }
         $this->pdf->textBox($x, $y + $hMiolo - $lh, $cols[0], $lh, $medida['rodape'], $aFontMiudo, 'B', 'L', 0, '');
@@ -485,7 +541,7 @@ class DanfeRtc extends Danfe
      * Altura da faixa desenhada por faixaItem().
      *
      * @param \DOMElement $det
-     * @return array<string, mixed> h, hMiolo, lh, nNome, nInfo, nome, info, rodape e tributos
+     * @return array<string, mixed> h, hMiolo, lh, hNome, hInfo, nome, info, rodape e tributos
      */
     protected function medidaFaixa($det)
     {
@@ -497,10 +553,14 @@ class DanfeRtc extends Danfe
         $prod = $det->getElementsByTagName('prod')->item(0);
         $nome = $prod ? $this->getTagValue($prod, 'xProd') : '';
         $info = $this->getTagValue($det, 'infAdProd');
+        // O textBox sem $force avança uma linha por tamanho da fonte (fontSize, em mm): as alturas
+        // saem da fonte usada, não de um valor fixo. A 1ª linha do nome ocupa a linha da grade ($lh).
         $nNome = max(1, (int) $this->pdf->getNumLines($nome, $wDesc, $aFont));
+        $hNome = $lh + ($nNome - 1) * $this->pdf->fontSize;
         $nInfo = $info === '' ? 0 : max(1, (int) $this->pdf->getNumLines($info, $wDesc, $aFontMiudo));
+        $hInfo = $nInfo * $this->pdf->fontSize;
         $tributos = $this->tributosItem($det);
-        $hTexto = ($nNome + $nInfo) * $lh;
+        $hTexto = $hNome + $hInfo;
         $hNcm = $lh;
         // Só as linhas que existem no XML: item sem tributo fica com a altura da descrição.
         $hTax = max(2, count($tributos['bases']), count($tributos['aliquotas']), count($tributos['valores'])) * $lh;
@@ -510,8 +570,8 @@ class DanfeRtc extends Danfe
             'h' => round($hMiolo + 1.2, 2),
             'hMiolo' => $hMiolo,
             'lh' => $lh,
-            'nNome' => $nNome,
-            'nInfo' => $nInfo,
+            'hNome' => $hNome,
+            'hInfo' => $hInfo,
             'nome' => $nome,
             'info' => $info,
             'rodape' => $this->rodapeItem($det),

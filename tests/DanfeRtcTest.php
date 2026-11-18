@@ -206,8 +206,8 @@ class DanfeRtcTest extends TestCase
     }
 
     /**
-     * Paisagem: a folha 1 aproveita a altura que sobra (quatro dos seis itens) e não reserva
-     * espaço para as formas de pagamento, que só aparecem com exibirTextoFatura.
+     * Paisagem: a grade da folha 1 desce até os dados adicionais (cinco dos seis itens) e não
+     * reserva espaço para as formas de pagamento, que só aparecem com exibirTextoFatura.
      */
     public function testPaisagemAproveitaAFolhaUm()
     {
@@ -215,8 +215,56 @@ class DanfeRtcTest extends TestCase
         $folhas = (new Parser())->parseContent($pdf)->getPages();
 
         $this->assertCount(2, $folhas);
-        $this->assertStringContainsString('RTC TESTE CST510', $folhas[0]->getText());
-        $this->assertStringContainsString('RTC TESTE CST515', $folhas[1]->getText());
+        $this->assertStringContainsString('RTC TESTE CST515', $folhas[0]->getText());
+        $this->assertStringContainsString('RTC TESTE CST830', $folhas[1]->getText());
+    }
+
+    /**
+     * Mais de 7 duplicatas viram uma linha de aviso, mas a Danfe reserva 12 mm por grupo de 7:
+     * a folha 1 usa a altura que sobra de fato, sem mandar o item sozinho para a folha 2.
+     */
+    public function testPaisagemComDuplicatasUsaAAlturaQueSobra()
+    {
+        $dups = '';
+        for ($i = 1; $i <= 8; $i++) {
+            $dups .= "<dup><nDup>00$i</nDup><dVenc>2026-12-0$i</dVenc><vDup>1.00</vDup></dup>";
+        }
+        $xml = str_replace(
+            '<pag>',
+            '<cobr><fat><nFat>1</nFat><vOrig>8.00</vOrig><vDesc>0.00</vDesc><vLiq>8.00</vLiq></fat>'
+                . $dups . '</cobr><pag>',
+            $this->paisagem('nfe_rtc_mono.xml')
+        );
+        $folhas = (new Parser())->parseContent((new DanfeRtc($xml))->render())->getPages();
+
+        $this->assertCount(1, $folhas);
+        $this->assertStringContainsString('RTC TESTE MONO01', $folhas[0]->getText());
+    }
+
+    /**
+     * infAdProd longo (lista de IMEIs) quebra em linhas mantendo os 5 pt, em vez de encolher
+     * a fonte até caber numa linha só.
+     */
+    public function testInfAdProdLongoQuebraEmLinhas()
+    {
+        $imeis = [];
+        for ($i = 10; $i <= 23; $i++) {
+            $imeis[] = '3512345000000' . $i;
+        }
+        $xml = preg_replace(
+            '#<vItem>#',
+            '<infAdProd>' . implode('; ', $imeis) . '</infAdProd><vItem>',
+            file_get_contents($this->fixture('nfe_rtc_itens.xml')),
+            1
+        );
+        $texto = (new Parser())->parseContent((new DanfeRtc($xml))->render())->getText();
+
+        $linhas = array_values(array_filter(explode("\n", $texto), function ($linha) {
+            return strpos($linha, '35123450000') !== false;
+        }));
+        $this->assertGreaterThan(1, count($linhas));
+        $this->assertStringContainsString('351234500000010', $linhas[0]);
+        $this->assertStringNotContainsString('351234500000023', $linhas[0]);
     }
 
     private function paisagem($nome)
