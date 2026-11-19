@@ -11,9 +11,6 @@ namespace NFePHP\DA\NFe;
  */
 class DanfeRtc extends Danfe
 {
-    /** Par "ROTULO valor / ROTULO valor" que cabe em 5 pt nas colunas de tributos. */
-    const MAX_CARACTERES_PAR = 28;
-
     /**
      * @param string $xml
      */
@@ -381,7 +378,7 @@ class DanfeRtc extends Danfe
     protected function cabecalhoItens($x, $y, $w)
     {
         $cols = $this->colunasItem($w);
-        $aFont = ['font' => $this->fontePadrao, 'size' => 5, 'style' => 'B'];
+        $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => 'B'];
         $h = 8;
         $labels = [
             "DESCRIÇÃO DO PRODUTO / SERVIÇO",
@@ -417,7 +414,6 @@ class DanfeRtc extends Danfe
         $hMiolo = $medida['hMiolo'];
         $prod = $det->getElementsByTagName('prod')->item(0);
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
-        $aFontMiudo = ['font' => $this->fontePadrao, 'size' => 5, 'style' => ''];
 
         $cursor = $x;
         foreach ($cols as $i => $largura) {
@@ -429,14 +425,14 @@ class DanfeRtc extends Danfe
 
         $this->pdf->textBox($x, $y, $cols[0], $medida['hNome'], $medida['nome'], $aFont, 'T', 'L', 0, '', false);
         if ($medida['info'] !== '') {
-            // false: quebra em linhas mantendo os 5 pt; o padrão (true) encolhe a fonte até caber numa linha.
+            // false: quebra em linhas mantendo a fonte; o padrão (true) encolhe a fonte até caber numa linha.
             $this->pdf->textBox(
                 $x,
                 $y + $medida['hNome'],
                 $cols[0],
                 $medida['hInfo'],
                 $medida['info'],
-                $aFontMiudo,
+                $aFont,
                 'T',
                 'L',
                 0,
@@ -444,7 +440,7 @@ class DanfeRtc extends Danfe
                 false
             );
         }
-        $this->pdf->textBox($x, $y + $hMiolo - $lh, $cols[0], $lh, $medida['rodape'], $aFontMiudo, 'B', 'L', 0, '');
+        $this->pdf->textBox($x, $y + $hMiolo - $lh, $cols[0], $lh, $medida['rodape'], $aFont, 'B', 'L', 0, '');
 
         $xCst = $x + $cols[0];
         $this->pdf->textBox($xCst, $y, $cols[1], $lh, $this->cstItem($det), $aFont, 'T', 'C', 0, '');
@@ -472,7 +468,7 @@ class DanfeRtc extends Danfe
                     $colunas[$c][1],
                     $lh,
                     $texto,
-                    $aFontMiudo,
+                    $aFont,
                     'T',
                     'R',
                     0,
@@ -495,16 +491,19 @@ class DanfeRtc extends Danfe
         $cols = $this->colunasItem($this->larguraUtil(1));
         $wDesc = max(10, $cols[0] - 1);
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
-        $aFontMiudo = ['font' => $this->fontePadrao, 'size' => 5, 'style' => ''];
         $lh = 3.3;
         $prod = $det->getElementsByTagName('prod')->item(0);
         $nome = $prod ? $this->getTagValue($prod, 'xProd') : '';
+        $codigo = $prod ? $this->getTagValue($prod, 'cProd') : '';
+        // O modelo da NT não tem a coluna do código, que o MOC (Anexo II, 3.1.7) não deixa suprimir:
+        // vai no início da descrição, que quebra em linhas sem encolher a fonte.
+        $nome = $codigo === '' ? $nome : $codigo . ' - ' . $nome;
         $info = $this->getTagValue($det, 'infAdProd');
         // O textBox sem $force avança uma linha por tamanho da fonte (fontSize, em mm): as alturas
         // saem da fonte usada, não de um valor fixo. A 1ª linha do nome ocupa a linha da grade ($lh).
         $nNome = max(1, (int) $this->pdf->getNumLines($nome, $wDesc, $aFont));
         $hNome = $lh + ($nNome - 1) * $this->pdf->fontSize;
-        $nInfo = $info === '' ? 0 : max(1, (int) $this->pdf->getNumLines($info, $wDesc, $aFontMiudo));
+        $nInfo = $info === '' ? 0 : max(1, (int) $this->pdf->getNumLines($info, $wDesc, $aFont));
         $hInfo = $nInfo * $this->pdf->fontSize;
         $tributos = $this->tributosItem($det);
         $hTexto = $hNome + $hInfo;
@@ -598,12 +597,18 @@ class DanfeRtc extends Danfe
             array_merge($valores, $grupos[0][2]),
         ];
         // Cada grupo fecha os próprios pares: retenção não divide linha com o tributo normal.
-        // O par da retenção (grupo 1) não cabe numa linha da coluna: um por linha.
-        foreach ($grupos as $i => $grupo) {
-            $par = $i === 1 ? 1 : 2;
-            $linhas['bases'] = array_merge($linhas['bases'], $this->linhasRotuladas($grupo[0], 1));
-            $linhas['aliquotas'] = array_merge($linhas['aliquotas'], $this->linhasRotuladas($grupo[1], $par));
-            $linhas['valores'] = array_merge($linhas['valores'], $this->linhasRotuladas($grupo[2], $par));
+        $cols = $this->colunasItem($this->larguraUtil(1));
+        $respiro = 2 * DanfeRtcPdf::RESPIRO_X;
+        foreach ($grupos as $grupo) {
+            $linhas['bases'] = array_merge($linhas['bases'], $this->linhasRotuladas($grupo[0]));
+            $linhas['aliquotas'] = array_merge(
+                $linhas['aliquotas'],
+                $this->linhasRotuladas($grupo[1], $cols[6] - $respiro)
+            );
+            $linhas['valores'] = array_merge(
+                $linhas['valores'],
+                $this->linhasRotuladas($grupo[2], $cols[7] - $respiro)
+            );
         }
 
         return $linhas;
@@ -711,13 +716,13 @@ class DanfeRtc extends Danfe
     }
 
     /**
-     * "ROTULO valor", descartando o que não existe no XML; $porLinha itens por linha.
+     * "ROTULO valor", descartando o que não existe no XML: em pares quando o par cabe em $largura.
      *
      * @param array<int, array{0: string, 1: string}> $itens
-     * @param int $porLinha
+     * @param float $largura largura útil da coluna em mm; 0 = um por linha
      * @return string[]
      */
-    protected function linhasRotuladas(array $itens, $porLinha)
+    protected function linhasRotuladas(array $itens, $largura = 0)
     {
         $textos = [];
         foreach ($itens as $item) {
@@ -725,12 +730,13 @@ class DanfeRtc extends Danfe
                 $textos[] = $item[0] . ' ' . $item[1];
             }
         }
-        // Par que não cabe na coluna (ad rem, valores grandes) vai um por linha: o textBox
-        // encolheria a fonte e o item ficaria com tamanhos diferentes.
+        // Par que não cabe na coluna (ad rem, retenção, valores grandes) vai um por linha: o textBox
+        // encolheria a fonte abaixo de 6 pt. A medida é a do texto na fonte do item, não a contagem de letras.
+        $this->pdf->setFont($this->fontePadrao, '', 6);
         $linhas = [];
         for ($i = 0; $i < count($textos); $i++) {
-            $par = $porLinha > 1 && isset($textos[$i + 1]) ? $textos[$i] . ' / ' . $textos[$i + 1] : '';
-            if ($par !== '' && mb_strlen($par) <= self::MAX_CARACTERES_PAR) {
+            $par = $largura > 0 && isset($textos[$i + 1]) ? $textos[$i] . ' / ' . $textos[$i + 1] : '';
+            if ($par !== '' && $this->pdf->getStringWidth($par) <= $largura) {
                 $linhas[] = $par;
                 $i++;
                 continue;

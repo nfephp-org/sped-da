@@ -54,6 +54,29 @@ class DanfeRtcTest extends TestCase
     }
 
     /**
+     * O par só divide a linha se couber na coluna em 6 pt: "IBS UF 0,04% / IBS MUN 0,00%" encolheria a fonte.
+     */
+    public function testParQueNaoCabeNaColunaVaiUmPorLinha()
+    {
+        $danfe = $this->danfe('nfe_rtc_completa.xml');
+
+        $this->assertSame(
+            ['ICMS 12,00% / CBS 0,36%', 'IBS UF 0,04%', 'IBS MUN 0,00%'],
+            $danfe->tributos(1)['aliquotas']
+        );
+    }
+
+    /**
+     * O modelo da NT não tem a coluna do código, que o MOC não deixa suprimir: vai no início da descrição.
+     */
+    public function testCodigoDoProdutoNaDescricao()
+    {
+        $pdf = (new DanfeRtc(file_get_contents($this->fixture('nfe_rtc_itens.xml'))))->render();
+
+        $this->assertStringContainsString('1564 - RTC TESTE CST000', (new Parser())->parseContent($pdf)->getText());
+    }
+
+    /**
      * Imune (CST 410) não tem gIBSCBS: nada impresso e nenhuma linha reservada.
      */
     public function testItemImuneNaoOcupaLinhasDeTributo()
@@ -282,6 +305,7 @@ class DanfeRtcTest extends TestCase
         return new class (file_get_contents($this->fixture($nome))) extends DanfeRtc {
             public function tributos($i)
             {
+                $this->render(); // os pares de tributo são medidos na fonte do PDF
                 return $this->tributosItem($this->det->item($i));
             }
 
