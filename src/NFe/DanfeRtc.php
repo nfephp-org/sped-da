@@ -824,11 +824,16 @@ class DanfeRtc extends Danfe
             return '';
         }
         $gRed = $this->primeiroFilho($grupo, 'gRed');
-        if (!empty($gRed)) {
-            return $this->textoNumero($gRed, 'pAliqEfet');
+        $origem = empty($gRed) ? $grupo : $gRed;
+        $tag = empty($gRed) ? $tagCheia : 'pAliqEfet';
+        $campo = $this->primeiroFilho($origem, $tag) ?: $origem->getElementsByTagName($tag)->item(0);
+        if (empty($campo) || $campo->nodeValue === '') {
+            return '';
         }
+        // Alíquotas são 3v2-4: até 4 casas (0,0723% não vira 0,07%), mínimo 2.
+        $texto = number_format((float) $campo->nodeValue, 4, ',', '.');
 
-        return $this->textoNumero($grupo, $tagCheia);
+        return preg_replace('/(,\d\d)0{1,2}$/', '$1', $texto);
     }
 
     /**

@@ -54,6 +54,19 @@ class DanfeRtcTest extends TestCase
     }
 
     /**
+     * pAliqEfet é 3v2-4: a alíquota efetiva sai com até 4 casas, sem arredondar.
+     */
+    public function testAliquotaEfetivaComQuatroCasas()
+    {
+        $danfe = $this->danfe('nfe_rtc_aliquota_quatro_casas.xml');
+
+        $this->assertSame(
+            ['CBS 0,3575%', 'IBS UF 0,0423%', 'IBS MUN 0,00%'],
+            $danfe->tributos(4)['aliquotas']
+        );
+    }
+
+    /**
      * O par só divide a linha se couber na coluna em 6 pt: "IBS UF 0,04% / IBS MUN 0,00%" encolheria a fonte.
      */
     public function testParQueNaoCabeNaColunaVaiUmPorLinha()
