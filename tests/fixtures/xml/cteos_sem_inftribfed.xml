@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cteOSProc versao="4.00" xmlns="http://www.portalfiscal.inf.br/cte">
+    <CTeOS versao="4.00">
+        <infCte versao="4.00" Id="CTe35260111111111000191670010000000011000000019">
+            <ide>
+                <cUF>35</cUF>
+                <cCT>00000001</cCT>
+                <CFOP>5352</CFOP>
+                <natOp>PRESTACAO DE SERVICO DE TRANSPORTE DE PASSAGEIROS</natOp>
+                <mod>67</mod>
+                <serie>1</serie>
+                <nCT>1</nCT>
+                <dhEmi>2026-01-15T08:00:00-03:00</dhEmi>
+                <tpImp>1</tpImp>
+                <tpEmis>1</tpEmis>
+                <cDV>9</cDV>
+                <tpAmb>2</tpAmb>
+                <tpCTe>0</tpCTe>
+                <procEmi>0</procEmi>
+                <verProc>1.0</verProc>
+                <indGlobalizado>0</indGlobalizado>
+                <cMunEnv>3550308</cMunEnv>
+                <xMunEnv>SAO PAULO</xMunEnv>
+                <UFEnv>SP</UFEnv>
+                <modal>01</modal>
+                <tpServ>6</tpServ>
+                <indIEToma>9</indIEToma>
+                <cMunIni>3550308</cMunIni>
+                <xMunIni>SAO PAULO</xMunIni>
+                <UFIni>SP</UFIni>
+                <cMunFim>3304557</cMunFim>
+                <xMunFim>RIO DE JANEIRO</xMunFim>
+                <UFFim>RJ</UFFim>
+            </ide>
+            <compl>
+                <xObs>Embarque as 7h na garagem</xObs>
+            </compl>
+            <emit>
+                <CNPJ>11111111000191</CNPJ>
+                <IE>111111111111</IE>
+                <xNome>TRANSPORTADORA TESTE LTDA</xNome>
+                <xFant>TRANSPORTADORA TESTE</xFant>
+                <enderEmit>
+                    <xLgr>RUA DE TESTE</xLgr>
+                    <nro>100</nro>
+                    <xBairro>CENTRO</xBairro>
+                    <cMun>3550308</cMun>
+                    <xMun>SAO PAULO</xMun>
+                    <CEP>01311000</CEP>
+                    <UF>SP</UF>
+                    <fone>1130000000</fone>
+                </enderEmit>
+            </emit>
+            <toma>
+                <CNPJ>11222333000181</CNPJ>
+                <IE>110042490114</IE>
+                <xNome>TOMADOR TESTE LTDA</xNome>
+                <enderToma>
+                    <xLgr>RUA DOS PASSAGEIROS</xLgr>
+                    <nro>200</nro>
+                    <xBairro>CENTRO</xBairro>
+                    <cMun>3550308</cMun>
+                    <xMun>SAO PAULO</xMun>
+                    <CEP>01311000</CEP>
+                    <UF>SP</UF>
+                    <cPais>1058</cPais>
+                    <xPais>BRASIL</xPais>
+                </enderToma>
+            </toma>
+            <vPrest>
+                <vTPrest>3500.00</vTPrest>
+                <vRec>3500.00</vRec>
+                <Comp>
+                    <xNome>FRETE FRETAM</xNome>
+                    <vComp>3500.00</vComp>
+                </Comp>
+            </vPrest>
+            <imp>
+                <ICMS>
+                    <ICMS00>
+                        <CST>00</CST>
+                        <vBC>3500.00</vBC>
+                        <pICMS>12.00</pICMS>
+                        <vICMS>420.00</vICMS>
+                    </ICMS00>
+                </ICMS>
+            </imp>
+            <infCTeNorm>
+                <infServico>
+                    <xDescServ>Fretamento de onibus turistico</xDescServ>
+                    <infQ>
+                        <qCarga>45.0000</qCarga>
+                    </infQ>
+                </infServico>
+                <infModal versaoModal="4.00">
+                    <rodoOS>
+                        <TAF>123456789012</TAF>
+                        <veic>
+                            <placa>ABC1D23</placa>
+                            <RENAVAM>12345678901</RENAVAM>
+                            <UF>SP</UF>
+                        </veic>
+                    </rodoOS>
+                </infModal>
+            </infCTeNorm>
+        </infCte>
+    </CTeOS>
+    <protCTe versao="4.00">
+        <infProt>
+            <tpAmb>2</tpAmb>
+            <verAplic>SP_CTE_PL_009</verAplic>
+            <chCTe>35260111111111000191670010000000011000000019</chCTe>
+            <dhRecbto>2026-01-15T08:01:00-03:00</dhRecbto>
+            <nProt>135260000012345</nProt>
+            <digVal>AAAAAAAAAAAAAAAAAAAAAAAAAAA=</digVal>
+            <cStat>100</cStat>
+            <xMotivo>Autorizado o uso do CT-e</xMotivo>
+        </infProt>
+    </protCTe>
+</cteOSProc>
