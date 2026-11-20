@@ -1273,36 +1273,51 @@ class DacteOS extends DaCommon
         $x = $oldX;
         $y = $y + 4;
 
-        $texto = !empty($this->infTribFed->getElementsByTagName("vPIS")->item(0)->nodeValue) ?
-            number_format($this->getTagValue($this->infTribFed, "vPIS"), 2, ",", ".") : '0,00';
+        $texto = $this->valorTributoFederal("vPIS");
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x, $y, $w * 0.26, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x += $w * 0.26;
 
-        $texto = !empty($this->infTribFed->getElementsByTagName("vCOFINS")->item(0)->nodeValue) ?
-            number_format($this->getTagValue($this->infTribFed, "vCOFINS"), 2, ",", ".") : '0,00';
+        $texto = $this->valorTributoFederal("vCOFINS");
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x, $y, $w * $wCol02, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x += $w * $wCol02;
 
-        $texto = !empty($this->infTribFed->getElementsByTagName("vIR")->item(0)->nodeValue) ?
-            number_format($this->getTagValue($this->infTribFed, "vIR"), 2, ",", ".") : '0,00';
+        $texto = $this->valorTributoFederal("vIR");
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x, $y, $w * $wCol02, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x += $w * $wCol02;
 
-        $texto = !empty($this->infTribFed->getElementsByTagName("vINSS")->item(0)->nodeValue) ?
-            number_format($this->getTagValue($this->infTribFed, "vINSS"), 2, ",", ".") : '0,00';
+        $texto = $this->valorTributoFederal("vINSS");
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x, $y, $w * $wCol02, $h, $texto, $aFont, 'T', 'L', 0, '');
         $x += $w * $wCol02;
 
-        $texto = !empty($this->infTribFed->getElementsByTagName("vCSLL")->item(0)->nodeValue) ?
-            number_format($this->getTagValue($this->infTribFed, "vCSLL"), 2, ",", ".").'%' : '0,00';
+        $texto = $this->valorTributoFederal("vCSLL", '%');
         $aFont = $this->formatNegrito;
         $this->pdf->textBox($x, $y, $w * $wCol02, $h, $texto, $aFont, 'T', 'L', 0, '');
 
     } //fim da função compValorDACTE
+
+    /**
+     * Valor formatado de um tributo federal do grupo infTribFed, que e opcional,
+     * assim como cada uma de suas tags. Retorna 0,00 quando ausente
+     *
+     * @param string $tag
+     * @param string $sufixo
+     * @return string
+     */
+    private function valorTributoFederal($tag, $sufixo = '')
+    {
+        if (empty($this->infTribFed)) {
+            return '0,00';
+        }
+        $elemento = $this->infTribFed->getElementsByTagName($tag)->item(0);
+        if (empty($elemento) || empty($elemento->nodeValue)) {
+            return '0,00';
+        }
+        return number_format($this->getTagValue($this->infTribFed, $tag), 2, ",", ".") . $sufixo;
+    }
 
     /**
      * geraChaveAdicCont
