@@ -98,6 +98,7 @@ Ou ainda alterando o composer.json do seu aplicativo inserindo:
 
 - [DANFE](docs/Danfe.md)
 - [DANFSe](docs/Danfse.md)
+- [GNRE](docs/Dagnre.md)
 
 ## Log de mudanças e versões
 Acompanhe o [CHANGELOG](CHANGELOG.md) para maiores informações sobre as alterações recentes.
@@ -114,6 +115,7 @@ Caso você encontre algum problema relativo a segurança, por favor envie um ema
 
 Roberto L. Machado (owner and developer)
 Newton Pasqualini Filho (DANFE Simplificado)
+Alberto Leal (GNRE)
 
 ## License
 
