@@ -125,7 +125,7 @@ class Dagnre extends DaCommon
         // cabeçalho
         $wLogo = 0.0;
         if (!empty($this->logomarca)) {
-            $this->pdf->image($this->logomarca, $x + 1, $y + 0.5, 0, 7);
+            $this->pdf->image($this->logomarca, $x + 1, $y + 0.5, 0, 7, 'jpeg');
             $wLogo = 18.0;
         }
         $this->pdf->textBox($x, $y, $wEsq, 8, '', $this->fonte(8));

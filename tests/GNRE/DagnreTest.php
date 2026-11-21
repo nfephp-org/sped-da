@@ -139,6 +139,33 @@ class DagnreTest extends TestCase
         new Dagnre($this->fixture('retorno-recibo.xml'));
     }
 
+    /**
+     * @return array<string, array{0: string}>
+     */
+    public function logoProvider(): array
+    {
+        $png = __DIR__ . '/../../examples/images/tulipas.png';
+        return [
+            'arquivo png' => [$png],
+            'data uri' => ['data://text/plain;base64,' . base64_encode((string) file_get_contents($png))],
+        ];
+    }
+
+    /**
+     * @dataProvider logoProvider
+     */
+    public function testLogo(string $logo): void
+    {
+        $semLogo = (new Dagnre($this->fixture('retorno-resultado-v2.xml')))->render();
+        $comLogo = (new Dagnre($this->fixture('retorno-resultado-v2.xml')))->render($logo);
+
+        $this->assertStringStartsWith('%PDF', $comLogo);
+        $this->assertGreaterThan(
+            substr_count($semLogo, '/Subtype /Image'),
+            substr_count($comLogo, '/Subtype /Image')
+        );
+    }
+
     public function testCreditos(): void
     {
         $dagnre = new Dagnre($this->fixture('retorno-resultado-v2.xml'));
