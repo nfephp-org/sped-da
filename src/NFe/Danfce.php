@@ -378,6 +378,18 @@ class Danfce extends DaCommon
     }
 
     /**
+     * Confere se o modelo do xml carregado em `$this->ide` é o aceito por esta classe.
+     * Extraído do `loadXml()` para que uma subclasse (ex.: DANFE Simplificado Tipo 2) possa
+     * sobrescrever e aceitar outro modelo/tpImp.
+     *
+     * @return bool
+     */
+    protected function isModeloAceito()
+    {
+        return $this->getTagValue($this->ide, "mod") == '65';
+    }
+
+    /**
      * Carrega os dados do xml na classe
      * @param string $xml
      *
@@ -389,7 +401,7 @@ class Danfce extends DaCommon
         $this->dom->loadXML($this->xml);
         $this->ide = $this->dom->getElementsByTagName("ide")->item(0);
         $mod = $this->getTagValue($this->ide, "mod");
-        if ($this->getTagValue($this->ide, "mod") != '65') {
+        if (!$this->isModeloAceito()) {
             throw new \Exception("O xml do DANFE deve ser uma NFC-e modelo 65");
         }
         $this->tpAmb = $this->getTagValue($this->ide, 'tpAmb');
