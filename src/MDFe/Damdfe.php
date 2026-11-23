@@ -980,77 +980,10 @@ class Damdfe extends DaCommon
             }
             $tamanho = ($valesPedagios * 7.5);
             if ($temVales) {
-                $y += 5;
-                $this->pdf->textBox($x1, $y, $x2, 11 + $tamanho / 2, '', $this->baseFont, 'T', 'L', 0);
-                $texto = 'Vale Pedágio';
-                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
-                $this->pdf->textBox($x1, $y, $x2, 4, $texto, $aFont, 'T', 'L', 0, '', false);
-                $x2 = ($x2 / 3);
-                $this->pdf->textBox($x1, $y, $x2 - 3, 4 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
-                $y += 5;
-                $texto = 'Responsável CNPJ/CPF';
-                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-                $this->pdf->textBox($x1, $y, $x2, 4, $texto, $aFont, 'T', 'L', 0, '', false);
-                $altura = $y;
-                for ($i = 0; $i < $valesPedagios; $i++) {
-                    $altura += 4;
-                    /* o responsável pelo pagamento é informado por CNPJ ou por CPF, conforme
-                       o xs:choice do schema, por isso o CPF é buscado na falta do CNPJ */
-                    $pgNode = $this->valePed->item($i)->getElementsByTagName('CNPJPg');
-                    if ($pgNode->length == 0) {
-                        $pgNode = $this->valePed->item($i)->getElementsByTagName('CPFPg');
-                    }
-                    $texto = $pgNode->length == 0 ? '' : $pgNode->item(0)->nodeValue;
-                    $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
-                    $this->pdf->textBox($x1, $altura, $x2, 4, $texto, $aFont, 'T', 'L', 0, '', false);
-                }
-                $x1 += $x2;
-                $this->pdf->textBox($x1, $y, $x2, 6 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
-                $texto = 'Fornecedora CNPJ';
-                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-                $this->pdf->textBox($x1, $y, $x2, 4, $texto, $aFont, 'T', 'L', 0, '', false);
-                $altura = $y;
-                for ($i = 0; $i < $valesPedagios; $i++) {
-                    $altura += 4;
-                    $pgNode = $this->valePed->item($i)->getElementsByTagName('CNPJForn');
-                    $texto = $pgNode->length == 0 ? '' : $pgNode->item(0)->nodeValue;
-                    $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
-                    $this->pdf->textBox($x1, $altura, $x2 , 4, $texto, $aFont, 'T', 'L', 0, '', false);
-                }
-                $x1 += $x2;
-                $this->pdf->textBox($x1, $y, $x2 + 6, 6 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
-                $texto = 'Nº Comprovante';
-                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => '');
-                $this->pdf->textBox($x1, $y, $x2, 4, $texto, $aFont, 'T', 'L', 0, '', false);
-                $altura = $y;
-                for ($i = 0; $i < $valesPedagios; $i++) {
-                    $altura += 4;
-                    $texto = $this->valePed->item($i)->getElementsByTagName('nCompra')->item(0)->nodeValue;
-                    $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
-                    $this->pdf->textBox($x1, $altura, $x2, 4, $texto, $aFont, 'T', 'L', 0, '', false);
-                }
+                $y = $this->valePedagio($x, $y + 5, $maxW / 2);
             }
             if ($this->seg != "" && $this->seg->length > 0) {
-                $y += 10;
-                $x1 = $x;
-                $x2 = ($x2 / 3);
-                $this->pdf->textBox($x1, $y, $x2 + 6, 6 + ($tamanho / 2), '', $this->baseFont, 'T', 'L', 0);
-                $texto = 'Seguradora';
-                $aFont = array('font' => $this->fontePadrao, 'size' => 8, 'style' => 'B');
-                $this->pdf->textBox($x1, $y, $x2 + 6, 4, $texto, $aFont, 'T', 'L', 0, '', false);
-                $y += 2;
-                $altura = $y;
-                for ($i = 0; $i < $this->seg->length; $i++) {
-                    $altura += 4;
-                    $xSeg = $this->seg->item($i)->getElementsByTagName('infSeg')->item(0)->getElementsByTagName('xSeg')->item(0)->nodeValue;
-                    $CNPJ = $this->seg->item($i)->getElementsByTagName('infSeg')->item(0)->getElementsByTagName('CNPJ')->item(0)->nodeValue;
-                    $aFont = array('font' => $this->fontePadrao, 'size' => 9, 'style' => '');
-                    $this->pdf->textBox($x1, $altura, 95, 4, "{$CNPJ} {$xSeg}", $aFont, 'T', 'L', 0, '', false);
-
-                    $altura += 4;
-                    $texto = $this->seg->item($i)->getElementsByTagName('nApol')->item(0)->nodeValue;
-                    $this->pdf->textBox($x1, $altura, 95, 4, "Número da apólice: {$texto}", $aFont, 'T', 'L', 0, '', false);
-                }
+                $y = $this->seguros($x, $y + 5, $maxW / 2);
             }
             $this->condutor = $this->veicTracao->getElementsByTagName('condutor');
             $x1 = round($maxW / 2, 0) + 7;
@@ -1475,6 +1408,109 @@ class Damdfe extends DaCommon
             $texto = "Powered by NFePHP®";
         }
         $this->pdf->textBox($x, $y, $w, 8, $texto, $aFont, 'T', 'R', false, '');
+    }
+
+    /**
+     * Imprime os dados do vale-pedágio sem exigir o número de compra opcional.
+     *
+     * @param float $x
+     * @param float $y
+     * @param float $w
+     * @return float
+     */
+    private function valePedagio($x, $y, $w)
+    {
+        $font = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
+        $fontTitulo = ['font' => $this->fontePadrao, 'size' => 8, 'style' => 'B'];
+        $this->pdf->textBox($x, $y, $w, 4, 'Vale Pedágio', $fontTitulo, 'T', 'L', 0);
+        $y += 4;
+        $colunas = [$w * 0.28, $w * 0.26, $w * 0.26, $w * 0.20];
+        $titulos = ["Responsável\nCNPJ/CPF", "Fornecedora\nCNPJ", 'Nº Comprovante', 'Valor R$'];
+        $cursor = $x;
+        foreach ($colunas as $i => $largura) {
+            $this->pdf->textBox($cursor, $y, $largura, 7, $titulos[$i], $font, 'T', 'L', 1);
+            $cursor += $largura;
+        }
+        $y += 7;
+        foreach ($this->valePed as $disp) {
+            $responsavel = $this->getTagValue($disp, 'CNPJPg');
+            if ($responsavel === '') {
+                $responsavel = $this->getTagValue($disp, 'CPFPg');
+            }
+            $valor = $this->getTagValue($disp, 'vValePed');
+            $campos = [
+                $responsavel,
+                $this->getTagValue($disp, 'CNPJForn'),
+                $this->getTagValue($disp, 'nCompra'),
+                $valor === '' ? '' : number_format((float) $valor, 2, ',', '.'),
+            ];
+            $cursor = $x;
+            foreach ($colunas as $i => $largura) {
+                $this->pdf->textBox($cursor, $y, $largura, 4, $campos[$i], $font, 'T', 'L', 1);
+                $cursor += $largura;
+            }
+            $y += 4;
+        }
+
+        return $y;
+    }
+
+    /**
+     * Agrupa os seguros pelo responsável, com dois pares de seguradora/apólice.
+     * Os campos opcionais ausentes permanecem em branco.
+     *
+     * @param float $x
+     * @param float $y
+     * @param float $w
+     * @return float
+     */
+    private function seguros($x, $y, $w)
+    {
+        $grupos = [];
+        foreach ($this->seg as $seguro) {
+            $infResp = $seguro->getElementsByTagName('infResp')->item(0);
+            $responsavel = $this->getTagValue($infResp, 'respSeg');
+            $infSeg = $seguro->getElementsByTagName('infSeg')->item(0);
+            $grupos[$responsavel][] = [
+                trim($this->getTagValue($infSeg, 'CNPJ') . ' ' . $this->getTagValue($infSeg, 'xSeg')),
+                $this->getTagValue($seguro, 'nApol'),
+            ];
+        }
+        $rotulos = ['1' => 'Emitente do MDF-e', '2' => 'Contratante'];
+        $font = ['font' => $this->fontePadrao, 'size' => 7, 'style' => ''];
+        $fontTitulo = ['font' => $this->fontePadrao, 'size' => 8, 'style' => 'B'];
+        $colunas = [$w * 0.28, $w * 0.22, $w * 0.28, $w * 0.22];
+        foreach ($grupos as $responsavel => $seguros) {
+            $titulo = 'Responsável pelo Seguro';
+            if (isset($rotulos[$responsavel])) {
+                $titulo .= ': ' . $rotulos[$responsavel];
+            }
+            $this->pdf->textBox($x, $y, $w, 4, $titulo, $fontTitulo, 'T', 'L', 0);
+            $y += 4;
+            $cursor = $x;
+            foreach ($colunas as $i => $largura) {
+                $titulo = $i % 2 === 0 ? 'Seguradora' : 'Número da Apólice';
+                $this->pdf->textBox($cursor, $y, $largura, 4, $titulo, $font, 'T', 'L', 1);
+                $cursor += $largura;
+            }
+            $y += 4;
+            foreach (array_chunk($seguros, 2) as $linha) {
+                $campos = array_merge($linha[0], $linha[1] ?? ['', '']);
+                $h = 4;
+                foreach ($colunas as $i => $largura) {
+                    $h = max($h, $this->pdf->getNumLines($campos[$i], $largura - 1, $font) * 3);
+                }
+                $cursor = $x;
+                foreach ($colunas as $i => $largura) {
+                    $this->pdf->textBox($cursor, $y, $largura, $h, $campos[$i], $font, 'T', 'L', 1, '', false);
+                    $cursor += $largura;
+                }
+                $y += $h;
+            }
+            $y += 3;
+        }
+
+        return $y;
     }
 
     public function setExibirDocumentosVinculados(bool $exibirDocumentosVinculados): void
