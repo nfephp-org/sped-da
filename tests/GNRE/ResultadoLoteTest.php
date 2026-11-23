@@ -95,4 +95,42 @@ class ResultadoLoteTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         ResultadoLote::paraStd('abc');
     }
+
+    /**
+     * Linha TXT 1.00 sintética: campos posicionados por CARACTERE (base 1)
+     *
+     * @param array<int, string> $campos início => conteúdo
+     */
+    private function linhaTxt(array $campos, int $tamanho = 1098): string
+    {
+        $chars = array_fill(0, $tamanho, ' ');
+        foreach ($campos as $inicio => $conteudo) {
+            foreach (preg_split('//u', $conteudo, -1, PREG_SPLIT_NO_EMPTY) ?: [] as $i => $char) {
+                $chars[$inicio - 1 + $i] = $char;
+            }
+        }
+        return implode('', $chars);
+    }
+
+    public function testTxtComAcentoNaoDeslocaCampos(): void
+    {
+        $linha = $this->linhaTxt([
+            1 => '1',
+            2 => '0001',
+            6 => '0',
+            32 => 'JOSÉ DA CONCEIÇÃO',
+            92 => 'AVENIDA SÃO JOÃO',
+            919 => '000000000012345',
+            979 => '858500000029430099992006280100962200000000000000',
+            1027 => '85850000002430099992002801000000000000000000',
+        ]);
+
+        $guia = ResultadoLote::lerTxtV1($linha)->guias[0];
+
+        $this->assertSame('JOSÉ DA CONCEIÇÃO', $guia->razaoSocialEmitente);
+        $this->assertSame('AVENIDA SÃO JOÃO', $guia->enderecoEmitente);
+        $this->assertSame('123.45', $guia->valorPrincipal);
+        $this->assertSame('858500000029430099992006280100962200000000000000', $guia->representacaoNumerica);
+        $this->assertSame('85850000002430099992002801000000000000000000', $guia->codigoBarras);
+    }
 }

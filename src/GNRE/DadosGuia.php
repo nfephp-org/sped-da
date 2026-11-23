@@ -105,7 +105,7 @@ class DadosGuia
         $dados->multa = self::formatarValor($guia->multa ?? '');
         $total = (float) ($guia->valorPrincipal ?? 0) + (float) ($guia->atualizacaoMonetaria ?? 0)
             + (float) ($guia->juros ?? 0) + (float) ($guia->multa ?? 0);
-        $dados->valorTotal = self::formatarValor((string) $total);
+        $dados->valorTotal = self::formatarNumero($total);
         $dados->informacoesComplementares = $guia->informacoesComplementares ?? '';
         $dados->numeroControle = self::semZeros($guia->numeroControle ?? '');
         $dados->linhaDigitavel = self::semZeros(self::digitos($guia->representacaoNumerica ?? ''));
@@ -158,6 +158,14 @@ class DadosGuia
     }
 
     /**
+     * Número -> 1.234,50 (sem passar por string: no PHP 7.4 (string) float depende do LC_NUMERIC); zero -> ''
+     */
+    public static function formatarNumero(float $valor): string
+    {
+        return $valor == 0 ? '' : number_format($valor, 2, ',', '.');
+    }
+
+    /**
      * 1234.5 -> 1.234,50; zero ou vazio -> ''
      */
     public static function formatarValor(string $valor): string
@@ -175,7 +183,7 @@ class DadosGuia
         $dados->ufFavorecida = self::texto($guia->ufFavorecida ?? '');
         $emitente = $guia->contribuinteEmitente ?? new stdClass();
         $dados->emitenteDocumento = self::documentoXml($emitente->identificacao ?? null);
-        $dados->emitenteIE = self::texto($emitente->identificacao->IE ?? '');
+        $dados->emitenteIE = self::ieSeparada($emitente->identificacao ?? null);
         $dados->emitenteRazaoSocial = self::texto($emitente->razaoSocial ?? '');
         $dados->emitenteEndereco = self::texto($emitente->endereco ?? '');
         $dados->emitenteMunicipio = self::texto($emitente->municipio ?? '');
@@ -196,11 +204,11 @@ class DadosGuia
         $dados->parcela = self::texto($referencia->parcela ?? '');
         $destinatario = $item->contribuinteDestinatario ?? new stdClass();
         $dados->destinatarioDocumento = self::documentoXml($destinatario->identificacao ?? null);
-        $dados->destinatarioIE = self::texto($destinatario->identificacao->IE ?? '');
+        $dados->destinatarioIE = self::ieSeparada($destinatario->identificacao ?? null);
         $dados->destinatarioRazaoSocial = self::texto($destinatario->razaoSocial ?? '');
         $dados->destinatarioMunicipio = self::texto($destinatario->municipio ?? '');
 
-        $somas = array_fill_keys(['11', '12', '31', '32', '41', '42', '51', '52'], 0.0);
+        $somas = array_fill_keys(['11', '12', '21', '22', '31', '32', '41', '42', '51', '52'], 0.0);
         foreach ($itens as $cada) {
             foreach (self::lista($cada->valor ?? null) as $valor) {
                 $tipo = (string) ($valor->attributes->tipo ?? '');
@@ -209,11 +217,18 @@ class DadosGuia
                 }
             }
         }
-        $dados->valorPrincipal = self::formatarValor((string) ($somas['11'] + $somas['12']));
-        $dados->multa = self::formatarValor((string) ($somas['31'] + $somas['32']));
-        $dados->juros = self::formatarValor((string) ($somas['41'] + $somas['42']));
-        $dados->atualizacaoMonetaria = self::formatarValor((string) ($somas['51'] + $somas['52']));
-        $dados->valorTotal = self::formatarValor(self::texto($guia->valorGNRE ?? ''));
+        $dados->valorPrincipal = self::formatarNumero($somas['11'] + $somas['12']);
+        $dados->multa = self::formatarNumero($somas['31'] + $somas['32']);
+        $dados->juros = self::formatarNumero($somas['41'] + $somas['42']);
+        $dados->atualizacaoMonetaria = self::formatarNumero($somas['51'] + $somas['52']);
+        $valorGnre = self::texto($guia->valorGNRE ?? '');
+        if ($valorGnre !== '') {
+            $dados->valorTotal = self::formatarValor($valorGnre);
+        } elseif ($somas['21'] + $somas['22'] > 0) {
+            $dados->valorTotal = self::formatarNumero($somas['21'] + $somas['22']);
+        } else {
+            $dados->valorTotal = self::formatarNumero(array_sum($somas) - $somas['21'] - $somas['22']);
+        }
         return $dados;
     }
 
@@ -294,6 +309,22 @@ class DadosGuia
     }
 
     /**
+     * IE para exibir ao lado do CNPJ/CPF; vazia quando a IE já é o próprio documento (sem CNPJ/CPF)
+     *
+     * @param mixed $identificacao {CNPJ|CPF[, IE]}
+     */
+    protected static function ieSeparada($identificacao): string
+    {
+        if (!$identificacao instanceof stdClass) {
+            return '';
+        }
+        if (self::texto($identificacao->CNPJ ?? '') === '' && self::texto($identificacao->CPF ?? '') === '') {
+            return '';
+        }
+        return self::texto($identificacao->IE ?? '');
+    }
+
+    /**
      * @param mixed $identificacao {CNPJ|CPF[, IE]}
      */
     protected static function documentoXml($identificacao): string
@@ -306,15 +337,16 @@ class DadosGuia
     }
 
     /**
-     * Documento do TXT (16 posições, alinhado à direita com zeros): 1 CNPJ, 2 CPF, outro: sem zeros à esquerda
+     * Documento do TXT (16 posições, alinhado à direita com zeros). No TXT de resultado do 1.00 o tipo é
+     * 1 = CPF, 2 = CNPJ, 3 = IE (ACBr ACBrGNREGuiasRetorno.pas), o contrário do XSD do lote.
      */
     protected static function documentoTxt(string $documento, string $tipo): string
     {
         if ($tipo === '1') {
-            return self::formatarDocumento(substr(str_pad($documento, 14, '0', STR_PAD_LEFT), -14));
+            return self::formatarDocumento(substr(str_pad($documento, 11, '0', STR_PAD_LEFT), -11));
         }
         if ($tipo === '2') {
-            return self::formatarDocumento(substr(str_pad($documento, 11, '0', STR_PAD_LEFT), -11));
+            return self::formatarDocumento(substr(str_pad($documento, 14, '0', STR_PAD_LEFT), -14));
         }
         return ltrim($documento, '0');
     }

@@ -176,4 +176,105 @@ class DagnreTest extends TestCase
         $this->assertStringContainsString('MINHA EMPRESA', $texto);
         $this->assertStringContainsString('Powered by NFePHP', $texto);
     }
+
+    public function testI25VetorialTresParaUm(): void
+    {
+        $barras = Dagnre::barrasI25('85850000002430099992002801000000000000000000');
+
+        $this->assertCount(4 + 22 * 10 + 3, $barras);
+        $this->assertSame([[true, 1], [false, 1], [true, 1], [false, 1]], array_slice($barras, 0, 4));
+        $this->assertSame([[true, 3], [false, 1], [true, 1]], array_slice($barras, -3));
+        $larguras = array_unique(array_column($barras, 1));
+        sort($larguras);
+        $this->assertSame([1, 3], $larguras);
+        $this->assertSame(4 + 22 * 18 + 5, array_sum(array_column($barras, 1)));
+    }
+
+    public function testI25RejeitaTamanhoImpar(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Dagnre::barrasI25('123');
+    }
+
+    public function testCodigoBarrasCom13mm(): void
+    {
+        $dagnre = new DagnreEspiao($this->fixture('retorno-resultado-v2.xml'));
+        $dagnre->render();
+
+        $this->assertSame(13.0, $dagnre->geometrias[0]['h']);
+        $this->assertGreaterThanOrEqual(100.0, $dagnre->geometrias[0]['w']);
+    }
+
+    public function testChaveNfeCabeNaCelula(): void
+    {
+        $dagnre = new DagnreEspiao($this->fixture('retorno-resultado-v2.xml'));
+        $dagnre->render();
+        $chave = '35200111111111111111550400000096131957613855';
+        $largura = 40.0;
+
+        $fonte = $dagnre->espiarFonteQueCabe($chave, $largura, 8);
+        $dagnre->pdf()->setFont('times', '', $fonte);
+
+        $this->assertLessThan(8, $fonte);
+        $this->assertLessThanOrEqual($largura, $dagnre->pdf()->getStringWidth($chave));
+    }
+
+    public function testTextosLongosNaoSobrepoem(): void
+    {
+        $dagnre = new DagnreEspiao($this->fixture('retorno-resultado-v2.xml'));
+        $dagnre->render();
+        $linhas = [
+            'Convênio/Protocolo: ' . str_repeat('C', 30) . '   Produto: ' . str_repeat('PRODUTO LONGO ', 18),
+            'Informações Complementares: ' . str_repeat('INFORMACAO COMPLEMENTAR ', 12),
+            'Documento válido para pagamento até 28/01/2020',
+        ];
+
+        $distribuicao = $dagnre->espiarDistribuirLinhas($linhas, 120.0, 22.0);
+
+        $this->assertCount(3, $distribuicao);
+        $this->assertLessThanOrEqual(22.0 + 0.001, array_sum(array_column($distribuicao, 'altura')));
+        foreach ($distribuicao as $item) {
+            $dagnre->pdf()->setFont('times', '', $item['fonte']);
+            $necessaria = $dagnre->pdf()->getNumLines(
+                $item['texto'],
+                120.0,
+                ['font' => 'times', 'size' => $item['fonte'], 'style' => '']
+            ) * $item['fonte'] * 0.3528 * 1.1;
+            $this->assertLessThanOrEqual($item['altura'] + 0.001, $necessaria, $item['texto']);
+        }
+        $this->assertSame('Documento válido para pagamento até 28/01/2020', $distribuicao[2]['texto']);
+    }
+
+    public function testMensagemComSituacaoDoLote(): void
+    {
+        $dom = new DOMDocument();
+        $dom->loadXML($this->fixture('retorno-resultado-v2.xml'));
+        $resultado = $dom->getElementsByTagNameNS('*', 'resultado')->item(0);
+        $this->assertInstanceOf(DOMElement::class, $resultado);
+        $this->assertNotNull($resultado->parentNode);
+        $resultado->parentNode->removeChild($resultado);
+        $codigo = $dom->getElementsByTagNameNS('*', 'codigo')->item(0);
+        $this->assertInstanceOf(DOMElement::class, $codigo);
+        $codigo->nodeValue = '401';
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches('/401/');
+        new Dagnre((string) $dom->saveXML());
+    }
+
+    public function testLogoLargaTemLarguraLimitada(): void
+    {
+        $imagem = imagecreatetruecolor(800, 100);
+        $this->assertNotFalse($imagem);
+        ob_start();
+        imagepng($imagem);
+        $png = (string) ob_get_clean();
+        $dagnre = new DagnreEspiao($this->fixture('retorno-resultado-v2.xml'));
+
+        $pdf = $dagnre->render('data://text/plain;base64,' . base64_encode($png));
+
+        $this->assertStringStartsWith('%PDF', $pdf);
+        $this->assertLessThanOrEqual(30.0, $dagnre->espiarLarguraLogo(7.0));
+        $this->assertGreaterThan(0.0, $dagnre->espiarLarguraLogo(7.0));
+    }
 }

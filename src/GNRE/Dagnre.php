@@ -10,11 +10,13 @@ use stdClass;
 
 /**
  * Documento auxiliar da GNRE: PDF com 3 vias por guia (Banco, Contribuinte, Contribuinte/Fisco),
- * código de barras de arrecadação (2 de 5 intercalado) e QR Code PIX quando informado.
+ * código de barras de arrecadação (2 de 5 intercalado, desenhado em vetor, razão 3:1) e
+ * QR Code PIX quando informado.
  *
  * Entrada: o retorno de Tools::sefazConsultaLote() (TResultLote_GNRE, com ou sem envelope SOAP),
  * do layout 2.00 (guias 2.00 ou 1.00) ou do lote 1.00 puro (resultado em TXT).
  * Só as guias com situacaoGuia = 0 (processadas com sucesso) são impressas.
+ * Layout fixo: A4 retrato, uma guia por página.
  *
  * Origem: refatoração do nfephp-org/sped-gnre 1.0.
  *
@@ -29,7 +31,23 @@ class Dagnre extends DaCommon
 {
     protected const TIPO_CODIGO_BARRAS = 'I25';
     protected const VIAS = ['1ª via - Banco', '2ª via - Contribuinte', '3ª via - Contribuinte/Fisco'];
-    protected const ALTURA_VIA = 92.0;
+    protected const ALTURA_VIA = 95.0;
+    protected const LARGURA_CODIGO_BARRAS = 103.0;
+    protected const ALTURA_CODIGO_BARRAS = 13.0;
+    protected const TAMANHO_QRCODE = 18.0;
+    protected const LARGURA_MAXIMA_LOGO = 30.0;
+    /**
+     * Altura de uma linha de texto em mm por ponto de fonte (1 pt = 0,3528 mm), com folga
+     */
+    protected const MM_POR_PONTO = 0.3528 * 1.1;
+
+    /**
+     * Padrões do 2 de 5 intercalado (n = estreita, w = larga) por dígito
+     */
+    private const PADROES_I25 = [
+        '0' => 'nnwwn', '1' => 'wnnnw', '2' => 'nwnnw', '3' => 'wwnnn', '4' => 'nnwnw',
+        '5' => 'wnwnn', '6' => 'nwwnn', '7' => 'nnnww', '8' => 'wnnwn', '9' => 'nwnwn',
+    ];
 
     /**
      * @var array<int, stdClass>
@@ -45,7 +63,8 @@ class Dagnre extends DaCommon
      */
     public function __construct(string $xmlResultado)
     {
-        foreach (ResultadoLote::ler($xmlResultado)->guias as $guia) {
+        $resultado = ResultadoLote::ler($xmlResultado);
+        foreach ($resultado->guias as $guia) {
             if ($guia->situacaoGuia === '0') {
                 $this->guias[] = $guia;
             } else {
@@ -53,9 +72,13 @@ class Dagnre extends DaCommon
             }
         }
         if (empty($this->guias)) {
-            throw new InvalidArgumentException(
-                'O documento de resposta relata um erro: nenhuma guia processada com sucesso para imprimir.'
-            );
+            throw new InvalidArgumentException(sprintf(
+                'O documento de resposta relata um erro: nenhuma guia processada com sucesso para imprimir '
+                . '(situação do lote: %s - %s; guias não impressas: %d).',
+                $resultado->situacaoProcess->codigo,
+                $resultado->situacaoProcess->descricao,
+                count($this->naoImpressas)
+            ));
         }
     }
 
@@ -77,6 +100,32 @@ class Dagnre extends DaCommon
     public function getGuiasNaoImpressas(): array
     {
         return $this->naoImpressas;
+    }
+
+    /**
+     * Barras do código 2 de 5 intercalado: lista de [é barra, largura em módulos (1 estreita, 3 larga)]
+     *
+     * @return array<int, array{0: bool, 1: int}>
+     * @throws InvalidArgumentException se o código não tiver só dígitos em quantidade par
+     */
+    public static function barrasI25(string $codigo): array
+    {
+        if ($codigo === '' || !ctype_digit($codigo) || strlen($codigo) % 2 !== 0) {
+            throw new InvalidArgumentException("Código 2 de 5 intercalado inválido: [$codigo].");
+        }
+        $barras = [[true, 1], [false, 1], [true, 1], [false, 1]];
+        foreach (str_split($codigo, 2) as $par) {
+            $pretas = self::PADROES_I25[$par[0]];
+            $brancas = self::PADROES_I25[$par[1]];
+            for ($i = 0; $i < 5; $i++) {
+                $barras[] = [true, $pretas[$i] === 'w' ? 3 : 1];
+                $barras[] = [false, $brancas[$i] === 'w' ? 3 : 1];
+            }
+        }
+        $barras[] = [true, 3];
+        $barras[] = [false, 1];
+        $barras[] = [true, 1];
+        return $barras;
     }
 
     /**
@@ -125,8 +174,9 @@ class Dagnre extends DaCommon
         // cabeçalho
         $wLogo = 0.0;
         if (!empty($this->logomarca)) {
-            $this->pdf->image($this->logomarca, $x + 1, $y + 0.5, 0, 7, 'jpeg');
-            $wLogo = 18.0;
+            [$wImagem, $hImagem] = $this->dimensoesLogo(7.0);
+            $this->pdf->image($this->logomarca, $x + 1, $y + 0.5 + (7 - $hImagem) / 2, $wImagem, $hImagem, 'jpeg');
+            $wLogo = $wImagem + 2;
         }
         $this->pdf->textBox($x, $y, $wEsq, 8, '', $this->fonte(8));
         $this->pdf->textBox(
@@ -181,14 +231,16 @@ class Dagnre extends DaCommon
             ['Total a Recolher', $this->moeda($guia->valorTotal)],
         ];
         $hCampo = 66 / count($campos);
+        $wRotulo = 27.0;
+        $wValor = $wDir - $wRotulo - 1.5;
         $yc = $y + 8;
         foreach ($campos as [$rotuloCampo, $valor]) {
-            $negrito = $rotuloCampo === 'Total a Recolher' ? 'B' : '';
+            $estilo = $rotuloCampo === 'Total a Recolher' ? 'B' : '';
             $this->pdf->textBox($xDir, $yc, $wDir, $hCampo, '', $this->fonte(6));
             $this->pdf->textBox(
                 $xDir + 1,
                 $yc + 0.3,
-                $wDir * 0.5,
+                $wRotulo,
                 $hCampo,
                 $rotuloCampo,
                 $this->fonte(6),
@@ -197,12 +249,12 @@ class Dagnre extends DaCommon
                 false
             );
             $this->pdf->textBox(
-                $xDir + $wDir * 0.45,
+                $xDir + $wRotulo + 0.5,
                 $yc + 0.3,
-                $wDir * 0.55 - 1,
+                $wValor,
                 $hCampo,
                 $valor,
-                $this->fonte(8, $negrito),
+                $this->fonte($this->fonteQueCabe($valor, $wValor, 8, $estilo), $estilo),
                 'C',
                 'R',
                 false
@@ -213,11 +265,10 @@ class Dagnre extends DaCommon
         // linha digitável, código de barras e PIX
         $yr = $y + 75;
         $temPix = $guia->qrcodePayload !== '';
-        $wCodigo = $temPix ? $w - 30 : $w;
         $this->pdf->textBox(
             $x,
             $yr,
-            $wCodigo,
+            $temPix ? $w - 30 : $w,
             5,
             DadosGuia::formatarLinhaDigitavel($guia->linhaDigitavel),
             $this->fonte(10, 'B'),
@@ -225,14 +276,20 @@ class Dagnre extends DaCommon
             'L',
             false
         );
-        if (strlen($guia->codigoBarras) === 44) {
-            $this->codigoBarras($guia->codigoBarras, $x, $yr + 5, 103, 10);
+        if (strlen($guia->codigoBarras) === 44 && ctype_digit($guia->codigoBarras)) {
+            $this->codigoBarras(
+                $guia->codigoBarras,
+                $x,
+                $yr + 5,
+                self::LARGURA_CODIGO_BARRAS,
+                self::ALTURA_CODIGO_BARRAS
+            );
         } else {
             $this->pdf->textBox(
                 $x,
                 $yr + 5,
-                103,
-                10,
+                self::LARGURA_CODIGO_BARRAS,
+                self::ALTURA_CODIGO_BARRAS,
                 'Código de barras indisponível',
                 $this->fonte(8, 'I'),
                 'C',
@@ -241,10 +298,10 @@ class Dagnre extends DaCommon
             );
         }
         if ($temPix) {
-            $this->qrCode($guia->qrcodePayload, $x + $w - 17, $yr - 1, 16);
+            $this->qrCode($guia->qrcodePayload, $x + $w - self::TAMANHO_QRCODE - 0.5, $yr - 0.5, self::TAMANHO_QRCODE);
             $this->pdf->textBox(
-                $x + $w - 47,
-                $yr + 6,
+                $x + $w - self::TAMANHO_QRCODE - 31,
+                $yr + 7,
                 29,
                 4,
                 'Pagamento via PIX',
@@ -257,7 +314,7 @@ class Dagnre extends DaCommon
     }
 
     /**
-     * Caixa com título e linhas de texto
+     * Caixa com título e linhas de texto que sempre cabem na altura disponível
      *
      * @param array<int, string> $linhas
      */
@@ -265,24 +322,153 @@ class Dagnre extends DaCommon
     {
         $this->pdf->textBox($x, $y, $w, $h, '', $this->fonte(7));
         $this->pdf->textBox($x + 1, $y + 0.5, $w - 2, 3, $titulo, $this->fonte(7, 'B'), 'T', 'L', false);
-        $altura = ($h - 4) / max(1, count($linhas));
         $yl = $y + 4;
-        foreach ($linhas as $linha) {
-            $this->pdf->textBox($x + 1, $yl, $w - 2, $altura, $linha, $this->fonte(7), 'T', 'L', false, '', false);
-            $yl += $altura;
+        foreach ($this->distribuirLinhas($linhas, $w - 2, $h - 4.5) as $item) {
+            $this->pdf->textBox(
+                $x + 1,
+                $yl,
+                $w - 2,
+                $item['altura'],
+                $item['texto'],
+                $this->fonte($item['fonte']),
+                'T',
+                'L',
+                false,
+                '',
+                false
+            );
+            $yl += $item['altura'];
         }
     }
 
     /**
-     * Código de barras de arrecadação (2 de 5 intercalado)
+     * Distribui as linhas na altura disponível: reduz a fonte (7 -> 5) e, se ainda não couber,
+     * encurta as linhas mais longas (exceto a última, que traz a validade do documento).
+     *
+     * @param array<int, string> $linhas
+     * @return array<int, array{texto: string, fonte: int, altura: float}>
+     */
+    protected function distribuirLinhas(array $linhas, float $largura, float $altura): array
+    {
+        $linhas = array_values(array_filter($linhas, function (string $linha): bool {
+            return trim($linha) !== '';
+        }));
+        if (empty($linhas)) {
+            return [];
+        }
+        for ($fonte = 7; $fonte >= 5; $fonte--) {
+            $alturas = $this->alturasNecessarias($linhas, $largura, $fonte);
+            if (array_sum($alturas) <= $altura) {
+                return $this->montarDistribuicao($linhas, $alturas, $fonte, $altura);
+            }
+        }
+        $fonte = 5;
+        $alturas = $this->alturasNecessarias($linhas, $largura, $fonte);
+        $ultima = count($linhas) - 1;
+        while (array_sum($alturas) > $altura) {
+            $maior = 0;
+            foreach ($linhas as $indice => $linha) {
+                if (($indice < $ultima || $ultima === 0) && mb_strlen($linha) > mb_strlen($linhas[$maior])) {
+                    $maior = $indice;
+                }
+            }
+            if (mb_strlen($linhas[$maior]) <= 10) {
+                break;
+            }
+            $linhas[$maior] = rtrim(mb_substr($linhas[$maior], 0, mb_strlen($linhas[$maior]) - 13)) . '...';
+            $alturas = $this->alturasNecessarias($linhas, $largura, $fonte);
+        }
+        return $this->montarDistribuicao($linhas, $alturas, $fonte, $altura);
+    }
+
+    /**
+     * @param array<int, string> $linhas
+     * @return array<int, float>
+     */
+    protected function alturasNecessarias(array $linhas, float $largura, int $fonte): array
+    {
+        $alturas = [];
+        foreach ($linhas as $linha) {
+            $alturas[] = $this->pdf->getNumLines($linha, $largura, $this->fonte($fonte)) * $fonte * self::MM_POR_PONTO;
+        }
+        return $alturas;
+    }
+
+    /**
+     * @param array<int, string> $linhas
+     * @param array<int, float> $alturas
+     * @return array<int, array{texto: string, fonte: int, altura: float}>
+     */
+    protected function montarDistribuicao(array $linhas, array $alturas, int $fonte, float $altura): array
+    {
+        $sobra = max(0.0, $altura - array_sum($alturas)) / count($linhas);
+        $distribuicao = [];
+        foreach ($linhas as $indice => $linha) {
+            $distribuicao[] = ['texto' => $linha, 'fonte' => $fonte, 'altura' => $alturas[$indice] + $sobra];
+        }
+        return $distribuicao;
+    }
+
+    /**
+     * Maior tamanho de fonte (de $maximo até 4) em que o texto cabe numa linha da largura dada
+     */
+    protected function fonteQueCabe(string $texto, float $largura, int $maximo, string $estilo = ''): int
+    {
+        $iso = (string) mb_convert_encoding($texto, 'ISO-8859-1', 'UTF-8');
+        for ($fonte = $maximo; $fonte > 4; $fonte--) {
+            $this->pdf->setFont($this->fontePadrao, $estilo, $fonte);
+            if ($this->pdf->getStringWidth($iso) <= $largura) {
+                return $fonte;
+            }
+        }
+        return 4;
+    }
+
+    /**
+     * Largura da logo (mm) para a altura dada, proporcional e limitada a 30 mm
+     */
+    protected function larguraLogo(float $altura): float
+    {
+        return $this->dimensoesLogo($altura)[0];
+    }
+
+    /**
+     * [largura, altura] da logo, proporcionais, cabendo em LARGURA_MAXIMA_LOGO x $altura
+     *
+     * @return array{0: float, 1: float}
+     */
+    protected function dimensoesLogo(float $altura): array
+    {
+        if (empty($this->logomarca)) {
+            return [0.0, 0.0];
+        }
+        $info = @getimagesize($this->logomarca);
+        if ($info === false || empty($info[0]) || empty($info[1])) {
+            return [$altura, $altura];
+        }
+        $largura = $altura * $info[0] / $info[1];
+        if ($largura > self::LARGURA_MAXIMA_LOGO) {
+            return [self::LARGURA_MAXIMA_LOGO, self::LARGURA_MAXIMA_LOGO * $info[1] / $info[0]];
+        }
+        return [$largura, $altura];
+    }
+
+    /**
+     * Código de barras de arrecadação: 2 de 5 intercalado em vetor, razão larga:estreita 3:1
      */
     protected function codigoBarras(string $codigo, float $x, float $y, float $w, float $h): void
     {
-        $png = (new Barcode())
-            ->getBarcodeObj(self::TIPO_CODIGO_BARRAS, $codigo, -1, -12, 'black')
-            ->setBackgroundColor('white')
-            ->getPngData();
-        $this->pdf->image('data://text/plain;base64,' . base64_encode($png), $x, $y, $w, $h, 'PNG');
+        $barras = self::barrasI25($codigo);
+        $modulo = $w / array_sum(array_column($barras, 1));
+        $this->pdf->setFillColor(0, 0, 0);
+        $xb = $x;
+        foreach ($barras as [$barra, $largura]) {
+            if ($barra) {
+                $this->pdf->rect($xb, $y, $modulo * $largura, $h, 'F');
+            }
+            $xb += $modulo * $largura;
+        }
+        $this->pdf->setFillColor(255, 255, 255);
     }
 
     /**

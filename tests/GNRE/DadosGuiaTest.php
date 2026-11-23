@@ -147,4 +147,61 @@ class DadosGuiaTest extends TestCase
         $guia->informacoesComplementares = (object) ['informacao' => 'A'];
         $this->assertSame('A', DadosGuia::deResultado($guia)->informacoesComplementares);
     }
+
+    /**
+     * No TXT de resultado do 1.00 o tipo é 1 = CPF, 2 = CNPJ, 3 = IE (ACBr ACBrGNREGuiasRetorno.pas)
+     */
+    public function testDocumentoTxtCpfCnpjIe(): void
+    {
+        $base = (object) ['situacaoGuia' => '0', 'rejeicoes' => []];
+
+        $cpf = clone $base;
+        $cpf->tipoDocEmitente = '1';
+        $cpf->docEmitente = '0000090483926086';
+        $cnpj = clone $base;
+        $cnpj->tipoDocEmitente = '2';
+        $cnpj->docEmitente = '0006157250000116';
+        $ie = clone $base;
+        $ie->tipoDocEmitente = '3';
+        $ie->docEmitente = '0000000123456789';
+
+        $this->assertSame('904.839.260-86', DadosGuia::deTxtV1($cpf)->emitenteDocumento);
+        $this->assertSame('06.157.250/0001-16', DadosGuia::deTxtV1($cnpj)->emitenteDocumento);
+        $this->assertSame('123456789', DadosGuia::deTxtV1($ie)->emitenteDocumento);
+    }
+
+    public function testValoresIndependemDoLocale(): void
+    {
+        $anterior = setlocale(LC_NUMERIC, '0');
+        if (setlocale(LC_NUMERIC, 'pt_BR.UTF-8', 'pt_BR.utf8', 'pt_BR', 'Portuguese_Brazil.1252', 'ptb') === false) {
+            $this->markTestSkipped('Locale pt_BR indisponível neste ambiente.');
+        }
+        try {
+            $guia = DadosGuia::deResultado($this->guiasV2()[1]);
+            $this->assertSame('184,07', $guia->valorPrincipal);
+            $this->assertSame('8,00', $guia->atualizacaoMonetaria);
+            $this->assertSame('182,25', $guia->valorTotal);
+        } finally {
+            setlocale(LC_NUMERIC, (string) $anterior);
+        }
+    }
+
+    public function testEmitenteSoComIeNaoDuplica(): void
+    {
+        $guia = $this->guiasV2()[0];
+        $guia->contribuinteEmitente->identificacao = (object) ['IE' => '123456789'];
+
+        $dados = DadosGuia::deResultado($guia);
+
+        $this->assertSame('123456789', $dados->emitenteDocumento);
+        $this->assertSame('', $dados->emitenteIE);
+    }
+
+    public function testTotalSemValorGnre(): void
+    {
+        $guia = $this->guiasV2()[1];
+        unset($guia->valorGNRE);
+
+        $this->assertSame('200,47', DadosGuia::deResultado($guia)->valorTotal);
+    }
 }
