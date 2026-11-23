@@ -5,7 +5,8 @@
 Gera o PDF da GNRE (Guia Nacional de Recolhimento de Tributos Estaduais) com **3 vias por guia**
 (1ª via - Banco, 2ª via - Contribuinte, 3ª via - Contribuinte/Fisco), uma guia por página A4.
 
-- Código de barras de arrecadação (padrão Febraban, 44 dígitos, **2 de 5 intercalado**).
+- Código de barras de arrecadação (padrão Febraban, 44 dígitos, **2 de 5 intercalado**), desenhado em vetor
+  com razão larga:estreita 3:1 e 13 mm de altura.
 - Linha digitável formatada (4 blocos de 11 dígitos + DV).
 - **QR Code PIX** quando a SEFAZ informa `qrcodePayload`.
 - Só as guias processadas com sucesso (`situacaoGuia` = 0) são impressas.
@@ -37,7 +38,20 @@ Guias não impressas (rejeitadas pelo Portal ou pela UF), com `situacaoGuia` e `
 
 ### Métodos herdados de DaCommon
 
-`creditsIntegratorFooter()`, `logoParameters()`, `printParameters()`, `setDefaultFont()`, `debugMode()`.
+`creditsIntegratorFooter()`, `logoParameters()`, `setDefaultFont()`, `debugMode()`.
+
+O layout é fixo em **A4 retrato** (`printParameters()` com outra orientação ou papel não é suportado).
+Com `debugMode(true)` o aviso de obsolescência do `tecnickcom/tc-lib-barcode` 1.x vira exceção
+(comportamento do `DaCommon`, igual nos demais DAs com código de barras).
+
+### Limitações conhecidas
+
+- Guia 2.00 com vários itens: receita, documento de origem, vencimento, referência e destinatário
+  vêm do **primeiro** item; os valores são somados de todos os itens.
+- "Valor Principal" soma os tipos 11 (ICMS) e 12 (FCP); "Total a Recolher" é o `valorGNRE` (sem ele,
+  os tipos 21 + 22 ou a soma dos valores).
+- Textos longos (informações complementares, produto) têm a fonte reduzida e, no limite, são encurtados
+  para caber na via.
 
 ## Exemplo
 

@@ -15,7 +15,7 @@ $logo = 'data://text/plain;base64,' . base64_encode(file_get_contents(realpath(_
 
 try {
     $dagnre = new Dagnre($xml);
-    // debugMode(true) transforma avisos em exceções; o tc-lib-barcode 1.x emite E_USER_DEPRECATED
+    // $dagnre->debugMode(true); // não use com o tc-lib-barcode 1.x: o E_USER_DEPRECATED dele vira exceção
     $dagnre->creditsIntegratorFooter('WEBNFe Sistemas - http://www.webenf.com.br');
     $pdf = $dagnre->render($logo);
     header('Content-Type: application/pdf');
