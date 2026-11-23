@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soapenv:Envelope xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <soapenv:Body>
+        <gnreRespostaMsg xmlns="http://www.gnre.pe.gov.br/webservice/GnreResultadoLote">
+            <ns1:TResultLote_GNRE xmlns="http://www.gnre.pe.gov.br" xmlns:ns1="http://www.gnre.pe.gov.br">
+                <ns1:ambiente>1</ns1:ambiente>
+                <ns1:numeroRecibo>0000000000</ns1:numeroRecibo>
+                <ns1:situacaoProcess>
+                    <ns1:codigo>403</ns1:codigo>
+                    <ns1:descricao>Lote Processado com pendencias</ns1:descricao>
+                </ns1:situacaoProcess>
+                <ns1:resultado>000000000000000000000700080
+                    100011AC12345630000000000212112TESTE RAZAO SOCIAL                                          RUA TESTE TESTE TESTE                                                                                         SP123456780001234567830000000000212112                                                                                                                                                                                                                                                                                                                 000000000000212112212112                                                                                                                                                                                                                                                                                                                                    10102014000000003112014005000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000                                                                                                                              
+                    20001c02_receita                   205A UF favorecida nao gera GNRE para a Receita informada.                                                                                                                                                                                                                                                                                                            
+                    914066705180001aef4dc134cd7c735c450d58c1d6f164ab4c55ddce25511fbe0d6b4b7970c3a98</ns1:resultado>
+            </ns1:TResultLote_GNRE>
+        </gnreRespostaMsg>
+    </soapenv:Body>
+</soapenv:Envelope>
