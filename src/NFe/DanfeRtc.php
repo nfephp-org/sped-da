@@ -362,7 +362,8 @@ class DanfeRtc extends Danfe
      * Altura da faixa desenhada por faixaItem().
      *
      * @param \DOMElement $det
-     * @return array{h: float, hMiolo: float, lh: float, nNome: int, nInfo: int, nome: string, info: string, rodape: string}
+     * @return array{h: float, hMiolo: float, lh: float, nNome: int, nInfo: int,
+     *     nome: string, info: string, rodape: string}
      */
     protected function medidaFaixa($det)
     {
@@ -399,7 +400,7 @@ class DanfeRtc extends Danfe
      */
     protected function colunasItem($w)
     {
-        $partes = [0.28, 0.09, 0.09, 0.10, 0.11, 0.11, 0.12];
+        $partes = [0.26, 0.07, 0.07, 0.09, 0.09, 0.13, 0.14];
         $cols = [];
         $usado = 0;
         foreach ($partes as $parte) {
@@ -413,7 +414,8 @@ class DanfeRtc extends Danfe
     }
 
     /**
-     * Quatro linhas fixas. Tag ausente permanece em branco.
+     * Quatro linhas conforme o modelo retrato da NT 2026.010.
+     * Cada valor identifica seu tributo. Tag ausente permanece em branco.
      *
      * @param \DOMElement $det
      * @return array<int, array{0: string, 1: string, 2: string}>
@@ -431,38 +433,56 @@ class DanfeRtc extends Danfe
 
         return [
             [
-                $this->textoNumero($icms, 'vBC'),
-                $this->textoPercentual($icms, 'pICMS'),
-                $this->textoNumero($icms, 'vICMS'),
-            ],
-            [
-                $this->textoNumero($gIbsCbs, 'vBC'),
+                $this->tributoTexto('ICMS', $this->textoNumero($icms, 'vBC')),
                 $this->parTexto(
-                    $this->textoPercentual($gIbsUf, 'pIBSUF'),
-                    $this->textoPercentual($gCbs, 'pCBS')
+                    $this->tributoTexto('ICMS', $this->textoPercentual($icms, 'pICMS')),
+                    $this->tributoTexto('CBS', $this->textoPercentual($gCbs, 'pCBS'))
                 ),
                 $this->parTexto(
-                    $this->textoNumero($gIbsUf, 'vIBSUF'),
-                    $this->textoNumero($gCbs, 'vCBS')
+                    $this->tributoTexto('ICMS', $this->textoNumero($icms, 'vICMS')),
+                    $this->tributoTexto('CBS', $this->textoNumero($gCbs, 'vCBS'))
                 ),
             ],
             [
-                $this->textoNumero($is, 'vBCIS'),
+                $this->tributoTexto('IBS/CBS', $this->textoNumero($gIbsCbs, 'vBC')),
                 $this->parTexto(
-                    $this->textoPercentual($gIbsMun, 'pIBSMun'),
-                    $this->textoPercentual($is, 'pIS')
+                    $this->tributoTexto('IBS UF', $this->textoPercentual($gIbsUf, 'pIBSUF')),
+                    $this->tributoTexto('IPI', $this->textoPercentual($ipi, 'pIPI'))
                 ),
                 $this->parTexto(
-                    $this->textoNumero($gIbsMun, 'vIBSMun'),
-                    $this->textoNumero($is, 'vIS')
+                    $this->tributoTexto('IBS UF', $this->textoNumero($gIbsUf, 'vIBSUF')),
+                    $this->tributoTexto('IPI', $this->textoNumero($ipi, 'vIPI'))
                 ),
             ],
             [
-                $this->textoNumero($ipi, 'vBC'),
-                $this->textoPercentual($ipi, 'pIPI'),
-                $this->textoNumero($ipi, 'vIPI'),
+                $this->tributoTexto('IS', $this->textoNumero($is, 'vBCIS')),
+                $this->parTexto(
+                    $this->tributoTexto('IBS MUN', $this->textoPercentual($gIbsMun, 'pIBSMun')),
+                    $this->tributoTexto('IS', $this->textoPercentual($is, 'pIS'))
+                ),
+                $this->parTexto(
+                    $this->tributoTexto('IBS MUN', $this->textoNumero($gIbsMun, 'vIBSMun')),
+                    $this->tributoTexto('IS', $this->textoNumero($is, 'vIS'))
+                ),
+            ],
+            [
+                $this->tributoTexto('IPI', $this->textoNumero($ipi, 'vBC')),
+                '',
+                '',
             ],
         ];
+    }
+
+    /**
+     * Identifica o tributo somente quando o valor existe no XML, inclusive zero.
+     *
+     * @param string $tributo
+     * @param string $valor
+     * @return string
+     */
+    protected function tributoTexto($tributo, $valor)
+    {
+        return $valor === '' ? '' : $tributo . ' ' . $valor;
     }
 
     /**

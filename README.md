@@ -61,6 +61,12 @@ $pdf = $danfe->render();
 
 Tag ausente fica em branco. O quadro "Tipo de regime de apuração do IBS e da CBS" fica reservado até a tag ser publicada.
 
+Na grade de produtos, as bases de cálculo, alíquotas e valores são identificados pelo nome do tributo,
+conforme o modelo retrato da NT 2026.010. As alíquotas e valores são agrupados em pares:
+ICMS/CBS, IBS UF/IPI e IBS Município/IS. As bases são apresentadas em quatro linhas:
+ICMS, IBS/CBS, IS e IPI. Valores ausentes não recebem rótulo nem são convertidos em zero;
+alíquotas de IBS/CBS com redução usam `pAliqEfet`.
+
 ## Contribuindo
 Este é um projeto totalmente *OpenSource*, para usa-lo e modifica-lo você não paga absolutamente nada. Porém para continuarmos a mante-lo é necessário qua alguma contribuição seja feita, seja auxiliando na codificação, na documentação ou na realização de testes e identificação de falhas e BUGs.
 
