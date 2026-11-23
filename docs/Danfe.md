@@ -20,3 +20,50 @@ Método de rederização do PDF
 $pdf = $danfe->render();
 ```
 retorna um PDF codificado.
+
+### Personalizacao dos tamanhos de fonte
+Os tamanhos de fonte podem ser ajustados por bloco/elemento da DANFE.
+
+```php
+use NFePHP\DA\NFe\Danfe;
+use NFePHP\DA\NFe\DanfeFontSizes;
+
+$danfe = new Danfe($xml);
+
+$danfe->setFontSizes(DanfeFontSizes::fromArray([
+    'cabecalho' => [
+        'emitente_identificacao' => 5,
+        'emitente_razao_social' => 10,
+        'titulo_danfe' => 12,
+        'descricao_danfe' => 7,
+        'tipo_operacao_texto' => 7,
+        'tipo_operacao_numero' => 10,
+        'numero' => 9,
+        'serie_folha' => 7,
+        'chave_acesso' => 7,
+        'consulta' => 7,
+        'rotulo' => 5,
+        'valor' => 9,
+    ],
+    'destinatario' => [
+        'titulo' => 6,
+        'rotulo' => 5,
+        'valor' => 8,
+    ],
+    'itens' => [
+        'titulo' => 6,
+        'cabecalho' => 5,
+        'dados' => 6,
+        'unidade_tributavel' => 4,
+    ],
+    'dados_adicionais' => [
+        'titulo' => 6,
+        'subtitulo' => 5,
+        'texto' => 5,
+    ],
+]));
+
+$pdf = $danfe->render();
+```
+
+As chaves não informadas mantêm os tamanhos originais da biblioteca.
