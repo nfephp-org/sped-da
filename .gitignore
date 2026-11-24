@@ -21,6 +21,8 @@ src/NFe/Bloco/Itens.php
 src/NFe/Bloco/Informacoes.php
 src/NFe/Bloco/Rodape.php
 tests/fixtures/pdf/*
+!tests/fixtures/pdf/nfe_rtc_minimo.pdf
+!tests/fixtures/pdf/old_mdfe_modelo_nao_valido.pdf
 
 .phpunit.result.cache
 .DS_Store
