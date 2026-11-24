@@ -472,7 +472,7 @@ class DanfeSimples extends DaCommon
             }
             $enderecoLinha2 .= "{$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['xMun']}"
                              . " / {$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['UF']}"
-                             . (isset($this->nfeArray['NFe']['infNFe']['entrega']['CEP'])
+                             . (isset($this->nfeArray['NFe']['infNFe']['dest']['enderDest']['CEP'])
                     ? " - CEP {$this->nfeArray['NFe']['infNFe']['dest']['enderDest']['CEP']}"
                     : null);
         }
