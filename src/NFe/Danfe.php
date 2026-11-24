@@ -119,6 +119,33 @@ class Danfe extends DaCommon
      */
     protected $hCabecalhoItens = 4;
     /**
+     * DanfeRtc usa cantos retos. A DANFE atual mantém o raio.
+     *
+     * @var bool
+     */
+    protected $bordaQuadrada = false;
+    /**
+     * DanfeRtc pinta de cinza o rótulo pequeno de cada campo.
+     *
+     * @var bool
+     */
+    protected $rotuloCinza = false;
+
+    /**
+     * Título de seção. DanfeRtc pinta a faixa cinza do leiaute RTC.
+     *
+     * @param float $x
+     * @param float $y
+     * @param float $w
+     * @param string $texto
+     * @return void
+     */
+    protected function tituloSecao($x, $y, $w, $texto)
+    {
+        $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => 'B'];
+        $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
+    }
+    /**
      * XML NFe
      *
      * @var string
@@ -538,6 +565,8 @@ class Danfe extends DaCommon
         }
         //instancia a classe pdf
         $this->pdf = new Pdf($this->orientacao, 'mm', $this->papel);
+        $this->pdf->bordaQuadrada = $this->bordaQuadrada;
+        $this->pdf->rotuloCinza = $this->rotuloCinza;
         //margens do PDF, em milímetros. Obs.: a margem direita é sempre igual à
         //margem esquerda. A margem inferior *não* existe na FPDF, é definida aqui
         //apenas para controle se necessário ser maior do que a margem superior
@@ -1439,9 +1468,7 @@ class Danfe extends DaCommon
         }
         $w     = $maxW;
         $h     = 7;
-        $texto = 'DESTINATÁRIO / REMETENTE';
-        $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => 'B'];
-        $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $this->tituloSecao($x, $y, $w, 'DESTINATÁRIO / REMETENTE');
         //NOME / RAZÃO SOCIAL
         $w     = round($maxW * 0.61, 0);
         $w1    = $w;
@@ -2016,15 +2043,13 @@ class Danfe extends DaCommon
         if ($this->dup->length > 0 || $textoFatura !== "") {
             //#####################################################################
             //FATURA / DUPLICATA
-            $texto = "FATURA / DUPLICATA";
             if ($this->orientacao == 'P') {
                 $w = $this->wPrint;
             } else {
                 $w = 271;
             }
-            $h     = 8;
-            $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => 'B'];
-            $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+            $h = 8;
+            $this->tituloSecao($x, $y, $w, 'FATURA / DUPLICATA');
             $y       += 3;
             $dups    = "";
             $dupcont = 0;
@@ -2404,11 +2429,9 @@ class Danfe extends DaCommon
         }
         //#####################################################################
         //TRANSPORTADOR / VOLUMES TRANSPORTADOS
-        $texto = "TRANSPORTADOR / VOLUMES TRANSPORTADOS";
-        $w     = $maxW;
-        $h     = 7;
-        $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => 'B'];
-        $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $w = $maxW;
+        $h = 7;
+        $this->tituloSecao($x, $y, $w, 'TRANSPORTADOR / VOLUMES TRANSPORTADOS');
         //NOME / RAZÃO SOCIAL
         $w1    = $maxW * 0.29;
         $y     += 3;
@@ -3671,11 +3694,9 @@ class Danfe extends DaCommon
         $oldX = $x;
         //#####################################################################
         //CÁLCULO DO ISSQN
-        $texto = "CÁLCULO DO ISSQN";
-        $w     = $this->wPrint;
-        $h     = 7;
-        $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => 'B'];
-        $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 0, '');
+        $w = $this->wPrint;
+        $h = 7;
+        $this->tituloSecao($x, $y, $w, 'CÁLCULO DO ISSQN');
         //INSCRIÇÃO MUNICIPAL
         $y     += 3;
         $w     = round($this->wPrint * 0.23, 0);

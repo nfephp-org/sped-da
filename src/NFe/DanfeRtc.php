@@ -2,6 +2,8 @@
 
 namespace NFePHP\DA\NFe;
 
+use Com\Tecnick\Barcode\Barcode;
+
 /**
  * DANFE do leiaute da Reforma Tributária do Consumo (NT 2026.010), retrato.
  *
@@ -17,8 +19,10 @@ class DanfeRtc extends Danfe
     public function __construct($xml)
     {
         parent::__construct($xml);
+        $this->bordaQuadrada = true;
+        $this->rotuloCinza = true;
         $this->hCabecalho = 54;
-        $this->hCabecalhoItens = 12;
+        $this->hCabecalhoItens = 8;
         $this->hImposto = empty($this->dom) ? 18 : $this->alturaImpostoRtc();
     }
 
@@ -38,7 +42,7 @@ class DanfeRtc extends Danfe
         $h = 7;
         $wCrt = 62;
         $crt = $this->getTagValue($this->emit, 'CRT');
-        $this->caixa($x, $y, $wCrt, $h, 'CÓDIGO DE REGIME TRIBUTÁRIO', $this->rotuloCrt($crt), 8);
+        $this->caixa($x, $y, $wCrt, $h, 'CÓDIGO DE REGIME TRIBUTÁRIO', $this->rotuloCrt($crt), 8, 'C', 'C');
         $this->caixa(
             $x + $wCrt,
             $y,
@@ -62,16 +66,19 @@ class DanfeRtc extends Danfe
     protected function imposto($x, $y)
     {
         $w = $this->larguraUtil(1);
-        $y = $this->tituloBloco($x, $y, $w, 'TOTAL DOS PRODUTOS E DA NOTA');
+        $y = $this->tituloBloco($x, $y, $w, 'TOTAL DOS PRODUTOS E TOTAL DA NOTA');
         $y = $this->linhaTotais($x, $y, $w, [
-            ['PRODUTOS', $this->textoNumero($this->ICMSTot, 'vProd')],
-            ['FRETE', $this->textoNumero($this->ICMSTot, 'vFrete')],
-            ['SEGURO', $this->textoNumero($this->ICMSTot, 'vSeg')],
+            ['VALOR TOTAL DOS PRODUTOS', $this->textoNumero($this->ICMSTot, 'vProd')],
+            ['VALOR DO FRETE', $this->textoNumero($this->ICMSTot, 'vFrete')],
+            ['VALOR DO SEGURO', $this->textoNumero($this->ICMSTot, 'vSeg')],
             ['DESCONTO', $this->textoNumero($this->ICMSTot, 'vDesc')],
             ['OUTRAS DESPESAS', $this->textoNumero($this->ICMSTot, 'vOutro')],
-            ['TOTAL DA NOTA', $this->textoNumero($this->ICMSTot, 'vNF')],
+        ]);
+        $y = $this->linhaTotais($x, $y, $w, [
+            ['VALOR TOTAL DA NOTA', $this->textoNumero($this->ICMSTot, 'vNF')],
         ]);
 
+        $y += 2;
         $y = $this->tituloBloco($x, $y, $w, 'TOTAL DO ICMS / IPI');
         $y = $this->linhaTotais($x, $y, $w, [
             ['BASE DE CÁLC. DO ICMS', $this->textoNumero($this->ICMSTot, 'vBC')],
@@ -87,12 +94,20 @@ class DanfeRtc extends Danfe
 
         $ibs = $this->dom->getElementsByTagName('IBSCBSTot')->item(0);
         $isTot = $this->dom->getElementsByTagName('ISTot')->item(0);
+        $gMono = $ibs ? $ibs->getElementsByTagName('gMono')->item(0) : null;
+        $y += 2;
         $y = $this->tituloBloco($x, $y, $w, 'TOTAL DO IBS / CBS / IS');
         $y = $this->linhaTotais($x, $y, $w, [
-            ['IBS UF', $this->textoNumero($ibs, 'vIBSUF')],
-            ['IBS MUNICIPAL', $this->textoNumero($ibs, 'vIBSMun')],
-            ['CBS', $this->textoNumero($ibs, 'vCBS')],
-            ['IS', $this->textoNumero($isTot, 'vIS')],
+            ['VALOR DA CBS', $this->textoNumero($ibs, 'vCBS')],
+            ['VALOR DO IBS UF', $this->textoNumero($ibs, 'vIBSUF')],
+            ['VALOR DO IBS MUNICÍPIO', $this->textoNumero($ibs, 'vIBSMun')],
+            ['VALOR DO IMPOSTO SELETIVO', $this->textoNumero($isTot, 'vIS')],
+        ]);
+        $y = $this->linhaTotais($x, $y, $w, [
+            ['VALOR DO IBS MONOFÁSICO', $this->textoNumero($gMono, 'vIBSMono')],
+            ['VALOR DA CBS MONOFÁSICA', $this->textoNumero($gMono, 'vCBSMono')],
+            ['VALOR DO IBS MONOFÁSICO POR RETENÇÃO', $this->textoNumero($gMono, 'vIBSMonoReten')],
+            ['VALOR DA CBS MONOFÁSICA POR RETENÇÃO', $this->textoNumero($gMono, 'vCBSMonoReten')],
         ]);
 
         return $y;
@@ -115,13 +130,12 @@ class DanfeRtc extends Danfe
         $oldX = $x;
         $oldY = $y;
         $w = $this->larguraUtil($pag);
-        $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => 'B'];
-        $this->pdf->textBox($x, $y, $w, 4, 'DADOS DOS PRODUTOS / SERVIÇOS', $aFont, 'T', 'L', 0, '');
+        $this->tituloSecao($x, $y, $w, 'DADOS DOS PRODUTOS / SERVIÇOS');
         $y += 3;
         $hmax += 1;
         $this->pdf->textBox($x, $y, $w, $hmax);
         $this->cabecalhoItens($x, $y, $w);
-        $y += 8;
+        $y += 4;
 
         $totItens = $this->det->length;
         $i = 0;
@@ -164,6 +178,9 @@ class DanfeRtc extends Danfe
     {
         $linhasOpcionais = (int) ceil(count($this->camposIcmsOpcionais()) / 6);
         $h = (3 + 7) * 3;
+        $h += 7;
+        $h += 7;
+        $h += 4;
         $h += $linhasOpcionais * 7;
 
         return $h + 1;
@@ -188,20 +205,6 @@ class DanfeRtc extends Danfe
                 $campos[] = [$titulo, $valor];
             }
         }
-        if (empty($this->dom)) {
-            return $campos;
-        }
-        $tot = $this->dom->getElementsByTagName('IBSCBSTot')->item(0);
-        $gMono = $tot ? $tot->getElementsByTagName('gMono')->item(0) : null;
-        if ($gMono) {
-            foreach (['vIBSMono' => 'IBS MONO', 'vCBSMono' => 'CBS MONO'] as $tag => $titulo) {
-                $valor = $this->textoNumero($gMono, $tag);
-                if ($valor !== '') {
-                    $campos[] = [$titulo, $valor];
-                }
-            }
-        }
-
         return $campos;
     }
 
@@ -214,8 +217,7 @@ class DanfeRtc extends Danfe
      */
     protected function tituloBloco($x, $y, $w, $texto)
     {
-        $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => 'B'];
-        $this->pdf->textBox($x, $y, $w, 4, $texto, $aFont, 'T', 'L', 0, '');
+        $this->tituloSecao($x, $y, $w, $texto);
 
         return $y + 3;
     }
@@ -234,7 +236,7 @@ class DanfeRtc extends Danfe
         $h = 7;
         $cursor = $x;
         foreach ($campos as $campo) {
-            $this->caixa($cursor, $y, $largura, $h, $campo[0], $campo[1], 9);
+            $this->caixa($cursor, $y, $largura, $h, $campo[0], $campo[1], 9, 'L', 'B');
             $cursor += $largura;
         }
 
@@ -251,12 +253,12 @@ class DanfeRtc extends Danfe
      * @param int $tamanhoValor
      * @return void
      */
-    protected function caixa($x, $y, $w, $h, $titulo, $valor, $tamanhoValor)
+    protected function caixa($x, $y, $w, $h, $titulo, $valor, $tamanhoValor, $alignValor = 'R', $vAlignValor = 'B')
     {
         $fontTitulo = ['font' => $this->fontePadrao, 'size' => 5, 'style' => ''];
         $fontValor = ['font' => $this->fontePadrao, 'size' => $tamanhoValor, 'style' => 'B'];
         $this->pdf->textBox($x, $y, $w, $h, $titulo, $fontTitulo, 'T', 'L', 1, '');
-        $this->pdf->textBox($x, $y, $w, $h, $valor, $fontValor, 'B', 'R', 0, '');
+        $this->pdf->textBox($x, $y, $w, $h, $valor, $fontValor, $vAlignValor, $alignValor, 0, '');
     }
 
     /**
@@ -269,7 +271,7 @@ class DanfeRtc extends Danfe
     {
         $cols = $this->colunasItem($w);
         $aFont = ['font' => $this->fontePadrao, 'size' => 5, 'style' => 'B'];
-        $h = 8;
+        $h = 4;
         $labels = [
             "DESCRIÇÃO DO PRODUTO / SERVIÇO",
             "CST / CFOP",
@@ -309,53 +311,78 @@ class DanfeRtc extends Danfe
         $cursor = $x;
         foreach ($cols as $i => $largura) {
             if ($i > 0) {
-                $this->pdf->line($cursor, $y, $cursor, $y + $hMiolo);
+                $this->pdf->line($cursor, $y, $cursor, $y + $h);
             }
             $cursor += $largura;
         }
 
-        $this->pdf->textBox($x, $y, $cols[0], $lh * $medida['nNome'], $medida['nome'], $aFont, 'T', 'L', 0, '');
+        $passo = 2.5;
+        $this->pdf->textBox($x + 0.6, $y, $cols[0] - 1, $passo * $medida['nNome'], $medida['nome'], $aFont, 'T', 'L', 0, '', false);
+        $yInfo = $y + ($passo * $medida['nNome']);
         if ($medida['info'] !== '') {
             $this->pdf->textBox(
-                $x,
-                $y + ($lh * $medida['nNome']),
-                $cols[0],
-                $lh * $medida['nInfo'],
+                $x + 0.6,
+                $yInfo,
+                $cols[0] - 1,
+                $passo * $medida['nInfo'],
                 $medida['info'],
                 $aFontMiudo,
                 'T',
                 'L',
                 0,
-                ''
+                '',
+                false
             );
         }
-        $this->pdf->textBox($x, $y + $hMiolo - $lh, $cols[0], $lh, $medida['rodape'], $aFontMiudo, 'B', 'L', 0, '');
+        $this->desenhaRodapeItem(
+            $x,
+            $yInfo + ($passo * $medida['nInfo']),
+            $cols[0],
+            $passo,
+            $det
+        );
 
         $xCst = $x + $cols[0];
-        $this->pdf->textBox($xCst, $y, $cols[1], $lh, $this->cstItem($det), $aFont, 'T', 'C', 0, '');
-        $this->pdf->textBox($xCst, $y + $lh, $cols[1], $lh, $this->getTagValue($prod, 'CFOP'), $aFont, 'T', 'C', 0, '');
+        $this->desenhaGuia($xCst, $y, $cols[1], $lh, 'CST', $this->cstItem($det));
+        $this->desenhaGuia($xCst, $y + $lh, $cols[1], $lh, 'CFOP', $this->getTagValue($prod, 'CFOP'));
 
         $xQtd = $xCst + $cols[1];
-        $un = $this->getTagValue($prod, 'uCom');
+        $un = strtoupper($this->getTagValue($prod, 'uCom'));
         $this->pdf->textBox($xQtd, $y, $cols[2], $lh, $this->textoQuantidade($prod, 'qCom'), $aFont, 'T', 'C', 0, '');
         $this->pdf->textBox($xQtd, $y + $lh, $cols[2], $lh, $un === '' ? '' : '[' . $un . ']', $aFont, 'T', 'C', 0, '');
 
         $xUnit = $xQtd + $cols[2];
-        $this->pdf->textBox($xUnit, $y, $cols[3], $lh, $this->textoNumero($prod, 'vUnCom'), $aFont, 'T', 'R', 0, '');
+        $this->pdf->textBox($xUnit, $y, $cols[3], $lh, $this->textoNumero($prod, 'vUnCom'), $aFont, 'T', 'C', 0, '');
         $xTotal = $xUnit + $cols[3];
-        $this->pdf->textBox($xTotal, $y, $cols[4], $lh, $this->textoNumero($prod, 'vProd'), $aFont, 'T', 'R', 0, '');
+        $this->pdf->textBox($xTotal, $y, $cols[4], $lh, $this->textoNumero($prod, 'vProd'), $aFont, 'T', 'C', 0, '');
 
         $xBase = $xTotal + $cols[4];
         $xAliq = $xBase + $cols[5];
         $xValor = $xAliq + $cols[6];
+        $xs = [$xBase, $xAliq, $xValor];
+        $ws = [$cols[5], $cols[6], $cols[7]];
         foreach ($this->linhasTributoFaixa($det) as $i => $linha) {
             $yLinha = $y + ($i * $lh);
-            $this->pdf->textBox($xBase, $yLinha, $cols[5], $lh, $linha[0], $aFontMiudo, 'T', 'R', 0, '');
-            $this->pdf->textBox($xAliq, $yLinha, $cols[6], $lh, $linha[1], $aFontMiudo, 'T', 'C', 0, '');
-            $this->pdf->textBox($xValor, $yLinha, $cols[7], $lh, $linha[2], $aFontMiudo, 'T', 'R', 0, '');
+            foreach ($linha as $c => $celula) {
+                if (isset($celula[0]) && is_array($celula[0])) {
+                    $this->desenhaParGuia(
+                        $xs[$c],
+                        $yLinha,
+                        $ws[$c],
+                        $lh,
+                        $celula[0][0],
+                        $celula[0][1],
+                        $celula[1][0],
+                        $celula[1][1]
+                    );
+                    continue;
+                }
+                $this->desenhaGuia($xs[$c], $yLinha, $ws[$c], $lh, $celula[0], $celula[1]);
+            }
         }
+        $this->pdf->SetTextColor(0, 0, 0);
 
-        $this->pdf->dashedHLine($x, $y + $hMiolo + 0.4, $w, 0.1, 120);
+        $this->pdf->line($x, $y + $h, $x + $w, $y + $h);
     }
 
     /**
@@ -376,10 +403,10 @@ class DanfeRtc extends Danfe
         $info = $this->getTagValue($det, 'infAdProd');
         $nNome = max(1, (int) $this->pdf->getNumLines($nome, $wDesc, $aFont));
         $nInfo = $info === '' ? 0 : max(1, (int) $this->pdf->getNumLines($info, $wDesc, $aFontMiudo));
-        $hTexto = ($nNome + $nInfo) * $lh;
-        $hNcm = $lh;
+        $passo = 2.5;
+        $hTexto = ($nNome + $nInfo + 1) * $passo;
         $hTax = 4 * $lh;
-        $hMiolo = max($hTexto + $hNcm, $hTax + $hNcm);
+        $hMiolo = max($hTexto, $hTax);
 
         return [
             'h' => round($hMiolo + 1.2, 2),
@@ -399,7 +426,7 @@ class DanfeRtc extends Danfe
      */
     protected function colunasItem($w)
     {
-        $partes = [0.28, 0.09, 0.09, 0.10, 0.11, 0.11, 0.12];
+        $partes = [0.24, 0.08, 0.08, 0.09, 0.09, 0.14, 0.15];
         $cols = [];
         $usado = 0;
         foreach ($partes as $parte) {
@@ -413,10 +440,11 @@ class DanfeRtc extends Danfe
     }
 
     /**
-     * Quatro linhas fixas. Tag ausente permanece em branco.
+     * Quatro linhas no formato do modelo: rótulo, pontilhado e valor.
+     * O número só entra quando a tag existe.
      *
      * @param \DOMElement $det
-     * @return array<int, array{0: string, 1: string, 2: string}>
+     * @return array
      */
     protected function linhasTributoFaixa($det)
     {
@@ -431,38 +459,202 @@ class DanfeRtc extends Danfe
 
         return [
             [
-                $this->textoNumero($icms, 'vBC'),
-                $this->textoPercentual($icms, 'pICMS'),
-                $this->textoNumero($icms, 'vICMS'),
+                ['ICMS', $this->valorOuZero($this->textoNumero($icms, 'vBC'))],
+                [
+                    ['ICMS', $this->valorOuZero($this->textoPercentual($icms, 'pICMS'), true)],
+                    ['CBS', $this->valorOuZero($this->textoPercentual($gCbs, 'pCBS'), true)],
+                ],
+                [
+                    ['ICMS', $this->valorOuZero($this->textoNumero($icms, 'vICMS'))],
+                    ['CBS', $this->valorOuZero($this->textoNumero($gCbs, 'vCBS'))],
+                ],
             ],
             [
-                $this->textoNumero($gIbsCbs, 'vBC'),
-                $this->parTexto(
-                    $this->textoPercentual($gIbsUf, 'pIBSUF'),
-                    $this->textoPercentual($gCbs, 'pCBS')
-                ),
-                $this->parTexto(
-                    $this->textoNumero($gIbsUf, 'vIBSUF'),
-                    $this->textoNumero($gCbs, 'vCBS')
-                ),
+                ['IBS / CBS', $this->valorOuZero($this->textoNumero($gIbsCbs, 'vBC'))],
+                [
+                    ['IBS UF', $this->valorOuZero($this->textoPercentual($gIbsUf, 'pIBSUF'), true)],
+                    ['IPI', $this->valorOuZero($this->textoPercentual($ipi, 'pIPI'), true)],
+                ],
+                [
+                    ['IBS UF', $this->valorOuZero($this->textoNumero($gIbsUf, 'vIBSUF'))],
+                    ['IPI', $this->valorOuZero($this->textoNumero($ipi, 'vIPI'))],
+                ],
             ],
             [
-                $this->textoNumero($is, 'vBCIS'),
-                $this->parTexto(
-                    $this->textoPercentual($gIbsMun, 'pIBSMun'),
-                    $this->textoPercentual($is, 'pIS')
-                ),
-                $this->parTexto(
-                    $this->textoNumero($gIbsMun, 'vIBSMun'),
-                    $this->textoNumero($is, 'vIS')
-                ),
+                ['IS', $this->valorOuZero($this->textoNumero($is, 'vBCIS'))],
+                [
+                    ['IBS MUN', $this->valorOuZero($this->textoPercentual($gIbsMun, 'pIBSMun'), true)],
+                    ['IS', $this->valorOuZero($this->textoPercentual($is, 'pIS'), true)],
+                ],
+                [
+                    ['IBS MUN', $this->valorOuZero($this->textoNumero($gIbsMun, 'vIBSMun'))],
+                    ['IS', $this->valorOuZero($this->textoNumero($is, 'vIS'))],
+                ],
             ],
             [
-                $this->textoNumero($ipi, 'vBC'),
-                $this->textoPercentual($ipi, 'pIPI'),
-                $this->textoNumero($ipi, 'vIPI'),
+                ['IPI', $this->valorOuZero($this->textoNumero($ipi, 'vBC'))],
+                ['IPI', $this->valorOuZero($this->textoPercentual($ipi, 'pIPI'), true)],
+                ['IPI', $this->valorOuZero($this->textoNumero($ipi, 'vIPI'))],
             ],
         ];
+    }
+
+    /**
+     * Rótulo e pontilhado em cinza; valor em preto forte, alinhado à direita.
+     *
+     * @param float $x
+     * @param float $y
+     * @param float $w
+     * @param float $h
+     * @param string $rotulo
+     * @param string $valor
+     * @param float $tamanho
+     * @return void
+     */
+    protected function desenhaGuia($x, $y, $w, $h, $rotulo, $valor, $tamanho = 5)
+    {
+        $pad = 0.6;
+        $x += $pad;
+        $w = max(6, $w - ($pad * 2));
+        $guia = $this->linhaGuia($rotulo, $valor, $w, $tamanho);
+        $valor = (string) $valor;
+        $prefixo = substr($guia, 0, strlen($guia) - strlen($valor));
+        $fonte = ['font' => $this->fontePadrao, 'size' => $tamanho, 'style' => ''];
+        $fonteValor = ['font' => $this->fontePadrao, 'size' => $tamanho, 'style' => 'B'];
+        $this->pdf->SetTextColor(120, 120, 120);
+        $this->pdf->textBox($x, $y, $w, $h, $prefixo, $fonte, 'T', 'L', 0, '', false);
+        $this->pdf->SetTextColor(0, 0, 0);
+        if ($valor !== '') {
+            $this->pdf->textBox($x, $y, $w, $h, $valor, $fonteValor, 'T', 'R', 0, '', false);
+        }
+    }
+
+    /**
+     * @param float $x
+     * @param float $y
+     * @param float $w
+     * @param float $h
+     * @param string $rotuloE
+     * @param string $valorE
+     * @param string $rotuloD
+     * @param string $valorD
+     * @return void
+     */
+    protected function desenhaParGuia($x, $y, $w, $h, $rotuloE, $valorE, $rotuloD, $valorD)
+    {
+        $this->pdf->setFont($this->fontePadrao, '', 5);
+        $wBarra = max(2.2, $this->pdf->GetStringWidth(' / '));
+        $metade = ($w - $wBarra) / 2;
+        $this->desenhaGuia($x, $y, $metade, $h, $rotuloE, $valorE);
+        $fonte = ['font' => $this->fontePadrao, 'size' => 5, 'style' => ''];
+        $this->pdf->SetTextColor(120, 120, 120);
+        $this->pdf->textBox($x + $metade, $y, $wBarra, $h, '/', $fonte, 'T', 'C', 0, '', false);
+        $this->pdf->SetTextColor(0, 0, 0);
+        $this->desenhaGuia($x + $metade + $wBarra, $y, $w - $metade - $wBarra, $h, $rotuloD, $valorD);
+    }
+
+    /**
+     * [NCM ...] e [cClassTrib ...] com a chave cinza e o código em preto.
+     *
+     * @param float $x
+     * @param float $y
+     * @param float $w
+     * @param float $h
+     * @param \DOMElement $det
+     * @return void
+     */
+    protected function desenhaRodapeItem($x, $y, $w, $h, $det)
+    {
+        $prod = $det->getElementsByTagName('prod')->item(0);
+        $ncm = $prod ? $this->getTagValue($prod, 'NCM') : '';
+        $classe = $this->cClassTribItem($det);
+        $cursor = $x + 0.4;
+        if ($ncm !== '') {
+            $cursor = $this->desenhaChaveValor($cursor, $y, $h, 'NCM', $ncm);
+        }
+        if ($classe !== '') {
+            $this->desenhaChaveValor($cursor + 1.2, $y, $h, 'cClassTrib', $classe);
+        }
+        $this->pdf->SetTextColor(0, 0, 0);
+    }
+
+    /**
+     * @param float $x
+     * @param float $y
+     * @param float $h
+     * @param string $chave
+     * @param string $valor
+     * @return float
+     */
+    protected function desenhaChaveValor($x, $y, $h, $chave, $valor)
+    {
+        $tamanho = 5;
+        $fonte = ['font' => $this->fontePadrao, 'size' => $tamanho, 'style' => ''];
+        $fonteValor = ['font' => $this->fontePadrao, 'size' => $tamanho, 'style' => 'B'];
+        $this->pdf->setFont($this->fontePadrao, '', $tamanho);
+        $prefixo = '[' . $chave . ' ';
+        $this->pdf->SetTextColor(120, 120, 120);
+        $this->pdf->textBox($x, $y, 28, $h, $prefixo, $fonte, 'T', 'L', 0, '');
+        $xValor = $x + $this->pdf->GetStringWidth($prefixo);
+        $this->pdf->SetTextColor(0, 0, 0);
+        $this->pdf->textBox($xValor, $y, 24, $h, $valor, $fonteValor, 'T', 'L', 0, '');
+        $this->pdf->setFont($this->fontePadrao, 'B', $tamanho);
+        $xFecha = $xValor + $this->pdf->GetStringWidth($valor);
+        $this->pdf->setFont($this->fontePadrao, '', $tamanho);
+        $this->pdf->SetTextColor(120, 120, 120);
+        $this->pdf->textBox($xFecha, $y, 3, $h, ']', $fonte, 'T', 'L', 0, '');
+
+        return $xFecha + $this->pdf->GetStringWidth(']');
+    }
+
+    /**
+     * Rótulo, pontilhado e valor na largura da coluna, como no modelo da NT.
+     *
+     * @param string $rotulo
+     * @param string $valor
+     * @param float $largura
+     * @param float $tamanho
+     * @return string
+     */
+    protected function linhaGuia($rotulo, $valor, $largura, $tamanho = 4.5)
+    {
+        $this->pdf->setFont($this->fontePadrao, '', $tamanho);
+        $rotulo = (string) $rotulo;
+        $valor = (string) $valor;
+        $larguraUtil = max(6, $largura - 0.6);
+        $wPonto = $this->pdf->GetStringWidth('.');
+        if ($wPonto < 0.2) {
+            $wPonto = 0.35;
+        }
+        $sobra = $larguraUtil - $this->pdf->GetStringWidth($rotulo . $valor);
+        $n = (int) floor($sobra / $wPonto);
+        if ($n < 1) {
+            $n = 1;
+        }
+        if ($n > 4) {
+            $n = 4;
+        }
+
+        return $rotulo . str_repeat('.', $n) . $valor;
+    }
+
+    /**
+     * Dois rótulos na mesma coluna, no par do modelo.
+     *
+     * @param string $rotuloE
+     * @param string $valorE
+     * @param string $rotuloD
+     * @param string $valorD
+     * @param float $largura
+     * @return string
+     */
+    protected function parGuia($rotuloE, $valorE, $rotuloD, $valorD, $largura)
+    {
+        $metade = $largura / 2;
+
+        return trim(
+            $this->linhaGuia($rotuloE, $valorE, $metade) . ' ' . $this->linhaGuia($rotuloD, $valorD, $metade)
+        );
     }
 
     /**
@@ -589,6 +781,22 @@ class DanfeRtc extends Danfe
     }
 
     /**
+     * Campo sem tag imprime zero, no mesmo formato do valor preenchido.
+     *
+     * @param string $texto
+     * @param bool $percentual
+     * @return string
+     */
+    protected function valorOuZero($texto, $percentual = false)
+    {
+        if ($texto === '' || $texto === null) {
+            return $percentual ? '0,00%' : '0,00';
+        }
+
+        return $texto;
+    }
+
+    /**
      * @param \DOMNode|null $node
      * @param string $tag
      * @return string
@@ -605,9 +813,7 @@ class DanfeRtc extends Danfe
         if (empty($campo) || $campo->nodeValue === '') {
             return '';
         }
-        $texto = number_format((float) $campo->nodeValue, 4, ',', '.');
-
-        return rtrim(rtrim($texto, '0'), ',');
+        return number_format((float) $campo->nodeValue, 2, ',', '.');
     }
 
     /**
@@ -643,6 +849,107 @@ class DanfeRtc extends Danfe
         ];
 
         return isset($mapa[$crt]) ? $mapa[$crt] : (string) $crt;
+    }
+
+    /**
+     * @param int|string $pag
+     * @return float
+     */
+    /**
+     * Dados adicionais à esquerda e o quadro do QR Code à direita.
+     *
+     * @param float $x
+     * @param float $y
+     * @param float $h
+     * @return float
+     */
+    protected function dadosAdicionais($x, $y, $h)
+    {
+        $y = $this->maxH - (7 + $h);
+        $wTotal = $this->orientacao == 'P' ? $this->wPrint : $this->wPrint - $this->wCanhoto;
+        $wQr = 32;
+        $wEsq = $wTotal - $wQr - 1;
+        $this->tituloSecao($x, $y, $wEsq, 'DADOS ADICIONAIS');
+
+        $yBox = $y + 3;
+        $wComp = round($wEsq * 0.66, 0);
+        $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => 'B'];
+        $this->pdf->textBox($x, $yBox, $wComp, $h, 'INFORMAÇÕES COMPLEMENTARES', $aFont, 'T', 'L', 1, '');
+        $aFont = ['font' => $this->fontePadrao, 'size' => $this->textadicfontsize * $this->pdf->k, 'style' => ''];
+        $this->pdf->textBox($x, $yBox + 3, $wComp - 2, $h - 3, $this->textoAdic, $aFont, 'T', 'L', 0, '', false);
+
+        $xFisco = $x + $wComp;
+        $wFisco = $wEsq - $wComp;
+        $texto = 'RESERVADO AO FISCO';
+        if (isset($this->nfeProc) && $this->nfeProc->getElementsByTagName('xMsg')->length) {
+            $texto .= ' ' . $this->nfeProc->getElementsByTagName('xMsg')->item(0)->nodeValue;
+        }
+        $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => 'B'];
+        $this->pdf->textBox($xFisco, $yBox, $wFisco, $h, $texto, $aFont, 'T', 'L', 1, '');
+
+        $xQr = $x + $wEsq + 1;
+        $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => 'B'];
+        $this->pdf->textBox($xQr, $yBox, $wQr, $h, 'QR CODE', $aFont, 'T', 'C', 1, '');
+        $this->desenhaQrCode($xQr, $yBox + 4, $wQr, $h - 5);
+
+        return $yBox + $h;
+    }
+
+    /**
+     * @param float $x
+     * @param float $y
+     * @param float $w
+     * @param float $h
+     * @return void
+     */
+    protected function desenhaQrCode($x, $y, $w, $h)
+    {
+        $conteudo = $this->conteudoQrCode();
+        if ($conteudo === '' || $h < 8 || $w < 8) {
+            return;
+        }
+        $barcode = new Barcode();
+        $png = $barcode->getBarcodeObj('QRCODE,M', $conteudo, -4, -4, 'black', [-1, -1, -1, -1])
+            ->setBackgroundColor('white')
+            ->getPngData();
+        $lado = min($w - 2, $h - 1);
+        $pic = 'data://text/plain;base64,' . base64_encode($png);
+        $this->pdf->image($pic, $x + (($w - $lado) / 2), $y, $lado, $lado, 'PNG');
+    }
+
+    /**
+     * @return string
+     */
+    protected function conteudoQrCode()
+    {
+        if (!empty($this->dom)) {
+            $node = $this->dom->getElementsByTagName('qrCode')->item(0);
+            if (!empty($node) && trim($node->nodeValue) !== '') {
+                return trim($node->nodeValue);
+            }
+        }
+        $chave = str_replace('NFe', '', $this->infNFe->getAttribute('Id'));
+
+        return $chave;
+    }
+
+    /**
+     * Faixa cinza clara e título em negrito, como no leiaute da NT.
+     *
+     * @param float $x
+     * @param float $y
+     * @param float $w
+     * @param string $texto
+     * @return void
+     */
+    protected function tituloSecao($x, $y, $w, $texto)
+    {
+        $h = 3.2;
+        $this->pdf->SetFillColor(226, 226, 226);
+        $this->pdf->rect($x, $y, $w, $h, 'F');
+        $aFont = ['font' => $this->fontePadrao, 'size' => 7, 'style' => 'B'];
+        $this->pdf->textBox($x + 0.4, $y, $w - 0.8, $h, $texto, $aFont, 'C', 'L', 0, '', false);
+        $this->pdf->SetFillColor(255, 255, 255);
     }
 
     /**

@@ -6,6 +6,37 @@ use NFePHP\DA\Legacy\FPDF\Fpdf as Fpdf;
 
 class Pdf extends Fpdf
 {
+    /**
+     * Quando verdadeiro, as caixas saem com canto reto.
+     *
+     * @var bool
+     */
+    public $bordaQuadrada = false;
+
+    /**
+     * Rótulo pequeno do campo (fonte até 6, no topo da caixa) sai em cinza.
+     *
+     * @var bool
+     */
+    public $rotuloCinza = false;
+
+    /**
+     * @param float $x
+     * @param float $y
+     * @param float $w
+     * @param float $h
+     * @param string $style
+     * @return void
+     */
+    protected function caixaBorda($x, $y, $w, $h, $style)
+    {
+        if ($this->bordaQuadrada) {
+            $this->rect($x, $y, $w, $h, $style);
+            return;
+        }
+        $this->roundedRect($x, $y, $w, $h, 0.8, '1234', $style);
+    }
+
     private $t128;                                             // tabela de codigos 128
     private $abcSet="";                                        // conjunto de caracteres legiveis em 128
     private $aSet="";                                          // grupo A do conjunto de de caracteres legiveis
@@ -902,14 +933,22 @@ class Pdf extends Fpdf
         }
         //desenhar a borda da caixa
         if ($border && $fill) {
-            $this->roundedRect($x, $y, $w, $h, 0.8, '1234', 'DF');
+            $this->caixaBorda($x, $y, $w, $h, 'DF');
         } elseif ($border) {
-            $this->roundedRect($x, $y, $w, $h, 0.8, '1234', 'D');
+            $this->caixaBorda($x, $y, $w, $h, 'D');
         } elseif ($fill) {
             $this->rect($x, $y, $w, $h, 'F');
         }
         //estabelecer o fonte
         $this->setFont($aFont['font'], $aFont['style'], $aFont['size']);
+        $rotuloCinza = $this->rotuloCinza
+            && $border
+            && $vAlign === 'T'
+            && ($aFont['style'] ?? '') !== 'B'
+            && (float) ($aFont['size'] ?? 10) <= 6;
+        if ($rotuloCinza) {
+            $this->SetTextColor(120, 120, 120);
+        }
         //calcular o incremento
         $incY = $this->fontSize; //tamanho da fonte na unidade definida
         if (!$force) {
@@ -978,6 +1017,9 @@ class Pdf extends Fpdf
                 break;
             }
         }
+        if ($rotuloCinza) {
+            $this->SetTextColor(0, 0, 0);
+        }
         return ($y1 - $y) - $incY;
     }
 
@@ -1043,7 +1085,7 @@ class Pdf extends Fpdf
         }
         //desenhar a borda da caixa
         if ($border) {
-            $this->roundedRect($x, $y, $w, $h, 0.8, '1234', 'D');
+            $this->caixaBorda($x, $y, $w, $h, 'D');
         }
         //estabelecer o fonte
         $this->setFont($aFont['font'], $aFont['style'], $aFont['size']);
