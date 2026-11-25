@@ -149,11 +149,13 @@ class DanfeRtc extends Danfe
     }
 
     /**
-     * @return bool
+     * Nada entre a grade e os dados adicionais: o ISSQN já foi impresso antes do transportador.
+     *
+     * @return float
      */
-    protected function temIssqn()
+    protected function alturaEntreItensEDadosAdicionais()
     {
-        return isset($this->ISSQNtot) && $this->getTagValue($this->ISSQNtot, 'vServ') > 0;
+        return 0;
     }
 
     /**

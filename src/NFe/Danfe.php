@@ -561,7 +561,8 @@ class Danfe extends DaCommon
     /**
      * Registra, na folha 1, quanto a grade de itens pode crescer (ou encolher) além de $hmax:
      * os dados adicionais ficam presos ao pé da folha (dadosAdicionais) e a grade ocupa o
-     * título, 3 mm, mais a caixa de $hmax + 1.
+     * título, 3 mm, mais a caixa de $hmax + 1. O que a folha desenha entre a grade e os dados
+     * adicionais (alturaEntreItensEDadosAdicionais) sai do espaço da grade.
      *
      * @param float $y
      * @param float $hmax
@@ -572,8 +573,28 @@ class Danfe extends DaCommon
     {
         if ((int) $pag === 1) {
             $yDadosAdicionais = $this->maxH - (7 + $this->hdadosadic);
-            $this->folgaFolha1 = ($yDadosAdicionais - 4 - $y) - $hmax;
+            $this->folgaFolha1 = ($yDadosAdicionais - 4 - $y) - $hmax
+                - $this->alturaEntreItensEDadosAdicionais();
         }
+    }
+
+    /**
+     * Altura, em mm, do quadro do ISSQN, que a Danfe desenha entre a grade de itens e os dados
+     * adicionais: 4 mm abaixo da grade, com título de 3 mm e linha de 7 mm (montaFolhas e issqn).
+     *
+     * @return float
+     */
+    protected function alturaEntreItensEDadosAdicionais()
+    {
+        return $this->temIssqn() ? 14 : 0;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function temIssqn()
+    {
+        return isset($this->ISSQNtot) && $this->getTagValue($this->ISSQNtot, 'vServ') > 0;
     }
 
     /**
