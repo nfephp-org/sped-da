@@ -110,7 +110,7 @@ class DanfeRtcTest extends TestCase
     }
 
     /**
-     * Regime normal: ICMS e IPI entram nos pares do modelo (ICMS/CBS, IBS UF/IPI, IBS MUN/IS).
+     * Regime normal: ICMS e IPI entram na ordem do modelo (ICMS, CBS, IBS UF, IPI, IBS MUN, IS).
      */
     public function testItemRegimeNormalSegueOsParesDoModelo()
     {
@@ -121,6 +121,22 @@ class DanfeRtcTest extends TestCase
             'aliquotas' => ['ICMS 20,00% / CBS 0,90%', 'IBS UF 0,10% / IPI 10,00%', 'IBS MUN 0,00%'],
             'valores' => ['ICMS 2,00 / CBS 0,09', 'IBS UF 0,01 / IPI 1,00', 'IBS MUN 0,00'],
         ], $danfe->tributos(0));
+    }
+
+    /**
+     * Como no modelo da NT: CST e CFOP com rótulo, rótulo e valor ligados por pontilhado.
+     * O tributo que não está no XML não aparece (item 4.4): o Simples não tem ICMS nem IPI.
+     */
+    public function testGradeComRotuloEPontilhadoSemOQueNaoExiste()
+    {
+        $normal = $this->texto('nfe_rtc_regime_normal.xml');
+        $this->assertMatchesRegularExpression('/CST\.{2,}000/', $normal);
+        $this->assertMatchesRegularExpression('/CFOP\.{2,}5102/', $normal);
+        $this->assertMatchesRegularExpression('/ICMS\.{2,}20,00%\/CBS\.{2,}0,90%/', $normal);
+
+        $simples = $this->texto('nfe_rtc_itens.xml');
+        $this->assertMatchesRegularExpression('/CBS\.{2,}0,90%\/IBS UF\.{2,}0,10%/', $simples);
+        $this->assertDoesNotMatchRegularExpression('/(ICMS|IPI)\.{2,}/', $simples);
     }
 
     /**
@@ -212,7 +228,7 @@ class DanfeRtcTest extends TestCase
         ], $danfe->mono());
         $this->assertSame([
             'bases' => ['ICMS 525,00', 'IBS/CBS 500,00', 'IS 500,00', 'IPI 500,00'],
-            'aliquotas' => ['ICMS 12,00% / CBS 0,90%', 'IBS UF 0,10% / IPI 10,00%', 'IBS MUN 0,00% / IS 5,00%'],
+            'aliquotas' => ['ICMS 12,00% / CBS 0,90%', 'IBS UF 0,10% / IPI 10,00%', 'IBS MUN 0,00%', 'IS 5,00%'],
             'valores' => ['ICMS 63,00 / CBS 4,50', 'IBS UF 0,50 / IPI 50,00', 'IBS MUN 0,00 / IS 25,00'],
         ], $danfe->tributos(0));
         $this->assertSame([
@@ -308,6 +324,13 @@ class DanfeRtcTest extends TestCase
         return preg_replace('#<tpImp>\d</tpImp>#', '<tpImp>2</tpImp>', file_get_contents($this->fixture($nome)));
     }
 
+    private function texto($nome)
+    {
+        $pdf = (new DanfeRtc(file_get_contents($this->fixture($nome))))->render();
+
+        return (new Parser())->parseContent($pdf)->getText();
+    }
+
     private function fixture($nome = 'nfe_rtc_minimo.xml')
     {
         return __DIR__ . '/fixtures/xml/' . $nome;
@@ -319,7 +342,14 @@ class DanfeRtcTest extends TestCase
             public function tributos($i)
             {
                 $this->render(); // os pares de tributo são medidos na fonte do PDF
-                return $this->tributosItem($this->det->item($i));
+                // Cada linha como se lê no papel, sem o pontilhado: "ICMS 63,00 / CBS 4,50".
+                return array_map(static function (array $linhas) {
+                    return array_map(static function (array $celulas) {
+                        return implode(' / ', array_map(static function (array $c) {
+                            return $c[0] . ' ' . $c[1];
+                        }, $celulas));
+                    }, $linhas);
+                }, $this->tributosItem($this->det->item($i)));
             }
 
             public function mono()
