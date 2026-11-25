@@ -50,4 +50,50 @@ class DanfeTest extends TestCase
         $this->assertCount(1, $folhas);
         $this->assertSame(15, preg_match_all('/RTC TESTE CST/', $folhas[0]->getText()));
     }
+
+    public function orientacoes(): array
+    {
+        return ['retrato' => ['1'], 'paisagem' => ['2']];
+    }
+
+    /**
+     * Na Danfe o quadro do ISSQN fica entre a grade de itens e os dados adicionais, que ficam
+     * presos ao pé da folha. A medição da folha 1 precisa reservar esse quadro: sem a reserva,
+     * a grade descia até os dados adicionais e o ISSQN era desenhado por cima deles.
+     *
+     * @dataProvider orientacoes
+     */
+    public function test_issqn_fica_acima_dos_dados_adicionais(string $tpImp): void
+    {
+        // nfe_rtc_completa tem ISSQNtot com vServ; a Danfe ignora os grupos da reforma.
+        $xml = preg_replace(
+            '#<tpImp>\d</tpImp>#',
+            "<tpImp>$tpImp</tpImp>",
+            file_get_contents(TEST_FIXTURES . 'xml/nfe_rtc_completa.xml')
+        );
+        $danfe = new class ($xml) extends Danfe {
+            /** @var float|null fim do quadro do ISSQN na folha 1, em mm a partir do topo */
+            public $fimIssqn;
+            /** @var float|null início dos dados adicionais na folha 1, em mm a partir do topo */
+            public $inicioDadosAdicionais;
+
+            protected function issqn($x, $y)
+            {
+                return $this->fimIssqn = parent::issqn($x, $y);
+            }
+
+            protected function dadosAdicionais($x, $y, $h)
+            {
+                // Mesma posição que dadosAdicionais() usa: presa ao pé da folha.
+                $this->inicioDadosAdicionais = $this->maxH - (7 + $h);
+                return parent::dadosAdicionais($x, $y, $h);
+            }
+        };
+
+        // A nota tem uma folha; os valores gravados são os da última montagem (monta() pode montar duas vezes).
+        $danfe->render();
+
+        $this->assertNotNull($danfe->fimIssqn);
+        $this->assertLessThanOrEqual($danfe->inicioDadosAdicionais, $danfe->fimIssqn);
+    }
 }
