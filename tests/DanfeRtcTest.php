@@ -61,21 +61,27 @@ class DanfeRtcTest extends TestCase
         $danfe = $this->danfe('nfe_rtc_aliquota_quatro_casas.xml');
 
         $this->assertSame(
-            ['CBS 0,3575%', 'IBS UF 0,0423%', 'IBS MUN 0,00%'],
+            ['CBS 0,3575% / IBS UF 0,0423%', 'IBS MUN 0,00%'],
             $danfe->tributos(4)['aliquotas']
         );
     }
 
     /**
-     * O par só divide a linha se couber na coluna em 6 pt: "IBS UF 0,04% / IBS MUN 0,00%" encolheria a fonte.
+     * O par só divide a linha se couber na coluna em 6 pt. Se um não cabe, todos os pares
+     * da coluna do item vão um por linha: a coluna não mistura par e item solto.
      */
-    public function testParQueNaoCabeNaColunaVaiUmPorLinha()
+    public function testParQueNaoCabeSeparaTodosOsDaColuna()
     {
-        $danfe = $this->danfe('nfe_rtc_completa.xml');
+        $danfe = $this->danfe('nfe_rtc_completa.xml', ['<vCBS>4.50</vCBS>' => '<vCBS>1234567.89</vCBS>']);
+        $tributos = $danfe->tributos(0);
 
         $this->assertSame(
-            ['ICMS 12,00% / CBS 0,36%', 'IBS UF 0,04%', 'IBS MUN 0,00%'],
-            $danfe->tributos(1)['aliquotas']
+            ['ICMS 63,00', 'CBS 1.234.567,89', 'IBS UF 0,50', 'IPI 50,00', 'IBS MUN 0,00', 'IS 25,00'],
+            $tributos['valores']
+        );
+        $this->assertSame(
+            ['ICMS 12,00% / CBS 0,90%', 'IBS UF 0,10% / IPI 10,00%', 'IBS MUN 0,00% / IS 5,00%'],
+            $tributos['aliquotas']
         );
     }
 
@@ -228,7 +234,7 @@ class DanfeRtcTest extends TestCase
         ], $danfe->mono());
         $this->assertSame([
             'bases' => ['ICMS 525,00', 'IBS/CBS 500,00', 'IS 500,00', 'IPI 500,00'],
-            'aliquotas' => ['ICMS 12,00% / CBS 0,90%', 'IBS UF 0,10% / IPI 10,00%', 'IBS MUN 0,00%', 'IS 5,00%'],
+            'aliquotas' => ['ICMS 12,00% / CBS 0,90%', 'IBS UF 0,10% / IPI 10,00%', 'IBS MUN 0,00% / IS 5,00%'],
             'valores' => ['ICMS 63,00 / CBS 4,50', 'IBS UF 0,50 / IPI 50,00', 'IBS MUN 0,00 / IS 25,00'],
         ], $danfe->tributos(0));
         $this->assertSame([
@@ -336,9 +342,9 @@ class DanfeRtcTest extends TestCase
         return __DIR__ . '/fixtures/xml/' . $nome;
     }
 
-    private function danfe($nome)
+    private function danfe($nome, array $troca = [])
     {
-        return new class (file_get_contents($this->fixture($nome))) extends DanfeRtc {
+        return new class (strtr(file_get_contents($this->fixture($nome)), $troca)) extends DanfeRtc {
             public function tributos($i)
             {
                 $this->render(); // os pares de tributo são medidos na fonte do PDF

@@ -521,7 +521,7 @@ class DanfeRtc extends Danfe
     protected function colunasItem($w)
     {
         // Descrição, CST/CFOP, qtd/un, unitário, total, bases, alíquotas; valores fica com o resto.
-        $partes = [0.24, 0.065, 0.075, 0.085, 0.085, 0.13, 0.15];
+        $partes = [0.24, 0.065, 0.075, 0.085, 0.085, 0.11, 0.17];
         $cols = [];
         $usado = 0;
         foreach ($partes as $parte) {
@@ -721,6 +721,7 @@ class DanfeRtc extends Danfe
     /**
      * Linhas da coluna de tributos: cada uma com uma ou duas células [rótulo, valor]. O que não
      * existe no XML não entra (NT 2026.010, item 4.4); par sem nenhum dos dois não ocupa linha.
+     * Se um par não cabe, todos vão um por linha: a coluna do item não mistura par e item solto.
      *
      * @param array<int, array<int, array{0: string, 1: string}>> $pares
      * @param float $largura largura da coluna em mm; 0 = um por linha
@@ -728,12 +729,20 @@ class DanfeRtc extends Danfe
      */
     protected function linhasRotuladas(array $pares, $largura = 0)
     {
-        $linhas = [];
-        foreach ($pares as $par) {
-            $par = array_values(array_filter($par, static function ($item) {
+        $pares = array_map(static function (array $par) {
+            return array_values(array_filter($par, static function ($item) {
                 return $item[1] !== '';
             }));
-            if (count($par) === 2 && $largura > 0 && $this->parCabe($par, $largura)) {
+        }, $pares);
+        $juntos = $largura > 0;
+        foreach ($pares as $par) {
+            if (count($par) === 2 && !$this->parCabe($par, $largura)) {
+                $juntos = false;
+            }
+        }
+        $linhas = [];
+        foreach ($pares as $par) {
+            if ($juntos && count($par) === 2) {
                 $linhas[] = $par;
                 continue;
             }
