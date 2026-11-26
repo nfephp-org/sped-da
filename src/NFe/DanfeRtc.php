@@ -766,7 +766,7 @@ class DanfeRtc extends Danfe
     {
         $metade = ($largura - $this->larguraBarra()) / 2;
         foreach ($par as $item) {
-            if ($this->larguraGuia($item) > $metade) {
+            if ($this->larguraGuia($item) > $metade + self::MARGEM_GUIA) {
                 return false;
             }
         }
@@ -775,7 +775,7 @@ class DanfeRtc extends Danfe
     }
 
     /**
-     * Rótulo, pontilhado mínimo e valor, com o respiro da borda, em mm (6 pt).
+     * Rótulo, pontilhado mínimo, intervalo e valor, com a margem dos dois lados, em mm (6 pt).
      *
      * @param array{0: string, 1: string} $item
      * @return float
@@ -785,8 +785,16 @@ class DanfeRtc extends Danfe
         $this->pdf->setFont($this->fontePadrao, '', 6);
 
         return $this->pdf->getStringWidth($item[0] . str_repeat('.', self::PONTOS_MINIMOS) . $item[1])
-            + 2 * DanfeRtcPdf::RESPIRO_X;
+            + self::INTERVALO_GUIA + 2 * self::MARGEM_GUIA;
     }
+
+    /**
+     * Distância do texto à borda no textBox da DanfeRtcPdf: o respiro mais os 0,5 mm do Pdf::textBox().
+     */
+    const MARGEM_GUIA = DanfeRtcPdf::RESPIRO_X + 0.5;
+
+    /** Intervalo entre o fim do pontilhado e o valor, em mm. */
+    const INTERVALO_GUIA = 0.3;
 
     /**
      * @return float
@@ -819,15 +827,18 @@ class DanfeRtc extends Danfe
         }
         $barra = $this->larguraBarra();
         $metade = ($w - $barra) / 2;
-        $this->desenhaGuia($x, $y, $metade, $h, $celulas[0]);
+        // Do lado da "/" não há margem: os espaços de " / " já separam as metades.
+        $this->desenhaGuia($x, $y, $metade + self::MARGEM_GUIA, $h, $celulas[0]);
         $this->pdf->setTextColor(...self::CINZA);
         $this->pdf->textBox($x + $metade, $y, $barra, $h, '/', $this->fonteItem(), 'T', 'C', 0, '', false);
         $this->pdf->setTextColor(0, 0, 0);
-        $this->desenhaGuia($x + $metade + $barra, $y, $metade, $h, $celulas[1]);
+        $this->desenhaGuia($x + $metade + $barra - self::MARGEM_GUIA, $y, $metade + self::MARGEM_GUIA, $h, $celulas[1]);
     }
 
     /**
      * Como no modelo da NT: rótulo e pontilhado em cinza, valor em preto à direita ("ICMS.....63,00").
+     * O pontilhado sai separado do rótulo e termina sempre a um intervalo do valor: a sobra do
+     * arredondamento (menos de um ponto) fica depois do rótulo, e as linhas ficam alinhadas.
      * Se nem o pontilhado mínimo couber, sai "ROTULO valor" como antes (o textBox ajusta a fonte).
      *
      * @param float $x
@@ -849,10 +860,15 @@ class DanfeRtc extends Danfe
             return;
         }
         $this->pdf->setFont($this->fontePadrao, '', 6);
-        $livre = $w - 2 * DanfeRtcPdf::RESPIRO_X - $this->pdf->getStringWidth($rotulo . $valor);
+        // Fim do pontilhado: antes do valor e do intervalo, medido a partir da borda direita.
+        $fim = $w - self::MARGEM_GUIA - $this->pdf->getStringWidth($valor) - self::INTERVALO_GUIA;
+        $livre = $fim - self::MARGEM_GUIA - $this->pdf->getStringWidth($rotulo);
         $pontos = max(self::PONTOS_MINIMOS, (int) floor($livre / $this->pdf->getStringWidth('.')));
         $this->pdf->setTextColor(...self::CINZA);
-        $this->pdf->textBox($x, $y, $w, $h, $rotulo . str_repeat('.', $pontos), $fonte, 'T', 'L', 0, '', false);
+        $this->pdf->textBox($x, $y, $w, $h, $rotulo, $fonte, 'T', 'L', 0, '', false);
+        // Caixa que termina em $fim + margem: o 'R' do textBox encosta o último ponto em $fim.
+        $pontilhado = str_repeat('.', $pontos);
+        $this->pdf->textBox($x, $y, $fim + self::MARGEM_GUIA, $h, $pontilhado, $fonte, 'T', 'R', 0, '', false);
         $this->pdf->setTextColor(0, 0, 0);
         $this->pdf->textBox($x, $y, $w, $h, $valor, $fonte, 'T', 'R', 0, '', false);
     }
