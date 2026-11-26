@@ -443,8 +443,8 @@ class DanfeRtc extends Danfe
         $this->pdf->textBox($x, $y + $hMiolo - $lh, $cols[0], $lh, $medida['rodape'], $aFont, 'B', 'L', 0, '');
 
         $xCst = $x + $cols[0];
-        $this->pdf->textBox($xCst, $y, $cols[1], $lh, $this->cstItem($det), $aFont, 'T', 'C', 0, '');
-        $this->pdf->textBox($xCst, $y + $lh, $cols[1], $lh, $this->getTagValue($prod, 'CFOP'), $aFont, 'T', 'C', 0, '');
+        $this->desenhaGuia($xCst, $y, $cols[1], $lh, ['CST', $this->cstItem($det)]);
+        $this->desenhaGuia($xCst, $y + $lh, $cols[1], $lh, ['CFOP', $this->getTagValue($prod, 'CFOP')]);
 
         $xQtd = $xCst + $cols[1];
         $un = $this->getTagValue($prod, 'uCom');
@@ -461,19 +461,8 @@ class DanfeRtc extends Danfe
         $xValor = $xAliq + $cols[6];
         $colunas = [[$xBase, $cols[5]], [$xAliq, $cols[6]], [$xValor, $cols[7]]];
         foreach (array_values($medida['tributos']) as $c => $linhas) {
-            foreach ($linhas as $i => $texto) {
-                $this->pdf->textBox(
-                    $colunas[$c][0],
-                    $y + ($i * $lh),
-                    $colunas[$c][1],
-                    $lh,
-                    $texto,
-                    $aFont,
-                    'T',
-                    'R',
-                    0,
-                    ''
-                );
+            foreach ($linhas as $i => $celulas) {
+                $this->desenhaLinha($colunas[$c][0], $y + ($i * $lh), $colunas[$c][1], $lh, $celulas);
             }
         }
 
@@ -531,7 +520,8 @@ class DanfeRtc extends Danfe
      */
     protected function colunasItem($w)
     {
-        $partes = [0.27, 0.07, 0.08, 0.09, 0.09, 0.12, 0.14];
+        // Descrição, CST/CFOP, qtd/un, unitário, total, bases, alíquotas; valores fica com o resto.
+        $partes = [0.24, 0.065, 0.075, 0.085, 0.085, 0.11, 0.17];
         $cols = [];
         $usado = 0;
         foreach ($partes as $parte) {
@@ -598,20 +588,33 @@ class DanfeRtc extends Danfe
         ];
         // Cada grupo fecha os próprios pares: retenção não divide linha com o tributo normal.
         $cols = $this->colunasItem($this->larguraUtil(1));
-        $respiro = 2 * DanfeRtcPdf::RESPIRO_X;
         foreach ($grupos as $grupo) {
-            $linhas['bases'] = array_merge($linhas['bases'], $this->linhasRotuladas($grupo[0]));
+            $linhas['bases'] = array_merge($linhas['bases'], $this->linhasRotuladas(array_chunk($grupo[0], 1), 0));
             $linhas['aliquotas'] = array_merge(
                 $linhas['aliquotas'],
-                $this->linhasRotuladas($grupo[1], $cols[6] - $respiro)
+                $this->linhasRotuladas($this->pares($grupo[1]), $cols[6])
             );
             $linhas['valores'] = array_merge(
                 $linhas['valores'],
-                $this->linhasRotuladas($grupo[2], $cols[7] - $respiro)
+                $this->linhasRotuladas($this->pares($grupo[2]), $cols[7])
             );
         }
 
         return $linhas;
+    }
+
+    /**
+     * Pares na ordem do modelo da NT (ICMS, CBS, IBS UF, IPI, IBS MUN, IS): só o que existe no
+     * XML se junta, para a ausência não deixar meia linha vazia.
+     *
+     * @param array<int, array{0: string, 1: string}> $itens
+     * @return array<int, array<int, array{0: string, 1: string}>>
+     */
+    protected function pares(array $itens)
+    {
+        return array_chunk(array_values(array_filter($itens, static function ($item) {
+            return $item[1] !== '';
+        })), 2);
     }
 
     /**
@@ -716,35 +719,169 @@ class DanfeRtc extends Danfe
     }
 
     /**
-     * "ROTULO valor", descartando o que não existe no XML: em pares quando o par cabe em $largura.
+     * Linhas da coluna de tributos: cada uma com uma ou duas células [rótulo, valor]. O que não
+     * existe no XML não entra (NT 2026.010, item 4.4); par sem nenhum dos dois não ocupa linha.
+     * Se um par não cabe, todos vão um por linha: a coluna do item não mistura par e item solto.
      *
-     * @param array<int, array{0: string, 1: string}> $itens
-     * @param float $largura largura útil da coluna em mm; 0 = um por linha
-     * @return string[]
+     * @param array<int, array<int, array{0: string, 1: string}>> $pares
+     * @param float $largura largura da coluna em mm; 0 = um por linha
+     * @return array<int, array<int, array{0: string, 1: string}>>
      */
-    protected function linhasRotuladas(array $itens, $largura = 0)
+    protected function linhasRotuladas(array $pares, $largura = 0)
     {
-        $textos = [];
-        foreach ($itens as $item) {
-            if ($item[1] !== '') {
-                $textos[] = $item[0] . ' ' . $item[1];
+        $pares = array_map(static function (array $par) {
+            return array_values(array_filter($par, static function ($item) {
+                return $item[1] !== '';
+            }));
+        }, $pares);
+        $juntos = $largura > 0;
+        foreach ($pares as $par) {
+            if (count($par) === 2 && !$this->parCabe($par, $largura)) {
+                $juntos = false;
             }
         }
-        // Par que não cabe na coluna (ad rem, retenção, valores grandes) vai um por linha: o textBox
-        // encolheria a fonte abaixo de 6 pt. A medida é a do texto na fonte do item, não a contagem de letras.
-        $this->pdf->setFont($this->fontePadrao, '', 6);
         $linhas = [];
-        for ($i = 0; $i < count($textos); $i++) {
-            $par = $largura > 0 && isset($textos[$i + 1]) ? $textos[$i] . ' / ' . $textos[$i + 1] : '';
-            if ($par !== '' && $this->pdf->getStringWidth($par) <= $largura) {
+        foreach ($pares as $par) {
+            if ($juntos && count($par) === 2) {
                 $linhas[] = $par;
-                $i++;
                 continue;
             }
-            $linhas[] = $textos[$i];
+            foreach ($par as $item) {
+                $linhas[] = [$item];
+            }
         }
 
         return $linhas;
+    }
+
+    /**
+     * Par que não cabe na coluna (ad rem, retenção, valores grandes) vai um por linha: o textBox
+     * encolheria a fonte abaixo de 6 pt. A medida é a do texto na fonte do item, com o pontilhado mínimo.
+     *
+     * @param array<int, array{0: string, 1: string}> $par
+     * @param float $largura
+     * @return bool
+     */
+    protected function parCabe(array $par, $largura)
+    {
+        $metade = ($largura - $this->larguraBarra()) / 2;
+        foreach ($par as $item) {
+            if ($this->larguraGuia($item) > $metade + self::MARGEM_GUIA) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Rótulo, pontilhado mínimo, intervalo e valor, com a margem dos dois lados, em mm (6 pt).
+     *
+     * @param array{0: string, 1: string} $item
+     * @return float
+     */
+    protected function larguraGuia(array $item)
+    {
+        $this->pdf->setFont($this->fontePadrao, '', 6);
+
+        return $this->pdf->getStringWidth($item[0] . str_repeat('.', self::PONTOS_MINIMOS) . $item[1])
+            + self::INTERVALO_GUIA + 2 * self::MARGEM_GUIA;
+    }
+
+    /**
+     * Distância do texto à borda no textBox da DanfeRtcPdf: o respiro mais os 0,5 mm do Pdf::textBox().
+     */
+    const MARGEM_GUIA = DanfeRtcPdf::RESPIRO_X + 0.5;
+
+    /** Intervalo entre o fim do pontilhado e o valor, em mm. */
+    const INTERVALO_GUIA = 0.3;
+
+    /**
+     * @return float
+     */
+    protected function larguraBarra()
+    {
+        $this->pdf->setFont($this->fontePadrao, '', 6);
+
+        return $this->pdf->getStringWidth(' / ');
+    }
+
+    /** Pontos que sempre separam o rótulo do valor. */
+    const PONTOS_MINIMOS = 2;
+
+    /**
+     * Uma linha da coluna: uma célula na largura toda ou duas metades separadas por "/".
+     *
+     * @param float $x
+     * @param float $y
+     * @param float $w
+     * @param float $h
+     * @param array<int, array{0: string, 1: string}> $celulas
+     * @return void
+     */
+    protected function desenhaLinha($x, $y, $w, $h, array $celulas)
+    {
+        if (count($celulas) === 1) {
+            $this->desenhaGuia($x, $y, $w, $h, $celulas[0]);
+            return;
+        }
+        $barra = $this->larguraBarra();
+        $metade = ($w - $barra) / 2;
+        // Do lado da "/" não há margem: os espaços de " / " já separam as metades.
+        $this->desenhaGuia($x, $y, $metade + self::MARGEM_GUIA, $h, $celulas[0]);
+        $this->pdf->setTextColor(...self::CINZA);
+        $this->pdf->textBox($x + $metade, $y, $barra, $h, '/', $this->fonteItem(), 'T', 'C', 0, '', false);
+        $this->pdf->setTextColor(0, 0, 0);
+        $this->desenhaGuia($x + $metade + $barra - self::MARGEM_GUIA, $y, $metade + self::MARGEM_GUIA, $h, $celulas[1]);
+    }
+
+    /**
+     * Como no modelo da NT: rótulo e pontilhado em cinza, valor em preto à direita ("ICMS.....63,00").
+     * O pontilhado sai separado do rótulo e termina sempre a um intervalo do valor: a sobra do
+     * arredondamento (menos de um ponto) fica depois do rótulo, e as linhas ficam alinhadas.
+     * Se nem o pontilhado mínimo couber, sai "ROTULO valor" como antes (o textBox ajusta a fonte).
+     *
+     * @param float $x
+     * @param float $y
+     * @param float $w
+     * @param float $h
+     * @param array{0: string, 1: string} $item
+     * @return void
+     */
+    protected function desenhaGuia($x, $y, $w, $h, array $item)
+    {
+        list($rotulo, $valor) = $item;
+        if ($valor === '') {
+            return;
+        }
+        $fonte = $this->fonteItem();
+        if ($this->larguraGuia($item) > $w) {
+            $this->pdf->textBox($x, $y, $w, $h, $rotulo . ' ' . $valor, $fonte, 'T', 'R', 0, '');
+            return;
+        }
+        $this->pdf->setFont($this->fontePadrao, '', 6);
+        // Fim do pontilhado: antes do valor e do intervalo, medido a partir da borda direita.
+        $fim = $w - self::MARGEM_GUIA - $this->pdf->getStringWidth($valor) - self::INTERVALO_GUIA;
+        $livre = $fim - self::MARGEM_GUIA - $this->pdf->getStringWidth($rotulo);
+        $pontos = max(self::PONTOS_MINIMOS, (int) floor($livre / $this->pdf->getStringWidth('.')));
+        $this->pdf->setTextColor(...self::CINZA);
+        $this->pdf->textBox($x, $y, $w, $h, $rotulo, $fonte, 'T', 'L', 0, '', false);
+        // Caixa que termina em $fim + margem: o 'R' do textBox encosta o último ponto em $fim.
+        $pontilhado = str_repeat('.', $pontos);
+        $this->pdf->textBox($x, $y, $fim + self::MARGEM_GUIA, $h, $pontilhado, $fonte, 'T', 'R', 0, '', false);
+        $this->pdf->setTextColor(0, 0, 0);
+        $this->pdf->textBox($x, $y, $w, $h, $valor, $fonte, 'T', 'R', 0, '', false);
+    }
+
+    /** Cinza dos rótulos, como no modelo da NT. */
+    const CINZA = [110, 110, 110];
+
+    /**
+     * @return array{font: string, size: int, style: string}
+     */
+    protected function fonteItem()
+    {
+        return ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
     }
 
     /**
