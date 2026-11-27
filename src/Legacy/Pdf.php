@@ -237,9 +237,9 @@ class Pdf extends Fpdf
 
     /**
      * Rotaciona para impressão paisagem (landscape)
-     * @param   number $angle
-     * @param   number $x
-     * @param   number $y
+     * @param   int|float $angle
+     * @param   int|float $x
+     * @param   int|float $y
      */
     public function rotate($angle, $x = -1, $y = -1)
     {
@@ -277,11 +277,11 @@ class Pdf extends Fpdf
 
     /**
      * Desenha um retangulo com cantos arredondados
-     * @param   number $x
-     * @param   number $y
-     * @param   number $w
-     * @param   number $h
-     * @param   number $r
+     * @param   int|float $x
+     * @param   int|float $y
+     * @param   int|float $w
+     * @param   int|float $h
+     * @param   int|float $r
      * @param   string $corners
      * @param   string $style
      */
@@ -336,12 +336,12 @@ class Pdf extends Fpdf
 
     /**
      * Desenha o arco para arredondar o canto do retangulo
-     * @param   number $x1
-     * @param   number $y1
-     * @param   number $x2
-     * @param   number $y2
-     * @param   number $x3
-     * @param   number $y3
+     * @param   int|float $x1
+     * @param   int|float $y1
+     * @param   int|float $x2
+     * @param   int|float $y2
+     * @param   int|float $x3
+     * @param   int|float $y3
      */
     private function arc($x1, $y1, $x2, $y2, $x3, $y3)
     {
@@ -361,12 +361,12 @@ class Pdf extends Fpdf
 
     /**
      * Desenha um retangulo com linhas tracejadas
-     * @param   number $x1
-     * @param   number $y1
-     * @param   number $x2
-     * @param   number $y2
-     * @param   number $width
-     * @param   number $nb
+     * @param   int|float $x1
+     * @param   int|float $y1
+     * @param   int|float $x2
+     * @param   int|float $y2
+     * @param   int|float $width
+     * @param   int|float $nb
      */
     public function dashedRect($x1, $y1, $x2, $y2, $width = 1, $nb = 15)
     {
@@ -399,8 +399,8 @@ class Pdf extends Fpdf
     /**
      * Monta uma caixa de texto
      * @param   string  $strText
-     * @param   number  $w
-     * @param   number  $h
+     * @param   int|float  $w
+     * @param   int|float  $h
      * @param   string  $align
      * @param   string  $valign
      * @param   boolean $border
@@ -430,14 +430,14 @@ class Pdf extends Fpdf
 
     /**
      * Insere linhas de texto na caixa
-     * @param   number  $w
-     * @param   number  $h
+     * @param   int|float  $w
+     * @param   int|float  $h
      * @param   string  $txt
      * @param   string  $border
      * @param   string  $align
      * @param   boolean $fill
-     * @param   number  $maxline
-     * @param   number  $prn
+     * @param   int|float  $maxline
+     * @param   int|float  $prn
      * @return  int
      */
     private function drawRows($w, $h, $txt, $border = 0, $align = 'J', $fill = false, $maxline = 0, $prn = 0)
@@ -523,7 +523,7 @@ class Pdf extends Fpdf
                     }
                 } else {
                     if ($align == 'J') {
-                        $this->ws = ($ns>1) ? ($wmax-$ls)/1000*$this->FontSize/($ns-1) : 0;
+                        $this->ws = ($ns>1) ? ($wmax-$ls)/1000*$this->fontSize/($ns-1) : 0;
                         if ($prn == 1) {
                             $this->out(sprintf('%.3F Tw', $this->ws*$this->k));
                         }
@@ -566,8 +566,8 @@ class Pdf extends Fpdf
 
     /**
      * Quebra o texto para caber na caixa
-     * @param   type $text
-     * @param   type $maxwidth
+     * @param   string $text
+     * @param   int|float $maxwidth
      * @return  int
      */
     public function wordWrap(&$text, $maxwidth)
@@ -616,11 +616,11 @@ class Pdf extends Fpdf
 
     /**
      * Celula com escala horizontal caso o texto seja muito largo
-     * @param   number  $w
-     * @param   number  $h
+     * @param   int|float  $w
+     * @param   int|float  $h
      * @param   string  $txt
-     * @param   number  $border
-     * @param   number  $ln
+     * @param   int|float  $border
+     * @param   int|float  $ln
      * @param   string  $align
      * @param   boolean $fill
      * @param   string  $link
@@ -653,7 +653,7 @@ class Pdf extends Fpdf
                 $this->out(sprintf('BT %.2F Tz ET', $horiz_scale));
             } else {
                 //Calcula o espaçamento de caracteres em pontos
-                $char_space = ($w-$this->cMargin*2-$str_width)/max($this->_MBGetStringLength($txt)-1, 1)*$this->k;
+                $char_space = ($w-$this->cMargin*2-$str_width)/max($this->mbGetStringLength($txt)-1, 1)*$this->k;
                 //Ajusta o espaçamento de caracteres
                 $this->out(sprintf('BT %.2F Tc ET', $char_space));
             }
@@ -670,11 +670,11 @@ class Pdf extends Fpdf
 
     /**
      * Celula com escalamento horizontal somente se necessário
-     * @param   number  $w
-     * @param   number  $h
+     * @param   int|float  $w
+     * @param   int|float  $h
      * @param   string  $txt
-     * @param   number  $border
-     * @param   number  $ln
+     * @param   int|float  $border
+     * @param   int|float  $ln
      * @param   string  $align
      * @param   boolean $fill
      * @param   string  $link
@@ -686,11 +686,11 @@ class Pdf extends Fpdf
 
     /**
      * Celula com escalamento forçado
-     * @param   number  $w
-     * @param   number  $h
+     * @param   int|float  $w
+     * @param   int|float  $h
      * @param   string  $txt
-     * @param   number  $border
-     * @param   number  $ln
+     * @param   int|float  $border
+     * @param   int|float  $ln
      * @param   string  $align
      * @param   boolean $fill
      * @param   string  $link
@@ -710,11 +710,11 @@ class Pdf extends Fpdf
 
     /**
      * Celula com espaçamento de caracteres somente se necessário
-     * @param   number  $w
-     * @param   number  $h
+     * @param   int|float  $w
+     * @param   int|float  $h
      * @param   string  $txt
-     * @param   number  $border
-     * @param   number  $ln
+     * @param   int|float  $border
+     * @param   int|float  $ln
      * @param   string  $align
      * @param   boolean $fill
      * @param   string  $link
@@ -726,11 +726,11 @@ class Pdf extends Fpdf
 
     /**
      * Celula com espaçamento de caracteres forçado
-     * @param   number  $w
-     * @param   number  $h
+     * @param   int|float  $w
+     * @param   int|float  $h
      * @param   string  $txt
-     * @param   number  $border
-     * @param   number  $ln
+     * @param   int|float  $border
+     * @param   int|float  $ln
      * @param   string  $align
      * @param   boolean $fill
      * @param   string  $link
@@ -774,12 +774,12 @@ class Pdf extends Fpdf
 
     /**
      * Desenha uma linha horizontal tracejada com o FPDF
-     * @param   number $x Posição horizontal inicial, em mm
-     * @param   number $y Posição vertical inicial, em mm
-     * @param   number $w Comprimento da linha, em mm
-     * @param   number $h Espessura da linha, em mm
-     * @param   number $n Numero de traços na seção da linha com o comprimento $w
-     * @return  none
+     * @param   int|float $x Posição horizontal inicial, em mm
+     * @param   int|float $y Posição vertical inicial, em mm
+     * @param   int|float $w Comprimento da linha, em mm
+     * @param   int|float $h Espessura da linha, em mm
+     * @param   int|float $n Numero de traços na seção da linha com o comprimento $w
+     * @return  void
      */
     public function dashedHLine($x, $y, $w, $h, $n)
     {
@@ -798,12 +798,12 @@ class Pdf extends Fpdf
 
    /**
     * Desenha uma linha vertical tracejada com o FPDF
-    * @param   number $x      Posição horizontal inicial, em mm
-    * @param   number $y      Posição vertical inicial, em mm
-    * @param   number $w      Espessura da linha, em mm
-    * @param   number $yfinal posição final
-    * @param   number $n      Numero de traços na seção da linha com o comprimento $w
-    * @return  none
+    * @param   int|float $x      Posição horizontal inicial, em mm
+    * @param   int|float $y      Posição vertical inicial, em mm
+    * @param   int|float $w      Espessura da linha, em mm
+    * @param   int|float $yfinal posição final
+    * @param   int|float $n      Numero de traços na seção da linha com o comprimento $w
+    * @return  void
     */
     public function dashedVLine($x, $y, $w, $yfinal, $n)
     {
@@ -825,9 +825,9 @@ class Pdf extends Fpdf
      * pGetNumLines
      * Obtem o numero de linhas usadas pelo texto usando a fonte especifidada
      * @param  string $text
-     * @param  number $width
+     * @param  int|float $width
      * @param  array  $aFont
-     * @return number numero de linhas
+     * @return int|float numero de linhas
      */
     public function getNumLines($text, $width, $aFont = ['font' => 'Times', 'size' => 8, 'style' => ''])
     {
@@ -845,10 +845,10 @@ class Pdf extends Fpdf
      * Ex. $this->pTextBox(2,20,34,8,'Texto',array('fonte'=>$this->fontePadrao,
      * 'size'=>10,'style='B'),'C','L',FALSE,'http://www.nfephp.org')
      *
-     * @param  number  $x       Posição horizontal da caixa, canto esquerdo superior
-     * @param  number  $y       Posição vertical da caixa, canto esquerdo superior
-     * @param  number  $w       Largura da caixa
-     * @param  number  $h       Altura da caixa
+     * @param  int|float  $x       Posição horizontal da caixa, canto esquerdo superior
+     * @param  int|float  $y       Posição vertical da caixa, canto esquerdo superior
+     * @param  int|float  $w       Largura da caixa
+     * @param  int|float  $h       Altura da caixa
      * @param  string  $text    Conteúdo da caixa
      * @param  array   $aFont   Matriz com as informações para formatação do texto com fonte, tamanho e estilo
      * @param  string  $vAlign  Alinhamento vertical do texto, T-topo C-centro B-base
@@ -859,11 +859,11 @@ class Pdf extends Fpdf
      * fonte até caber no espaço, se falso mantem o tamanho do fonte e usa quantas linhas forem necessárias
      * e para isso atera o tamanho do fonte até caber no espaço,
      * se falso mantem o tamanho do fonte e usa quantas linhas forem necessárias
-     * @param  number  $hmax
-     * @param  number  $vOffSet incremento forçado na na posição Y
+     * @param  int|float  $hmax
+     * @param  int|float  $vOffSet incremento forçado na na posição Y
      * @param  boolean $fill  Cria um quadrado e preenche o mesmo com a cor determinada no PDF.
      * Se ativo junto com $border colore o quadrado criado pelo memso.
-     * @return number $height Qual a altura necessária para desenhar esta textBox
+     * @return int|float $height Qual a altura necessária para desenhar esta textBox
      */
     public function textBox(
         $x,
@@ -988,10 +988,10 @@ class Pdf extends Fpdf
      * Atenção : Esta função é dependente de outras classes de FPDF
      * Ex. $this->__textBox90(2,20,34,8,'Texto',array('fonte'=>$this->fontePadrao,
      * 'size'=>10,'style='B'),'C','L',FALSE,'http://www.nfephp.org')
-     * @param  number $x Posição horizontal da caixa, canto esquerdo superior
-     * @param  number $y Posição vertical da caixa, canto esquerdo superior
-     * @param  number $w Largura da caixa
-     * @param  number $h Altura da caixa
+     * @param  int|float $x Posição horizontal da caixa, canto esquerdo superior
+     * @param  int|float $y Posição vertical da caixa, canto esquerdo superior
+     * @param  int|float $w Largura da caixa
+     * @param  int|float $h Altura da caixa
      * @param  string $text Conteúdo da caixa
      * @param  array $aFont Matriz com as informações para formatação do texto com fonte, tamanho e estilo
      * @param  string $vAlign Alinhamento vertical do texto, T-topo C-centro B-base
@@ -1002,9 +1002,9 @@ class Pdf extends Fpdf
      *  fonte até caber no espaço, se falso mantem o tamanho do fonte e usa quantas linhas forem necessárias
      *  linha e para isso atera o tamanho do fonte até caber no espaço,
      *  se falso mantem o tamanho do fonte e usa quantas linhas forem necessárias
-     * @param  number  $hmax
-     * @param  number  $vOffSet incremento forçado na na posição Y
-     * @return number $height Qual a altura necessária para desenhar esta textBox
+     * @param  int|float  $hmax
+     * @param  int|float  $vOffSet incremento forçado na na posição Y
+     * @return int|float $height Qual a altura necessária para desenhar esta textBox
      */
     public function textBox90(
         $x,
