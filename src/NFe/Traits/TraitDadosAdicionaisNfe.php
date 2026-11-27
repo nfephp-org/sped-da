@@ -4,13 +4,13 @@ namespace NFePHP\DA\NFe\Traits;
 
 trait TraitDadosAdicionaisNfe
 {
-    public function dadosAdicionais(string $infCpl = '', string $infAdFisco = '', float $heigth = null): object
+    public function dadosAdicionais(string $infCpl = '', string $infAdFisco = '', ?float $heigth = null): object
     {
         $dados = "dadosAdicionais{$this->orientacao}";
         return $this->$dados($infCpl, $infAdFisco, $heigth);
     }
 
-    public function dadosAdicionaisP(string $infCpl = '', string $infAdFisco = '', float $heigth = null): object
+    public function dadosAdicionaisP(string $infCpl = '', string $infAdFisco = '', ?float $heigth = null): object
     {
         if (empty($heigth)) {
             $heigth = 24;
@@ -80,7 +80,7 @@ trait TraitDadosAdicionaisNfe
         ];
     }
 
-    public function dadosAdicionaisL(string $infCpl, string $infAdFisco, float $heigth = null): object
+    public function dadosAdicionaisL(string $infCpl, string $infAdFisco, ?float $heigth = null): object
     {
 
     }
